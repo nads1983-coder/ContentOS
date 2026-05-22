@@ -1,6 +1,12 @@
-import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
 import { BrandLogo } from "@/components/brand-logo";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "Create a ContentOS Account",
+  path: "/signup",
+  index: false
+});
 
 export default function SignupPage() {
   return (
@@ -14,9 +20,6 @@ export default function SignupPage() {
         <div className="mt-6">
           <AuthForm mode="signup" />
         </div>
-        <Link href="/login" className="mt-6 block text-sm text-muted hover:text-bone">
-          Already have an account? Log in
-        </Link>
       </section>
     </main>
   );

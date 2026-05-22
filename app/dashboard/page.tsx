@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { BrandLogo } from "@/components/brand-logo";
 import { CheckoutButton, ManageBillingButton } from "@/components/billing-buttons";
 import { getCurrentUser } from "@/lib/auth";
@@ -22,6 +23,14 @@ import { buildUsageSummary } from "@/lib/usage";
 import { PlanId } from "@/types/saas";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "ContentOS Dashboard",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 const planLabels: Record<PlanId, string> = {
   free: "Free",

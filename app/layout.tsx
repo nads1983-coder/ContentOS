@@ -19,9 +19,6 @@ export const metadata: Metadata = {
     "social media SaaS",
     "ContentOS"
   ],
-  alternates: {
-    canonical: absoluteUrl("/")
-  },
   openGraph: {
     title: "ContentOS | AI Social Content Generator",
     description: siteConfig.description,
@@ -65,19 +62,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const shouldLoadAnalytics = process.env.NODE_ENV === "production";
+
   return (
     <html lang="en">
       <body>
         {children}
-        <Script
-          async
-          src="https://plausible.io/js/pa-gi8LN7uDl7Mbn6ht4W3QU.js"
-          strategy="afterInteractive"
-        />
-        <Script id="plausible-init" strategy="afterInteractive">
-          {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+        {shouldLoadAnalytics ? (
+          <>
+            <Script
+              async
+              src="https://plausible.io/js/pa-gi8LN7uDl7Mbn6ht4W3QU.js"
+              strategy="afterInteractive"
+            />
+            <Script id="plausible-init" strategy="afterInteractive">
+              {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
 plausible.init()`}
-        </Script>
+            </Script>
+          </>
+        ) : null}
       </body>
     </html>
   );

@@ -1,4 +1,10 @@
 import { PublicPage } from "@/components/public-page";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "ContentOS Refund Policy",
+  path: "/refund-policy"
+});
 
 export default function RefundPolicyPage() {
   return (

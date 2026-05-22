@@ -1,5 +1,11 @@
 import { PublicPage } from "@/components/public-page";
+import { pageMetadata } from "@/lib/metadata";
 import { siteConfig } from "@/lib/site";
+
+export const metadata = pageMetadata({
+  title: "Contact ContentOS Support",
+  path: "/contact"
+});
 
 export default function ContactPage() {
   return (

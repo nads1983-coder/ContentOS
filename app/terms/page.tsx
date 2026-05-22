@@ -1,4 +1,10 @@
 import { PublicPage } from "@/components/public-page";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "ContentOS Terms of Service",
+  path: "/terms"
+});
 
 export default function TermsPage() {
   return (

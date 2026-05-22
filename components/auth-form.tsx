@@ -13,6 +13,42 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [message, setMessage] = useState("");
   const [isPending, setIsPending] = useState(false);
   const endpoint = mode === "login" ? "/api/auth/login" : mode === "signup" ? "/api/auth/signup" : "/api/auth/reset";
+  const plan =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("plan")
+      : null;
+  const checkoutPlan = plan === "pro_creator" || plan === "pro_studio" ? plan : null;
+  const planQuery = checkoutPlan ? `?plan=${checkoutPlan}` : "";
+
+  async function continueToCheckout() {
+    if (!checkoutPlan) {
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    const response = await fetch("/api/billing/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan: checkoutPlan })
+    });
+    const data = (await response.json()) as {
+      url?: string;
+      error?: string;
+      redirectUrl?: string;
+    };
+
+    if (response.ok && data.url) {
+      window.location.href = data.url;
+      return;
+    }
+
+    if (response.status === 401 && data.redirectUrl) {
+      window.location.href = data.redirectUrl;
+      return;
+    }
+
+    setMessage(data.error ?? "Your account is ready, but checkout could not be opened.");
+  }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,7 +60,11 @@ export function AuthForm({ mode }: AuthFormProps) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password })
     });
-    const data = (await response.json()) as { error?: string };
+    const data = (await response.json()) as {
+      error?: string;
+      message?: string;
+      redirectUrl?: string;
+    };
 
     setIsPending(false);
 
@@ -38,7 +78,12 @@ export function AuthForm({ mode }: AuthFormProps) {
       return;
     }
 
-    window.location.href = "/dashboard";
+    if (data.message && !data.redirectUrl) {
+      setMessage(data.message);
+      return;
+    }
+
+    await continueToCheckout();
   }
 
   return (
@@ -89,10 +134,15 @@ export function AuthForm({ mode }: AuthFormProps) {
           <Link href="/reset-password" className="hover:text-bone">
             Reset password
           </Link>
-          <Link href="/signup" className="hover:text-bone">
+          <Link href={`/signup${planQuery}`} className="hover:text-bone">
             Create account
           </Link>
         </div>
+      ) : null}
+      {mode === "signup" ? (
+        <Link href={`/login${planQuery}`} className="text-sm text-muted hover:text-bone">
+          Already have an account? Log in
+        </Link>
       ) : null}
     </form>
   );

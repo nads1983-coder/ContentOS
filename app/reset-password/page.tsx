@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
 import { BrandLogo } from "@/components/brand-logo";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "Reset ContentOS Password",
+  path: "/reset-password",
+  index: false
+});
 
 export default function ResetPasswordPage() {
   return (

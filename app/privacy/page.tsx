@@ -1,4 +1,10 @@
 import { PublicPage } from "@/components/public-page";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "ContentOS Privacy Policy",
+  path: "/privacy"
+});
 
 export default function PrivacyPage() {
   return (

@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
+import { pageMetadata } from "@/lib/metadata";
 import { siteConfig } from "@/lib/site";
+
+export const metadata = pageMetadata({
+  title: "ContentOS | AI Social Content Generator",
+  path: "/"
+});
 
 const valueBullets = [
   "Multi-platform outputs",

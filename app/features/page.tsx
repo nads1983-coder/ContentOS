@@ -1,4 +1,10 @@
 import { PublicPage } from "@/components/public-page";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "ContentOS Features | AI Social Content Workflow",
+  path: "/features"
+});
 
 export default function FeaturesPage() {
   return (

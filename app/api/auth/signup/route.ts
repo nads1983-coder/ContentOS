@@ -63,7 +63,12 @@ export async function POST(request: Request) {
       path: "/",
       maxAge: data.expires_in ?? 3600
     });
+
+    return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({
+    ok: true,
+    message: "Check your inbox to confirm your account before logging in."
+  });
 }

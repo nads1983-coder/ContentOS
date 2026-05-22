@@ -10,9 +10,7 @@ const routes = [
   "/faq",
   "/privacy",
   "/terms",
-  "/refund-policy",
-  "/login",
-  "/signup"
+  "/refund-policy"
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

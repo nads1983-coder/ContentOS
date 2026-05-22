@@ -59,5 +59,5 @@ export async function POST(request: Request) {
     maxAge: data.expires_in ?? 3600
   });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
 }

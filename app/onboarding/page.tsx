@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import { BrandLogo } from "@/components/brand-logo";
 import { OnboardingForm } from "@/components/onboarding-form";
+
+export const metadata: Metadata = {
+  title: "Set up ContentOS Workspace",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default function OnboardingPage() {
   return (

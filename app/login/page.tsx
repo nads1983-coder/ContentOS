@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
 import { BrandLogo } from "@/components/brand-logo";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata({
+  title: "Log in to ContentOS",
+  path: "/login",
+  index: false
+});
 
 export default function LoginPage() {
   return (

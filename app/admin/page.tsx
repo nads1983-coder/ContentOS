@@ -1,6 +1,15 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { BrandLogo } from "@/components/brand-logo";
 import { getCurrentUser, isAdminEmail } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "ContentOS Admin",
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default async function AdminPage() {
   const user = await getCurrentUser();

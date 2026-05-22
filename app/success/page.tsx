@@ -1,5 +1,12 @@
 import Link from "next/link";
+import { pageMetadata } from "@/lib/metadata";
 import { PublicPage } from "@/components/public-page";
+
+export const metadata = pageMetadata({
+  title: "ContentOS Subscription Started",
+  path: "/success",
+  index: false
+});
 
 export default function SuccessPage() {
   return (
