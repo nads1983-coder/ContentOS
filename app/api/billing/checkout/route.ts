@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { isSupabaseConfigured } from "@/lib/env";
-import { createCheckoutSession, BillingPlan } from "@/lib/stripe-rest";
+import { isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/env";
+import {
+  checkoutPlanMatchesState,
+  createCheckoutSession,
+  BillingPlan,
+  getStripeSubscriptionState
+} from "@/lib/stripe-rest";
+import { getUserProfile, syncUserSubscriptionState } from "@/lib/supabase-rest";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -22,10 +28,35 @@ export async function POST(request: Request) {
   }
 
   try {
+    const profile = user && isSupabaseAdminConfigured()
+      ? await getUserProfile(user.id)
+      : null;
+    const subscriptionState = await getStripeSubscriptionState({
+      stripeCustomerId: profile?.stripe_customer_id,
+      stripeSubscriptionId: profile?.stripe_subscription_id,
+      email: user?.email
+    });
+
+    if (user && isSupabaseAdminConfigured()) {
+      await syncUserSubscriptionState({
+        userId: user.id,
+        email: user.email,
+        ...subscriptionState
+      });
+    }
+
+    if (checkoutPlanMatchesState(plan, subscriptionState)) {
+      return NextResponse.json(
+        { error: "You already have an active subscription for this plan." },
+        { status: 409 }
+      );
+    }
+
     const session = await createCheckoutSession({
       plan,
       userId: user?.id,
-      email: user?.email
+      email: user?.email,
+      stripeCustomerId: subscriptionState.stripeCustomerId ?? profile?.stripe_customer_id
     });
 
     return NextResponse.json({ url: session.url });

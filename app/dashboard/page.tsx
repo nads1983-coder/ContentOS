@@ -2,9 +2,34 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 import { CheckoutButton, ManageBillingButton } from "@/components/billing-buttons";
 import { getCurrentUser } from "@/lib/auth";
-import { isSupabaseAdminConfigured } from "@/lib/env";
-import { getUserProfile, listBrandProfiles } from "@/lib/supabase-rest";
+import { isStripeConfigured, isSupabaseAdminConfigured } from "@/lib/env";
+import { getStripeSubscriptionState, planHasActiveEntitlement } from "@/lib/stripe-rest";
+import {
+  getUserProfile,
+  listBrandProfiles,
+  syncUserSubscriptionState,
+  upsertUserProfile
+} from "@/lib/supabase-rest";
 import { buildUsageSummary } from "@/lib/usage";
+import { PlanId } from "@/types/saas";
+
+const planLabels: Record<PlanId, string> = {
+  free: "Free",
+  pro_creator: "Pro Creator",
+  pro_studio: "Pro Studio"
+};
+
+function formatDate(value?: string | null) {
+  if (!value) {
+    return "Not available";
+  }
+
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  }).format(new Date(value));
+}
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -33,9 +58,45 @@ export default async function DashboardPage() {
     );
   }
 
-  const profile = isSupabaseAdminConfigured() ? await getUserProfile(user.id) : null;
+  let profile = isSupabaseAdminConfigured() ? await getUserProfile(user.id) : null;
+
+  if (!profile && isSupabaseAdminConfigured()) {
+    profile = await upsertUserProfile({ id: user.id, email: user.email });
+  }
+
+  if (profile && isStripeConfigured()) {
+    try {
+      const subscriptionState = await getStripeSubscriptionState({
+        stripeCustomerId: profile.stripe_customer_id,
+        stripeSubscriptionId: profile.stripe_subscription_id,
+        email: user.email
+      });
+
+      profile = await syncUserSubscriptionState({
+        userId: user.id,
+        email: user.email,
+        ...subscriptionState
+      }) ?? {
+        ...profile,
+        plan: subscriptionState.plan,
+        subscription_status: subscriptionState.status,
+        stripe_customer_id: subscriptionState.stripeCustomerId,
+        stripe_subscription_id: subscriptionState.stripeSubscriptionId,
+        subscription_current_period_end: subscriptionState.currentPeriodEnd,
+        subscription_cancel_at_period_end: subscriptionState.cancelAtPeriodEnd,
+        subscription_canceled_at: subscriptionState.canceledAt
+      };
+    } catch {
+      // Keep the stored profile if Stripe is temporarily unavailable.
+    }
+  }
+
   const brandProfiles = isSupabaseAdminConfigured() ? await listBrandProfiles(user.id) : [];
   const plan = profile?.plan ?? "free";
+  const status = profile?.subscription_status ?? "none";
+  const hasActiveSubscription = planHasActiveEntitlement(plan, status);
+  const canUpgradeToCreator = !hasActiveSubscription;
+  const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
   const usage = buildUsageSummary(plan, 0);
 
   return (
@@ -53,13 +114,32 @@ export default async function DashboardPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
               Current plan
             </p>
-            <h1 className="mt-3 text-2xl font-semibold text-bone">{plan.replace("_", " ")}</h1>
+            <h1 className="mt-3 text-2xl font-semibold text-bone">{planLabels[plan]}</h1>
             <p className="mt-2 text-sm text-muted">
-              Status: {profile?.subscription_status ?? "none"}
+              Status: {status}
             </p>
+            <p className="mt-2 text-sm text-muted">
+              Renewal date: {formatDate(profile?.subscription_current_period_end)}
+            </p>
+            {profile?.subscription_cancel_at_period_end ? (
+              <p className="mt-2 rounded border border-gold/40 bg-gold/10 p-3 text-sm text-bone">
+                Cancellation pending. Access remains active until {formatDate(profile.subscription_current_period_end)}.
+              </p>
+            ) : null}
             <div className="mt-5 grid gap-3">
-              <CheckoutButton plan="pro_creator">Upgrade to Pro Creator</CheckoutButton>
-              <CheckoutButton plan="pro_studio">Upgrade to Pro Studio</CheckoutButton>
+              {canUpgradeToCreator ? (
+                <CheckoutButton plan="pro_creator">Upgrade to Pro Creator</CheckoutButton>
+              ) : null}
+              {canUpgradeToStudio ? (
+                <CheckoutButton plan="pro_studio">
+                  {plan === "pro_creator" ? "Upgrade to Pro Studio" : "Upgrade to Pro Studio"}
+                </CheckoutButton>
+              ) : null}
+              {!canUpgradeToCreator && !canUpgradeToStudio ? (
+                <p className="rounded border border-white/10 bg-white/[0.035] p-3 text-sm text-muted">
+                  Your current plan is active.
+                </p>
+              ) : null}
               {profile?.stripe_customer_id ? <ManageBillingButton /> : null}
             </div>
           </article>

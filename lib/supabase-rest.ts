@@ -1,5 +1,11 @@
 import { getEnv, isSupabaseAdminConfigured } from "@/lib/env";
-import { BrandProfile, OnboardingData, PlanId, UserProfile } from "@/types/saas";
+import {
+  BrandProfile,
+  OnboardingData,
+  PlanId,
+  SubscriptionStatus,
+  UserProfile
+} from "@/types/saas";
 
 type QueryValue = string | number | boolean | null;
 
@@ -70,8 +76,6 @@ export async function upsertUserProfile(profile: Partial<UserProfile> & { id: st
       Prefer: "resolution=merge-duplicates,return=representation"
     },
     body: JSON.stringify({
-      plan: "free",
-      subscription_status: "none",
       ...profile,
       updated_at: new Date().toISOString()
     })
@@ -153,15 +157,22 @@ export async function updateSubscriptionStatus(input: {
   userId?: string;
   email?: string;
   plan: PlanId;
-  status: string;
+  status: SubscriptionStatus;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  currentPeriodEnd?: string | null;
+  cancelAtPeriodEnd?: boolean;
+  canceledAt?: string | null;
 }) {
   const query: Record<string, QueryValue> | null = input.userId
     ? { id: `eq.${input.userId}` }
     : input.email
       ? { email: `eq.${input.email}` }
-      : null;
+      : input.stripeCustomerId
+        ? { stripe_customer_id: `eq.${input.stripeCustomerId}` }
+        : input.stripeSubscriptionId
+          ? { stripe_subscription_id: `eq.${input.stripeSubscriptionId}` }
+          : null;
 
   if (!query) {
     return null;
@@ -175,7 +186,26 @@ export async function updateSubscriptionStatus(input: {
       subscription_status: input.status,
       stripe_customer_id: input.stripeCustomerId,
       stripe_subscription_id: input.stripeSubscriptionId,
+      subscription_current_period_end: input.currentPeriodEnd,
+      subscription_cancel_at_period_end: input.cancelAtPeriodEnd ?? false,
+      subscription_canceled_at: input.canceledAt,
       updated_at: new Date().toISOString()
     })
   });
+}
+
+export async function syncUserSubscriptionState(input: {
+  userId: string;
+  email: string;
+  plan: PlanId;
+  status: SubscriptionStatus;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  currentPeriodEnd?: string | null;
+  cancelAtPeriodEnd?: boolean;
+  canceledAt?: string | null;
+}) {
+  const rows = await updateSubscriptionStatus(input);
+  const [saved] = rows ?? [];
+  return saved ?? null;
 }

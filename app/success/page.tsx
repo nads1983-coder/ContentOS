@@ -4,7 +4,8 @@ import { PublicPage } from "@/components/public-page";
 export default function SuccessPage() {
   return (
     <PublicPage title="Subscription started">
-      <p>Your checkout completed. Stripe will sync the subscription through the webhook once it is configured.</p>
+      <p>Your Pro subscription has been activated successfully.</p>
+      <p>You now have access to your upgraded ContentOS features.</p>
       <Link href="/dashboard" className="text-goldSoft hover:text-bone">
         Go to dashboard
       </Link>

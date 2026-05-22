@@ -6,10 +6,17 @@ create table if not exists public.profiles (
   subscription_status text not null default 'none',
   stripe_customer_id text,
   stripe_subscription_id text,
+  subscription_current_period_end timestamptz,
+  subscription_cancel_at_period_end boolean not null default false,
+  subscription_canceled_at timestamptz,
   onboarding_completed boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.profiles add column if not exists subscription_current_period_end timestamptz;
+alter table public.profiles add column if not exists subscription_cancel_at_period_end boolean not null default false;
+alter table public.profiles add column if not exists subscription_canceled_at timestamptz;
 
 create table if not exists public.brand_profiles (
   id uuid primary key default gen_random_uuid(),
@@ -76,6 +83,7 @@ create index if not exists idx_generation_history_user_created on public.generat
 create index if not exists idx_saved_content_user_created on public.saved_content(user_id, created_at desc);
 create index if not exists idx_usage_events_user_created on public.usage_events(user_id, created_at desc);
 create index if not exists idx_profiles_stripe_customer on public.profiles(stripe_customer_id);
+create index if not exists idx_profiles_stripe_subscription on public.profiles(stripe_subscription_id);
 
 alter table public.profiles enable row level security;
 alter table public.brand_profiles enable row level security;

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
-import { verifyStripeSignature } from "@/lib/stripe-rest";
+import {
+  getStripeSubscriptionState,
+  stripeSubscriptionToState,
+  verifyStripeSignature
+} from "@/lib/stripe-rest";
 import { updateSubscriptionStatus } from "@/lib/supabase-rest";
-import { PlanId } from "@/types/saas";
 
 type StripeWebhookEvent = {
   type: string;
@@ -11,24 +14,22 @@ type StripeWebhookEvent = {
       customer?: string;
       subscription?: string;
       status?: string;
+      current_period_end?: number;
+      cancel_at_period_end?: boolean;
+      canceled_at?: number | null;
       customer_email?: string;
       client_reference_id?: string;
       metadata?: Record<string, string>;
+      items?: {
+        data: Array<{
+          price?: {
+            id: string;
+          };
+        }>;
+      };
     };
   };
 };
-
-function planFromMetadata(value?: string): PlanId {
-  if (value === "pro_studio") {
-    return "pro_studio";
-  }
-
-  if (value === "pro_creator") {
-    return "pro_creator";
-  }
-
-  return "free";
-}
 
 export async function POST(request: Request) {
   const payload = await request.text();
@@ -40,25 +41,42 @@ export async function POST(request: Request) {
   const event = JSON.parse(payload) as StripeWebhookEvent;
   const object = event.data.object;
 
+  if (event.type === "checkout.session.completed") {
+    const state = await getStripeSubscriptionState({
+      stripeCustomerId: object.customer,
+      stripeSubscriptionId: object.subscription ?? object.id,
+      email: object.customer_email
+    });
+
+    await updateSubscriptionStatus({
+      userId: object.client_reference_id ?? object.metadata?.user_id,
+      email: object.customer_email,
+      ...state
+    });
+  }
+
   if (
     [
-      "checkout.session.completed",
       "customer.subscription.created",
       "customer.subscription.updated",
       "customer.subscription.deleted"
     ].includes(event.type)
   ) {
-    const status = event.type === "customer.subscription.deleted"
-      ? "canceled"
-      : object.status ?? "active";
+    const state = stripeSubscriptionToState({
+      id: object.id ?? "",
+      customer: object.customer ?? "",
+      status: event.type === "customer.subscription.deleted" ? "canceled" : object.status ?? "active",
+      current_period_end: object.current_period_end,
+      cancel_at_period_end: object.cancel_at_period_end,
+      canceled_at: object.canceled_at,
+      metadata: object.metadata,
+      items: object.items
+    });
 
     await updateSubscriptionStatus({
-      userId: object.client_reference_id ?? object.metadata?.user_id,
+      userId: object.metadata?.user_id,
       email: object.customer_email,
-      plan: planFromMetadata(object.metadata?.plan),
-      status,
-      stripeCustomerId: object.customer,
-      stripeSubscriptionId: object.subscription ?? object.id
+      ...state
     });
   }
 
