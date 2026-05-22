@@ -13,6 +13,8 @@ import {
 import { buildUsageSummary } from "@/lib/usage";
 import { PlanId } from "@/types/saas";
 
+export const dynamic = "force-dynamic";
+
 const planLabels: Record<PlanId, string> = {
   free: "Free",
   pro_creator: "Pro Creator",

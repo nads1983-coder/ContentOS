@@ -1,6 +1,19 @@
+const fallbackAppUrl = "https://getcontentos.co";
+
+function absoluteUrlEnv(value: string | undefined, fallback = fallbackAppUrl) {
+  const candidate = value?.trim() || fallback;
+
+  try {
+    const url = new URL(candidate);
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return fallback;
+  }
+}
+
 const serverEnv = {
-  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://getcontentos.co",
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "https://getcontentos.co",
+  appUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL),
+  siteUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_SITE_URL, absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL)),
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",

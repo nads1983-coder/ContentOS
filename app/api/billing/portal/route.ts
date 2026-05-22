@@ -3,6 +3,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { getUserProfile } from "@/lib/supabase-rest";
 import { createCustomerPortalSession } from "@/lib/stripe-rest";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function POST() {
   const user = await getCurrentUser();
 

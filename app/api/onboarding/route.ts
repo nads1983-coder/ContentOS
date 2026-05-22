@@ -3,6 +3,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { saveOnboarding } from "@/lib/supabase-rest";
 import { OnboardingData } from "@/types/saas";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   const user = await getCurrentUser();
 

@@ -31,6 +31,9 @@ type StripeWebhookEvent = {
   };
 };
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   const payload = await request.text();
 

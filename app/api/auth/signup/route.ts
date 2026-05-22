@@ -4,6 +4,9 @@ import { SESSION_COOKIE } from "@/lib/auth";
 import { getEnv, isSupabaseConfigured } from "@/lib/env";
 import { upsertUserProfile } from "@/lib/supabase-rest";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   if (!isSupabaseConfigured()) {
     return NextResponse.json({ error: "Supabase Auth is not configured." }, { status: 503 });

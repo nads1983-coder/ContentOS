@@ -9,6 +9,9 @@ import {
 } from "@/lib/stripe-rest";
 import { getUserProfile, syncUserSubscriptionState } from "@/lib/supabase-rest";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   const { plan } = (await request.json()) as { plan?: BillingPlan };

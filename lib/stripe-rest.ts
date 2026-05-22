@@ -43,7 +43,8 @@ export type StripeSubscriptionState = {
 };
 
 function stripeRedirectUrl(path: string) {
-  return new URL(path, getEnv().appUrl).toString();
+  const safePath = path.startsWith("/") ? path : `/${path}`;
+  return new URL(safePath, getEnv().appUrl).toString();
 }
 
 function stripePriceId(plan: BillingPlan) {
