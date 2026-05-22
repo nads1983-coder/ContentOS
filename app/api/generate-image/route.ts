@@ -7,7 +7,7 @@ import {
   normalizeSubscriptionStatus,
   planHasActiveEntitlement
 } from "@/lib/stripe-rest";
-import { getUserProfile, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { getUserProfile, recordUsageEvent, syncUserSubscriptionState } from "@/lib/supabase-rest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -205,7 +205,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // TODO: Record image generation usage once image events are added to usage tracking.
+    try {
+      await recordUsageEvent({
+        userId: user.id,
+        email: user.email,
+        eventType: "image_generation",
+        metadata: {
+          platform,
+          contentType,
+          style,
+          format,
+          size: sizeByFormat[format]
+        }
+      });
+    } catch {
+      console.warn("Image generation usage tracking failed", {
+        route: "/api/generate-image",
+        userId: user.id
+      });
+    }
+
     return NextResponse.json({
       image: imageData,
       mimeType: image?.b64_json ? "image/png" : undefined,

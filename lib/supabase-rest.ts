@@ -1,5 +1,6 @@
 import { getEnv, isSupabaseAdminConfigured } from "@/lib/env";
 import { normalizePlanId, normalizeSubscriptionStatus } from "@/lib/stripe-rest";
+import { currentUsageWindow } from "@/lib/usage";
 import {
   BrandProfile,
   OnboardingData,
@@ -8,7 +9,7 @@ import {
   UserProfile
 } from "@/types/saas";
 
-type QueryValue = string | number | boolean | null;
+type QueryValue = string | number | boolean | null | Array<string | number | boolean>;
 
 function restUrl(path: string, query?: Record<string, QueryValue>) {
   const env = getEnv();
@@ -16,7 +17,9 @@ function restUrl(path: string, query?: Record<string, QueryValue>) {
 
   if (query) {
     Object.entries(query).forEach(([key, value]) => {
-      if (value !== null) {
+      if (Array.isArray(value)) {
+        value.forEach((item) => url.searchParams.append(key, String(item)));
+      } else if (value !== null) {
         url.searchParams.set(key, String(value));
       }
     });
@@ -57,6 +60,47 @@ async function supabaseFetch<T>(
   }
 
   return response.json() as Promise<T>;
+}
+
+async function supabaseCount(
+  path: string,
+  init: RequestInit & { query?: Record<string, QueryValue> } = {}
+) {
+  const env = getEnv();
+
+  if (!isSupabaseAdminConfigured()) {
+    throw new Error("Supabase is not configured.");
+  }
+
+  const { query, headers, ...rest } = init;
+  const response = await fetch(restUrl(path, query), {
+    ...rest,
+    method: rest.method ?? "HEAD",
+    headers: {
+      apikey: env.supabaseServiceRoleKey,
+      Authorization: `Bearer ${env.supabaseServiceRoleKey}`,
+      Prefer: "count=exact",
+      Range: "0-0",
+      ...headers
+    },
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error(`Supabase count failed: ${response.status}`);
+  }
+
+  const contentRange = response.headers.get("content-range") ?? "";
+  const total = Number.parseInt(contentRange.split("/")[1] ?? "", 10);
+  return Number.isFinite(total) ? total : 0;
+}
+
+async function ensureUserProfile(userId: string, email?: string) {
+  if (!email) {
+    return;
+  }
+
+  await upsertUserProfile({ id: userId, email });
 }
 
 export async function getUserProfile(userId: string) {
@@ -152,6 +196,63 @@ export async function recordGeneration(userId: string, payload: unknown) {
       created_at: new Date().toISOString()
     })
   });
+}
+
+export async function recordUsageEvent(input: {
+  userId: string;
+  email?: string;
+  eventType: "text_generation" | "image_generation";
+  metadata?: Record<string, unknown>;
+}) {
+  await ensureUserProfile(input.userId, input.email);
+
+  return supabaseFetch<Array<{ id: string }>>("usage_events", {
+    method: "POST",
+    body: JSON.stringify({
+      user_id: input.userId,
+      event_type: input.eventType,
+      metadata: {
+        email: input.email,
+        ...input.metadata
+      },
+      created_at: new Date().toISOString()
+    })
+  });
+}
+
+export async function getMonthlyUsageCount(input: {
+  userId: string;
+  periodEnd?: string | null;
+}) {
+  const { periodStart, periodEnd } = currentUsageWindow(new Date(), input.periodEnd);
+
+  const query = {
+    user_id: `eq.${input.userId}`,
+    created_at: [`gte.${periodStart}`, `lt.${periodEnd}`],
+    select: "id"
+  };
+
+  let usageEvents = 0;
+  let textUsageEvents = 0;
+
+  try {
+    usageEvents = await supabaseCount("usage_events", { query });
+    textUsageEvents = await supabaseCount("usage_events", {
+      query: {
+        ...query,
+        event_type: "eq.text_generation"
+      }
+    });
+  } catch {
+    // Fall back to generation history for older installs while usage_events is being rolled out.
+  }
+
+  try {
+    const generationHistory = await supabaseCount("generation_history", { query });
+    return usageEvents + Math.max(0, generationHistory - textUsageEvents);
+  } catch {
+    return usageEvents;
+  }
 }
 
 export async function updateSubscriptionStatus(input: {

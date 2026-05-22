@@ -13,6 +13,7 @@ import {
 } from "@/lib/stripe-rest";
 import {
   getUserProfile,
+  getMonthlyUsageCount,
   listBrandProfiles,
   syncUserSubscriptionState,
   upsertUserProfile
@@ -173,7 +174,23 @@ export default async function DashboardPage() {
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
   const canUpgradeToCreator = !hasActiveSubscription;
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
-  const usage = buildUsageSummary(plan, 0);
+  let monthlyUsageCount = 0;
+
+  if (isSupabaseAdminConfigured()) {
+    try {
+      monthlyUsageCount = await getMonthlyUsageCount({
+        userId: user.id,
+        periodEnd: profile?.subscription_current_period_end
+      });
+    } catch (error) {
+      console.warn("Dashboard usage fetch failed", {
+        userId: user.id,
+        error
+      });
+    }
+  }
+
+  const usage = buildUsageSummary(plan, monthlyUsageCount, profile?.subscription_current_period_end);
 
   console.log("Dashboard normalized subscription state", {
     userId: user.id,

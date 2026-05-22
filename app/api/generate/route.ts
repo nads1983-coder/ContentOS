@@ -5,7 +5,7 @@ import { contentTypes, defaultSelectedTypes } from "@/lib/content-config";
 import { isSupabaseAdminConfigured } from "@/lib/env";
 import { captureServerError } from "@/lib/monitoring";
 import { buildInput, buildInstructions, requestedTypeSet } from "@/lib/prompts";
-import { recordGeneration } from "@/lib/supabase-rest";
+import { recordGeneration, recordUsageEvent } from "@/lib/supabase-rest";
 import {
   CtaModeId,
   ContentTypeId,
@@ -280,6 +280,21 @@ export async function POST(nextRequest: NextRequest) {
         await recordGeneration(user.id, result);
       } catch (error) {
         captureServerError(error, { route: "/api/generate", userId: user.id });
+      }
+
+      try {
+        await recordUsageEvent({
+          userId: user.id,
+          email: user.email,
+          eventType: "text_generation",
+          metadata: {
+            generationId: result.id,
+            selectedTypes: request.selectedTypes,
+            outputCount: result.sections.length
+          }
+        });
+      } catch (error) {
+        captureServerError(error, { route: "/api/generate", userId: user.id, event: "usage" });
       }
     }
 
