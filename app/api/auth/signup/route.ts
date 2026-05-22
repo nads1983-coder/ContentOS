@@ -40,17 +40,26 @@ export async function POST(request: Request) {
     user?: { id?: string; email?: string };
     msg?: string;
     error_description?: string;
+    error?: string;
   };
 
-  if (!response.ok || !data.user?.id || !data.user.email) {
+  if (!response.ok || !data.user?.id) {
     return NextResponse.json(
-      { error: data.error_description ?? data.msg ?? "Signup failed." },
+      {
+        error:
+          data.error_description ??
+          data.msg ??
+          data.error ??
+          "Unable to create account. Please try again."
+      },
       { status: 400 }
     );
   }
 
+  const profileEmail = data.user.email ?? email;
+
   try {
-    await upsertUserProfile({ id: data.user.id, email: data.user.email });
+    await upsertUserProfile({ id: data.user.id, email: profileEmail });
   } catch {
     // Best effort until Supabase service role is configured.
   }
@@ -69,6 +78,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
-    message: "Check your inbox to confirm your account before logging in."
+    message: "Check your email to confirm your ContentOS account.",
+    status: "confirmation_required"
   });
 }

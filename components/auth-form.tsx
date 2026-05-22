@@ -11,6 +11,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [messageKind, setMessageKind] = useState<"success" | "error" | "info">("info");
   const [isPending, setIsPending] = useState(false);
   const endpoint = mode === "login" ? "/api/auth/login" : mode === "signup" ? "/api/auth/signup" : "/api/auth/reset";
   const plan =
@@ -47,43 +48,67 @@ export function AuthForm({ mode }: AuthFormProps) {
       return;
     }
 
+    setMessageKind("error");
     setMessage(data.error ?? "Your account is ready, but checkout could not be opened.");
   }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (isPending) {
+      return;
+    }
+
     setIsPending(true);
     setMessage("");
+    setMessageKind("info");
 
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
-    const data = (await response.json()) as {
-      error?: string;
-      message?: string;
-      redirectUrl?: string;
-    };
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = (await response.json()) as {
+        error?: string;
+        message?: string;
+        redirectUrl?: string;
+        status?: string;
+      };
 
-    setIsPending(false);
+      if (!response.ok) {
+        setMessageKind("error");
+        setMessage(
+          data.error ??
+            (mode === "signup"
+              ? "Unable to create account. Please try again."
+              : "Something went wrong.")
+        );
+        return;
+      }
 
-    if (!response.ok) {
-      setMessage(data.error ?? "Something went wrong.");
-      return;
+      if (mode === "reset") {
+        setMessageKind("success");
+        setMessage("Check your inbox for a password reset link.");
+        return;
+      }
+
+      if (data.message && !data.redirectUrl) {
+        setMessageKind("success");
+        setMessage(data.message);
+        return;
+      }
+
+      await continueToCheckout();
+    } catch {
+      setMessageKind("error");
+      setMessage(
+        mode === "signup"
+          ? "Unable to create account. Please try again."
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setIsPending(false);
     }
-
-    if (mode === "reset") {
-      setMessage("Check your inbox for a password reset link.");
-      return;
-    }
-
-    if (data.message && !data.redirectUrl) {
-      setMessage(data.message);
-      return;
-    }
-
-    await continueToCheckout();
   }
 
   return (
@@ -112,7 +137,13 @@ export function AuthForm({ mode }: AuthFormProps) {
         </label>
       ) : null}
       {message ? (
-        <p className="rounded border border-gold/40 bg-gold/10 p-3 text-sm text-bone">
+        <p
+          className={
+            messageKind === "error"
+              ? "rounded border border-gold/40 bg-gold/10 p-3 text-sm text-bone"
+              : "rounded border border-violet/50 bg-violet/15 p-3 text-sm text-bone shadow-violet"
+          }
+        >
           {message}
         </p>
       ) : null}
