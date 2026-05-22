@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
-import { StudioShell } from "@/components/studio-shell";
-import { absoluteUrl, siteConfig } from "@/lib/site";
+import { siteConfig } from "@/lib/site";
 
 const valueBullets = [
   "Multi-platform outputs",
@@ -138,6 +137,8 @@ const jsonLd = [
 ];
 
 export default function Home() {
+  const studioHref = "/studio";
+
   return (
     <>
       <script
@@ -160,7 +161,7 @@ export default function Home() {
                 Log in
               </Link>
               <Link
-                href="/signup"
+                href={studioHref}
                 className="rounded border border-gold/60 bg-gold/10 px-4 py-2 font-semibold text-bone transition hover:bg-gold/20"
               >
                 Start creating
@@ -170,25 +171,26 @@ export default function Home() {
         </section>
 
         <section className="relative max-w-[100vw] overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-          <div className="mx-auto grid w-[calc(100vw-2rem)] max-w-7xl gap-10 overflow-hidden sm:w-full lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.88fr)] lg:items-center">
-            <div className="w-full min-w-0 max-w-[22rem] overflow-hidden sm:max-w-full">
+          <div className="mx-0 grid w-full max-w-[18rem] min-w-0 gap-10 sm:mx-auto sm:max-w-7xl lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.88fr)] lg:items-center">
+            <div className="min-w-0 overflow-hidden">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
                 AI social content generator
               </p>
-              <h1 className="mt-5 w-full max-w-[22rem] break-words text-3xl font-black leading-[1.08] tracking-normal text-bone sm:max-w-3xl sm:text-5xl lg:text-6xl">
-                <span className="block">Create platform-ready</span>
+              <h1 className="mt-5 max-w-3xl break-words text-3xl font-black leading-[1.08] tracking-normal text-bone sm:text-5xl lg:text-6xl">
+                <span className="block sm:inline">Create </span>
+                <span className="block sm:inline">platform-ready </span>
                 <span className="block">content from one idea.</span>
               </h1>
-              <p className="mt-6 w-full max-w-[22rem] break-words text-base leading-7 text-muted sm:max-w-2xl sm:text-lg sm:leading-8">
+              <p className="mt-6 max-w-2xl break-words text-base leading-7 text-muted sm:text-lg sm:leading-8">
                 Generate LinkedIn posts, Instagram captions, TikTok scripts, X threads, hooks, CTAs, hashtags, carousels and repurposing packs in minutes.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href="#workspace"
+                <Link
+                  href={studioHref}
                   className="flex min-h-12 items-center justify-center rounded border border-violet/70 bg-violet px-5 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep"
                 >
                   Start creating
-                </a>
+                </Link>
                 <a
                   href="#examples"
                   className="flex min-h-12 items-center justify-center rounded border border-white/10 bg-white/[0.04] px-5 text-sm font-semibold text-bone transition hover:border-gold/60"
@@ -205,7 +207,7 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-            <div className="w-full min-w-0 max-w-[22rem] overflow-hidden rounded border border-white/10 bg-panel/76 p-3 shadow-violet backdrop-blur-xl sm:max-w-full sm:p-4">
+            <div className="w-full min-w-0 overflow-hidden rounded border border-white/10 bg-panel/76 p-3 shadow-violet backdrop-blur-xl sm:p-4">
               <div className="w-full min-w-0 overflow-hidden rounded border border-white/10 bg-ink/80 p-4 sm:p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
                   Content pack preview
@@ -226,8 +228,8 @@ export default function Home() {
         </section>
 
         <section className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-[22rem] sm:max-w-7xl">
-            <h2 className="max-w-[22rem] break-words text-2xl font-extrabold tracking-normal text-bone sm:max-w-3xl sm:text-3xl">
+          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-7xl">
+            <h2 className="max-w-3xl break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Built for consistent content without blank-page drag.
             </h2>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
@@ -245,8 +247,8 @@ export default function Home() {
         </section>
 
         <section id="features" className="px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-[22rem] sm:max-w-7xl">
-            <h2 className="max-w-[22rem] break-words text-2xl font-extrabold tracking-normal text-bone sm:max-w-none sm:text-3xl">
+          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-7xl">
+            <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               A complete content workflow
             </h2>
             <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
@@ -260,8 +262,8 @@ export default function Home() {
         </section>
 
         <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-[22rem] sm:max-w-7xl">
-            <h2 className="max-w-[22rem] break-words text-2xl font-extrabold tracking-normal text-bone sm:max-w-none sm:text-3xl">
+          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-7xl">
+            <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Simple pricing for creators and teams
             </h2>
             <div className="mt-8 grid items-stretch gap-4 lg:grid-cols-3">
@@ -282,12 +284,12 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
-                  <a
-                    href="#workspace"
+                  <Link
+                    href={studioHref}
                     className="mt-auto flex min-h-11 items-center justify-center rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white transition hover:bg-violetDeep"
                   >
                     Start creating
-                  </a>
+                  </Link>
                 </article>
               ))}
             </div>
@@ -295,27 +297,27 @@ export default function Home() {
         </section>
 
         <section id="examples" className="px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-[22rem] sm:max-w-7xl">
-            <h2 className="max-w-[22rem] break-words text-2xl font-extrabold tracking-normal text-bone sm:max-w-none sm:text-3xl">
+          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-7xl">
+            <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Starter templates
             </h2>
             <div className="mt-8 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
               {["Launch announcement", "Educational post", "Product promotion", "Personal brand story", "Thought leadership", "Newsletter repurpose", "Short-form video script"].map((item) => (
-                <a
+                <Link
                   key={item}
-                  href="#workspace"
+                  href={studioHref}
                   className="rounded border border-white/10 bg-white/[0.035] p-4 text-sm font-semibold text-bone transition hover:border-violet/60"
                 >
                   {item}
-                </a>
+                </Link>
               ))}
             </div>
           </div>
         </section>
 
         <section id="faq" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-[22rem] sm:max-w-4xl">
-            <h2 className="max-w-[22rem] break-words text-2xl font-extrabold tracking-normal text-bone sm:max-w-none sm:text-3xl">
+          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-4xl">
+            <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               FAQ
             </h2>
             <div className="mt-8 grid gap-4">
@@ -330,9 +332,17 @@ export default function Home() {
         </section>
       </main>
 
-      <section id="workspace" aria-label="ContentOS workspace">
-        <StudioShell embedded />
-      </section>
+      <footer className="border-t border-white/10 px-4 py-8 text-sm text-muted sm:px-6 lg:px-8">
+        <div className="mx-0 flex w-full max-w-[18rem] flex-col gap-4 sm:mx-auto sm:max-w-7xl sm:flex-row sm:items-center sm:justify-between">
+          <BrandLogo />
+          <nav className="flex flex-wrap gap-4" aria-label="Footer">
+            <Link href="/features" className="hover:text-bone">Features</Link>
+            <Link href="/pricing" className="hover:text-bone">Pricing</Link>
+            <Link href="/privacy" className="hover:text-bone">Privacy</Link>
+            <Link href="/terms" className="hover:text-bone">Terms</Link>
+          </nav>
+        </div>
+      </footer>
     </>
   );
 }

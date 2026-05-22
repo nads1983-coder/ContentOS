@@ -43,7 +43,7 @@ export default async function DashboardPage() {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <BrandLogo />
-          <Link href="/" className="text-sm text-muted hover:text-bone">
+          <Link href="/studio" className="text-sm text-muted hover:text-bone">
             Back to workspace
           </Link>
         </div>

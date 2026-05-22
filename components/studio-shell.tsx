@@ -605,7 +605,7 @@ export function StudioShell({ embedded = false }: { embedded?: boolean }) {
         <DesktopRail onNavigate={handleRailAction} />
 
         <div className="min-w-0 space-y-4">
-          <section className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+          <section className="grid min-w-0 gap-4 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
             <ComposerPanel
               id="composer"
               source={source}
