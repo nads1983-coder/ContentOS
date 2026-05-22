@@ -35,15 +35,26 @@ export async function POST(request: Request) {
   });
 
   const data = (await response.json()) as {
+    id?: string;
+    email?: string;
     access_token?: string;
     expires_in?: number;
+    session?: {
+      access_token?: string;
+      expires_in?: number;
+    } | null;
     user?: { id?: string; email?: string };
     msg?: string;
     error_description?: string;
     error?: string;
   };
 
-  if (!response.ok || !data.user?.id) {
+  const createdUserId = data.user?.id ?? data.id;
+  const createdUserEmail = data.user?.email ?? data.email ?? email;
+  const accessToken = data.access_token ?? data.session?.access_token;
+  const expiresIn = data.expires_in ?? data.session?.expires_in;
+
+  if (!response.ok || !createdUserId) {
     return NextResponse.json(
       {
         error:
@@ -56,21 +67,19 @@ export async function POST(request: Request) {
     );
   }
 
-  const profileEmail = data.user.email ?? email;
-
   try {
-    await upsertUserProfile({ id: data.user.id, email: profileEmail });
+    await upsertUserProfile({ id: createdUserId, email: createdUserEmail });
   } catch {
     // Best effort until Supabase service role is configured.
   }
 
-  if (data.access_token) {
-    (await cookies()).set(SESSION_COOKIE, data.access_token, {
+  if (accessToken) {
+    (await cookies()).set(SESSION_COOKIE, accessToken, {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: data.expires_in ?? 3600
+      maxAge: expiresIn ?? 3600
     });
 
     return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
