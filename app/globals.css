@@ -15,6 +15,7 @@
 
 html {
   min-height: 100%;
+  overflow-x: hidden;
   background: #050509;
 }
 
