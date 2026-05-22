@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
 import { siteConfig } from "@/lib/site";
 
@@ -38,16 +39,28 @@ const features = [
   "Content refinement tools"
 ];
 
-const pricing = [
+type MarketingPlan = {
+  name: string;
+  price: string;
+  body: string;
+  items: string[];
+  cta: string;
+  billingPlan?: "pro_creator" | "pro_studio";
+  featured?: boolean;
+};
+
+const pricing: MarketingPlan[] = [
   {
     name: "Free",
     price: "£0",
     body: "For testing the workflow and creating core post formats.",
-    items: ["Basic generation", "Limited monthly generations", "Core post formats"]
+    items: ["Basic generation", "Limited monthly generations", "Core post formats"],
+    cta: "Start creating"
   },
   {
     name: "Pro Creator",
     price: "£19/month",
+    billingPlan: "pro_creator",
     body: "AI social content generation for creators, founders and consultants.",
     items: [
       "Unlimited generations",
@@ -59,11 +72,13 @@ const pricing = [
       "Export tools",
       "Brand voice memory"
     ],
-    featured: true
+    featured: true,
+    cta: "Upgrade to Pro Creator"
   },
   {
     name: "Pro Studio",
     price: "£49/month",
+    billingPlan: "pro_studio",
     body: "Advanced AI social content workspace for agencies, teams and high-volume creators.",
     items: [
       "Multiple brand profiles",
@@ -71,7 +86,8 @@ const pricing = [
       "Higher usage limits",
       "Advanced workflows",
       "Future team support ready"
-    ]
+    ],
+    cta: "Upgrade to Pro Studio"
   }
 ];
 
@@ -284,12 +300,23 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    href={studioHref}
-                    className="mt-auto flex min-h-11 items-center justify-center rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white transition hover:bg-violetDeep"
-                  >
-                    Start creating
-                  </Link>
+                  <div className="mt-auto">
+                    {plan.billingPlan ? (
+                      <CheckoutButton
+                        plan={plan.billingPlan}
+                        className="w-full"
+                      >
+                        {plan.cta}
+                      </CheckoutButton>
+                    ) : (
+                      <Link
+                        href={studioHref}
+                        className="flex min-h-11 items-center justify-center rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white transition hover:bg-violetDeep"
+                      >
+                        {plan.cta}
+                      </Link>
+                    )}
+                  </div>
                 </article>
               ))}
             </div>

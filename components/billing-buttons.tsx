@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { clsx } from "clsx";
 
 export function CheckoutButton({
   plan,
-  children
+  children,
+  className
 }: {
   plan: "pro_creator" | "pro_studio";
   children: React.ReactNode;
+  className?: string;
 }) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState("");
@@ -16,21 +19,34 @@ export function CheckoutButton({
     setIsPending(true);
     setError("");
 
-    const response = await fetch("/api/billing/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan })
-    });
-    const data = (await response.json()) as { url?: string; error?: string };
+    try {
+      const response = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan })
+      });
+      const data = (await response.json()) as {
+        url?: string;
+        error?: string;
+        redirectUrl?: string;
+      };
 
-    setIsPending(false);
+      if (response.status === 401 && data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+        return;
+      }
 
-    if (!response.ok || !data.url) {
-      setError(data.error ?? "Checkout is not available.");
-      return;
+      if (!response.ok || !data.url) {
+        setError(data.error ?? "Checkout is not available.");
+        return;
+      }
+
+      window.location.href = data.url;
+    } catch {
+      setError("Checkout could not be opened. Please try again.");
+    } finally {
+      setIsPending(false);
     }
-
-    window.location.href = data.url;
   }
 
   return (
@@ -39,7 +55,10 @@ export function CheckoutButton({
         type="button"
         onClick={checkout}
         disabled={isPending}
-        className="min-h-11 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted"
+        className={clsx(
+          "min-h-11 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted",
+          className
+        )}
       >
         {isPending ? "Opening checkout..." : children}
       </button>

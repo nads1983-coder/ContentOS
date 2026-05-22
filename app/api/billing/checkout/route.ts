@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { isSupabaseConfigured } from "@/lib/env";
 import { createCheckoutSession, BillingPlan } from "@/lib/stripe-rest";
 
 export async function POST(request: Request) {
@@ -8,6 +9,16 @@ export async function POST(request: Request) {
 
   if (!plan || !["pro_creator", "pro_studio"].includes(plan)) {
     return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
+  }
+
+  if (isSupabaseConfigured() && !user) {
+    return NextResponse.json(
+      {
+        error: "Create an account or log in before upgrading.",
+        redirectUrl: `/signup?plan=${plan}`
+      },
+      { status: 401 }
+    );
   }
 
   try {
