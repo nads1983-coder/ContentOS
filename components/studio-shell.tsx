@@ -355,7 +355,7 @@ function prefixSelectedLines(text: string, numbered: boolean) {
     .join("\n");
 }
 
-export function StudioShell() {
+export function StudioShell({ embedded = false }: { embedded?: boolean }) {
   const [source, setSource] = useState(starterText);
   const [brandName, setBrandName] = useState("");
   const [audience, setAudience] = useState("");
@@ -714,15 +714,17 @@ export function StudioShell() {
         />
       </div>
 
-      <BottomActionBar
-        canGenerate={canGenerate}
-        isPending={isPending}
-        saved={isSaved(store, result)}
-        onGenerate={() => generateContent()}
-        onSave={saveCurrent}
-        onSaveDraft={saveDraft}
-        onOpenHistory={() => setHistoryOpen(true)}
-      />
+      {embedded ? null : (
+        <BottomActionBar
+          canGenerate={canGenerate}
+          isPending={isPending}
+          saved={isSaved(store, result)}
+          onGenerate={() => generateContent()}
+          onSave={saveCurrent}
+          onSaveDraft={saveDraft}
+          onOpenHistory={() => setHistoryOpen(true)}
+        />
+      )}
     </main>
   );
 }

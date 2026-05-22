@@ -30,7 +30,7 @@ export function BrandLogo({
       </div>
       {showWordmark ? (
         <div className="min-w-0">
-          <p className="truncate font-display text-lg uppercase tracking-normal text-bone">
+          <p className="truncate text-base font-extrabold tracking-normal text-bone sm:text-lg">
             Content<span className="text-goldSoft">OS</span>
           </p>
           <p className="truncate text-xs text-muted">
