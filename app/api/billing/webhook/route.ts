@@ -51,6 +51,16 @@ export async function POST(request: Request) {
       email: object.customer_email
     });
 
+    console.log("Stripe checkout session subscription sync", {
+      userId: object.client_reference_id ?? object.metadata?.user_id,
+      email: object.customer_email,
+      plan: state.plan,
+      status: state.status,
+      stripeCustomerId: state.stripeCustomerId,
+      stripeSubscriptionId: state.stripeSubscriptionId,
+      currentPeriodEnd: state.currentPeriodEnd
+    });
+
     await updateSubscriptionStatus({
       userId: object.client_reference_id ?? object.metadata?.user_id,
       email: object.customer_email,
@@ -65,7 +75,7 @@ export async function POST(request: Request) {
       "customer.subscription.deleted"
     ].includes(event.type)
   ) {
-    const state = stripeSubscriptionToState({
+    const fallbackState = stripeSubscriptionToState({
       id: object.id ?? "",
       customer: object.customer ?? "",
       status: event.type === "customer.subscription.deleted" ? "canceled" : object.status ?? "active",
@@ -74,6 +84,24 @@ export async function POST(request: Request) {
       canceled_at: object.canceled_at,
       metadata: object.metadata,
       items: object.items
+    });
+    const state = event.type === "customer.subscription.deleted"
+      ? fallbackState
+      : await getStripeSubscriptionState({
+        stripeCustomerId: object.customer,
+        stripeSubscriptionId: object.id
+      });
+
+    console.log("Stripe subscription event sync", {
+      eventType: event.type,
+      userId: object.metadata?.user_id,
+      email: object.customer_email,
+      rawStatus: object.status,
+      plan: state.plan,
+      status: state.status,
+      stripeCustomerId: state.stripeCustomerId,
+      stripeSubscriptionId: state.stripeSubscriptionId,
+      currentPeriodEnd: state.currentPeriodEnd
     });
 
     await updateSubscriptionStatus({

@@ -71,12 +71,30 @@ export default async function DashboardPage() {
     profile = await upsertUserProfile({ id: user.id, email: user.email });
   }
 
+  console.log("Dashboard fetched Supabase subscription state", {
+    userId: user.id,
+    plan: profile?.plan,
+    subscriptionStatus: profile?.subscription_status,
+    stripeCustomerId: profile?.stripe_customer_id,
+    stripeSubscriptionId: profile?.stripe_subscription_id,
+    currentPeriodEnd: profile?.subscription_current_period_end
+  });
+
   if (profile && isStripeConfigured()) {
     try {
       const subscriptionState = await getStripeSubscriptionState({
         stripeCustomerId: profile.stripe_customer_id,
         stripeSubscriptionId: profile.stripe_subscription_id,
         email: user.email
+      });
+
+      console.log("Dashboard fetched Stripe subscription state", {
+        userId: user.id,
+        plan: subscriptionState.plan,
+        status: subscriptionState.status,
+        stripeCustomerId: subscriptionState.stripeCustomerId,
+        stripeSubscriptionId: subscriptionState.stripeSubscriptionId,
+        currentPeriodEnd: subscriptionState.currentPeriodEnd
       });
 
       profile = await syncUserSubscriptionState({
@@ -94,6 +112,11 @@ export default async function DashboardPage() {
         subscription_canceled_at: subscriptionState.canceledAt
       };
     } catch {
+      console.warn("Dashboard Stripe subscription sync failed", {
+        userId: user.id,
+        stripeCustomerId: profile.stripe_customer_id,
+        stripeSubscriptionId: profile.stripe_subscription_id
+      });
       // Keep the stored profile if Stripe is temporarily unavailable.
     }
   }
@@ -105,6 +128,16 @@ export default async function DashboardPage() {
   const canUpgradeToCreator = !hasActiveSubscription;
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
   const usage = buildUsageSummary(plan, 0);
+
+  console.log("Dashboard normalized subscription state", {
+    userId: user.id,
+    plan,
+    status,
+    hasActiveSubscription,
+    canUpgradeToCreator,
+    canUpgradeToStudio,
+    currentPeriodEnd: profile?.subscription_current_period_end
+  });
 
   return (
     <main className="min-h-screen px-4 py-6 text-bone sm:px-6 lg:px-8">

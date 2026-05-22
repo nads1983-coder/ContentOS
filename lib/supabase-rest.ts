@@ -165,34 +165,82 @@ export async function updateSubscriptionStatus(input: {
   cancelAtPeriodEnd?: boolean;
   canceledAt?: string | null;
 }) {
-  const query: Record<string, QueryValue> | null = input.userId
-    ? { id: `eq.${input.userId}` }
-    : input.email
-      ? { email: `eq.${input.email}` }
-      : input.stripeCustomerId
-        ? { stripe_customer_id: `eq.${input.stripeCustomerId}` }
-        : input.stripeSubscriptionId
-          ? { stripe_subscription_id: `eq.${input.stripeSubscriptionId}` }
-          : null;
+  const queries: Record<string, QueryValue>[] = [];
 
-  if (!query) {
+  if (input.userId) {
+    queries.push({ id: `eq.${input.userId}` });
+  }
+
+  if (input.email) {
+    queries.push({ email: `eq.${input.email}` });
+  }
+
+  if (input.stripeCustomerId) {
+    queries.push({ stripe_customer_id: `eq.${input.stripeCustomerId}` });
+  }
+
+  if (input.stripeSubscriptionId) {
+    queries.push({ stripe_subscription_id: `eq.${input.stripeSubscriptionId}` });
+  }
+
+  if (!queries.length) {
     return null;
   }
 
-  return supabaseFetch<UserProfile[]>("profiles", {
-    method: "PATCH",
-    query,
-    body: JSON.stringify({
-      plan: normalizePlanId(input.plan),
-      subscription_status: normalizeSubscriptionStatus(input.status),
-      stripe_customer_id: input.stripeCustomerId,
-      stripe_subscription_id: input.stripeSubscriptionId,
-      subscription_current_period_end: input.currentPeriodEnd,
-      subscription_cancel_at_period_end: input.cancelAtPeriodEnd ?? false,
-      subscription_canceled_at: input.canceledAt,
-      updated_at: new Date().toISOString()
-    })
-  });
+  const corePayload = {
+    plan: normalizePlanId(input.plan),
+    subscription_status: normalizeSubscriptionStatus(input.status),
+    stripe_customer_id: input.stripeCustomerId,
+    stripe_subscription_id: input.stripeSubscriptionId,
+    updated_at: new Date().toISOString()
+  };
+  const fullPayload = {
+    ...corePayload,
+    subscription_current_period_end: input.currentPeriodEnd,
+    subscription_cancel_at_period_end: input.cancelAtPeriodEnd ?? false,
+    subscription_canceled_at: input.canceledAt
+  };
+  let lastError: unknown = null;
+
+  for (const query of queries) {
+    try {
+      const rows = await supabaseFetch<UserProfile[]>("profiles", {
+        method: "PATCH",
+        query,
+        body: JSON.stringify(fullPayload)
+      });
+
+      if (rows.length) {
+        return rows;
+      }
+    } catch (error) {
+      lastError = error;
+
+      try {
+        const rows = await supabaseFetch<UserProfile[]>("profiles", {
+          method: "PATCH",
+          query,
+          body: JSON.stringify(corePayload)
+        });
+
+        if (rows.length) {
+          console.warn(
+            "Subscription core fields synced, but renewal/cancellation fields could not be written. Apply the latest database schema.",
+            { query }
+          );
+          return rows;
+        }
+      } catch (coreError) {
+        lastError = coreError;
+      }
+    }
+  }
+
+  if (lastError) {
+    throw lastError;
+  }
+
+  return [];
 }
 
 export async function syncUserSubscriptionState(input: {
