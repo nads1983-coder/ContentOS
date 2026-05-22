@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
 import { StudioShell } from "@/components/studio-shell";
+import { getCurrentUser } from "@/lib/auth";
+import { isStripeConfigured, isSupabaseAdminConfigured } from "@/lib/env";
 import { absoluteUrl } from "@/lib/site";
+import {
+  getStripeSubscriptionState,
+  normalizePlanId,
+  normalizeSubscriptionStatus,
+  planHasActiveEntitlement
+} from "@/lib/stripe-rest";
+import { getUserProfile, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { PlanId } from "@/types/saas";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "ContentOS Studio | AI Content Workspace",
@@ -14,6 +26,52 @@ export const metadata: Metadata = {
   }
 };
 
-export default function StudioPage() {
-  return <StudioShell />;
+async function getInitialStudioPlan(): Promise<PlanId> {
+  const user = await getCurrentUser();
+
+  if (!user || !isSupabaseAdminConfigured()) {
+    return "free";
+  }
+
+  const profile = await getUserProfile(user.id);
+
+  if (!profile) {
+    return "free";
+  }
+
+  if (isStripeConfigured()) {
+    try {
+      const subscriptionState = await getStripeSubscriptionState({
+        stripeCustomerId: profile.stripe_customer_id,
+        stripeSubscriptionId: profile.stripe_subscription_id,
+        email: user.email
+      });
+
+      const synced = await syncUserSubscriptionState({
+        userId: user.id,
+        email: user.email,
+        ...subscriptionState
+      });
+      const syncedPlan = normalizePlanId(synced?.plan ?? subscriptionState.plan);
+      const syncedStatus = normalizeSubscriptionStatus(
+        synced?.subscription_status ?? subscriptionState.status
+      );
+
+      if (planHasActiveEntitlement(syncedPlan, syncedStatus)) {
+        return syncedPlan;
+      }
+    } catch {
+      // Use stored Supabase state if Stripe is temporarily unavailable.
+    }
+  }
+
+  const plan = normalizePlanId(profile.plan);
+  const status = normalizeSubscriptionStatus(profile.subscription_status);
+  return planHasActiveEntitlement(plan, status) ? plan : "free";
+}
+
+export default async function StudioPage() {
+  const initialPlan = await getInitialStudioPlan();
+
+  return <StudioShell initialPlan={initialPlan} />;
 }

@@ -35,6 +35,7 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { clsx } from "clsx";
+import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
 import {
   ctaModes,
@@ -239,11 +240,36 @@ async function copyText(text: string) {
 }
 
 type FormatterMode = "desktop" | "mobile";
-type PlanId = "free" | "pro";
+type PlanId = "free" | "pro_creator" | "pro_studio";
 type FormatterPlatform = "linkedin" | "instagram" | "tiktok" | "xThread" | "shortVideoScript";
 type TextStyle = "bold" | "italic" | "boldItalic" | "underline" | "strikethrough";
+type ImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";
+type ImageFormat = "square" | "landscape" | "vertical";
+
+type GeneratedImage = {
+  image: string;
+  size: string;
+  style: ImageStyle;
+  format: ImageFormat;
+  createdAt: string;
+};
 
 const FREE_GENERATION_LIMIT = 3;
+
+const imageStyles: Array<{ id: ImageStyle; label: string }> = [
+  { id: "minimal", label: "Minimal" },
+  { id: "premium", label: "Premium" },
+  { id: "corporate", label: "Corporate" },
+  { id: "bold", label: "Bold" },
+  { id: "dark", label: "Dark" },
+  { id: "modern", label: "Modern" }
+];
+
+const imageFormats: Array<{ id: ImageFormat; label: string; helper: string }> = [
+  { id: "square", label: "Square 1:1", helper: "1024 x 1024" },
+  { id: "landscape", label: "Landscape 16:9", helper: "1536 x 1024" },
+  { id: "vertical", label: "Vertical 9:16", helper: "1024 x 1536" }
+];
 
 const formatterPlatforms: Array<{
   id: FormatterPlatform;
@@ -357,7 +383,13 @@ function prefixSelectedLines(text: string, numbered: boolean) {
     .join("\n");
 }
 
-export function StudioShell({ embedded = false }: { embedded?: boolean }) {
+export function StudioShell({
+  embedded = false,
+  initialPlan = "free"
+}: {
+  embedded?: boolean;
+  initialPlan?: PlanId;
+}) {
   const [source, setSource] = useState(starterText);
   const [brandName, setBrandName] = useState("");
   const [audience, setAudience] = useState("");
@@ -370,7 +402,7 @@ export function StudioShell({ embedded = false }: { embedded?: boolean }) {
   const [presetTopic, setPresetTopic] = useState<PresetTopicId>("business");
   const [selectedTypes, setSelectedTypes] = useState<ContentTypeId[]>(defaultSelectedTypes);
   const [activeFilter, setActiveFilter] = useState<FilterId>("all");
-  const [plan, setPlan] = useState<PlanId>("free");
+  const [plan, setPlan] = useState<PlanId>(initialPlan);
   const [store, setStore] = useState<StudioStore>({
     version: 1,
     recent: [],
@@ -384,6 +416,12 @@ export function StudioShell({ embedded = false }: { embedded?: boolean }) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [imageSection, setImageSection] = useState<GeneratedSection | null>(null);
+  const [imageStyle, setImageStyle] = useState<ImageStyle>("premium");
+  const [imageFormat, setImageFormat] = useState<ImageFormat>("square");
+  const [imagePending, setImagePending] = useState(false);
+  const [imageError, setImageError] = useState("");
+  const [generatedImages, setGeneratedImages] = useState<Record<string, GeneratedImage>>({});
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -414,7 +452,8 @@ export function StudioShell({ embedded = false }: { embedded?: boolean }) {
   const usedGenerations = store.recent.length;
   const freeRemaining = Math.max(0, FREE_GENERATION_LIMIT - usedGenerations);
   const hasPaidSelection = selectedTypes.some(isPaidContentType);
-  const isPro = plan === "pro";
+  const isPro = plan !== "free";
+  const isProStudio = plan === "pro_studio";
   const canGenerate =
     source.trim().length > 7 &&
     selectedTypes.length > 0 &&
@@ -524,7 +563,7 @@ export function StudioShell({ embedded = false }: { embedded?: boolean }) {
 
   function saveCurrent() {
     if (!isPro) {
-      setError("Saved history is a Pro feature in this placeholder paywall.");
+      setError("Saved history is a Pro feature.");
       return;
     }
 
@@ -589,6 +628,85 @@ export function StudioShell({ embedded = false }: { embedded?: boolean }) {
     window.setTimeout(() => setCopiedId(""), 1400);
   }
 
+  async function generateImage(section = imageSection) {
+    if (!section) {
+      return;
+    }
+
+    if (!isProStudio) {
+      setImageError("Image generation is available on Pro Studio.");
+      return;
+    }
+
+    setImagePending(true);
+    setImageError("");
+
+    const outputText = [
+      section.title,
+      section.body,
+      ...section.items.map((item) => `- ${item}`),
+      section.cta ? `CTA: ${section.cta}` : ""
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    try {
+      const response = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          outputText,
+          platform: section.platform,
+          contentType: labelForContentType(section.type),
+          style: imageStyle,
+          format: imageFormat,
+          brandContext: {
+            brandName,
+            audience,
+            offer,
+            brandVoice,
+            contentGoal
+          }
+        })
+      });
+      const data = (await response.json()) as {
+        image?: string;
+        size?: string;
+        style?: ImageStyle;
+        format?: ImageFormat;
+        createdAt?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !data.image) {
+        throw new Error(data.error ?? "Image generation failed. Try again.");
+      }
+
+      const generatedImage = data.image;
+
+      setGeneratedImages((current) => ({
+        ...current,
+        [section.id]: {
+          image: generatedImage,
+          size: data.size ?? "",
+          style: data.style ?? imageStyle,
+          format: data.format ?? imageFormat,
+          createdAt: data.createdAt ?? new Date().toISOString()
+        }
+      }));
+    } catch (imageGenerationError) {
+      setImageError(
+        imageGenerationError instanceof Error
+          ? imageGenerationError.message
+          : "Image generation failed. Try again."
+      );
+    } finally {
+      setImagePending(false);
+    }
+  }
+
   return (
     <main className="min-h-screen pb-28 text-bone lg:pb-0">
       <div className="pointer-events-none fixed inset-0 opacity-80">
@@ -649,8 +767,14 @@ export function StudioShell({ embedded = false }: { embedded?: boolean }) {
               error={error}
               copiedId={copiedId}
               isPending={isPending}
+              plan={plan}
+              generatedImages={generatedImages}
               onFilterChange={setActiveFilter}
               onCopySection={copySection}
+              onOpenImagePanel={(section) => {
+                setImageSection(section);
+                setImageError("");
+              }}
               onRegenerate={() => generateContent()}
               onSaveCurrent={saveCurrent}
               onCopyRefinement={async (section, action) => {
@@ -716,6 +840,23 @@ export function StudioShell({ embedded = false }: { embedded?: boolean }) {
         />
       </div>
 
+      <ImageGenerationPanel
+        section={imageSection}
+        plan={plan}
+        style={imageStyle}
+        format={imageFormat}
+        image={imageSection ? generatedImages[imageSection.id] : undefined}
+        isPending={imagePending}
+        error={imageError}
+        onClose={() => {
+          setImageSection(null);
+          setImageError("");
+        }}
+        onStyleChange={setImageStyle}
+        onFormatChange={setImageFormat}
+        onGenerate={() => generateImage()}
+      />
+
       {embedded ? null : (
         <BottomActionBar
           canGenerate={canGenerate}
@@ -761,7 +902,11 @@ function TopBar({
           </Link>
           <div className="flex items-center gap-2 rounded border border-line bg-white/[0.03] px-3 py-2 text-xs text-muted">
             <span className="h-2 w-2 rounded-full bg-goldSoft" />
-            {plan === "pro" ? "Pro workspace" : "Free workspace"}
+            {plan === "pro_studio"
+              ? "Pro Studio workspace"
+              : plan === "pro_creator"
+                ? "Pro Creator workspace"
+                : "Free workspace"}
           </div>
         </div>
 
@@ -888,7 +1033,7 @@ function ComposerPanel({
   onSaveDraft: () => void;
   onPlanChange: (value: PlanId) => void;
 }) {
-  const isPro = plan === "pro";
+  const isPro = plan !== "free";
 
   return (
     <section
@@ -923,7 +1068,7 @@ function ComposerPanel({
               Free includes basic generation. Pro unlocks full generation, formatter presets, repurposing, and saved history.
             </p>
           </div>
-          <div className="grid grid-cols-2 overflow-hidden rounded border border-white/10 bg-ink/70 sm:w-44">
+          <div className="grid grid-cols-3 overflow-hidden rounded border border-white/10 bg-ink/70 sm:w-64">
             <button
               type="button"
               onClick={() => onPlanChange("free")}
@@ -936,13 +1081,23 @@ function ComposerPanel({
             </button>
             <button
               type="button"
-              onClick={() => onPlanChange("pro")}
+              onClick={() => onPlanChange("pro_creator")}
               className={clsx(
                 "min-h-10 border-l border-white/10 px-3 text-xs font-semibold",
-                isPro ? "bg-violet/25 text-bone" : "text-muted hover:text-bone"
+                plan === "pro_creator" ? "bg-violet/25 text-bone" : "text-muted hover:text-bone"
               )}
             >
-              Pro
+              Creator
+            </button>
+            <button
+              type="button"
+              onClick={() => onPlanChange("pro_studio")}
+              className={clsx(
+                "min-h-10 border-l border-white/10 px-3 text-xs font-semibold",
+                plan === "pro_studio" ? "bg-violet/25 text-bone" : "text-muted hover:text-bone"
+              )}
+            >
+              Studio
             </button>
           </div>
         </div>
@@ -1160,8 +1315,11 @@ function OutputPanel({
   copiedId,
   isPending,
   isSaved,
+  plan,
+  generatedImages,
   onFilterChange,
   onCopySection,
+  onOpenImagePanel,
   onRegenerate,
   onSaveCurrent,
   onCopyRefinement,
@@ -1176,8 +1334,11 @@ function OutputPanel({
   copiedId: string;
   isPending: boolean;
   isSaved: boolean;
+  plan: PlanId;
+  generatedImages: Record<string, GeneratedImage>;
   onFilterChange: (value: FilterId) => void;
   onCopySection: (section: GeneratedSection) => void;
+  onOpenImagePanel: (section: GeneratedSection) => void;
   onRegenerate: () => void;
   onSaveCurrent: () => void;
   onCopyRefinement: (section: GeneratedSection, action: string) => void;
@@ -1247,7 +1408,10 @@ function OutputPanel({
               key={section.id}
               section={section}
               copied={copiedId === section.id}
+              plan={plan}
+              image={generatedImages[section.id]}
               onCopy={() => onCopySection(section)}
+              onGenerateImage={() => onOpenImagePanel(section)}
               onCopyRefinement={(action) => onCopyRefinement(section, action)}
             />
           ))
@@ -1311,7 +1475,7 @@ function PlatformFormatterPanel({
   const [platform, setPlatform] = useState<FormatterPlatform>("linkedin");
   const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const isPro = plan === "pro";
+  const isPro = plan !== "free";
   const activePlatform = formatterPlatforms.find((item) => item.id === platform) ?? formatterPlatforms[0];
 
   function replaceSelection(transform: (value: string) => string) {
@@ -1349,7 +1513,7 @@ function PlatformFormatterPanel({
 
   async function copyFormattedText() {
     if (!isPro) {
-      onPlanChange("pro");
+      onPlanChange("pro_creator");
       return;
     }
 
@@ -1575,17 +1739,25 @@ function FormatterButton({
 function OutputCard({
   section,
   copied,
+  plan,
+  image,
   onCopy,
+  onGenerateImage,
   onCopyRefinement
 }: {
   section: GeneratedSection;
   copied: boolean;
+  plan: PlanId;
+  image?: GeneratedImage;
   onCopy: () => void;
+  onGenerateImage: () => void;
   onCopyRefinement: (action: string) => void;
 }) {
+  const canGenerateImage = plan === "pro_studio";
+
   return (
     <article className="rounded border border-white/10 bg-white/[0.035] p-4">
-      <div className="mb-3 flex items-start justify-between gap-3">
+      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-[0.18em] text-violet">
             {section.platform}
@@ -1593,14 +1765,29 @@ function OutputCard({
           <h3 className="mt-1 text-lg font-semibold text-bone">{section.title}</h3>
           <p className="mt-1 text-xs text-muted">{labelForContentType(section.type)}</p>
         </div>
-        <button
-          type="button"
-          onClick={onCopy}
-          className="flex min-h-10 shrink-0 items-center gap-2 rounded border border-white/10 bg-ink/70 px-3 text-xs font-semibold text-bone transition hover:border-violet/60"
-        >
-          {copied ? <Check size={15} /> : <Copy size={15} />}
-          {copied ? "Copied" : "Copy"}
-        </button>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={onGenerateImage}
+            className={clsx(
+              "flex min-h-10 items-center gap-2 rounded border px-3 text-xs font-semibold transition",
+              canGenerateImage
+                ? "border-gold/60 bg-gold/10 text-bone hover:border-gold"
+                : "border-white/10 bg-ink/70 text-muted hover:border-gold/60 hover:text-bone"
+            )}
+          >
+            {canGenerateImage ? <Wand2 size={15} /> : <Lock size={15} />}
+            Generate Image
+          </button>
+          <button
+            type="button"
+            onClick={onCopy}
+            className="flex min-h-10 items-center gap-2 rounded border border-white/10 bg-ink/70 px-3 text-xs font-semibold text-bone transition hover:border-violet/60"
+          >
+            {copied ? <Check size={15} /> : <Copy size={15} />}
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
       </div>
 
       {section.body ? (
@@ -1627,6 +1814,30 @@ function OutputCard({
           {section.cta}
         </div>
       ) : null}
+
+      {image ? (
+        <div className="mt-4 rounded border border-gold/30 bg-ink/50 p-3">
+          <img
+            src={image.image}
+            alt={`Generated visual for ${section.title}`}
+            className="aspect-square w-full rounded border border-white/10 object-cover"
+          />
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted">
+              {image.style} visual · {image.size || image.format}
+            </p>
+            <a
+              href={image.image}
+              download={`${section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "contentos-image"}.png`}
+              className="flex min-h-10 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+            >
+              <FileText size={14} />
+              Download PNG
+            </a>
+          </div>
+        </div>
+      ) : null}
+
       <div className="studio-scroll mt-4 flex gap-2 overflow-x-auto pb-1">
         {[
           "shorten",
@@ -1649,6 +1860,185 @@ function OutputCard({
         ))}
       </div>
     </article>
+  );
+}
+
+function ImageGenerationPanel({
+  section,
+  plan,
+  style,
+  format,
+  image,
+  isPending,
+  error,
+  onClose,
+  onStyleChange,
+  onFormatChange,
+  onGenerate
+}: {
+  section: GeneratedSection | null;
+  plan: PlanId;
+  style: ImageStyle;
+  format: ImageFormat;
+  image?: GeneratedImage;
+  isPending: boolean;
+  error: string;
+  onClose: () => void;
+  onStyleChange: (value: ImageStyle) => void;
+  onFormatChange: (value: ImageFormat) => void;
+  onGenerate: () => void;
+}) {
+  if (!section) {
+    return null;
+  }
+
+  const isProStudio = plan === "pro_studio";
+
+  return (
+    <div className="fixed inset-0 z-[70] overflow-y-auto bg-black/70 px-4 py-6 backdrop-blur-sm">
+      <div className="mx-auto w-full max-w-2xl rounded border border-white/10 bg-coal p-4 shadow-violet sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+              Image generation
+            </p>
+            <h2 className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
+              Generate Visual
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-muted">
+              Create a platform-aware visual from this {section.platform} output.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded border border-white/10 bg-white/[0.04] text-muted transition hover:border-violet/60 hover:text-bone"
+            aria-label="Close image generation"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {!isProStudio ? (
+          <div className="mt-5 rounded border border-gold/30 bg-gold/10 p-4">
+            <div className="flex items-start gap-3">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-gold/15 text-goldSoft">
+                <Lock size={18} />
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-bone">
+                  Image generation is available on Pro Studio.
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-muted">
+                  Upgrade to generate real social images from your finished content packs.
+                </p>
+                <div className="mt-4 max-w-xs">
+                  <CheckoutButton plan="pro_studio">Upgrade to Pro Studio</CheckoutButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="mt-5 grid gap-4">
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                  Style
+                </p>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {imageStyles.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => onStyleChange(item.id)}
+                      className={clsx(
+                        "min-h-11 rounded border px-3 text-sm font-semibold transition",
+                        style === item.id
+                          ? "border-gold/70 bg-gold/10 text-bone"
+                          : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
+                      )}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                  Format
+                </p>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  {imageFormats.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => onFormatChange(item.id)}
+                      className={clsx(
+                        "min-h-14 rounded border px-3 text-left transition",
+                        format === item.id
+                          ? "border-gold/70 bg-gold/10 text-bone"
+                          : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
+                      )}
+                    >
+                      <span className="block text-sm font-semibold">{item.label}</span>
+                      <span className="mt-1 block text-xs text-muted">{item.helper}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {error ? (
+              <div className="mt-4 rounded border border-gold/40 bg-gold/10 p-3 text-sm leading-6 text-bone">
+                {error}
+              </div>
+            ) : null}
+
+            {image ? (
+              <div className="mt-5 rounded border border-white/10 bg-white/[0.035] p-3">
+                <img
+                  src={image.image}
+                  alt={`Generated visual for ${section.title}`}
+                  className="max-h-[68vh] w-full rounded border border-white/10 object-contain"
+                />
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  <a
+                    href={image.image}
+                    download={`${section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "contentos-image"}.png`}
+                    className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
+                  >
+                    <FileText size={16} />
+                    Download PNG
+                  </a>
+                  <button
+                    type="button"
+                    onClick={onGenerate}
+                    disabled={isPending}
+                    className="flex min-h-11 items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted"
+                  >
+                    {isPending ? <Loader2 className="animate-spin" size={16} /> : <RefreshCcw size={16} />}
+                    Regenerate image
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            {!image ? (
+              <button
+                type="button"
+                onClick={onGenerate}
+                disabled={isPending}
+                className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted"
+              >
+                {isPending ? <Loader2 className="animate-spin" size={17} /> : <Wand2 size={17} />}
+                {isPending ? "Generating visual..." : "Generate visual"}
+              </button>
+            ) : null}
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -1685,7 +2075,7 @@ function SavedLibraryPanel({
 }) {
   const [platformFilter, setPlatformFilter] = useState<FilterId>("all");
   const [categoryFilter, setCategoryFilter] = useState<PresetTopicId>("none");
-  const isPro = plan === "pro";
+  const isPro = plan !== "free";
 
   const filtered = store.saved.filter((item) => {
     const matchesCategory =
@@ -1714,7 +2104,7 @@ function SavedLibraryPanel({
         {!isPro ? (
           <button
             type="button"
-            onClick={() => onPlanChange("pro")}
+            onClick={() => onPlanChange("pro_creator")}
             className="flex min-h-11 items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep"
           >
             <Lock size={16} />
@@ -1725,7 +2115,7 @@ function SavedLibraryPanel({
 
       {!isPro ? (
         <div className="rounded border border-white/10 bg-white/[0.035] p-4 text-sm leading-6 text-muted">
-          Saved history is part of the Pro placeholder plan. The switch above simulates entitlement only, no payment is processed.
+          Saved history is part of Pro. Upgrade or use the workspace plan switch while testing locally.
         </div>
       ) : (
         <>

@@ -7,7 +7,9 @@ import {
   getStripeSubscriptionState,
   normalizePlanId,
   normalizeSubscriptionStatus,
-  planHasActiveEntitlement
+  planHasActiveEntitlement,
+  retrieveStripeSubscription,
+  stripeSubscriptionToState
 } from "@/lib/stripe-rest";
 import {
   getUserProfile,
@@ -118,6 +120,50 @@ export default async function DashboardPage() {
         stripeSubscriptionId: profile.stripe_subscription_id
       });
       // Keep the stored profile if Stripe is temporarily unavailable.
+    }
+  }
+
+  const normalizedStoredStatus = normalizeSubscriptionStatus(profile?.subscription_status);
+  const shouldBackfillRenewalDate =
+    profile?.stripe_subscription_id &&
+    (normalizedStoredStatus === "active" || normalizedStoredStatus === "trialing") &&
+    !profile.subscription_current_period_end &&
+    isStripeConfigured();
+
+  if (profile && shouldBackfillRenewalDate) {
+    try {
+      const stripeSubscriptionId = profile.stripe_subscription_id;
+
+      if (!stripeSubscriptionId) {
+        throw new Error("Missing Stripe subscription ID.");
+      }
+
+      const subscription = await retrieveStripeSubscription(stripeSubscriptionId);
+      const subscriptionState = stripeSubscriptionToState(subscription);
+
+      if (subscriptionState.currentPeriodEnd) {
+        profile = await syncUserSubscriptionState({
+          userId: user.id,
+          email: user.email,
+          plan: normalizePlanId(profile.plan),
+          status: normalizedStoredStatus,
+          stripeCustomerId: profile.stripe_customer_id ?? subscriptionState.stripeCustomerId,
+          stripeSubscriptionId: profile.stripe_subscription_id,
+          currentPeriodEnd: subscriptionState.currentPeriodEnd,
+          cancelAtPeriodEnd: subscriptionState.cancelAtPeriodEnd,
+          canceledAt: subscriptionState.canceledAt
+        }) ?? {
+          ...profile,
+          subscription_current_period_end: subscriptionState.currentPeriodEnd,
+          subscription_cancel_at_period_end: subscriptionState.cancelAtPeriodEnd,
+          subscription_canceled_at: subscriptionState.canceledAt
+        };
+      }
+    } catch {
+      console.warn("Dashboard renewal date backfill failed", {
+        userId: user.id,
+        stripeSubscriptionId: profile.stripe_subscription_id
+      });
     }
   }
 
