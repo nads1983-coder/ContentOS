@@ -1,10 +1,13 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { getEnv, isStripeConfigured } from "@/lib/env";
-import { absoluteUrl } from "@/lib/site";
 
 export type BillingPlan = "pro_creator" | "pro_studio";
 
 const apiVersion = "2026-02-25.clover";
+
+function stripeRedirectUrl(path: string) {
+  return new URL(path, getEnv().appUrl).toString();
+}
 
 function stripePriceId(plan: BillingPlan) {
   const env = getEnv();
@@ -53,8 +56,8 @@ export async function createCheckoutSession(input: {
 
   const body = new URLSearchParams({
     mode: "subscription",
-    success_url: absoluteUrl("/success?session_id={CHECKOUT_SESSION_ID}"),
-    cancel_url: absoluteUrl("/cancel"),
+    success_url: stripeRedirectUrl("/success?session_id={CHECKOUT_SESSION_ID}"),
+    cancel_url: stripeRedirectUrl("/cancel"),
     "line_items[0][price]": price,
     "line_items[0][quantity]": "1",
     "metadata[plan]": input.plan
@@ -79,7 +82,7 @@ export async function createCustomerPortalSession(input: {
     "billing_portal/sessions",
     new URLSearchParams({
       customer: input.customerId,
-      return_url: absoluteUrl("/dashboard")
+      return_url: stripeRedirectUrl("/dashboard")
     })
   );
 }

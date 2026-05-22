@@ -1,5 +1,6 @@
 const serverEnv = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://contentos.app",
+  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://getcontentos.co",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "https://getcontentos.co",
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
   supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",

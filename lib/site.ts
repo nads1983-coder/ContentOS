@@ -3,7 +3,7 @@ export const siteConfig = {
   tagline: "Create platform-ready content from one idea.",
   description:
     "ContentOS turns one idea into platform-ready social content, including LinkedIn posts, Instagram captions, TikTok scripts, X threads, hooks, CTAs, hashtags, carousels and repurposing packs.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://contentos.app",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "https://getcontentos.co",
   supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@getcontentos.co"
 };
 
