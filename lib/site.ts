@@ -1,0 +1,12 @@
+export const siteConfig = {
+  name: "ContentOS",
+  tagline: "Create platform-ready content from one idea.",
+  description:
+    "ContentOS turns one idea into platform-ready social content, including LinkedIn posts, Instagram captions, TikTok scripts, X threads, hooks, CTAs, hashtags, carousels and repurposing packs.",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://contentos.app",
+  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@contentos.app"
+};
+
+export function absoluteUrl(path = "/") {
+  return new URL(path, siteConfig.url).toString();
+}

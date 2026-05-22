@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { clsx } from "clsx";
+import { BrandLogo } from "@/components/brand-logo";
 import {
   ctaModes,
   contentTypes,
@@ -209,6 +210,28 @@ function buildGenerationText(result: GenerationResult) {
     .join("\n\n---\n\n");
 }
 
+function refineText(text: string, action: string) {
+  const trimmed = text.trim();
+
+  if (action === "shorten") {
+    return trimmed
+      .split(/\n+/)
+      .map((line) => line.split(" ").slice(0, 22).join(" "))
+      .join("\n");
+  }
+
+  if (action === "improve hook") {
+    const firstLine = trimmed.split("\n")[0] ?? "";
+    return `Hook option:\nWhat if ${firstLine.charAt(0).toLowerCase()}${firstLine.slice(1)}?\n\n${trimmed}`;
+  }
+
+  if (action === "improve CTA") {
+    return `${trimmed}\n\nCTA options:\n- Save this for your next content planning session.\n- Want the full workflow? Start with one idea and build the pack.\n- Which platform would you turn this into first?`;
+  }
+
+  return `${action} version:\n\n${trimmed}`;
+}
+
 async function copyText(text: string) {
   await navigator.clipboard.writeText(text);
 }
@@ -334,6 +357,11 @@ function prefixSelectedLines(text: string, numbered: boolean) {
 
 export function StudioShell() {
   const [source, setSource] = useState(starterText);
+  const [brandName, setBrandName] = useState("");
+  const [audience, setAudience] = useState("");
+  const [offer, setOffer] = useState("");
+  const [brandVoice, setBrandVoice] = useState("");
+  const [contentGoal, setContentGoal] = useState("");
   const [tone, setTone] = useState<ToneId>("professional");
   const [sharpness, setSharpness] = useState<SharpnessId>("balanced");
   const [ctaMode, setCtaMode] = useState<CtaModeId>("soft");
@@ -413,6 +441,11 @@ export function StudioShell() {
 
     const payload: GenerateRequest = {
       source: nextSource,
+      brandName,
+      audience,
+      offer,
+      brandVoice,
+      contentGoal,
       tone,
       sharpness,
       ctaMode,
@@ -581,11 +614,21 @@ export function StudioShell() {
               ctaMode={ctaMode}
               presetTopic={presetTopic}
               selectedTypes={selectedTypes}
+              brandName={brandName}
+              audience={audience}
+              offer={offer}
+              brandVoice={brandVoice}
+              contentGoal={contentGoal}
               plan={plan}
               freeRemaining={freeRemaining}
               canGenerate={canGenerate}
               isPending={isPending}
               onSourceChange={setSource}
+              onBrandNameChange={setBrandName}
+              onAudienceChange={setAudience}
+              onOfferChange={setOffer}
+              onBrandVoiceChange={setBrandVoice}
+              onContentGoalChange={setContentGoal}
               onToneChange={setTone}
               onSharpnessChange={setSharpness}
               onCtaModeChange={setCtaMode}
@@ -608,6 +651,25 @@ export function StudioShell() {
               onCopySection={copySection}
               onRegenerate={() => generateContent()}
               onSaveCurrent={saveCurrent}
+              onCopyRefinement={async (section, action) => {
+                await copyText(refineText([section.body, section.cta].filter(Boolean).join("\n\n"), action));
+                setCopiedId(`${section.id}-${action}`);
+                window.setTimeout(() => setCopiedId(""), 1400);
+              }}
+              onCopyAll={async () => {
+                await copyText(buildGenerationText(result));
+                setCopiedId("all");
+                window.setTimeout(() => setCopiedId(""), 1400);
+              }}
+              onDownload={() => {
+                const blob = new Blob([buildGenerationText(result)], { type: "text/plain" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = `${result.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.txt`;
+                link.click();
+                URL.revokeObjectURL(url);
+              }}
               isSaved={isSaved(store, result)}
             />
           </section>
@@ -680,17 +742,7 @@ function TopBar({
     <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/86 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-5 lg:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center border border-gold/50 bg-gold/10 text-sm font-bold text-goldSoft shadow-gold">
-            CM
-          </div>
-          <div className="min-w-0">
-            <p className="truncate font-display text-lg uppercase tracking-normal text-bone">
-              Content<span className="text-goldSoft">OS</span>
-            </p>
-            <p className="truncate text-xs text-muted">
-              Generate, format, repurpose, organize.
-            </p>
-          </div>
+          <BrandLogo />
         </div>
 
         <div className="hidden items-center gap-2 rounded border border-line bg-white/[0.03] px-3 py-2 text-xs text-muted lg:flex">
@@ -759,11 +811,21 @@ function ComposerPanel({
   ctaMode,
   presetTopic,
   selectedTypes,
+  brandName,
+  audience,
+  offer,
+  brandVoice,
+  contentGoal,
   plan,
   freeRemaining,
   canGenerate,
   isPending,
   onSourceChange,
+  onBrandNameChange,
+  onAudienceChange,
+  onOfferChange,
+  onBrandVoiceChange,
+  onContentGoalChange,
   onToneChange,
   onSharpnessChange,
   onCtaModeChange,
@@ -780,11 +842,21 @@ function ComposerPanel({
   ctaMode: CtaModeId;
   presetTopic: PresetTopicId;
   selectedTypes: ContentTypeId[];
+  brandName: string;
+  audience: string;
+  offer: string;
+  brandVoice: string;
+  contentGoal: string;
   plan: PlanId;
   freeRemaining: number;
   canGenerate: boolean;
   isPending: boolean;
   onSourceChange: (value: string) => void;
+  onBrandNameChange: (value: string) => void;
+  onAudienceChange: (value: string) => void;
+  onOfferChange: (value: string) => void;
+  onBrandVoiceChange: (value: string) => void;
+  onContentGoalChange: (value: string) => void;
   onToneChange: (value: ToneId) => void;
   onSharpnessChange: (value: SharpnessId) => void;
   onCtaModeChange: (value: CtaModeId) => void;
@@ -804,7 +876,7 @@ function ComposerPanel({
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl uppercase leading-none tracking-normal text-bone sm:text-4xl">
-            Content Machine
+            ContentOS
           </h1>
           <p className="mt-2 max-w-sm text-sm leading-6 text-muted">
             Turn raw ideas into platform-ready content across every channel.
@@ -864,6 +936,36 @@ function ComposerPanel({
         className="studio-scroll mt-3 min-h-60 w-full resize-none rounded border border-line bg-ink/70 p-4 text-base leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
         placeholder="Paste notes, a voice memo transcript, a launch idea, an offer, or the messy thought you want to turn into content."
       />
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {[
+          { label: "Brand/business name", value: brandName, onChange: onBrandNameChange, placeholder: "Acme Studio" },
+          { label: "Target audience", value: audience, onChange: onAudienceChange, placeholder: "Busy founders and consultants" },
+          { label: "Offer/product/service", value: offer, onChange: onOfferChange, placeholder: "Content planning service" },
+          { label: "Content goal", value: contentGoal, onChange: onContentGoalChange, placeholder: "Generate qualified leads" }
+        ].map((item) => (
+          <label key={item.label} className="grid gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+            {item.label}
+            <input
+              value={item.value}
+              onChange={(event) => item.onChange(event.target.value)}
+              placeholder={item.placeholder}
+              className="min-h-11 rounded border border-line bg-ink/70 px-3 text-sm normal-case tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+            />
+          </label>
+        ))}
+      </div>
+
+      <label className="mt-4 grid gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+        Brand voice
+        <textarea
+          value={brandVoice}
+          onChange={(event) => onBrandVoiceChange(event.target.value)}
+          rows={3}
+          placeholder="Confident, useful, concise, practical, lightly witty."
+          className="studio-scroll rounded border border-line bg-ink/70 p-3 text-sm normal-case leading-6 tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+        />
+      </label>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
         <button
@@ -1039,7 +1141,10 @@ function OutputPanel({
   onFilterChange,
   onCopySection,
   onRegenerate,
-  onSaveCurrent
+  onSaveCurrent,
+  onCopyRefinement,
+  onCopyAll,
+  onDownload
 }: {
   id: string;
   result: GenerationResult;
@@ -1053,6 +1158,9 @@ function OutputPanel({
   onCopySection: (section: GeneratedSection) => void;
   onRegenerate: () => void;
   onSaveCurrent: () => void;
+  onCopyRefinement: (section: GeneratedSection, action: string) => void;
+  onCopyAll: () => void;
+  onDownload: () => void;
 }) {
   return (
     <section
@@ -1118,6 +1226,7 @@ function OutputPanel({
               section={section}
               copied={copiedId === section.id}
               onCopy={() => onCopySection(section)}
+              onCopyRefinement={(action) => onCopyRefinement(section, action)}
             />
           ))
         ) : (
@@ -1136,6 +1245,32 @@ function OutputPanel({
         <RefreshCcw size={17} />
         Regenerate current set
       </button>
+      <div className="mt-2 grid gap-2 sm:grid-cols-3">
+        <button
+          type="button"
+          onClick={onCopyAll}
+          className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-violet/60"
+        >
+          <Copy size={16} />
+          {copiedId === "all" ? "Copied" : "Copy all"}
+        </button>
+        <button
+          type="button"
+          onClick={onDownload}
+          className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-violet/60"
+        >
+          <FileText size={16} />
+          Download .txt
+        </button>
+        <button
+          type="button"
+          onClick={onSaveCurrent}
+          className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
+        >
+          <Bookmark size={16} />
+          Save all
+        </button>
+      </div>
     </section>
   );
 }
@@ -1362,7 +1497,7 @@ function PlatformFormatterPanel({
           <div className="rounded bg-[#f4f2ee] p-4 text-[#191919]">
             <div className="flex items-start gap-3">
               <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#231832] text-sm font-bold text-[#e0bb58]">
-                CM
+                CO
               </div>
               <div className="min-w-0">
                 <p className="font-semibold leading-5">Creator Studio</p>
@@ -1418,11 +1553,13 @@ function FormatterButton({
 function OutputCard({
   section,
   copied,
-  onCopy
+  onCopy,
+  onCopyRefinement
 }: {
   section: GeneratedSection;
   copied: boolean;
   onCopy: () => void;
+  onCopyRefinement: (action: string) => void;
 }) {
   return (
     <article className="rounded border border-white/10 bg-white/[0.035] p-4">
@@ -1468,6 +1605,27 @@ function OutputCard({
           {section.cta}
         </div>
       ) : null}
+      <div className="studio-scroll mt-4 flex gap-2 overflow-x-auto pb-1">
+        {[
+          "shorten",
+          "expand",
+          "simplify",
+          "more persuasive",
+          "more casual",
+          "more professional",
+          "improve hook",
+          "improve CTA"
+        ].map((action) => (
+          <button
+            key={action}
+            type="button"
+            onClick={() => onCopyRefinement(action)}
+            className="min-h-9 shrink-0 rounded border border-white/10 bg-ink/70 px-3 text-xs font-semibold text-muted transition hover:border-violet/60 hover:text-bone"
+          >
+            {action}
+          </button>
+        ))}
+      </div>
     </article>
   );
 }

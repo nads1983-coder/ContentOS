@@ -96,6 +96,11 @@ export function buildInput(request: GenerateRequest) {
 Source material:
 ${request.source}
 
+Brand/business name: ${request.brandName || "Not provided"}
+Target audience: ${request.audience || "Not provided"}
+Offer/product/service: ${request.offer || "Not provided"}
+Brand voice notes: ${request.brandVoice || "Not provided"}
+Content goal: ${request.contentGoal || "Not provided"}
 Tone selected: ${labelForTone(request.tone)}
 Sharpness selected: ${labelForSharpness(request.sharpness)}
 Sharpness behavior: ${sharpnessInstructions[request.sharpness]}
@@ -116,9 +121,13 @@ General quality rules:
 - keep the user's source material at the center
 - make each output platform-native rather than copying the same post everywhere
 - preserve useful details from the source, but do not invent credentials, results, data, or customer proof
+- use the brand, audience, offer, brand voice, and content goal when provided
 - favor clean structure, clear hooks, and practical takeaways
 - avoid sounding like a generic social media manager
 - avoid vague words like unlock, empower, thrive, game-changing, and revolutionary unless the source explicitly uses them
+- make hooks specific to a tension, outcome, audience belief, or useful contrast
+- make CTAs concrete, aligned with the selected CTA mode, and low-friction
+- reduce repetitive phrasing by varying sentence openings and section structure
 
 LinkedIn post formatting:
 - strongest line first

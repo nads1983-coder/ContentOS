@@ -1,9 +1,55 @@
 import type { Metadata, Viewport } from "next";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ContentOS",
-  description: "AI-powered social media content operating system for creators and growing teams."
+  metadataBase: new URL(siteConfig.url),
+  title: "ContentOS | AI Social Content Generator",
+  description: siteConfig.description,
+  keywords: [
+    "AI social content generator",
+    "social media content tool",
+    "LinkedIn post generator",
+    "Instagram caption generator",
+    "TikTok script generator",
+    "content repurposing tool",
+    "AI content planner",
+    "creator workflow",
+    "social media SaaS",
+    "ContentOS"
+  ],
+  alternates: {
+    canonical: absoluteUrl("/")
+  },
+  openGraph: {
+    title: "ContentOS | AI Social Content Generator",
+    description: siteConfig.description,
+    siteName: "ContentOS",
+    type: "website",
+    url: absoluteUrl("/"),
+    images: [
+      {
+        url: absoluteUrl("/opengraph-image"),
+        width: 1200,
+        height: 630,
+        alt: "ContentOS AI social content generator"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ContentOS | AI Social Content Generator",
+    description: siteConfig.description,
+    images: [absoluteUrl("/opengraph-image")]
+  },
+  robots: {
+    index: true,
+    follow: true
+  },
+  icons: {
+    icon: "/icon",
+    apple: "/apple-icon"
+  }
 };
 
 export const viewport: Viewport = {

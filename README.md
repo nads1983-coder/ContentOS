@@ -1,79 +1,64 @@
 # ContentOS
 
-An AI-powered social media content operating system for creators, entrepreneurs, small businesses, coaches, consultants, and agencies.
+ContentOS is an AI social content generator that turns one rough idea into a complete platform-ready content pack.
 
-The app turns raw notes, transcripts, launch ideas, offers, and stories into structured platform-ready content across LinkedIn, Instagram, TikTok, X/Twitter, Facebook, and YouTube Shorts.
+Primary tagline: **Create platform-ready content from one idea.**
+
+Supporting line: Generate posts, captions, scripts, hooks, CTAs, hashtags and repurposing packs in minutes.
+
+## Product
+
+ContentOS is built for founders, creators, consultants, freelancers, agencies, coaches, small teams, and personal brands who need consistent content without starting from a blank page every time.
 
 ## Features
 
-- Multi-platform content generation workflow
-- Generic content categories for business, personal brand, motivation, education, sales, product promotion, storytelling, thought leadership, community building, and announcements
-- Tone presets for professional, bold, friendly, inspirational, direct, story-led, sales-focused, educational, premium, and conversational content
+- Landing page with SEO, FAQ, pricing, examples, and product positioning
+- Content generation through the existing `/api/generate` OpenAI flow
 - Platform outputs for LinkedIn, Instagram, TikTok, X/Twitter, Facebook, and YouTube Shorts
-- Formatter tools for LinkedIn posts, Instagram captions, TikTok captions, X threads, and short-form video scripts
-- Repurposing workflow for posts, captions, threads, carousel outlines, video scripts, and email/newsletter drafts
-- Placeholder paywall with Free and Pro entitlement states
-- Saved content library with platform/category filters, copy, and delete
-- Server-only OpenAI integration
-- Local browser persistence for drafts, saved outputs, and recent generations
-- Vercel-ready Next.js project structure
+- Repurposing packs, carousel outlines, scripts, hooks, CTAs, and hashtags
+- Platform formatter for LinkedIn, Instagram, TikTok, X threads, and video scripts
+- Output actions for copy all, save all, individual copy, refinement shortcuts, and `.txt` download
+- Saved library with filtering, sorting-ready structure, timestamps, and delete/copy actions
+- Supabase Auth REST architecture for signup, login, logout, password reset, account sessions, and dashboard protection
+- Supabase database schema for users, subscriptions, saved content, generations, onboarding, brand profiles, usage, and leads
+- Stripe Checkout, Customer Portal, and webhook route architecture
+- Sitemap, robots, Open Graph image, favicon, apple icon, and structured JSON-LD
+- Legal/public pages for features, pricing, about, contact, FAQ, privacy, terms, refund policy
+- Admin dashboard shell protected by configured admin emails
 
-## Paywall Notes
-
-The current paywall is intentionally a placeholder. It does not process payments and does not include fake Stripe code.
-
-- Free users get a limited number of generations and basic output types.
-- Pro unlocks full generation options, formatter access, repurposing outputs, CTA/carousel/video/email outputs, and saved history.
-- The `Plan` switch in the UI simulates entitlement so Stripe can be connected later.
-
-## Tech Stack
-
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- OpenAI JavaScript SDK
-- Lucide React icons
-
-## Getting Started
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Create a local environment file:
-
-```bash
-cp .env.example .env.local
-```
-
-Add your OpenAI key:
+## Environment Variables
 
 ```bash
 OPENAI_API_KEY=your_openai_key
 OPENAI_MODEL=gpt-5.2
+NEXT_PUBLIC_SITE_URL=https://contentos.app
+NEXT_PUBLIC_SUPPORT_EMAIL=support@contentos.app
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+STRIPE_SECRET_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PRO_CREATOR_PRICE_ID=
+STRIPE_PRO_STUDIO_PRICE_ID=
+
+NEXT_PUBLIC_PLAUSIBLE_DOMAIN=
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_SENTRY_DSN=
+ADMIN_EMAILS=
 ```
 
-Run the development server:
+## Database
 
-```bash
-npm run dev
-```
+Run `lib/database-schema.sql` in Supabase to create the production tables and indexes.
 
-Open:
+## Stripe Products
 
-```text
-http://localhost:3000
-```
+Pro Creator: AI social content generation for creators, founders and consultants. Includes multi-platform outputs, formatter tools, repurposing packs and saved content library.
 
-## Environment Variables
-
-| Variable | Required | Description |
-| --- | --- | --- |
-| `OPENAI_API_KEY` | Yes | OpenAI API key used by the server-only generation route. |
-| `OPENAI_MODEL` | No | Model used for generation. Defaults to `gpt-5.2`. |
+Pro Studio: Advanced AI social content workspace for agencies, teams and high-volume creators. Includes multiple brand profiles, advanced workflows and expanded usage limits.
 
 ## Scripts
 
@@ -84,14 +69,3 @@ npm run typecheck
 npm run build
 npm run start
 ```
-
-## Vercel Deployment
-
-This project is ready to deploy on Vercel.
-
-1. Import the GitHub repository into Vercel.
-2. Add `OPENAI_API_KEY` in Vercel Project Settings.
-3. Optionally add `OPENAI_MODEL`.
-4. Deploy with the default Next.js settings.
-
-The OpenAI key is only used server-side in `app/api/generate/route.ts`.

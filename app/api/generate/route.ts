@@ -1,7 +1,11 @@
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth";
 import { contentTypes, defaultSelectedTypes } from "@/lib/content-config";
+import { isSupabaseAdminConfigured } from "@/lib/env";
+import { captureServerError } from "@/lib/monitoring";
 import { buildInput, buildInstructions, requestedTypeSet } from "@/lib/prompts";
+import { recordGeneration } from "@/lib/supabase-rest";
 import {
   CtaModeId,
   ContentTypeId,
@@ -60,6 +64,11 @@ function normalizeRequest(body: unknown): GenerateRequest {
 
   const candidate = body as Partial<GenerateRequest>;
   const source = typeof candidate.source === "string" ? candidate.source.trim() : "";
+  const brandName = typeof candidate.brandName === "string" ? candidate.brandName.trim() : "";
+  const audience = typeof candidate.audience === "string" ? candidate.audience.trim() : "";
+  const offer = typeof candidate.offer === "string" ? candidate.offer.trim() : "";
+  const brandVoice = typeof candidate.brandVoice === "string" ? candidate.brandVoice.trim() : "";
+  const contentGoal = typeof candidate.contentGoal === "string" ? candidate.contentGoal.trim() : "";
   const tone = toneIds.has(candidate.tone as ToneId)
     ? (candidate.tone as ToneId)
     : "professional";
@@ -82,6 +91,11 @@ function normalizeRequest(body: unknown): GenerateRequest {
 
   return {
     source: source.slice(0, 8000),
+    brandName: brandName.slice(0, 180),
+    audience: audience.slice(0, 240),
+    offer: offer.slice(0, 240),
+    brandVoice: brandVoice.slice(0, 320),
+    contentGoal: contentGoal.slice(0, 180),
     tone,
     sharpness,
     ctaMode,
@@ -258,9 +272,20 @@ export async function POST(nextRequest: NextRequest) {
       }
     });
 
-    return NextResponse.json(parseOpenAIJson(response.output_text, request));
+    const result = parseOpenAIJson(response.output_text, request);
+    const user = await getCurrentUser();
+
+    if (user && isSupabaseAdminConfigured()) {
+      try {
+        await recordGeneration(user.id, result);
+      } catch (error) {
+        captureServerError(error, { route: "/api/generate", userId: user.id });
+      }
+    }
+
+    return NextResponse.json(result);
   } catch (error) {
-    console.error(error);
+    captureServerError(error, { route: "/api/generate" });
     return NextResponse.json(
       {
         error:

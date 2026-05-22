@@ -104,6 +104,11 @@ export type StudioStore = {
 
 export type GenerateRequest = {
   source: string;
+  brandName?: string;
+  audience?: string;
+  offer?: string;
+  brandVoice?: string;
+  contentGoal?: string;
   tone: ToneId;
   sharpness: SharpnessId;
   ctaMode: CtaModeId;

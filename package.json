@@ -1,5 +1,6 @@
 {
   "name": "social-content-os",
+  "description": "ContentOS AI social content generator for platform-ready content packs.",
   "version": "0.1.0",
   "private": true,
   "scripts": {
