@@ -42,6 +42,39 @@ export type StripeSubscriptionState = {
   canceledAt?: string | null;
 };
 
+export function normalizePlanId(value?: string | null): PlanId {
+  const normalized = value
+    ?.trim()
+    .toLowerCase()
+    .replace(/[_\s]+/g, "-");
+
+  if (normalized === "pro-studio" || normalized === "prostudio" || normalized === "studio") {
+    return "pro_studio";
+  }
+
+  if (normalized === "pro-creator" || normalized === "procreator" || normalized === "creator") {
+    return "pro_creator";
+  }
+
+  return "free";
+}
+
+export function normalizeSubscriptionStatus(value?: string | null): SubscriptionStatus {
+  const normalized = value?.trim().toLowerCase().replace(/[_\s]+/g, "-");
+
+  if (
+    normalized === "trialing" ||
+    normalized === "active" ||
+    normalized === "past-due" ||
+    normalized === "canceled" ||
+    normalized === "incomplete"
+  ) {
+    return normalized.replace("-", "_") as SubscriptionStatus;
+  }
+
+  return "none";
+}
+
 function stripeRedirectUrl(path: string) {
   const safePath = path.startsWith("/") ? path : `/${path}`;
   return new URL(safePath, getEnv().appUrl).toString();
@@ -124,30 +157,24 @@ function planFromPriceId(priceId?: string): PlanId {
 }
 
 function planFromSubscription(subscription: StripeSubscription): PlanId {
-  const metadataPlan = subscription.metadata?.plan;
+  const metadataPlan = normalizePlanId(
+    subscription.metadata?.plan ??
+      subscription.metadata?.Plan ??
+      subscription.metadata?.PLAN
+  );
 
-  if (metadataPlan === "pro_studio" || metadataPlan === "pro_creator") {
+  if (metadataPlan !== "free") {
     return metadataPlan;
   }
 
   return planFromPriceId(subscription.items?.data[0]?.price?.id);
 }
 
-function normalizeStatus(status?: string): SubscriptionStatus {
-  if (
-    status === "trialing" ||
-    status === "active" ||
-    status === "past_due" ||
-    status === "canceled" ||
-    status === "incomplete"
-  ) {
-    return status;
+function timestampToIso(timestamp?: number | null) {
+  if (timestamp === undefined) {
+    return undefined;
   }
 
-  return "none";
-}
-
-function timestampToIso(timestamp?: number | null) {
   return timestamp ? new Date(timestamp * 1000).toISOString() : null;
 }
 
@@ -156,7 +183,7 @@ function hasActiveEntitlement(status: SubscriptionStatus) {
 }
 
 function subscriptionRank(subscription: StripeSubscription) {
-  const status = normalizeStatus(subscription.status);
+  const status = normalizeSubscriptionStatus(subscription.status);
 
   if (hasActiveEntitlement(status)) {
     return 3;
@@ -181,7 +208,7 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
     };
   }
 
-  const status = normalizeStatus(subscription.status);
+  const status = normalizeSubscriptionStatus(subscription.status);
   const plan = hasActiveEntitlement(status) || status === "past_due"
     ? planFromSubscription(subscription)
     : "free";
@@ -198,11 +225,11 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
 }
 
 export function planHasActiveEntitlement(plan: PlanId, status?: string) {
-  return plan !== "free" && hasActiveEntitlement(normalizeStatus(status));
+  return normalizePlanId(plan) !== "free" && hasActiveEntitlement(normalizeSubscriptionStatus(status));
 }
 
 export function checkoutPlanMatchesState(plan: BillingPlan, state: StripeSubscriptionState) {
-  return state.plan === plan && hasActiveEntitlement(state.status);
+  return normalizePlanId(state.plan) === plan && hasActiveEntitlement(normalizeSubscriptionStatus(state.status));
 }
 
 export async function retrieveStripeSubscription(subscriptionId: string) {

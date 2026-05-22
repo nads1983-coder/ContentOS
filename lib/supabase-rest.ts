@@ -1,4 +1,5 @@
 import { getEnv, isSupabaseAdminConfigured } from "@/lib/env";
+import { normalizePlanId, normalizeSubscriptionStatus } from "@/lib/stripe-rest";
 import {
   BrandProfile,
   OnboardingData,
@@ -182,8 +183,8 @@ export async function updateSubscriptionStatus(input: {
     method: "PATCH",
     query,
     body: JSON.stringify({
-      plan: input.plan,
-      subscription_status: input.status,
+      plan: normalizePlanId(input.plan),
+      subscription_status: normalizeSubscriptionStatus(input.status),
       stripe_customer_id: input.stripeCustomerId,
       stripe_subscription_id: input.stripeSubscriptionId,
       subscription_current_period_end: input.currentPeriodEnd,

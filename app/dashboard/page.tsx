@@ -3,7 +3,12 @@ import { BrandLogo } from "@/components/brand-logo";
 import { CheckoutButton, ManageBillingButton } from "@/components/billing-buttons";
 import { getCurrentUser } from "@/lib/auth";
 import { isStripeConfigured, isSupabaseAdminConfigured } from "@/lib/env";
-import { getStripeSubscriptionState, planHasActiveEntitlement } from "@/lib/stripe-rest";
+import {
+  getStripeSubscriptionState,
+  normalizePlanId,
+  normalizeSubscriptionStatus,
+  planHasActiveEntitlement
+} from "@/lib/stripe-rest";
 import {
   getUserProfile,
   listBrandProfiles,
@@ -94,8 +99,8 @@ export default async function DashboardPage() {
   }
 
   const brandProfiles = isSupabaseAdminConfigured() ? await listBrandProfiles(user.id) : [];
-  const plan = profile?.plan ?? "free";
-  const status = profile?.subscription_status ?? "none";
+  const plan = normalizePlanId(profile?.plan);
+  const status = normalizeSubscriptionStatus(profile?.subscription_status);
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
   const canUpgradeToCreator = !hasActiveSubscription;
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
