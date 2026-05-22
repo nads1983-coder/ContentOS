@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowLeft,
   Archive,
   Bookmark,
   BookmarkCheck,
@@ -31,6 +32,7 @@ import {
   Wand2,
   X
 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { clsx } from "clsx";
 import { BrandLogo } from "@/components/brand-logo";
@@ -744,15 +746,33 @@ function TopBar({
     <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/86 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-5 lg:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <BrandLogo />
+          <Link href="/" aria-label="Back to ContentOS homepage">
+            <BrandLogo />
+          </Link>
         </div>
 
-        <div className="hidden items-center gap-2 rounded border border-line bg-white/[0.03] px-3 py-2 text-xs text-muted lg:flex">
-          <span className="h-2 w-2 rounded-full bg-goldSoft" />
-          {plan === "pro" ? "Pro workspace" : "Free workspace"}
+        <div className="hidden items-center gap-3 lg:flex">
+          <Link
+            href="/"
+            className="flex min-h-10 items-center gap-2 rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+          >
+            <ArrowLeft size={15} />
+            Home
+          </Link>
+          <div className="flex items-center gap-2 rounded border border-line bg-white/[0.03] px-3 py-2 text-xs text-muted">
+            <span className="h-2 w-2 rounded-full bg-goldSoft" />
+            {plan === "pro" ? "Pro workspace" : "Free workspace"}
+          </div>
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
+          <Link
+            href="/"
+            className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted"
+            aria-label="Back to ContentOS homepage"
+          >
+            <ArrowLeft size={18} />
+          </Link>
           <button
             type="button"
             onClick={onOpenHistory}
