@@ -32,7 +32,7 @@ ContentOS is built for founders, creators, consultants, freelancers, agencies, c
 OPENAI_API_KEY=your_openai_key
 OPENAI_MODEL=gpt-5.2
 NEXT_PUBLIC_SITE_URL=https://contentos.app
-NEXT_PUBLIC_SUPPORT_EMAIL=support@contentos.app
+NEXT_PUBLIC_SUPPORT_EMAIL=support@getcontentos.co
 
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
