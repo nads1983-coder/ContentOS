@@ -36,7 +36,8 @@ const features = [
   "Export tools",
   "Platform optimization",
   "Prompt presets",
-  "Content refinement tools"
+  "Content refinement tools",
+  "Generate matching social visuals from your content"
 ];
 
 type MarketingPlan = {
@@ -85,6 +86,9 @@ const pricing: MarketingPlan[] = [
       "Workspace organization",
       "Higher usage limits",
       "Advanced workflows",
+      "AI image generation",
+      "Downloadable PNG visuals",
+      "Social graphic generation",
       "Future team support ready"
     ],
     cta: "Upgrade to Pro Studio"
