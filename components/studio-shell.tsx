@@ -724,11 +724,11 @@ export function StudioShell({
         onToggleMenu={() => setMenuOpen((value) => !value)}
       />
 
-      <div className="relative mx-auto grid w-full max-w-none min-w-0 gap-4 px-0 pb-6 pt-4 sm:max-w-7xl sm:px-5 lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:px-6 lg:pt-6">
+      <div className="relative mx-auto block w-full max-w-none min-w-0 space-y-4 px-0 pb-6 pt-4 sm:max-w-7xl sm:px-5 lg:grid lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:space-y-0 lg:px-6 lg:pt-6">
         <DesktopRail onNavigate={handleRailAction} />
 
         <div className="w-full min-w-0 space-y-4">
-          <section className="grid w-full min-w-0 gap-4 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+          <section className="block w-full min-w-0 space-y-4 2xl:grid 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] 2xl:gap-4 2xl:space-y-0">
             <ComposerPanel
               id="composer"
               source={source}
