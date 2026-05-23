@@ -9,6 +9,7 @@ import {
   normalizePlanId,
   normalizeSubscriptionStatus,
   planHasActiveEntitlement,
+  reconcileActiveSubscriptionPlan,
   retrieveStripeSubscription,
   stripeSubscriptionToState
 } from "@/lib/stripe-rest";
@@ -94,11 +95,11 @@ export default async function DashboardPage() {
 
   if (profile && isStripeConfigured()) {
     try {
-      const subscriptionState = await getStripeSubscriptionState({
+      const subscriptionState = reconcileActiveSubscriptionPlan(await getStripeSubscriptionState({
         stripeCustomerId: profile.stripe_customer_id,
         stripeSubscriptionId: profile.stripe_subscription_id,
         email: user.email
-      });
+      }), profile.plan);
 
       console.log("Dashboard fetched Stripe subscription state", {
         userId: user.id,

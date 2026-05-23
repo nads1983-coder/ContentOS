@@ -48,6 +48,11 @@ export function AuthForm({ mode }: AuthFormProps) {
       return;
     }
 
+    if (response.status === 409 && data.redirectUrl) {
+      window.location.href = data.redirectUrl;
+      return;
+    }
+
     setMessageKind("error");
     setMessage(data.error ?? "Your account is ready, but checkout could not be opened.");
   }

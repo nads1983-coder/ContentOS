@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/env";
 import {
-  checkoutPlanMatchesState,
+  checkoutPlanIsCoveredByState,
   createCheckoutSession,
   BillingPlan,
-  getStripeSubscriptionState
+  getStripeSubscriptionState,
+  hasActiveUnknownPaidSubscription,
+  reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
 import { getUserProfile, syncUserSubscriptionState } from "@/lib/supabase-rest";
 
@@ -34,11 +36,12 @@ export async function POST(request: Request) {
     const profile = user && isSupabaseAdminConfigured()
       ? await getUserProfile(user.id)
       : null;
-    const subscriptionState = await getStripeSubscriptionState({
+    const rawSubscriptionState = await getStripeSubscriptionState({
       stripeCustomerId: profile?.stripe_customer_id,
       stripeSubscriptionId: profile?.stripe_subscription_id,
       email: user?.email
     });
+    const subscriptionState = reconcileActiveSubscriptionPlan(rawSubscriptionState, profile?.plan);
 
     if (user && isSupabaseAdminConfigured()) {
       await syncUserSubscriptionState({
@@ -48,9 +51,22 @@ export async function POST(request: Request) {
       });
     }
 
-    if (checkoutPlanMatchesState(plan, subscriptionState)) {
+    if (checkoutPlanIsCoveredByState(plan, subscriptionState)) {
       return NextResponse.json(
-        { error: "You already have an active subscription for this plan." },
+        {
+          error: "Your active subscription already includes this plan.",
+          redirectUrl: "/dashboard"
+        },
+        { status: 409 }
+      );
+    }
+
+    if (hasActiveUnknownPaidSubscription(rawSubscriptionState)) {
+      return NextResponse.json(
+        {
+          error: "You already have an active subscription. Manage billing from your dashboard.",
+          redirectUrl: "/dashboard"
+        },
         { status: 409 }
       );
     }

@@ -7,7 +7,8 @@ import {
   getStripeSubscriptionState,
   normalizePlanId,
   normalizeSubscriptionStatus,
-  planHasActiveEntitlement
+  planHasActiveEntitlement,
+  reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
 import { getUserProfile, syncUserSubscriptionState } from "@/lib/supabase-rest";
 import { PlanId } from "@/types/saas";
@@ -41,11 +42,11 @@ async function getInitialStudioPlan(): Promise<PlanId> {
 
   if (isStripeConfigured()) {
     try {
-      const subscriptionState = await getStripeSubscriptionState({
+      const subscriptionState = reconcileActiveSubscriptionPlan(await getStripeSubscriptionState({
         stripeCustomerId: profile.stripe_customer_id,
         stripeSubscriptionId: profile.stripe_subscription_id,
         email: user.email
-      });
+      }), profile.plan);
 
       const synced = await syncUserSubscriptionState({
         userId: user.id,

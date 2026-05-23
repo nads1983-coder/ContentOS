@@ -52,7 +52,14 @@ export function normalizePlanId(value?: string | null): PlanId {
     return "pro_studio";
   }
 
-  if (normalized === "pro-creator" || normalized === "procreator" || normalized === "creator") {
+  if (
+    normalized === "pro-creator" ||
+    normalized === "procreator" ||
+    normalized === "creator" ||
+    normalized === "pro" ||
+    normalized === "paid" ||
+    normalized === "premium"
+  ) {
     return "pro_creator";
   }
 
@@ -145,11 +152,17 @@ async function stripeGet<T>(path: string, query?: URLSearchParams) {
 function planFromPriceId(priceId?: string): PlanId {
   const env = getEnv();
 
-  if (priceId && priceId === env.stripeProStudioPriceId) {
+  if (
+    priceId &&
+    (priceId === env.stripeProStudioPriceId || env.stripeLegacyProStudioPriceIds.includes(priceId))
+  ) {
     return "pro_studio";
   }
 
-  if (priceId && priceId === env.stripeProCreatorPriceId) {
+  if (
+    priceId &&
+    (priceId === env.stripeProCreatorPriceId || env.stripeLegacyProCreatorPriceIds.includes(priceId))
+  ) {
     return "pro_creator";
   }
 
@@ -228,8 +241,64 @@ export function planHasActiveEntitlement(plan: PlanId, status?: string) {
   return normalizePlanId(plan) !== "free" && hasActiveEntitlement(normalizeSubscriptionStatus(status));
 }
 
+function planRank(plan: PlanId) {
+  const normalized = normalizePlanId(plan);
+
+  if (normalized === "pro_studio") {
+    return 2;
+  }
+
+  if (normalized === "pro_creator") {
+    return 1;
+  }
+
+  return 0;
+}
+
+export function reconcileActiveSubscriptionPlan(
+  state: StripeSubscriptionState,
+  storedPlan?: string | null
+): StripeSubscriptionState {
+  const normalizedStatePlan = normalizePlanId(state.plan);
+  const normalizedStoredPlan = normalizePlanId(storedPlan);
+
+  // Entitlements must be based on stable internal plan IDs, not displayed prices.
+  // If Stripe confirms an active subscription but the price ID is not mapped
+  // after a pricing change, never downgrade the user to Free during sync.
+  if (
+    normalizedStatePlan === "free" &&
+    Boolean(state.stripeSubscriptionId) &&
+    hasActiveEntitlement(normalizeSubscriptionStatus(state.status))
+  ) {
+    return {
+      ...state,
+      plan: normalizedStoredPlan !== "free" ? normalizedStoredPlan : "pro_creator"
+    };
+  }
+
+  return {
+    ...state,
+    plan: normalizedStatePlan
+  };
+}
+
 export function checkoutPlanMatchesState(plan: BillingPlan, state: StripeSubscriptionState) {
   return normalizePlanId(state.plan) === plan && hasActiveEntitlement(normalizeSubscriptionStatus(state.status));
+}
+
+export function checkoutPlanIsCoveredByState(plan: BillingPlan, state: StripeSubscriptionState) {
+  return (
+    hasActiveEntitlement(normalizeSubscriptionStatus(state.status)) &&
+    planRank(normalizePlanId(state.plan)) >= planRank(plan)
+  );
+}
+
+export function hasActiveUnknownPaidSubscription(state: StripeSubscriptionState) {
+  return (
+    hasActiveEntitlement(normalizeSubscriptionStatus(state.status)) &&
+    normalizePlanId(state.plan) === "free" &&
+    Boolean(state.stripeSubscriptionId)
+  );
 }
 
 export async function retrieveStripeSubscription(subscriptionId: string) {

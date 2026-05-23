@@ -21,6 +21,14 @@ const serverEnv = {
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   stripeProCreatorPriceId: process.env.STRIPE_PRO_CREATOR_PRICE_ID ?? "",
   stripeProStudioPriceId: process.env.STRIPE_PRO_STUDIO_PRICE_ID ?? "",
+  stripeLegacyProCreatorPriceIds: (process.env.STRIPE_LEGACY_PRO_CREATOR_PRICE_IDS ?? "")
+    .split(",")
+    .map((priceId) => priceId.trim())
+    .filter(Boolean),
+  stripeLegacyProStudioPriceIds: (process.env.STRIPE_LEGACY_PRO_STUDIO_PRICE_IDS ?? "")
+    .split(",")
+    .map((priceId) => priceId.trim())
+    .filter(Boolean),
   plausibleDomain: process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN ?? "",
   posthogKey: process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "",
   sentryDsn: process.env.NEXT_PUBLIC_SENTRY_DSN ?? "",

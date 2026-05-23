@@ -36,6 +36,11 @@ export function CheckoutButton({
         return;
       }
 
+      if (response.status === 409 && data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+        return;
+      }
+
       if (!response.ok || !data.url) {
         setError(data.error ?? "Checkout is not available.");
         return;
