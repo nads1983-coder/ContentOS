@@ -43,6 +43,7 @@ import {
   buildSectionCopyText,
   copyPlainText
 } from "@/lib/copy";
+import { formatOutputSection, OutputBlock } from "@/lib/output-format";
 import {
   ctaModes,
   contentTypes,
@@ -1842,6 +1843,7 @@ function OutputCard({
   onCopyRefinement: (action: string) => void;
 }) {
   const canGenerateImage = plan === "pro_studio";
+  const formattedOutput = formatOutputSection(section);
 
   return (
     <article className="w-full min-w-0 rounded-2xl border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:rounded sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
@@ -1878,30 +1880,7 @@ function OutputCard({
         </div>
       </div>
 
-      {section.body ? (
-        <p className="whitespace-pre-line text-[0.95rem] leading-7 text-bone/92">
-          {section.body}
-        </p>
-      ) : null}
-
-      {section.items.length ? (
-        <ul className="mt-4 grid gap-3 sm:gap-2">
-          {section.items.map((item) => (
-            <li
-              key={item}
-              className="rounded-lg border-l-2 border-gold/70 bg-white/[0.035] py-2.5 pl-3 pr-2 text-sm leading-6 text-muted sm:rounded-none sm:bg-ink/42 sm:py-2 sm:pr-0"
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      {section.cta ? (
-        <div className="mt-4 rounded-xl border border-violet/35 bg-violet/10 p-4 text-sm leading-6 text-bone sm:rounded sm:p-3">
-          {section.cta}
-        </div>
-      ) : null}
+      <PlatformOutputBlocks blocks={formattedOutput.blocks} />
 
       {image ? (
         <div className="mt-4 rounded-xl border border-gold/30 bg-ink/55 p-3 sm:rounded">
@@ -1948,6 +1927,132 @@ function OutputCard({
         ))}
       </div>
     </article>
+  );
+}
+
+function PlatformOutputBlocks({ blocks }: { blocks: OutputBlock[] }) {
+  if (!blocks.length) {
+    return (
+      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-muted sm:rounded">
+        No readable output content was returned for this card.
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-3">
+      {blocks.map((block) => (
+        <PlatformOutputBlock key={block.id} block={block} />
+      ))}
+    </div>
+  );
+}
+
+function PlatformOutputBlock({ block }: { block: OutputBlock }) {
+  if (block.kind === "thread") {
+    return (
+      <div className="grid gap-2">
+        <OutputBlockLabel>{block.label}</OutputBlockLabel>
+        <ol className="grid gap-2">
+          {block.lines.map((line, index) => (
+            <li
+              key={`${line}-${index}`}
+              className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] p-3 text-sm leading-6 text-bone/90 sm:rounded"
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-full border border-gold/50 bg-gold/10 text-xs font-semibold text-goldSoft">
+                {index + 1}
+              </span>
+              <span className="whitespace-pre-line">{line}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    );
+  }
+
+  if (block.kind === "hashtags" || block.kind === "tags") {
+    return (
+      <div className="rounded-xl border border-gold/25 bg-gold/[0.07] p-3 sm:rounded">
+        <OutputBlockLabel>{block.label}</OutputBlockLabel>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {block.lines.map((line) => (
+            <span
+              key={line}
+              className="rounded-full border border-gold/25 bg-ink/60 px-3 py-1.5 text-xs font-semibold text-goldSoft"
+            >
+              {line}
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (block.kind === "hook" || block.kind === "subject" || block.kind === "title") {
+    return (
+      <div className="rounded-xl border border-violet/30 bg-violet/10 p-4 text-sm leading-6 text-bone sm:rounded">
+        <OutputBlockLabel>{block.label}</OutputBlockLabel>
+        <div className="mt-2 grid gap-2">
+          {block.lines.map((line) => (
+            <p key={line} className="text-[0.98rem] font-semibold leading-7 text-bone">
+              {line}
+            </p>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (block.kind === "cta" || block.kind === "preview") {
+    return (
+      <div className="rounded-xl border border-violet/35 bg-violet/[0.08] p-4 text-sm leading-6 text-bone sm:rounded sm:p-3">
+        <OutputBlockLabel>{block.label}</OutputBlockLabel>
+        <div className="mt-2 grid gap-2">
+          {block.lines.map((line) => (
+            <p key={line} className="whitespace-pre-line text-bone/92">
+              {line}
+            </p>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (block.kind === "items") {
+    return (
+      <div className="grid gap-2">
+        <OutputBlockLabel>{block.label}</OutputBlockLabel>
+        <ul className="grid gap-2">
+          {block.lines.map((line) => (
+            <li
+              key={line}
+              className="rounded-lg border-l-2 border-gold/70 bg-white/[0.035] py-2.5 pl-3 pr-2 text-sm leading-6 text-muted sm:rounded-none sm:bg-ink/42 sm:py-2 sm:pr-0"
+            >
+              {line}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-3">
+      <OutputBlockLabel>{block.label}</OutputBlockLabel>
+      {block.lines.map((line) => (
+        <p key={line} className="whitespace-pre-line text-[0.95rem] leading-7 text-bone/92">
+          {line}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+function OutputBlockLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-goldSoft/90 sm:text-[0.7rem]">
+      {children}
+    </p>
   );
 }
 
