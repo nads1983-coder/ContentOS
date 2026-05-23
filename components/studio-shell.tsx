@@ -724,7 +724,7 @@ export function StudioShell({
         onToggleMenu={() => setMenuOpen((value) => !value)}
       />
 
-      <div className="relative mx-auto grid w-full max-w-none min-w-0 gap-4 px-2 pb-6 pt-4 sm:max-w-7xl sm:px-5 lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:px-6 lg:pt-6">
+      <div className="relative mx-auto grid w-full max-w-none min-w-0 gap-4 px-0 pb-6 pt-4 sm:max-w-7xl sm:px-5 lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:px-6 lg:pt-6">
         <DesktopRail onNavigate={handleRailAction} />
 
         <div className="w-full min-w-0 space-y-4">
@@ -1069,7 +1069,7 @@ function ComposerPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 w-full min-w-0 rounded border border-white/10 bg-panel/78 p-3 shadow-violet backdrop-blur-xl sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded-none border-y border-white/10 bg-panel/78 p-2 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -1141,7 +1141,7 @@ function ComposerPanel({
         value={source}
         onChange={(event) => onSourceChange(event.target.value)}
         rows={10}
-        className="studio-scroll mt-3 min-h-60 w-full resize-none rounded border border-line bg-ink/70 p-4 text-base leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+        className="studio-scroll mt-3 min-h-60 w-full resize-none rounded border border-line bg-ink/70 p-3 text-base leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:p-4"
         placeholder="Paste notes, a voice memo transcript, a launch idea, an offer, or the messy thought you want to turn into content."
       />
 
@@ -1233,7 +1233,7 @@ function ComposerPanel({
               type="button"
               onClick={() => onToneChange(item.id)}
               className={clsx(
-                "rounded border p-3 text-left transition",
+                "rounded border p-2.5 text-left transition sm:p-3",
                 tone === item.id
                   ? "border-gold/70 bg-gold/10 text-bone"
                   : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
@@ -1379,7 +1379,7 @@ function OutputPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 w-full min-w-0 rounded border border-white/10 bg-coal/86 p-3 backdrop-blur-xl sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded-none border-y border-white/10 bg-coal/86 p-2 backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -1578,7 +1578,7 @@ function PlatformFormatterPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 w-full min-w-0 rounded border border-white/10 bg-panel/78 p-3 shadow-violet backdrop-blur-xl sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded-none border-y border-white/10 bg-panel/78 p-2 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -1678,7 +1678,7 @@ function PlatformFormatterPanel({
             value={text}
             onChange={(event) => setText(event.target.value)}
             rows={12}
-            className="studio-scroll min-h-80 w-full resize-none rounded border border-line bg-ink/70 p-4 text-base leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+            className="studio-scroll min-h-80 w-full resize-none rounded border border-line bg-ink/70 p-3 text-base leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:p-4"
             placeholder="Write or paste platform copy here."
           />
 
@@ -1707,7 +1707,7 @@ function PlatformFormatterPanel({
 
         <div
           className={clsx(
-            "min-w-0 rounded border border-white/10 bg-ink/70 p-3 sm:p-4",
+            "min-w-0 rounded border border-white/10 bg-ink/70 p-2 sm:p-4",
             previewMode === "mobile" ? "mx-auto w-full max-w-none sm:max-w-sm" : "w-full"
           )}
         >
@@ -1787,7 +1787,7 @@ function OutputCard({
   const canGenerateImage = plan === "pro_studio";
 
   return (
-    <article className="w-full min-w-0 rounded border border-white/10 bg-white/[0.035] p-3 sm:p-4">
+    <article className="w-full min-w-0 rounded border border-white/10 bg-white/[0.035] p-2 sm:p-4">
       <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-[0.18em] text-violet">
@@ -2119,7 +2119,7 @@ function SavedLibraryPanel({
   });
 
   return (
-    <section className="scroll-mt-20 w-full min-w-0 rounded border border-white/10 bg-coal/86 p-3 backdrop-blur-xl sm:p-5">
+    <section className="scroll-mt-20 w-full min-w-0 rounded-none border-y border-white/10 bg-coal/86 p-2 backdrop-blur-xl sm:rounded sm:border sm:p-5">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
@@ -2182,7 +2182,7 @@ function SavedLibraryPanel({
               filtered.map((item) => (
                 <article
                   key={item.id}
-                  className="w-full min-w-0 rounded border border-white/10 bg-white/[0.035] p-3 sm:p-4"
+                  className="w-full min-w-0 rounded border border-white/10 bg-white/[0.035] p-2 sm:p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
