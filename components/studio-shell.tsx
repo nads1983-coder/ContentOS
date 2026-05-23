@@ -941,7 +941,7 @@ function TopBar({
           )}
         </div>
 
-        <div className="relative flex shrink-0 items-center lg:hidden">
+        <div className="relative z-[90] flex shrink-0 items-center lg:hidden">
           <button
             type="button"
             onClick={onToggleMenu}
@@ -952,27 +952,27 @@ function TopBar({
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
           {menuOpen ? (
-            <div className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-white/10 bg-coal/96 p-2 shadow-violet backdrop-blur-xl">
+            <div className="absolute right-0 top-full z-[100] mt-2 w-[11.25rem] rounded-xl border border-white/10 bg-[#07050d] p-1.5 shadow-[0_18px_45px_rgba(0,0,0,0.55)]">
               {authenticated ? (
                 <>
                   <Link
                     href="/dashboard#account"
-                    className="flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-bone transition hover:bg-white/[0.05]"
+                    className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-white/[0.06]"
                   >
                     Account
                   </Link>
                   <Link
                     href="/dashboard"
-                    className="flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-bone transition hover:bg-white/[0.05]"
+                    className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-white/[0.06]"
                   >
                     Dashboard
                   </Link>
-                  <LogoutButton className="flex min-h-11 w-full items-center rounded-lg px-3 text-left text-sm font-semibold text-bone transition hover:bg-white/[0.05] disabled:text-muted" />
+                  <LogoutButton className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-left text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-white/[0.06] disabled:text-muted" />
                 </>
               ) : (
                 <Link
                   href="/login"
-                  className="flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-bone transition hover:bg-white/[0.05]"
+                  className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-white/[0.06]"
                 >
                   Log in
                 </Link>
