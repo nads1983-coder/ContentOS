@@ -823,7 +823,7 @@ export function StudioShell({
           store={store}
           current={result}
           renderTimestamps={hasMounted}
-          isOpen={historyOpen || menuOpen}
+          isOpen={historyOpen}
           onClose={() => {
             setHistoryOpen(false);
             setMenuOpen(false);
@@ -890,8 +890,18 @@ function TopBar({
     <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/86 backdrop-blur-xl">
       <div className="mx-auto flex min-h-16 max-w-none items-center justify-between gap-2 px-3 py-3 sm:max-w-7xl sm:gap-3 sm:px-5 lg:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <Link href="/" aria-label="Back to ContentOS homepage">
+          <Link href="/" aria-label="Back to ContentOS homepage" className="hidden lg:block">
             <BrandLogo />
+          </Link>
+          <Link
+            href="/"
+            aria-label="Back to ContentOS homepage"
+            className="flex min-w-0 items-center gap-2 lg:hidden"
+          >
+            <BrandLogo size="sm" showWordmark={false} />
+            <span className="truncate text-base font-extrabold tracking-normal text-bone">
+              Content<span className="text-goldSoft">OS</span>
+            </span>
           </Link>
         </div>
 
@@ -931,40 +941,44 @@ function TopBar({
           )}
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 lg:hidden">
-          <Link
-            href="/"
-            className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-muted"
-            aria-label="Back to ContentOS homepage"
-          >
-            <ArrowLeft size={18} />
-          </Link>
-          {authenticated ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="flex h-10 items-center rounded-lg border border-gold/40 bg-gold/10 px-3 text-xs font-semibold text-bone"
-              >
-                Account
-              </Link>
-              <LogoutButton className="flex h-10 items-center rounded-lg border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone disabled:text-muted" />
-            </>
-          ) : (
-            <Link
-              href="/login"
-              className="flex h-10 items-center rounded-lg border border-gold/40 bg-gold/10 px-3 text-xs font-semibold text-bone"
-            >
-              Log in
-            </Link>
-          )}
+        <div className="relative flex shrink-0 items-center lg:hidden">
           <button
             type="button"
             onClick={onToggleMenu}
             className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-muted"
-            aria-label="Open menu"
+            aria-label={menuOpen ? "Close account menu" : "Open account menu"}
+            aria-expanded={menuOpen}
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
+          {menuOpen ? (
+            <div className="absolute right-0 top-full mt-2 w-44 rounded-xl border border-white/10 bg-coal/96 p-2 shadow-violet backdrop-blur-xl">
+              {authenticated ? (
+                <>
+                  <Link
+                    href="/dashboard#account"
+                    className="flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-bone transition hover:bg-white/[0.05]"
+                  >
+                    Account
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-bone transition hover:bg-white/[0.05]"
+                  >
+                    Dashboard
+                  </Link>
+                  <LogoutButton className="flex min-h-11 w-full items-center rounded-lg px-3 text-left text-sm font-semibold text-bone transition hover:bg-white/[0.05] disabled:text-muted" />
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-bone transition hover:bg-white/[0.05]"
+                >
+                  Log in
+                </Link>
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
     </header>
