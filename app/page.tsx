@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
 import { pageMetadata } from "@/lib/metadata";
+import { pricingPlans } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site";
 
 export const metadata = pageMetadata({
@@ -46,61 +47,6 @@ const features = [
   "Generate matching social visuals from your content"
 ];
 
-type MarketingPlan = {
-  name: string;
-  price: string;
-  body: string;
-  items: string[];
-  cta: string;
-  billingPlan?: "pro_creator" | "pro_studio";
-  featured?: boolean;
-};
-
-const pricing: MarketingPlan[] = [
-  {
-    name: "Free",
-    price: "£0",
-    body: "For testing the workflow and creating core post formats.",
-    items: ["Basic generation", "Limited monthly generations", "Core post formats"],
-    cta: "Start creating"
-  },
-  {
-    name: "Pro Creator",
-    price: "£19/month",
-    billingPlan: "pro_creator",
-    body: "AI social content generation for creators, founders and consultants.",
-    items: [
-      "Unlimited generations",
-      "Multi-platform outputs",
-      "Repurposing packs",
-      "Carousel and video scripts",
-      "Formatter tools",
-      "Saved library",
-      "Export tools",
-      "Brand voice memory"
-    ],
-    featured: true,
-    cta: "Upgrade to Pro Creator"
-  },
-  {
-    name: "Pro Studio",
-    price: "£49/month",
-    billingPlan: "pro_studio",
-    body: "Advanced AI social content workspace for agencies, teams and high-volume creators.",
-    items: [
-      "Multiple brand profiles",
-      "Workspace organization",
-      "Higher usage limits",
-      "Advanced workflows",
-      "AI image generation",
-      "Downloadable PNG visuals",
-      "Social graphic generation",
-      "Future team support ready"
-    ],
-    cta: "Upgrade to Pro Studio"
-  }
-];
-
 const faqs = [
   {
     question: "What is ContentOS?",
@@ -137,13 +83,13 @@ const jsonLd = [
       {
         "@type": "Offer",
         name: "Pro Creator",
-        price: "19",
+        price: pricingPlans.find((plan) => plan.billingPlan === "pro_creator")?.schemaPrice ?? "9",
         priceCurrency: "GBP"
       },
       {
         "@type": "Offer",
         name: "Pro Studio",
-        price: "49",
+        price: pricingPlans.find((plan) => plan.billingPlan === "pro_studio")?.schemaPrice ?? "39",
         priceCurrency: "GBP"
       }
     ]
@@ -293,15 +239,27 @@ export default function Home() {
               Simple pricing for creators and teams
             </h2>
             <div className="mt-8 grid items-stretch gap-4 lg:grid-cols-3">
-              {pricing.map((plan) => (
+              {pricingPlans.map((plan) => (
                 <article
                   key={plan.name}
                   className={`flex min-h-full flex-col rounded border p-5 ${plan.featured ? "border-gold/70 bg-gold/10 shadow-gold" : "border-white/10 bg-coal/70"}`}
                 >
-                  <BrandLogo showWordmark={false} size="sm" />
+                  <div className="flex items-start justify-between gap-3">
+                    <BrandLogo showWordmark={false} size="sm" />
+                    {plan.badge ? (
+                      <span className="rounded border border-gold/50 bg-gold/10 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-goldSoft">
+                        {plan.badge}
+                      </span>
+                    ) : null}
+                  </div>
                   <h3 className="mt-4 text-xl font-semibold text-bone">{plan.name}</h3>
                   <p className="mt-2 text-2xl font-extrabold text-goldSoft">{plan.price}</p>
                   <p className="mt-3 text-sm leading-6 text-muted">{plan.body}</p>
+                  {plan.socialProof ? (
+                    <p className="mt-3 rounded border border-white/10 bg-white/[0.035] p-3 text-xs leading-5 text-bone/80">
+                      {plan.socialProof}
+                    </p>
+                  ) : null}
                   <ul className="mt-5 grid gap-2 text-sm text-muted">
                     {plan.items.map((item) => (
                       <li key={item} className="flex gap-2">
@@ -330,6 +288,9 @@ export default function Home() {
                 </article>
               ))}
             </div>
+            <p className="mt-5 text-center text-sm text-muted">
+              Simple pricing. No hidden fees. Cancel anytime.
+            </p>
           </div>
         </section>
 

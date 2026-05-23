@@ -1,5 +1,6 @@
 import { CheckoutButton } from "@/components/billing-buttons";
 import { pageMetadata } from "@/lib/metadata";
+import { pricingPlans } from "@/lib/pricing";
 import { PublicPage } from "@/components/public-page";
 
 export const metadata = pageMetadata({
@@ -8,24 +9,51 @@ export const metadata = pageMetadata({
 });
 
 export default function PricingPage() {
+  const plans = pricingPlans;
+
   return (
     <PublicPage title="Simple pricing for creators and teams">
       <section className="grid gap-4 md:grid-cols-3">
-        <div className="rounded border border-white/10 bg-white/[0.035] p-4">
-          <h2 className="text-lg font-semibold text-bone">Free</h2>
-          <p>Basic generation, limited monthly generations, and core post formats.</p>
-        </div>
-        <div className="rounded border border-gold/60 bg-gold/10 p-4">
-          <h2 className="text-lg font-semibold text-bone">Pro Creator, £19/month</h2>
-          <p>Unlimited generations, multi-platform outputs, formatter tools, repurposing packs, saved library, exports, and brand voice memory.</p>
-          <div className="mt-4"><CheckoutButton plan="pro_creator">Upgrade to Pro Creator</CheckoutButton></div>
-        </div>
-        <div className="rounded border border-white/10 bg-white/[0.035] p-4">
-          <h2 className="text-lg font-semibold text-bone">Pro Studio, £49/month</h2>
-          <p>Multiple brand profiles, workspace organization, higher usage limits, advanced workflows, AI image generation, downloadable PNG visuals, social graphic generation, and future team support.</p>
-          <div className="mt-4"><CheckoutButton plan="pro_studio">Upgrade to Pro Studio</CheckoutButton></div>
-        </div>
+        {plans.map((plan) => (
+          <div
+            key={plan.name}
+            className={`rounded border p-4 ${plan.featured ? "border-gold/60 bg-gold/10" : "border-white/10 bg-white/[0.035]"}`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-lg font-semibold text-bone">
+                {plan.billingPlan ? `${plan.name}, ${plan.price}` : plan.name}
+              </h2>
+              {plan.badge ? (
+                <span className="rounded border border-gold/50 bg-gold/10 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-goldSoft">
+                  {plan.badge}
+                </span>
+              ) : null}
+            </div>
+            <p className="mt-3">{plan.body}</p>
+            {plan.socialProof ? (
+              <p className="mt-3 rounded border border-white/10 bg-white/[0.035] p-3 text-xs leading-5 text-bone/80">
+                {plan.socialProof}
+              </p>
+            ) : null}
+            <ul className="mt-4 grid gap-2 text-sm">
+              {plan.items.map((item) => (
+                <li key={item} className="flex gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-goldSoft" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            {plan.billingPlan ? (
+              <div className="mt-4">
+                <CheckoutButton plan={plan.billingPlan}>{plan.cta}</CheckoutButton>
+              </div>
+            ) : null}
+          </div>
+        ))}
       </section>
+      <p className="text-center text-sm text-muted">
+        Simple pricing. No hidden fees. Cancel anytime.
+      </p>
     </PublicPage>
   );
 }
