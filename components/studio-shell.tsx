@@ -39,6 +39,11 @@ import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
 import { LogoutButton } from "@/components/logout-button";
 import {
+  buildGenerationCopyText,
+  buildSectionCopyText,
+  copyPlainText
+} from "@/lib/copy";
+import {
   ctaModes,
   contentTypes,
   defaultSelectedTypes,
@@ -234,10 +239,6 @@ function refineText(text: string, action: string) {
   }
 
   return `${action} version:\n\n${trimmed}`;
-}
-
-async function copyText(text: string) {
-  await navigator.clipboard.writeText(text);
 }
 
 type FormatterMode = "desktop" | "mobile";
@@ -617,18 +618,18 @@ export function StudioShell({
   }
 
   async function copySection(section: GeneratedSection) {
-    const text = [
-      section.title,
-      section.body,
-      ...section.items.map((item) => `- ${item}`),
-      section.cta ? `CTA: ${section.cta}` : ""
-    ]
-      .filter(Boolean)
-      .join("\n\n");
-
-    await copyText(text);
-    setCopiedId(section.id);
-    window.setTimeout(() => setCopiedId(""), 1400);
+    try {
+      setError("");
+      await copyPlainText(buildSectionCopyText(section));
+      setCopiedId(section.id);
+      window.setTimeout(() => setCopiedId(""), 1400);
+    } catch (copyError) {
+      setError(
+        copyError instanceof Error
+          ? copyError.message
+          : "Unable to copy clean text."
+      );
+    }
   }
 
   async function generateImage(section = imageSection) {
@@ -781,14 +782,33 @@ export function StudioShell({
               onRegenerate={() => generateContent()}
               onSaveCurrent={saveCurrent}
               onCopyRefinement={async (section, action) => {
-                await copyText(refineText([section.body, section.cta].filter(Boolean).join("\n\n"), action));
-                setCopiedId(`${section.id}-${action}`);
-                window.setTimeout(() => setCopiedId(""), 1400);
+                try {
+                  setError("");
+                  const sectionText = buildSectionCopyText(section);
+                  await copyPlainText(refineText(sectionText, action));
+                  setCopiedId(`${section.id}-${action}`);
+                  window.setTimeout(() => setCopiedId(""), 1400);
+                } catch (copyError) {
+                  setError(
+                    copyError instanceof Error
+                      ? copyError.message
+                      : "Unable to copy clean text."
+                  );
+                }
               }}
               onCopyAll={async () => {
-                await copyText(buildGenerationText(result));
-                setCopiedId("all");
-                window.setTimeout(() => setCopiedId(""), 1400);
+                try {
+                  setError("");
+                  await copyPlainText(buildGenerationCopyText(result));
+                  setCopiedId("all");
+                  window.setTimeout(() => setCopiedId(""), 1400);
+                } catch (copyError) {
+                  setError(
+                    copyError instanceof Error
+                      ? copyError.message
+                      : "Unable to copy clean text."
+                  );
+                }
               }}
               onDownload={() => {
                 const blob = new Blob([buildGenerationText(result)], { type: "text/plain" });
@@ -810,9 +830,18 @@ export function StudioShell({
             plan={plan}
             onPlanChange={setPlan}
             onCopy={async (item) => {
-              await copyText(buildGenerationText(item));
-              setCopiedId(item.id);
-              window.setTimeout(() => setCopiedId(""), 1400);
+              try {
+                setError("");
+                await copyPlainText(buildGenerationCopyText(item));
+                setCopiedId(item.id);
+                window.setTimeout(() => setCopiedId(""), 1400);
+              } catch (copyError) {
+                setError(
+                  copyError instanceof Error
+                    ? copyError.message
+                    : "Unable to copy clean saved content."
+                );
+              }
             }}
             onDelete={deleteSaved}
             copiedId={copiedId}
@@ -1519,6 +1548,7 @@ function PlatformFormatterPanel({
   const [previewMode, setPreviewMode] = useState<FormatterMode>("desktop");
   const [platform, setPlatform] = useState<FormatterPlatform>("linkedin");
   const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isPro = plan !== "free";
   const activePlatform = formatterPlatforms.find((item) => item.id === platform) ?? formatterPlatforms[0];
@@ -1562,9 +1592,19 @@ function PlatformFormatterPanel({
       return;
     }
 
-    await copyText(text);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1400);
+    try {
+      setCopyError("");
+      await copyPlainText(text);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    } catch (formatterCopyError) {
+      setCopied(false);
+      setCopyError(
+        formatterCopyError instanceof Error
+          ? formatterCopyError.message
+          : "Unable to copy clean formatted text."
+      );
+    }
   }
 
   function applyPlatformTemplate(nextPlatform: FormatterPlatform) {
@@ -1717,6 +1757,9 @@ function PlatformFormatterPanel({
               {isPro ? (copied ? "Copied" : "Copy") : "Unlock"}
             </button>
           </div>
+          {copyError ? (
+            <p className="mt-2 text-xs leading-5 text-goldSoft">{copyError}</p>
+          ) : null}
         </div>
 
         <div
