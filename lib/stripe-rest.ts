@@ -339,14 +339,18 @@ export async function listStripeCustomerSubscriptions(customerId: string) {
   );
 }
 
-export async function findStripeCustomerByEmail(email: string) {
-  const customers = await stripeGet<StripeList<StripeCustomer>>(
+export async function listStripeCustomersByEmail(email: string) {
+  return stripeGet<StripeList<StripeCustomer>>(
     "customers",
     new URLSearchParams({
       email,
-      limit: "1"
+      limit: "10"
     })
   );
+}
+
+export async function findStripeCustomerByEmail(email: string) {
+  const customers = await listStripeCustomersByEmail(email);
 
   return customers.data[0] ?? null;
 }
@@ -358,11 +362,57 @@ export async function getStripeSubscriptionState(input: {
 }) {
   let customerId = input.stripeCustomerId ?? undefined;
   const subscriptions: StripeSubscription[] = [];
+  const diagnostic = {
+    authenticatedEmail: input.email,
+    storedStripeCustomerId: input.stripeCustomerId,
+    storedStripeSubscriptionId: input.stripeSubscriptionId,
+    stripeCustomersFoundByEmail: [] as string[],
+    subscriptionsReturned: [] as Array<{
+      id: string;
+      customer: string;
+      rawStatus: string;
+      effectiveStatus: SubscriptionStatus;
+      cancelAtPeriodEnd?: boolean;
+      currentPeriodEnd?: string | null;
+      resolvedPlan: PlanId;
+    }>
+  };
+
+  function trackSubscriptions(nextSubscriptions: StripeSubscription[]) {
+    nextSubscriptions.forEach((subscription) => {
+      diagnostic.subscriptionsReturned.push({
+        id: subscription.id,
+        customer: subscription.customer,
+        rawStatus: subscription.status,
+        effectiveStatus: effectiveSubscriptionStatus(subscription),
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        currentPeriodEnd: timestampToIso(subscription.current_period_end),
+        resolvedPlan: planFromSubscription(subscription)
+      });
+    });
+  }
+
+  function selectBestSubscription() {
+    return subscriptions
+      .filter((subscription, index, all) =>
+        all.findIndex((item) => item.id === subscription.id) === index
+      )
+      .sort((a, b) => {
+        const rank = subscriptionRank(b) - subscriptionRank(a);
+
+        if (rank !== 0) {
+          return rank;
+        }
+
+        return (b.current_period_end ?? 0) - (a.current_period_end ?? 0);
+      })[0];
+  }
 
   if (input.stripeSubscriptionId) {
     try {
       const subscription = await retrieveStripeSubscription(input.stripeSubscriptionId);
       subscriptions.push(subscription);
+      trackSubscriptions([subscription]);
       customerId = subscription.customer;
     } catch {
       // Fall back to customer/email lookup if the stored subscription is no longer retrievable.
@@ -370,57 +420,65 @@ export async function getStripeSubscriptionState(input: {
   }
 
   if (!customerId && input.email) {
-    const customer = await findStripeCustomerByEmail(input.email);
+    const customers = await listStripeCustomersByEmail(input.email);
+    diagnostic.stripeCustomersFoundByEmail = customers.data.map((customer) => customer.id);
+    const customer = customers.data[0] ?? null;
     customerId = customer?.id;
   }
 
   if (customerId) {
     const customerSubscriptions = await listStripeCustomerSubscriptions(customerId);
     subscriptions.push(...customerSubscriptions.data);
+    trackSubscriptions(customerSubscriptions.data);
   }
 
-  const bestKnownSubscription = subscriptions
-    .filter((subscription, index, all) =>
-      all.findIndex((item) => item.id === subscription.id) === index
-    )
-    .sort((a, b) => {
-      const rank = subscriptionRank(b) - subscriptionRank(a);
-
-      if (rank !== 0) {
-        return rank;
-      }
-
-      return (b.current_period_end ?? 0) - (a.current_period_end ?? 0);
-    })[0];
+  const bestKnownSubscription = selectBestSubscription();
 
   if (
     input.email &&
-    subscriptionRank(bestKnownSubscription) < 3
+    (!bestKnownSubscription || subscriptionRank(bestKnownSubscription) < 3)
   ) {
-    const customer = await findStripeCustomerByEmail(input.email);
+    const customers = await listStripeCustomersByEmail(input.email);
+    diagnostic.stripeCustomersFoundByEmail = customers.data.map((customer) => customer.id);
 
-    if (customer?.id && customer.id !== customerId) {
+    for (const customer of customers.data) {
+      if (customer.id === customerId) {
+        continue;
+      }
+
       const customerSubscriptions = await listStripeCustomerSubscriptions(customer.id);
       subscriptions.push(...customerSubscriptions.data);
-      customerId = customer.id;
+      trackSubscriptions(customerSubscriptions.data);
+
+      const bestSubscription = selectBestSubscription();
+
+      if (bestSubscription && subscriptionRank(bestSubscription) >= 3) {
+        customerId = bestSubscription.customer;
+        break;
+      }
     }
   }
 
-  const bestSubscription = subscriptions
-    .filter((subscription, index, all) =>
-      all.findIndex((item) => item.id === subscription.id) === index
-    )
-    .sort((a, b) => {
-      const rank = subscriptionRank(b) - subscriptionRank(a);
-
-      if (rank !== 0) {
-        return rank;
-      }
-
-      return (b.current_period_end ?? 0) - (a.current_period_end ?? 0);
-    })[0];
+  const bestSubscription = selectBestSubscription();
 
   const state = stripeSubscriptionToState(bestSubscription);
+  console.log("Stripe subscription lookup diagnostic", {
+    ...diagnostic,
+    selectedSubscription: bestSubscription
+      ? {
+        id: bestSubscription.id,
+        customer: bestSubscription.customer,
+        rawStatus: bestSubscription.status,
+        effectiveStatus: effectiveSubscriptionStatus(bestSubscription),
+        cancelAtPeriodEnd: bestSubscription.cancel_at_period_end,
+        currentPeriodEnd: timestampToIso(bestSubscription.current_period_end),
+        resolvedBillingPlan: state.plan
+      }
+      : null,
+    finalStatus: state.status,
+    finalPlan: state.plan,
+    finalStripeCustomerId: state.stripeCustomerId ?? customerId
+  });
 
   return {
     ...state,

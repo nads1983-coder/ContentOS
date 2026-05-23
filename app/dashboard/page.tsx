@@ -86,6 +86,7 @@ export default async function DashboardPage() {
 
   console.log("Dashboard fetched Supabase subscription state", {
     userId: user.id,
+    authenticatedEmail: user.email,
     plan: profile?.plan,
     subscriptionStatus: profile?.subscription_status,
     stripeCustomerId: profile?.stripe_customer_id,
@@ -103,6 +104,7 @@ export default async function DashboardPage() {
 
       console.log("Dashboard fetched Stripe subscription state", {
         userId: user.id,
+        authenticatedEmail: user.email,
         dbPlan: profile.plan,
         dbStatus: profile.subscription_status,
         dbStripeCustomerId: profile.stripe_customer_id,
@@ -211,6 +213,7 @@ export default async function DashboardPage() {
 
   console.log("Dashboard normalized subscription state", {
     userId: user.id,
+    authenticatedEmail: user.email,
     dbSubscriptionValue: profile?.subscription_status,
     plan,
     status,
@@ -238,10 +241,14 @@ export default async function DashboardPage() {
             </p>
             <h1 className="mt-3 text-2xl font-semibold text-bone">{planLabels[plan]}</h1>
             <p className="mt-2 text-sm text-muted">
-              Status: {status}
+              Status: {profile?.subscription_cancel_at_period_end && hasActiveSubscription
+                ? `${status} / canceling at period end`
+                : status}
             </p>
             <p className="mt-2 text-sm text-muted">
-              Renewal date: {formatDate(profile?.subscription_current_period_end)}
+              {profile?.subscription_cancel_at_period_end && hasActiveSubscription
+                ? "Paid until"
+                : "Renewal date"}: {formatDate(profile?.subscription_current_period_end)}
             </p>
             {profile?.subscription_cancel_at_period_end ? (
               <p className="mt-2 rounded border border-gold/40 bg-gold/10 p-3 text-sm text-bone">

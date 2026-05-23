@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { SESSION_COOKIE } from "@/lib/auth";
+import { REFRESH_COOKIE, SESSION_COOKIE } from "@/lib/auth";
 import { getEnv, isSupabaseConfigured } from "@/lib/env";
 import { upsertUserProfile } from "@/lib/supabase-rest";
 
@@ -38,9 +38,11 @@ export async function POST(request: Request) {
     id?: string;
     email?: string;
     access_token?: string;
+    refresh_token?: string;
     expires_in?: number;
     session?: {
       access_token?: string;
+      refresh_token?: string;
       expires_in?: number;
     } | null;
     user?: { id?: string; email?: string };
@@ -52,6 +54,7 @@ export async function POST(request: Request) {
   const createdUserId = data.user?.id ?? data.id;
   const createdUserEmail = data.user?.email ?? data.email ?? email;
   const accessToken = data.access_token ?? data.session?.access_token;
+  const refreshToken = data.refresh_token ?? data.session?.refresh_token;
   const expiresIn = data.expires_in ?? data.session?.expires_in;
 
   if (!response.ok || !createdUserId) {
@@ -74,13 +77,25 @@ export async function POST(request: Request) {
   }
 
   if (accessToken) {
-    (await cookies()).set(SESSION_COOKIE, accessToken, {
+    const cookieStore = await cookies();
+
+    cookieStore.set(SESSION_COOKIE, accessToken, {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
       path: "/",
       maxAge: expiresIn ?? 3600
     });
+
+    if (refreshToken) {
+      cookieStore.set(REFRESH_COOKIE, refreshToken, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30
+      });
+    }
 
     return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
   }
