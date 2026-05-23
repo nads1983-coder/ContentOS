@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { clearPendingCheckout } from "@/components/billing-buttons";
 
 type AuthFormProps = {
   mode: "login" | "signup" | "reset";
@@ -23,6 +24,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   async function continueToCheckout() {
     if (!checkoutPlan) {
+      clearPendingCheckout();
       window.location.href = "/dashboard";
       return;
     }
@@ -39,6 +41,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     };
 
     if (response.ok && data.url) {
+      clearPendingCheckout();
       window.location.href = data.url;
       return;
     }
@@ -49,6 +52,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
 
     if (response.status === 409 && data.redirectUrl) {
+      clearPendingCheckout();
       window.location.href = data.redirectUrl;
       return;
     }

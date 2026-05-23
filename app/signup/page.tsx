@@ -1,5 +1,7 @@
+import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
 import { BrandLogo } from "@/components/brand-logo";
+import { getCurrentUser } from "@/lib/auth";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -8,7 +10,13 @@ export const metadata = pageMetadata({
   index: false
 });
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const user = await getCurrentUser();
+
+  if (user) {
+    redirect("/dashboard");
+  }
+
   return (
     <main className="grid min-h-screen place-items-center overflow-x-hidden px-4 py-10 text-bone">
       <section className="w-full max-w-md rounded border border-white/10 bg-panel/78 p-4 shadow-violet sm:p-6">

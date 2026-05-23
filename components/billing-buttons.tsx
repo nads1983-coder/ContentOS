@@ -6,16 +6,32 @@ import { clsx } from "clsx";
 export function CheckoutButton({
   plan,
   children,
-  className
+  className,
+  authenticated,
+  covered
 }: {
   plan: "pro_creator" | "pro_studio";
   children: React.ReactNode;
   className?: string;
+  authenticated?: boolean;
+  covered?: boolean;
 }) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState("");
 
   async function checkout() {
+    if (covered) {
+      clearPendingCheckout();
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    if (authenticated === false) {
+      setPendingCheckout(plan);
+      window.location.href = `/signup?plan=${plan}`;
+      return;
+    }
+
     setIsPending(true);
     setError("");
 
@@ -32,11 +48,13 @@ export function CheckoutButton({
       };
 
       if (response.status === 401 && data.redirectUrl) {
+        setPendingCheckout(plan);
         window.location.href = data.redirectUrl;
         return;
       }
 
       if (response.status === 409 && data.redirectUrl) {
+        clearPendingCheckout();
         window.location.href = data.redirectUrl;
         return;
       }
@@ -70,6 +88,24 @@ export function CheckoutButton({
       {error ? <p className="text-xs text-goldSoft">{error}</p> : null}
     </div>
   );
+}
+
+function setPendingCheckout(plan: "pro_creator" | "pro_studio") {
+  try {
+    window.localStorage.setItem("contentos_pending_checkout_plan", plan);
+    window.localStorage.setItem("contentos_pending_checkout_at", new Date().toISOString());
+  } catch {
+    // Some browsers block localStorage; query params still preserve the plan.
+  }
+}
+
+export function clearPendingCheckout() {
+  try {
+    window.localStorage.removeItem("contentos_pending_checkout_plan");
+    window.localStorage.removeItem("contentos_pending_checkout_at");
+  } catch {
+    // Ignore storage cleanup failures.
+  }
 }
 
 export function ManageBillingButton() {
