@@ -1,7 +1,6 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getEnv, isSupabaseConfigured } from "@/lib/env";
-import { REFRESH_COOKIE, SESSION_COOKIE } from "@/lib/auth";
+import { setAuthCookies } from "@/lib/auth";
 import { upsertUserProfile } from "@/lib/supabase-rest";
 
 export const dynamic = "force-dynamic";
@@ -52,25 +51,11 @@ export async function POST(request: Request) {
     // Profile sync is best effort because auth should not fail if DB service role is not set yet.
   }
 
-  const cookieStore = await cookies();
-
-  cookieStore.set(SESSION_COOKIE, data.access_token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: data.expires_in ?? 3600
+  await setAuthCookies({
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    expiresIn: data.expires_in
   });
-
-  if (data.refresh_token) {
-    cookieStore.set(REFRESH_COOKIE, data.refresh_token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30
-    });
-  }
 
   return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
 }

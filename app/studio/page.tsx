@@ -27,17 +27,17 @@ export const metadata: Metadata = {
   }
 };
 
-async function getInitialStudioPlan(): Promise<PlanId> {
+async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: boolean }> {
   const user = await getCurrentUser();
 
   if (!user || !isSupabaseAdminConfigured()) {
-    return "free";
+    return { plan: "free", authenticated: Boolean(user) };
   }
 
   const profile = await getUserProfile(user.id);
 
   if (!profile) {
-    return "free";
+    return { plan: "free", authenticated: true };
   }
 
   if (isStripeConfigured()) {
@@ -59,7 +59,7 @@ async function getInitialStudioPlan(): Promise<PlanId> {
       );
 
       if (planHasActiveEntitlement(syncedPlan, syncedStatus)) {
-        return syncedPlan;
+        return { plan: syncedPlan, authenticated: true };
       }
     } catch {
       // Use stored Supabase state if Stripe is temporarily unavailable.
@@ -68,11 +68,14 @@ async function getInitialStudioPlan(): Promise<PlanId> {
 
   const plan = normalizePlanId(profile.plan);
   const status = normalizeSubscriptionStatus(profile.subscription_status);
-  return planHasActiveEntitlement(plan, status) ? plan : "free";
+  return {
+    plan: planHasActiveEntitlement(plan, status) ? plan : "free",
+    authenticated: true
+  };
 }
 
 export default async function StudioPage() {
-  const initialPlan = await getInitialStudioPlan();
+  const initialState = await getInitialStudioState();
 
-  return <StudioShell initialPlan={initialPlan} />;
+  return <StudioShell initialPlan={initialState.plan} authenticated={initialState.authenticated} />;
 }

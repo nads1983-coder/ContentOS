@@ -9,11 +9,17 @@ export type AuthUser = {
   email: string;
 };
 
+export type AuthSession = {
+  accessToken: string;
+  refreshToken?: string;
+  expiresIn?: number;
+};
+
 export async function getSessionToken() {
   return (await cookies()).get(SESSION_COOKIE)?.value ?? "";
 }
 
-async function fetchAuthUser(token: string): Promise<AuthUser | null> {
+export async function fetchAuthUser(token: string): Promise<AuthUser | null> {
   const env = getEnv();
   const response = await fetch(`${env.supabaseUrl}/auth/v1/user`, {
     headers: {
@@ -37,6 +43,34 @@ async function fetchAuthUser(token: string): Promise<AuthUser | null> {
     id: data.id,
     email: data.email
   };
+}
+
+export async function setAuthCookies(session: AuthSession) {
+  const cookieStore = await cookies();
+
+  cookieStore.set(SESSION_COOKIE, session.accessToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: session.expiresIn ?? 3600
+  });
+
+  if (session.refreshToken) {
+    cookieStore.set(REFRESH_COOKIE, session.refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30
+    });
+  }
+}
+
+export async function clearAuthCookies() {
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE);
+  cookieStore.delete(REFRESH_COOKIE);
 }
 
 async function refreshSession() {
@@ -69,23 +103,11 @@ async function refreshSession() {
   }
 
   try {
-    cookieStore.set(SESSION_COOKIE, data.access_token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: data.expires_in ?? 3600
+    await setAuthCookies({
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      expiresIn: data.expires_in
     });
-
-    if (data.refresh_token) {
-      cookieStore.set(REFRESH_COOKIE, data.refresh_token, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 30
-      });
-    }
   } catch {
     // Server components may not be allowed to mutate cookies; the refreshed
     // access token is still valid for this request.

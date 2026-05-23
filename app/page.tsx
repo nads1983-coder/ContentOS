@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
+import { LogoutButton } from "@/components/logout-button";
 import { pageMetadata } from "@/lib/metadata";
 import { planCoversPlan } from "@/lib/plan-utils";
 import { pricingPlans } from "@/lib/pricing";
@@ -140,6 +141,7 @@ export default async function Home() {
                   <Link href="/studio" className="transition hover:text-bone">
                     Workspace
                   </Link>
+                  <LogoutButton className="text-sm text-muted transition hover:text-bone" />
                 </>
               ) : (
                 <Link href="/login" className="transition hover:text-bone">
@@ -160,6 +162,7 @@ export default async function Home() {
               >
                 {billingState.isLoggedIn ? "Account" : "Log in"}
               </Link>
+              {billingState.isLoggedIn ? <LogoutButton /> : null}
             </div>
           </div>
         </section>

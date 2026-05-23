@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
+import { LogoutButton } from "@/components/logout-button";
 import { getServerBillingState } from "@/lib/server-billing-state";
 import { siteConfig } from "@/lib/site";
 
@@ -24,6 +25,7 @@ export async function PublicPage({
             <Link href={billingState.isLoggedIn ? "/dashboard" : "/login"} className="hover:text-bone">
               {billingState.isLoggedIn ? "Account" : "Log in"}
             </Link>
+            {billingState.isLoggedIn ? <LogoutButton className="text-sm text-muted hover:text-bone" /> : null}
           </nav>
         </div>
         <article className="mt-10 rounded border border-white/10 bg-panel/78 p-4 shadow-violet sm:p-6">

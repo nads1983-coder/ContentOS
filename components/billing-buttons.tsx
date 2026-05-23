@@ -99,6 +99,15 @@ function setPendingCheckout(plan: "pro_creator" | "pro_studio") {
   }
 }
 
+export function getPendingCheckout(): "pro_creator" | "pro_studio" | null {
+  try {
+    const value = window.localStorage.getItem("contentos_pending_checkout_plan");
+    return value === "pro_creator" || value === "pro_studio" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
 export function clearPendingCheckout() {
   try {
     window.localStorage.removeItem("contentos_pending_checkout_plan");

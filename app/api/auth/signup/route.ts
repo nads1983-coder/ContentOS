@@ -1,7 +1,7 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { REFRESH_COOKIE, SESSION_COOKIE } from "@/lib/auth";
+import { setAuthCookies } from "@/lib/auth";
 import { getEnv, isSupabaseConfigured } from "@/lib/env";
+import { absoluteUrl } from "@/lib/site";
 import { upsertUserProfile } from "@/lib/supabase-rest";
 
 export const dynamic = "force-dynamic";
@@ -25,14 +25,17 @@ export async function POST(request: Request) {
   }
 
   const env = getEnv();
-  const response = await fetch(`${env.supabaseUrl}/auth/v1/signup`, {
-    method: "POST",
-    headers: {
-      apikey: env.supabaseAnonKey,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
-  });
+  const response = await fetch(
+    `${env.supabaseUrl}/auth/v1/signup?redirect_to=${encodeURIComponent(absoluteUrl("/auth/callback"))}`,
+    {
+      method: "POST",
+      headers: {
+        apikey: env.supabaseAnonKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    }
+  );
 
   const data = (await response.json()) as {
     id?: string;
@@ -77,25 +80,11 @@ export async function POST(request: Request) {
   }
 
   if (accessToken) {
-    const cookieStore = await cookies();
-
-    cookieStore.set(SESSION_COOKIE, accessToken, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: expiresIn ?? 3600
+    await setAuthCookies({
+      accessToken,
+      refreshToken,
+      expiresIn
     });
-
-    if (refreshToken) {
-      cookieStore.set(REFRESH_COOKIE, refreshToken, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 30
-      });
-    }
 
     return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
   }

@@ -37,6 +37,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { clsx } from "clsx";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
+import { LogoutButton } from "@/components/logout-button";
 import {
   ctaModes,
   contentTypes,
@@ -385,10 +386,12 @@ function prefixSelectedLines(text: string, numbered: boolean) {
 
 export function StudioShell({
   embedded = false,
-  initialPlan = "free"
+  initialPlan = "free",
+  authenticated = false
 }: {
   embedded?: boolean;
   initialPlan?: PlanId;
+  authenticated?: boolean;
 }) {
   const [source, setSource] = useState(starterText);
   const [brandName, setBrandName] = useState("");
@@ -715,6 +718,7 @@ export function StudioShell({
       </div>
 
       <TopBar
+        authenticated={authenticated}
         menuOpen={menuOpen}
         plan={plan}
         onToggleMenu={() => setMenuOpen((value) => !value)}
@@ -872,10 +876,12 @@ export function StudioShell({
 }
 
 function TopBar({
+  authenticated,
   menuOpen,
   plan,
   onToggleMenu
 }: {
+  authenticated: boolean;
   menuOpen: boolean;
   plan: PlanId;
   onToggleMenu: () => void;
@@ -905,12 +911,24 @@ function TopBar({
                 ? "Pro Creator workspace"
                 : "Free workspace"}
           </div>
-          <Link
-            href="/dashboard"
-            className="flex min-h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
-          >
-            Account
-          </Link>
+          {authenticated ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="flex min-h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+              >
+                Account
+              </Link>
+              <LogoutButton className="flex min-h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60 disabled:text-muted" />
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="flex min-h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+            >
+              Log in
+            </Link>
+          )}
         </div>
 
         <div className="flex shrink-0 items-center gap-2 lg:hidden">
@@ -921,12 +939,24 @@ function TopBar({
           >
             <ArrowLeft size={18} />
           </Link>
-          <Link
-            href="/dashboard"
-            className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-3 text-xs font-semibold text-bone"
-          >
-            Account
-          </Link>
+          {authenticated ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-3 text-xs font-semibold text-bone"
+              >
+                Account
+              </Link>
+              <LogoutButton className="flex h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone disabled:text-muted" />
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-3 text-xs font-semibold text-bone"
+            >
+              Log in
+            </Link>
+          )}
           <button
             type="button"
             onClick={onToggleMenu}

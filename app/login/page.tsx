@@ -4,6 +4,7 @@ import { AuthForm } from "@/components/auth-form";
 import { BrandLogo } from "@/components/brand-logo";
 import { getCurrentUser } from "@/lib/auth";
 import { pageMetadata } from "@/lib/metadata";
+import { BillingPlan } from "@/lib/pricing";
 
 export const metadata = pageMetadata({
   title: "Log in to ContentOS",
@@ -11,8 +12,19 @@ export const metadata = pageMetadata({
   index: false
 });
 
-export default async function LoginPage() {
+function parseBillingPlan(value?: string | string[]): BillingPlan | null {
+  const plan = Array.isArray(value) ? value[0] : value;
+  return plan === "pro_creator" || plan === "pro_studio" ? plan : null;
+}
+
+export default async function LoginPage({
+  searchParams
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await getCurrentUser();
+  const params = await searchParams;
+  const plan = parseBillingPlan(params?.plan);
 
   if (user) {
     redirect("/dashboard");
@@ -27,7 +39,7 @@ export default async function LoginPage() {
           Access your ContentOS workspace, saved content, usage, and billing.
         </p>
         <div className="mt-6">
-          <AuthForm mode="login" />
+          <AuthForm mode="login" initialPlan={plan} />
         </div>
         <Link href="/" className="mt-6 block text-sm text-muted hover:text-bone">
           Back to ContentOS

@@ -3,6 +3,7 @@ import { AuthForm } from "@/components/auth-form";
 import { BrandLogo } from "@/components/brand-logo";
 import { getCurrentUser } from "@/lib/auth";
 import { pageMetadata } from "@/lib/metadata";
+import { BillingPlan } from "@/lib/pricing";
 
 export const metadata = pageMetadata({
   title: "Create a ContentOS Account",
@@ -10,8 +11,19 @@ export const metadata = pageMetadata({
   index: false
 });
 
-export default async function SignupPage() {
+function parseBillingPlan(value?: string | string[]): BillingPlan | null {
+  const plan = Array.isArray(value) ? value[0] : value;
+  return plan === "pro_creator" || plan === "pro_studio" ? plan : null;
+}
+
+export default async function SignupPage({
+  searchParams
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await getCurrentUser();
+  const params = await searchParams;
+  const plan = parseBillingPlan(params?.plan);
 
   if (user) {
     redirect("/dashboard");
@@ -26,7 +38,7 @@ export default async function SignupPage() {
           Start generating content packs and save your best outputs.
         </p>
         <div className="mt-6">
-          <AuthForm mode="signup" />
+          <AuthForm mode="signup" initialPlan={plan} />
         </div>
       </section>
     </main>

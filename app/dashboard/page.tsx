@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { BrandLogo } from "@/components/brand-logo";
 import { CheckoutButton, ManageBillingButton } from "@/components/billing-buttons";
+import { LogoutButton } from "@/components/logout-button";
 import { getCurrentUser } from "@/lib/auth";
 import { isStripeConfigured, isSupabaseAdminConfigured } from "@/lib/env";
 import {
@@ -229,9 +230,12 @@ export default async function DashboardPage() {
       <div className="mx-auto w-full max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <BrandLogo />
-          <Link href="/studio" className="text-sm text-muted hover:text-bone">
-            Back to workspace
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/studio" className="text-sm text-muted hover:text-bone">
+              Back to workspace
+            </Link>
+            <LogoutButton className="text-sm text-muted hover:text-bone" />
+          </div>
         </div>
 
         <section className="mt-8 grid gap-4 lg:grid-cols-3">
