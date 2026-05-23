@@ -45,7 +45,9 @@ export default function PricingPage() {
             </ul>
             {plan.billingPlan ? (
               <div className="mt-4">
-                <CheckoutButton plan={plan.billingPlan}>{plan.cta}</CheckoutButton>
+                <CheckoutButton plan={plan.billingPlan} className="w-full">
+                  {plan.cta}
+                </CheckoutButton>
               </div>
             ) : null}
           </div>

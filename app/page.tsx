@@ -139,11 +139,19 @@ export default function Home() {
                 Start creating
               </Link>
             </nav>
+            <div className="flex shrink-0 items-center gap-2 md:hidden">
+              <Link
+                href="/login"
+                className="rounded border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-bone transition hover:border-gold/60"
+              >
+                Log in
+              </Link>
+            </div>
           </div>
         </section>
 
         <section className="relative max-w-[100vw] overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-          <div className="mx-0 grid w-full max-w-[18rem] min-w-0 gap-10 sm:mx-auto sm:max-w-7xl lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.88fr)] lg:items-center">
+          <div className="mx-auto grid w-full max-w-7xl min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.88fr)] lg:items-center">
             <div className="min-w-0 overflow-hidden">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
                 AI social content generator
@@ -200,7 +208,7 @@ export default function Home() {
         </section>
 
         <section className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl">
             <h2 className="max-w-3xl break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Built for consistent content without blank-page drag.
             </h2>
@@ -219,7 +227,7 @@ export default function Home() {
         </section>
 
         <section id="features" className="px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl">
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               A complete content workflow
             </h2>
@@ -234,7 +242,7 @@ export default function Home() {
         </section>
 
         <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl">
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Simple pricing for creators and teams
             </h2>
@@ -295,7 +303,7 @@ export default function Home() {
         </section>
 
         <section id="examples" className="px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-7xl">
+          <div className="mx-auto w-full max-w-7xl">
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Starter templates
             </h2>
@@ -314,7 +322,7 @@ export default function Home() {
         </section>
 
         <section id="faq" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-0 w-full max-w-[18rem] sm:mx-auto sm:max-w-4xl">
+          <div className="mx-auto w-full max-w-4xl">
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               FAQ
             </h2>
@@ -331,7 +339,7 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-white/10 px-4 py-8 text-sm text-muted sm:px-6 lg:px-8">
-        <div className="mx-0 flex w-full max-w-[18rem] flex-col gap-4 sm:mx-auto sm:max-w-7xl sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <BrandLogo />
           <nav className="flex flex-wrap gap-4" aria-label="Footer">
             <Link href="/features" className="hover:text-bone">Features</Link>

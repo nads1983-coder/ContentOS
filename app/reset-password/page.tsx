@@ -11,8 +11,8 @@ export const metadata = pageMetadata({
 
 export default function ResetPasswordPage() {
   return (
-    <main className="grid min-h-screen place-items-center px-4 py-10 text-bone">
-      <section className="w-full max-w-md rounded border border-white/10 bg-panel/78 p-6 shadow-violet">
+    <main className="grid min-h-screen place-items-center overflow-x-hidden px-4 py-10 text-bone">
+      <section className="w-full max-w-md rounded border border-white/10 bg-panel/78 p-4 shadow-violet sm:p-6">
         <BrandLogo />
         <h1 className="mt-8 font-display text-3xl uppercase tracking-normal">Reset password</h1>
         <p className="mt-2 text-sm leading-6 text-muted">

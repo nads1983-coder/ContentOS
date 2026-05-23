@@ -708,7 +708,7 @@ export function StudioShell({
   }
 
   return (
-    <main className="min-h-screen pb-28 text-bone lg:pb-0">
+    <main className="min-h-screen w-full overflow-x-hidden pb-28 text-bone lg:pb-0">
       <div className="pointer-events-none fixed inset-0 opacity-80">
         <div className="absolute right-[-5rem] top-12 h-72 w-72 rounded-full bg-violet/20 blur-3xl" />
         <div className="absolute bottom-28 left-[-6rem] h-64 w-64 rounded-full bg-gold/10 blur-3xl" />
@@ -718,10 +718,9 @@ export function StudioShell({
         menuOpen={menuOpen}
         plan={plan}
         onToggleMenu={() => setMenuOpen((value) => !value)}
-        onOpenHistory={() => setHistoryOpen(true)}
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl gap-4 px-4 pb-6 pt-4 sm:px-5 lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:px-6 lg:pt-6">
+      <div className="relative mx-auto grid w-full max-w-7xl min-w-0 gap-4 px-4 pb-6 pt-4 sm:px-5 lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:px-6 lg:pt-6">
         <DesktopRail onNavigate={handleRailAction} />
 
         <div className="min-w-0 space-y-4">
@@ -875,17 +874,15 @@ export function StudioShell({
 function TopBar({
   menuOpen,
   plan,
-  onToggleMenu,
-  onOpenHistory
+  onToggleMenu
 }: {
   menuOpen: boolean;
   plan: PlanId;
   onToggleMenu: () => void;
-  onOpenHistory: () => void;
 }) {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/86 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-5 lg:px-6">
+      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-5 lg:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/" aria-label="Back to ContentOS homepage">
             <BrandLogo />
@@ -908,9 +905,15 @@ function TopBar({
                 ? "Pro Creator workspace"
                 : "Free workspace"}
           </div>
+          <Link
+            href="/dashboard"
+            className="flex min-h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+          >
+            Account
+          </Link>
         </div>
 
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex shrink-0 items-center gap-2 lg:hidden">
           <Link
             href="/"
             className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted"
@@ -918,14 +921,12 @@ function TopBar({
           >
             <ArrowLeft size={18} />
           </Link>
-          <button
-            type="button"
-            onClick={onOpenHistory}
-            className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted"
-            aria-label="Open history"
+          <Link
+            href="/dashboard"
+            className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-3 text-xs font-semibold text-bone"
           >
-            <History size={18} />
-          </button>
+            Account
+          </Link>
           <button
             type="button"
             onClick={onToggleMenu}
@@ -1144,7 +1145,7 @@ function ComposerPanel({
         />
       </label>
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <button
           type="button"
           onClick={onGenerate}
@@ -1222,7 +1223,7 @@ function ComposerPanel({
           </p>
           <p className="text-xs text-muted">{labelForSharpness(sharpness)}</p>
         </div>
-        <div className="grid grid-cols-4 overflow-hidden rounded border border-white/10 bg-white/[0.03]">
+        <div className="grid grid-cols-2 overflow-hidden rounded border border-white/10 bg-white/[0.03] sm:grid-cols-4">
           {sharpnessModes.map((item) => (
             <button
               key={item.id}
@@ -1651,7 +1652,7 @@ function PlatformFormatterPanel({
             placeholder="Write or paste platform copy here."
           />
 
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-[1fr_auto_auto]">
+          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
             <p className="col-span-2 self-center text-xs text-muted sm:col-span-1">
               {text.length.toLocaleString()} characters
             </p>
@@ -1945,7 +1946,7 @@ function ImageGenerationPanel({
                 <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
                   Style
                 </p>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="grid gap-2 sm:grid-cols-3">
                   {imageStyles.map((item) => (
                     <button
                       key={item.id}
