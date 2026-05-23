@@ -767,6 +767,7 @@ export function StudioShell({
             <OutputPanel
               id="outputs"
               result={result}
+              sourceText={result.source}
               activeFilter={activeFilter}
               visibleSections={visibleSections}
               error={error}
@@ -1384,6 +1385,7 @@ function ComposerPanel({
 function OutputPanel({
   id,
   result,
+  sourceText,
   activeFilter,
   visibleSections,
   error,
@@ -1403,6 +1405,7 @@ function OutputPanel({
 }: {
   id: string;
   result: GenerationResult;
+  sourceText: string;
   activeFilter: FilterId;
   visibleSections: GeneratedSection[];
   error: string;
@@ -1456,7 +1459,7 @@ function OutputPanel({
         </div>
       ) : null}
 
-      <div className="studio-scroll mt-5 flex gap-2 overflow-x-auto pb-2 sm:mt-4">
+      <div className="studio-scroll mt-5 flex snap-x scroll-px-4 gap-2 overflow-x-auto pb-2 sm:mt-4">
         {filters.map((filter) => (
           <button
             key={filter.id}
@@ -1482,6 +1485,7 @@ function OutputPanel({
             <OutputCard
               key={section.id}
               section={section}
+              sourceText={sourceText}
               copied={copiedId === section.id}
               plan={plan}
               image={generatedImages[section.id]}
@@ -1827,6 +1831,7 @@ function FormatterButton({
 
 function OutputCard({
   section,
+  sourceText,
   copied,
   plan,
   image,
@@ -1835,6 +1840,7 @@ function OutputCard({
   onCopyRefinement
 }: {
   section: GeneratedSection;
+  sourceText: string;
   copied: boolean;
   plan: PlanId;
   image?: GeneratedImage;
@@ -1843,7 +1849,7 @@ function OutputCard({
   onCopyRefinement: (action: string) => void;
 }) {
   const canGenerateImage = plan === "pro_studio";
-  const formattedOutput = formatOutputSection(section);
+  const formattedOutput = formatOutputSection(section, sourceText);
 
   return (
     <article className="w-full min-w-0 rounded-2xl border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:rounded sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
@@ -1908,11 +1914,7 @@ function OutputCard({
       <div className="studio-scroll mt-5 flex gap-2 overflow-x-auto pb-1 sm:mt-4">
         {[
           "shorten",
-          "expand",
           "simplify",
-          "more persuasive",
-          "more casual",
-          "more professional",
           "improve hook",
           "improve CTA"
         ].map((action) => (
@@ -1982,6 +1984,21 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
             >
               {line}
             </span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (block.kind === "platform") {
+    return (
+      <div className="rounded-xl border border-white/[0.08] bg-white/[0.035] p-4 sm:rounded">
+        <OutputBlockLabel>{block.label}</OutputBlockLabel>
+        <div className="mt-3 grid gap-3">
+          {block.lines.map((line, index) => (
+            <p key={`${line}-${index}`} className="whitespace-pre-line text-sm leading-6 text-bone/92">
+              {line}
+            </p>
           ))}
         </div>
       </div>

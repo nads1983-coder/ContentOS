@@ -140,12 +140,18 @@ Instagram caption formatting:
 - strong first line that works in preview
 - mobile-friendly spacing
 - warm, visual, and easy to engage with
+- body must contain a real caption, at least 2 short paragraphs of non-hashtag text
+- put hashtags in items only, not as the whole body
 - up to 7 relevant hashtags
+- never return an Instagram section where body is only hashtags or only a CTA
 
 TikTok caption formatting:
 - very short and hook-led
 - native, direct, and low filler
+- body must contain a short caption or hook in plain language, not just hashtags
+- put hashtags in items only
 - up to 5 relevant hashtags
+- never return a TikTok section where body is only hashtags or only a CTA
 
 X/Twitter formatting:
 - concise and readable
@@ -175,6 +181,8 @@ Carousel outline formatting:
 Repurposing workflow:
 - if Repurposing Pack is requested, include the full set in one section: LinkedIn post, Instagram caption, TikTok caption, X post or thread, carousel outline, short video script, and email/newsletter draft
 - use clear labels inside body or items so the user can copy each asset
+- format each repurposed asset with a clear platform label, for example "LinkedIn:", "Instagram:", "TikTok:", "X/Twitter:", "Facebook:", "YouTube Shorts:", "Email:", "Carousel:", or "Thread:"
+- do not merge the repurposed assets into one dense paragraph
 
 Platform hashtag rules:
 - If Platform Hashtags are requested, create separate labeled sets for LinkedIn, Instagram, TikTok, X/Twitter, Facebook, and YouTube Shorts.

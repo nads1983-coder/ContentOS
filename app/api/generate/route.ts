@@ -124,6 +124,38 @@ function asStringArray(value: unknown): string[] {
     .filter(Boolean);
 }
 
+function withoutHashtags(value: string) {
+  return value
+    .replace(/#[\p{L}\p{N}_]+/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function hasMeaningfulCaption(value: string) {
+  const withoutTags = withoutHashtags(value);
+  return withoutTags.split(/\s+/).filter(Boolean).length >= 7;
+}
+
+function fallbackCaptionFromSource(source: string, type: ContentTypeId) {
+  const cleaned = withoutHashtags(sanitizeGeneratedText(source))
+    .split(/\n{2,}|\.\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .slice(0, type === "tiktok" ? 1 : 2)
+    .join(". ");
+
+  if (!cleaned) {
+    return type === "tiktok"
+      ? "A quick look at the idea behind this update."
+      : "A practical look at the idea behind this update.\n\nUse this as a starting point for a clearer, more useful caption.";
+  }
+
+  const ending = cleaned.endsWith(".") || cleaned.endsWith("!") || cleaned.endsWith("?") ? "" : ".";
+  return type === "tiktok"
+    ? `${cleaned}${ending}`.slice(0, 180)
+    : `${cleaned}${ending}`;
+}
+
 function normalizeSections(value: unknown, selectedTypes: ContentTypeId[]): GeneratedSection[] {
   if (!Array.isArray(value)) {
     return [];
@@ -172,7 +204,16 @@ function parseOpenAIJson(text: string, request: GenerateRequest): GenerationResu
     sections?: unknown;
   };
 
-  const sections = normalizeSections(parsed.sections, request.selectedTypes);
+  const sections = normalizeSections(parsed.sections, request.selectedTypes).map((section) => {
+    if ((section.type === "instagram" || section.type === "tiktok") && !hasMeaningfulCaption(section.body)) {
+      return {
+        ...section,
+        body: fallbackCaptionFromSource(request.source, section.type)
+      };
+    }
+
+    return section;
+  });
 
   if (!sections.length) {
     throw new Error("The model returned an empty generation.");
