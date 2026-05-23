@@ -427,6 +427,11 @@ export function StudioShell({
   const [imagePending, setImagePending] = useState(false);
   const [imageError, setImageError] = useState("");
   const [generatedImages, setGeneratedImages] = useState<Record<string, GeneratedImage>>({});
+  const outputWorkspaceRef = useRef<HTMLElement | null>(null);
+  const pendingAutoScrollIdRef = useRef("");
+  const lastAutoScrolledIdRef = useRef("");
+  const isGeneratingRef = useRef(false);
+  const userInteractedDuringGenerationRef = useRef(false);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -445,6 +450,30 @@ export function StudioShell({
     writeStore(store);
   }, [hasMounted, store]);
 
+  useEffect(() => {
+    isGeneratingRef.current = isPending;
+  }, [isPending]);
+
+  useEffect(() => {
+    const markUserInteraction = () => {
+      if (isGeneratingRef.current) {
+        userInteractedDuringGenerationRef.current = true;
+      }
+    };
+
+    window.addEventListener("wheel", markUserInteraction, { passive: true });
+    window.addEventListener("touchmove", markUserInteraction, { passive: true });
+    window.addEventListener("keydown", markUserInteraction);
+    window.addEventListener("pointerdown", markUserInteraction);
+
+    return () => {
+      window.removeEventListener("wheel", markUserInteraction);
+      window.removeEventListener("touchmove", markUserInteraction);
+      window.removeEventListener("keydown", markUserInteraction);
+      window.removeEventListener("pointerdown", markUserInteraction);
+    };
+  }, []);
+
   const visibleSections = useMemo(() => {
     const sourceResult =
       activeFilter === "saved" && store.saved.length ? store.saved[0] : result;
@@ -453,6 +482,35 @@ export function StudioShell({
       sectionMatchesFilter(section, activeFilter)
     );
   }, [activeFilter, result, store.saved]);
+
+  useEffect(() => {
+    const pendingId = pendingAutoScrollIdRef.current;
+
+    if (
+      !hasMounted ||
+      isPending ||
+      !pendingId ||
+      pendingId !== result.id ||
+      lastAutoScrolledIdRef.current === pendingId ||
+      !visibleSections.length ||
+      userInteractedDuringGenerationRef.current
+    ) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        outputWorkspaceRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+        lastAutoScrolledIdRef.current = pendingId;
+        pendingAutoScrollIdRef.current = "";
+      });
+    }, 60);
+
+    return () => window.clearTimeout(timeout);
+  }, [hasMounted, isPending, result.id, visibleSections.length]);
 
   const usedGenerations = store.recent.length;
   const freeRemaining = Math.max(0, FREE_GENERATION_LIMIT - usedGenerations);
@@ -483,6 +541,8 @@ export function StudioShell({
       return;
     }
 
+    isGeneratingRef.current = true;
+    userInteractedDuringGenerationRef.current = false;
     setIsPending(true);
 
     const payload: GenerateRequest = {
@@ -519,6 +579,7 @@ export function StudioShell({
         throw new Error("Generation returned an unexpected response.");
       }
 
+      pendingAutoScrollIdRef.current = data.id;
       setResult(data);
       persistStore(addRecent(readStore(), data));
     } catch (generationError) {
@@ -528,6 +589,7 @@ export function StudioShell({
           : "Generation failed. Try again."
       );
     } finally {
+      isGeneratingRef.current = false;
       setIsPending(false);
     }
   }
@@ -766,6 +828,7 @@ export function StudioShell({
 
             <OutputPanel
               id="outputs"
+              containerRef={outputWorkspaceRef}
               result={result}
               sourceText={result.source}
               activeFilter={activeFilter}
@@ -1384,6 +1447,7 @@ function ComposerPanel({
 
 function OutputPanel({
   id,
+  containerRef,
   result,
   sourceText,
   activeFilter,
@@ -1404,6 +1468,7 @@ function OutputPanel({
   onDownload
 }: {
   id: string;
+  containerRef: React.RefObject<HTMLElement | null>;
   result: GenerationResult;
   sourceText: string;
   activeFilter: FilterId;
@@ -1426,6 +1491,7 @@ function OutputPanel({
   return (
     <section
       id={id}
+      ref={containerRef}
       className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-coal/88 p-4 backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
       <div className="flex items-start justify-between gap-3">
