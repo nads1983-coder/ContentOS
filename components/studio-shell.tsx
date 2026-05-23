@@ -724,11 +724,11 @@ export function StudioShell({
         onToggleMenu={() => setMenuOpen((value) => !value)}
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl min-w-0 gap-4 px-4 pb-6 pt-4 sm:px-5 lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:px-6 lg:pt-6">
+      <div className="relative mx-auto grid w-full max-w-none min-w-0 gap-4 px-2 pb-6 pt-4 sm:max-w-7xl sm:px-5 lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:px-6 lg:pt-6">
         <DesktopRail onNavigate={handleRailAction} />
 
-        <div className="min-w-0 space-y-4">
-          <section className="grid min-w-0 gap-4 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+        <div className="w-full min-w-0 space-y-4">
+          <section className="grid w-full min-w-0 gap-4 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
             <ComposerPanel
               id="composer"
               source={source}
@@ -888,7 +888,7 @@ function TopBar({
 }) {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/86 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-5 lg:px-6">
+      <div className="mx-auto flex min-h-16 max-w-none items-center justify-between gap-3 px-2 py-3 sm:max-w-7xl sm:px-5 lg:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/" aria-label="Back to ContentOS homepage">
             <BrandLogo />
@@ -931,7 +931,7 @@ function TopBar({
           )}
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 lg:hidden">
+        <div className="flex shrink-0 items-center gap-1.5 lg:hidden">
           <Link
             href="/"
             className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted"
@@ -943,16 +943,16 @@ function TopBar({
             <>
               <Link
                 href="/dashboard"
-                className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-3 text-xs font-semibold text-bone"
+                className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-2.5 text-xs font-semibold text-bone"
               >
                 Account
               </Link>
-              <LogoutButton className="flex h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone disabled:text-muted" />
+              <LogoutButton className="flex h-10 items-center rounded border border-white/10 bg-white/[0.04] px-2.5 text-xs font-semibold text-bone disabled:text-muted" />
             </>
           ) : (
             <Link
               href="/login"
-              className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-3 text-xs font-semibold text-bone"
+              className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-2.5 text-xs font-semibold text-bone"
             >
               Log in
             </Link>
@@ -1069,14 +1069,14 @@ function ComposerPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 min-w-0 rounded border border-white/10 bg-panel/78 p-4 shadow-violet backdrop-blur-xl sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded border border-white/10 bg-panel/78 p-3 shadow-violet backdrop-blur-xl sm:p-5"
     >
       <div className="mb-4 flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <h1 className="font-display text-3xl uppercase leading-none tracking-normal text-bone sm:text-4xl">
             ContentOS
           </h1>
-          <p className="mt-2 max-w-sm text-sm leading-6 text-muted">
+          <p className="mt-2 max-w-none text-sm leading-6 text-muted sm:max-w-sm">
             Turn raw ideas into platform-ready content across every channel.
           </p>
         </div>
@@ -1099,7 +1099,7 @@ function ComposerPanel({
               Free includes basic generation. Pro unlocks full generation, formatter presets, repurposing, and saved history.
             </p>
           </div>
-          <div className="grid grid-cols-3 overflow-hidden rounded border border-white/10 bg-ink/70 sm:w-64">
+          <div className="grid w-full grid-cols-3 overflow-hidden rounded border border-white/10 bg-ink/70 sm:w-64">
             <button
               type="button"
               onClick={() => onPlanChange("free")}
@@ -1304,7 +1304,7 @@ function ComposerPanel({
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
           Content types
         </p>
-        <div className="studio-scroll flex snap-x gap-2 overflow-x-auto pb-2 lg:flex-wrap lg:overflow-visible">
+        <div className="studio-scroll flex snap-x gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible">
           {contentTypes.map((item) => {
             const active = selectedTypes.includes(item.id);
             return (
@@ -1314,7 +1314,7 @@ function ComposerPanel({
                 onClick={() => onToggleType(item.id)}
                 title={item.paidOnly && !isPro ? "Pro output" : item.label}
                 className={clsx(
-                  "flex min-h-10 shrink-0 snap-start items-center gap-2 rounded border px-3 text-sm transition",
+                  "flex min-h-10 shrink-0 snap-start items-center gap-2 rounded border px-3 text-sm transition sm:shrink",
                   active
                     ? "border-violet/70 bg-violet/20 text-bone"
                     : "border-white/10 bg-white/[0.03] text-muted hover:border-violet/50"
@@ -1379,14 +1379,14 @@ function OutputPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 min-w-0 rounded border border-white/10 bg-coal/86 p-4 backdrop-blur-xl sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded border border-white/10 bg-coal/86 p-3 backdrop-blur-xl sm:p-5"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
             Output workspace
           </p>
-          <h2 className="mt-2 truncate font-display text-2xl uppercase tracking-normal text-bone">
+          <h2 className="mt-2 line-clamp-2 font-display text-2xl uppercase tracking-normal text-bone sm:truncate">
             {result.title}
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted">{result.summary}</p>
@@ -1430,7 +1430,7 @@ function OutputPanel({
         ))}
       </div>
 
-      <div className="mt-3 grid gap-3">
+      <div className="mt-3 grid w-full min-w-0 gap-3">
         {isPending ? (
           <LoadingCard />
         ) : visibleSections.length ? (
@@ -1578,7 +1578,7 @@ function PlatformFormatterPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 rounded border border-white/10 bg-panel/78 p-4 shadow-violet backdrop-blur-xl sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded border border-white/10 bg-panel/78 p-3 shadow-violet backdrop-blur-xl sm:p-5"
     >
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -1593,7 +1593,7 @@ function PlatformFormatterPanel({
           </p>
         </div>
 
-        <div className="grid grid-cols-2 overflow-hidden rounded border border-white/10 bg-white/[0.03] sm:w-48">
+        <div className="grid w-full grid-cols-2 overflow-hidden rounded border border-white/10 bg-white/[0.03] sm:w-48">
           <button
             type="button"
             onClick={() => setPreviewMode("desktop")}
@@ -1707,8 +1707,8 @@ function PlatformFormatterPanel({
 
         <div
           className={clsx(
-            "min-w-0 rounded border border-white/10 bg-ink/70 p-4",
-            previewMode === "mobile" ? "mx-auto w-full max-w-sm" : "w-full"
+            "min-w-0 rounded border border-white/10 bg-ink/70 p-3 sm:p-4",
+            previewMode === "mobile" ? "mx-auto w-full max-w-none sm:max-w-sm" : "w-full"
           )}
         >
           <div className="rounded bg-[#f4f2ee] p-4 text-[#191919]">
@@ -1787,7 +1787,7 @@ function OutputCard({
   const canGenerateImage = plan === "pro_studio";
 
   return (
-    <article className="rounded border border-white/10 bg-white/[0.035] p-4">
+    <article className="w-full min-w-0 rounded border border-white/10 bg-white/[0.035] p-3 sm:p-4">
       <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-[0.18em] text-violet">
@@ -1796,12 +1796,12 @@ function OutputCard({
           <h3 className="mt-1 text-lg font-semibold text-bone">{section.title}</h3>
           <p className="mt-1 text-xs text-muted">{labelForContentType(section.type)}</p>
         </div>
-        <div className="flex shrink-0 flex-wrap gap-2">
+        <div className="grid w-full gap-2 sm:flex sm:w-auto sm:shrink-0 sm:flex-wrap">
           <button
             type="button"
             onClick={onGenerateImage}
             className={clsx(
-              "flex min-h-10 items-center gap-2 rounded border px-3 text-xs font-semibold transition",
+              "flex min-h-10 items-center justify-center gap-2 rounded border px-3 text-xs font-semibold transition",
               canGenerateImage
                 ? "border-gold/60 bg-gold/10 text-bone hover:border-gold"
                 : "border-white/10 bg-ink/70 text-muted hover:border-gold/60 hover:text-bone"
@@ -1813,7 +1813,7 @@ function OutputCard({
           <button
             type="button"
             onClick={onCopy}
-            className="flex min-h-10 items-center gap-2 rounded border border-white/10 bg-ink/70 px-3 text-xs font-semibold text-bone transition hover:border-violet/60"
+            className="flex min-h-10 items-center justify-center gap-2 rounded border border-white/10 bg-ink/70 px-3 text-xs font-semibold text-bone transition hover:border-violet/60"
           >
             {copied ? <Check size={15} /> : <Copy size={15} />}
             {copied ? "Copied" : "Copy"}
@@ -2119,7 +2119,7 @@ function SavedLibraryPanel({
   });
 
   return (
-    <section className="scroll-mt-20 rounded border border-white/10 bg-coal/86 p-4 backdrop-blur-xl sm:p-5">
+    <section className="scroll-mt-20 w-full min-w-0 rounded border border-white/10 bg-coal/86 p-3 backdrop-blur-xl sm:p-5">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
@@ -2128,7 +2128,7 @@ function SavedLibraryPanel({
           <h2 className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
             Organized Outputs
           </h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
+          <p className="mt-2 max-w-none text-sm leading-6 text-muted sm:max-w-xl">
             Save generated sets, filter by platform or category, copy them back out, and remove anything you no longer need.
           </p>
         </div>
@@ -2182,7 +2182,7 @@ function SavedLibraryPanel({
               filtered.map((item) => (
                 <article
                   key={item.id}
-                  className="rounded border border-white/10 bg-white/[0.035] p-4"
+                  className="w-full min-w-0 rounded border border-white/10 bg-white/[0.035] p-3 sm:p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
