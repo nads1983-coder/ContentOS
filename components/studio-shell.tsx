@@ -724,7 +724,7 @@ export function StudioShell({
         onToggleMenu={() => setMenuOpen((value) => !value)}
       />
 
-      <div className="relative mx-auto block w-full max-w-none min-w-0 space-y-4 px-0 pb-6 pt-4 sm:max-w-7xl sm:px-5 lg:grid lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:space-y-0 lg:px-6 lg:pt-6">
+      <div className="relative mx-auto block w-full max-w-none min-w-0 space-y-4 px-3 pb-6 pt-4 sm:max-w-7xl sm:px-5 lg:grid lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:space-y-0 lg:px-6 lg:pt-6">
         <DesktopRail onNavigate={handleRailAction} />
 
         <div className="w-full min-w-0 space-y-4">
@@ -888,7 +888,7 @@ function TopBar({
 }) {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/86 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 max-w-none items-center justify-between gap-3 px-2 py-3 sm:max-w-7xl sm:px-5 lg:px-6">
+      <div className="mx-auto flex min-h-16 max-w-none items-center justify-between gap-2 px-3 py-3 sm:max-w-7xl sm:gap-3 sm:px-5 lg:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/" aria-label="Back to ContentOS homepage">
             <BrandLogo />
@@ -931,10 +931,10 @@ function TopBar({
           )}
         </div>
 
-        <div className="flex shrink-0 items-center gap-1.5 lg:hidden">
+        <div className="flex shrink-0 items-center gap-2 lg:hidden">
           <Link
             href="/"
-            className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted"
+            className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-muted"
             aria-label="Back to ContentOS homepage"
           >
             <ArrowLeft size={18} />
@@ -943,16 +943,16 @@ function TopBar({
             <>
               <Link
                 href="/dashboard"
-                className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-2.5 text-xs font-semibold text-bone"
+                className="flex h-10 items-center rounded-lg border border-gold/40 bg-gold/10 px-3 text-xs font-semibold text-bone"
               >
                 Account
               </Link>
-              <LogoutButton className="flex h-10 items-center rounded border border-white/10 bg-white/[0.04] px-2.5 text-xs font-semibold text-bone disabled:text-muted" />
+              <LogoutButton className="flex h-10 items-center rounded-lg border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone disabled:text-muted" />
             </>
           ) : (
             <Link
               href="/login"
-              className="flex h-10 items-center rounded border border-gold/50 bg-gold/10 px-2.5 text-xs font-semibold text-bone"
+              className="flex h-10 items-center rounded-lg border border-gold/40 bg-gold/10 px-3 text-xs font-semibold text-bone"
             >
               Log in
             </Link>
@@ -960,7 +960,7 @@ function TopBar({
           <button
             type="button"
             onClick={onToggleMenu}
-            className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted"
+            className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-muted"
             aria-label="Open menu"
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -1069,14 +1069,14 @@ function ComposerPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 w-full min-w-0 rounded-none border-y border-white/10 bg-panel/78 p-2 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-panel/82 p-4 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
+      <div className="mb-5 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="font-display text-3xl uppercase leading-none tracking-normal text-bone sm:text-4xl">
+          <h1 className="font-display text-[2rem] uppercase leading-none tracking-normal text-bone sm:text-4xl">
             ContentOS
           </h1>
-          <p className="mt-2 max-w-none text-sm leading-6 text-muted sm:max-w-sm">
+          <p className="mt-3 max-w-none text-[0.95rem] leading-7 text-muted sm:max-w-sm sm:text-sm sm:leading-6">
             Turn raw ideas into platform-ready content across every channel.
           </p>
         </div>
@@ -1089,22 +1089,22 @@ function ComposerPanel({
         </div>
       </div>
 
-      <div className="mb-4 rounded border border-white/10 bg-white/[0.035] p-3">
+      <div className="mb-5 rounded-xl border border-white/[0.08] bg-white/[0.045] p-4 sm:rounded sm:p-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-semibold text-bone">
+            <p className="text-base font-semibold text-bone sm:text-sm">
               {isPro ? "Pro access enabled" : `${freeRemaining} free generations left`}
             </p>
-            <p className="mt-1 text-xs leading-5 text-muted">
+            <p className="mt-1 text-sm leading-6 text-muted sm:text-xs sm:leading-5">
               Free includes basic generation. Pro unlocks full generation, formatter presets, repurposing, and saved history.
             </p>
           </div>
-          <div className="grid w-full grid-cols-3 overflow-hidden rounded border border-white/10 bg-ink/70 sm:w-64">
+          <div className="grid w-full grid-cols-3 overflow-hidden rounded-lg border border-white/10 bg-ink/70 sm:w-64 sm:rounded">
             <button
               type="button"
               onClick={() => onPlanChange("free")}
               className={clsx(
-                "min-h-10 px-3 text-xs font-semibold",
+                "min-h-11 px-3 text-sm font-semibold sm:min-h-10 sm:text-xs",
                 !isPro ? "bg-gold/10 text-bone" : "text-muted hover:text-bone"
               )}
             >
@@ -1114,7 +1114,7 @@ function ComposerPanel({
               type="button"
               onClick={() => onPlanChange("pro_creator")}
               className={clsx(
-                "min-h-10 border-l border-white/10 px-3 text-xs font-semibold",
+                "min-h-11 border-l border-white/10 px-3 text-sm font-semibold sm:min-h-10 sm:text-xs",
                 plan === "pro_creator" ? "bg-violet/25 text-bone" : "text-muted hover:text-bone"
               )}
             >
@@ -1124,7 +1124,7 @@ function ComposerPanel({
               type="button"
               onClick={() => onPlanChange("pro_studio")}
               className={clsx(
-                "min-h-10 border-l border-white/10 px-3 text-xs font-semibold",
+                "min-h-11 border-l border-white/10 px-3 text-sm font-semibold sm:min-h-10 sm:text-xs",
                 plan === "pro_studio" ? "bg-violet/25 text-bone" : "text-muted hover:text-bone"
               )}
             >
@@ -1134,14 +1134,14 @@ function ComposerPanel({
         </div>
       </div>
 
-      <label className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+      <label className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
         Source material
       </label>
       <textarea
         value={source}
         onChange={(event) => onSourceChange(event.target.value)}
         rows={10}
-        className="studio-scroll mt-3 min-h-60 w-full resize-none rounded border border-line bg-ink/70 p-3 text-base leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:p-4"
+        className="studio-scroll mt-3 min-h-56 w-full resize-none rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:min-h-60 sm:rounded sm:text-base"
         placeholder="Paste notes, a voice memo transcript, a launch idea, an offer, or the messy thought you want to turn into content."
       />
 
@@ -1152,35 +1152,35 @@ function ComposerPanel({
           { label: "Offer/product/service", value: offer, onChange: onOfferChange, placeholder: "Content planning service" },
           { label: "Content goal", value: contentGoal, onChange: onContentGoalChange, placeholder: "Generate qualified leads" }
         ].map((item) => (
-          <label key={item.label} className="grid gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+          <label key={item.label} className="grid gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             {item.label}
             <input
               value={item.value}
               onChange={(event) => item.onChange(event.target.value)}
               placeholder={item.placeholder}
-              className="min-h-11 rounded border border-line bg-ink/70 px-3 text-sm normal-case tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+              className="min-h-12 rounded-xl border border-line bg-ink/90 px-4 text-[0.95rem] normal-case tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:min-h-11 sm:rounded sm:px-3 sm:text-sm"
             />
           </label>
         ))}
       </div>
 
-      <label className="mt-4 grid gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+      <label className="mt-4 grid gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
         Brand voice
         <textarea
           value={brandVoice}
           onChange={(event) => onBrandVoiceChange(event.target.value)}
           rows={3}
           placeholder="Confident, useful, concise, practical, lightly witty."
-          className="studio-scroll rounded border border-line bg-ink/70 p-3 text-sm normal-case leading-6 tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+          className="studio-scroll rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] normal-case leading-7 tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:p-3 sm:text-sm sm:leading-6"
         />
       </label>
 
-      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+      <div className="mt-5 grid gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-2">
         <button
           type="button"
           onClick={onGenerate}
           disabled={!canGenerate}
-          className="flex min-h-12 items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/10 disabled:text-muted"
+          className="flex min-h-14 items-center justify-center gap-2 rounded-xl border border-violet/70 bg-violet px-4 text-base font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/10 disabled:text-muted sm:min-h-12 sm:rounded sm:text-sm"
         >
           {isPending ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
           Generate
@@ -1188,18 +1188,18 @@ function ComposerPanel({
         <button
           type="button"
           onClick={onSaveDraft}
-          className="flex min-h-12 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
+          className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded"
         >
           <Save size={17} />
           Save draft
         </button>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-6 sm:mt-5">
         <div className="mb-2 flex items-center justify-between gap-3">
           <label
             htmlFor="preset-topic"
-            className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft"
+            className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]"
           >
             Topic
           </label>
@@ -1209,7 +1209,7 @@ function ComposerPanel({
           id="preset-topic"
           value={presetTopic}
           onChange={(event) => onPresetTopicChange(event.target.value as PresetTopicId)}
-          className="min-h-12 w-full rounded border border-line bg-ink/70 px-3 text-sm font-semibold text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+          className="min-h-12 w-full rounded-xl border border-line bg-ink/90 px-4 text-[0.95rem] font-semibold text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:px-3 sm:text-sm"
         >
           {presetTopics.map((topic) => (
             <option key={topic.id} value={topic.id} className="bg-ink text-bone">
@@ -1219,41 +1219,41 @@ function ComposerPanel({
         </select>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-6 sm:mt-5">
         <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             Tone
           </p>
           <p className="text-xs text-muted">{labelForTone(tone)}</p>
         </div>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-2">
           {tones.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => onToneChange(item.id)}
               className={clsx(
-                "rounded border p-2.5 text-left transition sm:p-3",
+                "rounded-xl border p-3 text-left transition sm:rounded sm:p-3",
                 tone === item.id
                   ? "border-gold/70 bg-gold/10 text-bone"
                   : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
               )}
             >
-              <span className="block text-sm font-semibold text-bone">{item.label}</span>
+              <span className="block text-[0.95rem] font-semibold text-bone sm:text-sm">{item.label}</span>
               <span className="mt-1 block text-xs leading-5">{item.description}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-6 sm:mt-5">
         <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             Sharpness
           </p>
           <p className="text-xs text-muted">{labelForSharpness(sharpness)}</p>
         </div>
-        <div className="grid grid-cols-2 overflow-hidden rounded border border-white/10 bg-white/[0.03] sm:grid-cols-4">
+        <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] sm:rounded sm:grid-cols-4">
           {sharpnessModes.map((item) => (
             <button
               key={item.id}
@@ -1261,7 +1261,7 @@ function ComposerPanel({
               onClick={() => onSharpnessChange(item.id)}
               title={item.description}
               className={clsx(
-                "min-h-11 border-r border-white/10 px-2 text-xs font-semibold transition last:border-r-0",
+                "min-h-12 border-r border-white/10 px-2 text-sm font-semibold transition last:border-r-0 sm:min-h-11 sm:text-xs",
                 sharpness === item.id
                   ? "bg-violet/25 text-bone"
                   : "text-muted hover:bg-white/[0.04] hover:text-bone"
@@ -1273,9 +1273,9 @@ function ComposerPanel({
         </div>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-6 sm:mt-5">
         <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             CTA
           </p>
           <p className="text-xs text-muted">{labelForCtaMode(ctaMode)}</p>
@@ -1288,7 +1288,7 @@ function ComposerPanel({
               onClick={() => onCtaModeChange(item.id)}
               title={item.description}
               className={clsx(
-                "min-h-10 shrink-0 rounded border px-3 text-sm transition",
+                "min-h-11 shrink-0 rounded-full border px-4 text-sm transition sm:min-h-10 sm:rounded sm:px-3",
                 ctaMode === item.id
                   ? "border-gold/70 bg-gold/10 text-bone"
                   : "border-white/10 bg-white/[0.03] text-muted hover:border-violet/50"
@@ -1300,8 +1300,8 @@ function ComposerPanel({
         </div>
       </div>
 
-      <div className="mt-5">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+      <div className="mt-6 sm:mt-5">
+        <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
           Content types
         </p>
         <div className="studio-scroll flex snap-x gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible">
@@ -1314,7 +1314,7 @@ function ComposerPanel({
                 onClick={() => onToggleType(item.id)}
                 title={item.paidOnly && !isPro ? "Pro output" : item.label}
                 className={clsx(
-                  "flex min-h-10 shrink-0 snap-start items-center gap-2 rounded border px-3 text-sm transition sm:shrink",
+                  "flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-full border px-4 text-sm transition sm:min-h-10 sm:shrink sm:rounded sm:px-3",
                   active
                     ? "border-violet/70 bg-violet/20 text-bone"
                     : "border-white/10 bg-white/[0.03] text-muted hover:border-violet/50"
@@ -1379,23 +1379,23 @@ function OutputPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 w-full min-w-0 rounded-none border-y border-white/10 bg-coal/86 p-2 backdrop-blur-xl sm:rounded sm:border sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-coal/88 p-4 backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             Output workspace
           </p>
-          <h2 className="mt-2 line-clamp-2 font-display text-2xl uppercase tracking-normal text-bone sm:truncate">
+          <h2 className="mt-2 line-clamp-2 font-display text-[1.7rem] uppercase leading-none tracking-normal text-bone sm:truncate sm:text-2xl">
             {result.title}
           </h2>
-          <p className="mt-2 text-sm leading-6 text-muted">{result.summary}</p>
+          <p className="mt-3 text-sm leading-6 text-muted sm:mt-2">{result.summary}</p>
         </div>
         <button
           type="button"
           onClick={onSaveCurrent}
           className={clsx(
-            "grid h-11 w-11 shrink-0 place-items-center rounded border transition",
+            "grid h-11 w-11 shrink-0 place-items-center rounded-xl border transition sm:rounded",
             isSaved
               ? "border-gold/70 bg-gold/15 text-goldSoft"
               : "border-white/10 bg-white/[0.04] text-muted hover:border-gold/60"
@@ -1412,14 +1412,14 @@ function OutputPanel({
         </div>
       ) : null}
 
-      <div className="studio-scroll mt-4 flex gap-2 overflow-x-auto pb-2">
+      <div className="studio-scroll mt-5 flex gap-2 overflow-x-auto pb-2 sm:mt-4">
         {filters.map((filter) => (
           <button
             key={filter.id}
             type="button"
             onClick={() => onFilterChange(filter.id)}
             className={clsx(
-              "min-h-10 shrink-0 rounded border px-3 text-sm transition",
+              "min-h-11 shrink-0 rounded-full border px-4 text-sm transition sm:min-h-10 sm:rounded sm:px-3",
               activeFilter === filter.id
                 ? "border-gold/70 bg-gold/10 text-bone"
                 : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/50"
@@ -1430,7 +1430,7 @@ function OutputPanel({
         ))}
       </div>
 
-      <div className="mt-3 grid w-full min-w-0 gap-3">
+      <div className="mt-4 grid w-full min-w-0 gap-4 sm:mt-3 sm:gap-3">
         {isPending ? (
           <LoadingCard />
         ) : visibleSections.length ? (
@@ -1457,16 +1457,16 @@ function OutputPanel({
         type="button"
         onClick={onRegenerate}
         disabled={isPending}
-        className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 disabled:cursor-not-allowed disabled:text-muted"
+          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 disabled:cursor-not-allowed disabled:text-muted sm:mt-4 sm:min-h-11 sm:rounded"
       >
         <RefreshCcw size={17} />
         Regenerate current set
       </button>
-      <div className="mt-2 grid gap-2 sm:grid-cols-3">
+      <div className="mt-3 grid gap-2 sm:mt-2 sm:grid-cols-3">
         <button
           type="button"
           onClick={onCopyAll}
-          className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-violet/60"
+          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
         >
           <Copy size={16} />
           {copiedId === "all" ? "Copied" : "Copy all"}
@@ -1474,7 +1474,7 @@ function OutputPanel({
         <button
           type="button"
           onClick={onDownload}
-          className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-violet/60"
+          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
         >
           <FileText size={16} />
           Download .txt
@@ -1482,7 +1482,7 @@ function OutputPanel({
         <button
           type="button"
           onClick={onSaveCurrent}
-          className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
+          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded"
         >
           <Bookmark size={16} />
           Save all
@@ -1578,14 +1578,14 @@ function PlatformFormatterPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 w-full min-w-0 rounded-none border-y border-white/10 bg-panel/78 p-2 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-panel/82 p-4 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             Platform formatter
           </p>
-          <h2 className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
+          <h2 className="mt-2 font-display text-[1.7rem] uppercase leading-none tracking-normal text-bone sm:text-2xl">
             Format Platform Text
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
@@ -1593,12 +1593,12 @@ function PlatformFormatterPanel({
           </p>
         </div>
 
-        <div className="grid w-full grid-cols-2 overflow-hidden rounded border border-white/10 bg-white/[0.03] sm:w-48">
+        <div className="grid w-full grid-cols-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] sm:w-48 sm:rounded">
           <button
             type="button"
             onClick={() => setPreviewMode("desktop")}
             className={clsx(
-              "flex min-h-10 items-center justify-center gap-2 border-r border-white/10 px-3 text-xs font-semibold",
+              "flex min-h-11 items-center justify-center gap-2 border-r border-white/10 px-3 text-xs font-semibold sm:min-h-10",
               previewMode === "desktop"
                 ? "bg-gold/10 text-bone"
                 : "text-muted hover:text-bone"
@@ -1611,7 +1611,7 @@ function PlatformFormatterPanel({
             type="button"
             onClick={() => setPreviewMode("mobile")}
             className={clsx(
-              "flex min-h-10 items-center justify-center gap-2 px-3 text-xs font-semibold",
+              "flex min-h-11 items-center justify-center gap-2 px-3 text-xs font-semibold sm:min-h-10",
               previewMode === "mobile"
                 ? "bg-gold/10 text-bone"
                 : "text-muted hover:text-bone"
@@ -1632,7 +1632,7 @@ function PlatformFormatterPanel({
                 type="button"
                 onClick={() => applyPlatformTemplate(item.id)}
                 className={clsx(
-                  "min-h-10 shrink-0 rounded border px-3 text-sm font-semibold transition",
+                  "min-h-11 shrink-0 rounded-full border px-4 text-sm font-semibold transition sm:min-h-10 sm:rounded sm:px-3",
                   platform === item.id
                     ? "border-gold/70 bg-gold/10 text-bone"
                     : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/50"
@@ -1678,7 +1678,7 @@ function PlatformFormatterPanel({
             value={text}
             onChange={(event) => setText(event.target.value)}
             rows={12}
-            className="studio-scroll min-h-80 w-full resize-none rounded border border-line bg-ink/70 p-3 text-base leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:p-4"
+            className="studio-scroll min-h-80 w-full resize-none rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:p-4 sm:text-base"
             placeholder="Write or paste platform copy here."
           />
 
@@ -1689,7 +1689,7 @@ function PlatformFormatterPanel({
             <button
               type="button"
               onClick={() => setText("")}
-              className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-violet/60"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
             >
               <Eraser size={16} />
               Clear
@@ -1697,7 +1697,7 @@ function PlatformFormatterPanel({
             <button
               type="button"
               onClick={copyFormattedText}
-              className="flex min-h-11 items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep sm:rounded"
             >
               {copied ? <Check size={16} /> : <Copy size={16} />}
               {isPro ? (copied ? "Copied" : "Copy") : "Unlock"}
@@ -1707,7 +1707,7 @@ function PlatformFormatterPanel({
 
         <div
           className={clsx(
-            "min-w-0 rounded border border-white/10 bg-ink/70 p-2 sm:p-4",
+            "min-w-0 rounded-xl border border-white/10 bg-ink/90 p-3 sm:rounded sm:p-4",
             previewMode === "mobile" ? "mx-auto w-full max-w-none sm:max-w-sm" : "w-full"
           )}
         >
@@ -1787,21 +1787,21 @@ function OutputCard({
   const canGenerateImage = plan === "pro_studio";
 
   return (
-    <article className="w-full min-w-0 rounded border border-white/10 bg-white/[0.035] p-2 sm:p-4">
-      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <article className="w-full min-w-0 rounded-2xl border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:rounded sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
+      <div className="mb-4 flex flex-col gap-3 sm:mb-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-xs uppercase tracking-[0.18em] text-violet">
+          <p className="text-[0.72rem] uppercase tracking-[0.14em] text-violet sm:text-xs sm:tracking-[0.18em]">
             {section.platform}
           </p>
-          <h3 className="mt-1 text-lg font-semibold text-bone">{section.title}</h3>
-          <p className="mt-1 text-xs text-muted">{labelForContentType(section.type)}</p>
+          <h3 className="mt-2 text-xl font-semibold leading-6 text-bone sm:mt-1 sm:text-lg">{section.title}</h3>
+          <p className="mt-2 text-xs text-muted sm:mt-1">{labelForContentType(section.type)}</p>
         </div>
-        <div className="grid w-full gap-2 sm:flex sm:w-auto sm:shrink-0 sm:flex-wrap">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0 sm:flex-wrap">
           <button
             type="button"
             onClick={onGenerateImage}
             className={clsx(
-              "flex min-h-10 items-center justify-center gap-2 rounded border px-3 text-xs font-semibold transition",
+              "flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-semibold transition sm:min-h-10 sm:rounded",
               canGenerateImage
                 ? "border-gold/60 bg-gold/10 text-bone hover:border-gold"
                 : "border-white/10 bg-ink/70 text-muted hover:border-gold/60 hover:text-bone"
@@ -1813,7 +1813,7 @@ function OutputCard({
           <button
             type="button"
             onClick={onCopy}
-            className="flex min-h-10 items-center justify-center gap-2 rounded border border-white/10 bg-ink/70 px-3 text-xs font-semibold text-bone transition hover:border-violet/60"
+            className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-violet/60 sm:min-h-10 sm:rounded sm:bg-ink/70"
           >
             {copied ? <Check size={15} /> : <Copy size={15} />}
             {copied ? "Copied" : "Copy"}
@@ -1828,11 +1828,11 @@ function OutputCard({
       ) : null}
 
       {section.items.length ? (
-        <ul className="mt-4 grid gap-2">
+        <ul className="mt-4 grid gap-3 sm:gap-2">
           {section.items.map((item) => (
             <li
               key={item}
-              className="border-l-2 border-gold/70 bg-ink/42 py-2 pl-3 text-sm leading-6 text-muted"
+              className="rounded-lg border-l-2 border-gold/70 bg-white/[0.035] py-2.5 pl-3 pr-2 text-sm leading-6 text-muted sm:rounded-none sm:bg-ink/42 sm:py-2 sm:pr-0"
             >
               {item}
             </li>
@@ -1841,13 +1841,13 @@ function OutputCard({
       ) : null}
 
       {section.cta ? (
-        <div className="mt-4 rounded border border-violet/40 bg-violet/10 p-3 text-sm leading-6 text-bone">
+        <div className="mt-4 rounded-xl border border-violet/35 bg-violet/10 p-4 text-sm leading-6 text-bone sm:rounded sm:p-3">
           {section.cta}
         </div>
       ) : null}
 
       {image ? (
-        <div className="mt-4 rounded border border-gold/30 bg-ink/50 p-3">
+        <div className="mt-4 rounded-xl border border-gold/30 bg-ink/55 p-3 sm:rounded">
           <img
             src={image.image}
             alt={`Generated visual for ${section.title}`}
@@ -1860,7 +1860,7 @@ function OutputCard({
             <a
               href={image.image}
               download={`${section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "contentos-image"}.png`}
-              className="flex min-h-10 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+              className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60 sm:rounded"
             >
               <FileText size={14} />
               Download PNG
@@ -1869,7 +1869,7 @@ function OutputCard({
         </div>
       ) : null}
 
-      <div className="studio-scroll mt-4 flex gap-2 overflow-x-auto pb-1">
+      <div className="studio-scroll mt-5 flex gap-2 overflow-x-auto pb-1 sm:mt-4">
         {[
           "shorten",
           "expand",
@@ -1884,7 +1884,7 @@ function OutputCard({
             key={action}
             type="button"
             onClick={() => onCopyRefinement(action)}
-            className="min-h-9 shrink-0 rounded border border-white/10 bg-ink/70 px-3 text-xs font-semibold text-muted transition hover:border-violet/60 hover:text-bone"
+            className="min-h-10 shrink-0 rounded-full border border-white/10 bg-white/[0.035] px-3 text-xs font-semibold text-muted transition hover:border-violet/60 hover:text-bone sm:min-h-9 sm:rounded sm:bg-ink/70"
           >
             {action}
           </button>
@@ -2119,13 +2119,13 @@ function SavedLibraryPanel({
   });
 
   return (
-    <section className="scroll-mt-20 w-full min-w-0 rounded-none border-y border-white/10 bg-coal/86 p-2 backdrop-blur-xl sm:rounded sm:border sm:p-5">
+    <section className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-coal/88 p-4 backdrop-blur-xl sm:rounded sm:border sm:p-5">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             Saved library
           </p>
-          <h2 className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
+          <h2 className="mt-2 font-display text-[1.7rem] uppercase leading-none tracking-normal text-bone sm:text-2xl">
             Organized Outputs
           </h2>
           <p className="mt-2 max-w-none text-sm leading-6 text-muted sm:max-w-xl">
@@ -2136,7 +2136,7 @@ function SavedLibraryPanel({
           <button
             type="button"
             onClick={() => onPlanChange("pro_creator")}
-            className="flex min-h-11 items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep"
+            className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep sm:rounded"
           >
             <Lock size={16} />
             Unlock library
@@ -2145,7 +2145,7 @@ function SavedLibraryPanel({
       </div>
 
       {!isPro ? (
-        <div className="rounded border border-white/10 bg-white/[0.035] p-4 text-sm leading-6 text-muted">
+        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4 text-sm leading-6 text-muted sm:rounded">
           Saved history is part of Pro. Upgrade or use the workspace plan switch while testing locally.
         </div>
       ) : (
@@ -2182,7 +2182,7 @@ function SavedLibraryPanel({
               filtered.map((item) => (
                 <article
                   key={item.id}
-                  className="w-full min-w-0 rounded border border-white/10 bg-white/[0.035] p-2 sm:p-4"
+                  className="w-full min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.035] p-4 sm:rounded sm:border-white/10"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -2197,7 +2197,7 @@ function SavedLibraryPanel({
                       <button
                         type="button"
                         onClick={() => onCopy(item)}
-                        className="grid h-10 w-10 place-items-center rounded border border-white/10 bg-ink/70 text-bone transition hover:border-violet/60"
+                        className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-ink/70 text-bone transition hover:border-violet/60 sm:rounded"
                         aria-label="Copy saved content"
                       >
                         {copiedId === item.id ? <Check size={16} /> : <Copy size={16} />}
@@ -2205,7 +2205,7 @@ function SavedLibraryPanel({
                       <button
                         type="button"
                         onClick={() => onDelete(item.id)}
-                        className="grid h-10 w-10 place-items-center rounded border border-white/10 bg-ink/70 text-muted transition hover:border-gold/60 hover:text-bone"
+                        className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-ink/70 text-muted transition hover:border-gold/60 hover:text-bone sm:rounded"
                         aria-label="Delete saved content"
                       >
                         <Trash2 size={16} />
@@ -2215,7 +2215,7 @@ function SavedLibraryPanel({
                 </article>
               ))
             ) : (
-              <div className="rounded border border-white/10 bg-white/[0.03] p-4 text-sm text-muted">
+              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-muted sm:rounded">
                 No saved outputs match these filters yet.
               </div>
             )}
@@ -2415,13 +2415,13 @@ function BottomActionBar({
   onOpenHistory: () => void;
 }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink/92 px-3 py-3 backdrop-blur-xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink/94 px-4 pb-4 pt-3 shadow-[0_-18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-md grid-cols-4 gap-2">
         <button
           type="button"
           onClick={onGenerate}
           disabled={!canGenerate}
-          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded border border-violet/70 bg-violet text-[0.68rem] font-semibold text-white disabled:border-white/10 disabled:bg-white/10 disabled:text-muted"
+          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-violet/70 bg-violet text-[0.7rem] font-semibold text-white shadow-violet disabled:border-white/10 disabled:bg-white/10 disabled:text-muted"
         >
           {isPending ? <Loader2 className="animate-spin" size={17} /> : <Sparkles size={17} />}
           Generate
@@ -2429,7 +2429,7 @@ function BottomActionBar({
         <button
           type="button"
           onClick={onSave}
-          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded border border-white/10 bg-white/[0.04] text-[0.68rem] font-semibold text-bone"
+          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/[0.025] text-[0.7rem] font-semibold text-bone"
         >
           {saved ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
           Save
@@ -2437,7 +2437,7 @@ function BottomActionBar({
         <button
           type="button"
           onClick={onSaveDraft}
-          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded border border-white/10 bg-white/[0.04] text-[0.68rem] font-semibold text-bone"
+          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/[0.025] text-[0.7rem] font-semibold text-bone"
         >
           <Clipboard size={17} />
           Draft
@@ -2445,7 +2445,7 @@ function BottomActionBar({
         <button
           type="button"
           onClick={onOpenHistory}
-          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded border border-white/10 bg-white/[0.04] text-[0.68rem] font-semibold text-bone"
+          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/[0.025] text-[0.7rem] font-semibold text-bone"
         >
           <History size={17} />
           History
