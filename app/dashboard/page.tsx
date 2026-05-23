@@ -103,8 +103,15 @@ export default async function DashboardPage() {
 
       console.log("Dashboard fetched Stripe subscription state", {
         userId: user.id,
+        dbPlan: profile.plan,
+        dbStatus: profile.subscription_status,
+        dbStripeCustomerId: profile.stripe_customer_id,
+        stripeCustomerIdMatches:
+          Boolean(profile.stripe_customer_id && subscriptionState.stripeCustomerId) &&
+          profile.stripe_customer_id === subscriptionState.stripeCustomerId,
         plan: subscriptionState.plan,
         status: subscriptionState.status,
+        cancelAtPeriodEnd: subscriptionState.cancelAtPeriodEnd,
         stripeCustomerId: subscriptionState.stripeCustomerId,
         stripeSubscriptionId: subscriptionState.stripeSubscriptionId,
         currentPeriodEnd: subscriptionState.currentPeriodEnd
@@ -204,8 +211,10 @@ export default async function DashboardPage() {
 
   console.log("Dashboard normalized subscription state", {
     userId: user.id,
+    dbSubscriptionValue: profile?.subscription_status,
     plan,
     status,
+    cancelAtPeriodEnd: profile?.subscription_cancel_at_period_end,
     hasActiveSubscription,
     canUpgradeToCreator,
     canUpgradeToStudio,

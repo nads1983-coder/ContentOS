@@ -19,6 +19,7 @@ type StripeWebhookEvent = {
       canceled_at?: number | null;
       customer_email?: string;
       client_reference_id?: string;
+      email?: string;
       metadata?: Record<string, string>;
       items?: {
         data: Array<{
@@ -56,6 +57,8 @@ export async function POST(request: Request) {
       email: object.customer_email,
       plan: state.plan,
       status: state.status,
+      rawStatus: object.status,
+      cancelAtPeriodEnd: state.cancelAtPeriodEnd,
       stripeCustomerId: state.stripeCustomerId,
       stripeSubscriptionId: state.stripeSubscriptionId,
       currentPeriodEnd: state.currentPeriodEnd
@@ -99,6 +102,8 @@ export async function POST(request: Request) {
       rawStatus: object.status,
       plan: state.plan,
       status: state.status,
+      cancelAtPeriodEnd: state.cancelAtPeriodEnd,
+      rawCancelAtPeriodEnd: object.cancel_at_period_end,
       stripeCustomerId: state.stripeCustomerId,
       stripeSubscriptionId: state.stripeSubscriptionId,
       currentPeriodEnd: state.currentPeriodEnd
@@ -107,6 +112,31 @@ export async function POST(request: Request) {
     await updateSubscriptionStatus({
       userId: object.metadata?.user_id,
       email: object.customer_email,
+      ...state
+    });
+  }
+
+  if (event.type === "invoice.paid") {
+    const state = await getStripeSubscriptionState({
+      stripeCustomerId: object.customer,
+      stripeSubscriptionId: object.subscription,
+      email: object.customer_email ?? object.email
+    });
+
+    console.log("Stripe invoice paid subscription sync", {
+      userId: object.metadata?.user_id,
+      email: object.customer_email ?? object.email,
+      plan: state.plan,
+      status: state.status,
+      cancelAtPeriodEnd: state.cancelAtPeriodEnd,
+      stripeCustomerId: state.stripeCustomerId,
+      stripeSubscriptionId: state.stripeSubscriptionId,
+      currentPeriodEnd: state.currentPeriodEnd
+    });
+
+    await updateSubscriptionStatus({
+      userId: object.metadata?.user_id,
+      email: object.customer_email ?? object.email,
       ...state
     });
   }

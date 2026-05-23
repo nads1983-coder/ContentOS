@@ -314,6 +314,15 @@ export async function updateSubscriptionStatus(input: {
       if (rows.length) {
         return rows;
       }
+
+      console.warn("Subscription sync query matched no Supabase profiles", {
+        query,
+        plan: corePayload.plan,
+        status: corePayload.subscription_status,
+        stripeCustomerId: corePayload.stripe_customer_id,
+        stripeSubscriptionId: corePayload.stripe_subscription_id,
+        currentPeriodEnd: fullPayload.subscription_current_period_end
+      });
     } catch (error) {
       lastError = error;
 
@@ -331,6 +340,14 @@ export async function updateSubscriptionStatus(input: {
           );
           return rows;
         }
+
+        console.warn("Subscription core sync query matched no Supabase profiles", {
+          query,
+          plan: corePayload.plan,
+          status: corePayload.subscription_status,
+          stripeCustomerId: corePayload.stripe_customer_id,
+          stripeSubscriptionId: corePayload.stripe_subscription_id
+        });
       } catch (coreError) {
         lastError = coreError;
       }

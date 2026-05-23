@@ -195,8 +195,25 @@ function hasActiveEntitlement(status: SubscriptionStatus) {
   return status === "active" || status === "trialing";
 }
 
-function subscriptionRank(subscription: StripeSubscription) {
+function hasFuturePeriodEnd(timestamp?: number | null) {
+  return Boolean(timestamp && timestamp * 1000 > Date.now());
+}
+
+function effectiveSubscriptionStatus(subscription: StripeSubscription): SubscriptionStatus {
   const status = normalizeSubscriptionStatus(subscription.status);
+
+  if (
+    status === "canceled" &&
+    hasFuturePeriodEnd(subscription.current_period_end)
+  ) {
+    return "active";
+  }
+
+  return status;
+}
+
+function subscriptionRank(subscription: StripeSubscription) {
+  const status = effectiveSubscriptionStatus(subscription);
 
   if (hasActiveEntitlement(status)) {
     return 3;
@@ -221,7 +238,7 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
     };
   }
 
-  const status = normalizeSubscriptionStatus(subscription.status);
+  const status = effectiveSubscriptionStatus(subscription);
   const plan = hasActiveEntitlement(status) || status === "past_due"
     ? planFromSubscription(subscription)
     : "free";
@@ -360,6 +377,33 @@ export async function getStripeSubscriptionState(input: {
   if (customerId) {
     const customerSubscriptions = await listStripeCustomerSubscriptions(customerId);
     subscriptions.push(...customerSubscriptions.data);
+  }
+
+  const bestKnownSubscription = subscriptions
+    .filter((subscription, index, all) =>
+      all.findIndex((item) => item.id === subscription.id) === index
+    )
+    .sort((a, b) => {
+      const rank = subscriptionRank(b) - subscriptionRank(a);
+
+      if (rank !== 0) {
+        return rank;
+      }
+
+      return (b.current_period_end ?? 0) - (a.current_period_end ?? 0);
+    })[0];
+
+  if (
+    input.email &&
+    subscriptionRank(bestKnownSubscription) < 3
+  ) {
+    const customer = await findStripeCustomerByEmail(input.email);
+
+    if (customer?.id && customer.id !== customerId) {
+      const customerSubscriptions = await listStripeCustomerSubscriptions(customer.id);
+      subscriptions.push(...customerSubscriptions.data);
+      customerId = customer.id;
+    }
   }
 
   const bestSubscription = subscriptions
