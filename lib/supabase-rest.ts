@@ -11,6 +11,22 @@ import {
 
 type QueryValue = string | number | boolean | null | Array<string | number | boolean>;
 
+class SupabaseRequestError extends Error {
+  status: number;
+  details: string;
+
+  constructor(status: number, details: string) {
+    super(`Supabase request failed: ${status}`);
+    this.name = "SupabaseRequestError";
+    this.status = status;
+    this.details = details;
+  }
+}
+
+function isSupabaseConflict(error: unknown) {
+  return error instanceof SupabaseRequestError && error.status === 409;
+}
+
 function restUrl(path: string, query?: Record<string, QueryValue>) {
   const env = getEnv();
   const url = new URL(`/rest/v1/${path}`, env.supabaseUrl);
@@ -52,7 +68,7 @@ async function supabaseFetch<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`Supabase request failed: ${response.status}`);
+    throw new SupabaseRequestError(response.status, await response.text());
   }
 
   if (response.status === 204) {
@@ -97,10 +113,10 @@ async function supabaseCount(
 
 async function ensureUserProfile(userId: string, email?: string) {
   if (!email) {
-    return;
+    return getUserProfile(userId);
   }
 
-  await upsertUserProfile({ id: userId, email });
+  return upsertUserProfile({ id: userId, email });
 }
 
 export async function getUserProfile(userId: string) {
@@ -114,19 +130,84 @@ export async function getUserProfile(userId: string) {
   return profiles[0] ?? null;
 }
 
-export async function upsertUserProfile(profile: Partial<UserProfile> & { id: string; email: string }) {
-  const [saved] = await supabaseFetch<UserProfile[]>("profiles", {
-    method: "POST",
-    headers: {
-      Prefer: "resolution=merge-duplicates,return=representation"
-    },
-    body: JSON.stringify({
-      ...profile,
-      updated_at: new Date().toISOString()
-    })
+export async function getUserProfileByEmail(email: string) {
+  const profiles = await supabaseFetch<UserProfile[]>("profiles", {
+    query: {
+      email: `eq.${email}`,
+      select: "*"
+    }
   });
 
-  return saved;
+  return profiles[0] ?? null;
+}
+
+export async function getUserProfileForUser(userId: string, email?: string) {
+  const profile = await getUserProfile(userId);
+
+  if (profile || !email) {
+    return profile;
+  }
+
+  // Some legacy/test accounts can have the same email attached to an older
+  // profile id. Billing entitlement should follow the stable email record.
+  return getUserProfileByEmail(email);
+}
+
+export async function upsertUserProfile(profile: Partial<UserProfile> & { id: string; email: string }) {
+  const payload = {
+    ...profile,
+    updated_at: new Date().toISOString()
+  };
+
+  try {
+    const [saved] = await supabaseFetch<UserProfile[]>("profiles", {
+      method: "POST",
+      query: {
+        on_conflict: "id"
+      },
+      headers: {
+        Prefer: "resolution=merge-duplicates,return=representation"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    return saved;
+  } catch (error) {
+    if (!isSupabaseConflict(error)) {
+      throw error;
+    }
+
+    console.warn("Profile upsert hit an existing email record. Reusing profile by email.", {
+      id: profile.id,
+      email: profile.email
+    });
+
+    const existingByEmail = await supabaseFetch<UserProfile[]>("profiles", {
+      query: {
+        email: `eq.${profile.email}`,
+        select: "*"
+      }
+    });
+    const existing = existingByEmail[0];
+
+    if (!existing) {
+      throw error;
+    }
+
+    const [saved] = await supabaseFetch<UserProfile[]>("profiles", {
+      method: "PATCH",
+      query: {
+        email: `eq.${profile.email}`
+      },
+      body: JSON.stringify({
+        email: profile.email,
+        full_name: profile.full_name ?? existing.full_name,
+        updated_at: new Date().toISOString()
+      })
+    });
+
+    return saved ?? existing;
+  }
 }
 
 export async function listBrandProfiles(userId: string) {
@@ -169,6 +250,9 @@ export async function deleteBrandProfile(userId: string, id: string) {
 export async function saveOnboarding(userId: string, data: OnboardingData) {
   const [saved] = await supabaseFetch<Array<{ id: string }>>("onboarding", {
     method: "POST",
+    query: {
+      on_conflict: "user_id"
+    },
     headers: {
       Prefer: "resolution=merge-duplicates,return=representation"
     },
@@ -204,12 +288,13 @@ export async function recordUsageEvent(input: {
   eventType: "text_generation" | "image_generation";
   metadata?: Record<string, unknown>;
 }) {
-  await ensureUserProfile(input.userId, input.email);
+  const profile = await ensureUserProfile(input.userId, input.email);
+  const userId = profile?.id ?? input.userId;
 
   return supabaseFetch<Array<{ id: string }>>("usage_events", {
     method: "POST",
     body: JSON.stringify({
-      user_id: input.userId,
+      user_id: userId,
       event_type: input.eventType,
       metadata: {
         email: input.email,
@@ -355,6 +440,18 @@ export async function updateSubscriptionStatus(input: {
   }
 
   if (lastError) {
+    if (isSupabaseConflict(lastError)) {
+      console.warn("Subscription sync skipped because Supabase reported a duplicate billing/profile conflict.", {
+        plan: input.plan,
+        status: input.status,
+        stripeCustomerId: input.stripeCustomerId,
+        stripeSubscriptionId: input.stripeSubscriptionId,
+        email: input.email,
+        userId: input.userId
+      });
+      return [];
+    }
+
     throw lastError;
   }
 

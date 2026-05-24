@@ -15,14 +15,14 @@ import {
   stripeSubscriptionToState
 } from "@/lib/stripe-rest";
 import {
-  getUserProfile,
+  getUserProfileForUser,
   getMonthlyUsageCount,
   listBrandProfiles,
   syncUserSubscriptionState,
   upsertUserProfile
 } from "@/lib/supabase-rest";
 import { buildUsageSummary } from "@/lib/usage";
-import { PlanId } from "@/types/saas";
+import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +52,18 @@ function formatDate(value?: string | null) {
   }).format(new Date(value));
 }
 
+function fallbackProfileForUser(user: { id: string; email: string }): UserProfile {
+  return {
+    id: user.id,
+    email: user.email,
+    plan: "free",
+    subscription_status: "none",
+    subscription_current_period_end: null,
+    subscription_cancel_at_period_end: false,
+    subscription_canceled_at: null
+  };
+}
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
 
@@ -79,10 +91,23 @@ export default async function DashboardPage() {
     );
   }
 
-  let profile = isSupabaseAdminConfigured() ? await getUserProfile(user.id) : null;
+  let profile: UserProfile | null = null;
 
-  if (!profile && isSupabaseAdminConfigured()) {
-    profile = await upsertUserProfile({ id: user.id, email: user.email });
+  if (isSupabaseAdminConfigured()) {
+    try {
+      profile = await getUserProfileForUser(user.id, user.email);
+
+      if (!profile) {
+        profile = await upsertUserProfile({ id: user.id, email: user.email });
+      }
+    } catch (error) {
+      console.warn("Dashboard profile fetch/upsert failed. Rendering fallback billing state.", {
+        userId: user.id,
+        authenticatedEmail: user.email,
+        error
+      });
+      profile = fallbackProfileForUser(user);
+    }
   }
 
   console.log("Dashboard fetched Supabase subscription state", {
@@ -121,7 +146,7 @@ export default async function DashboardPage() {
       });
 
       profile = await syncUserSubscriptionState({
-        userId: user.id,
+        userId: profile.id,
         email: user.email,
         ...subscriptionState
       }) ?? {
@@ -164,7 +189,7 @@ export default async function DashboardPage() {
 
       if (subscriptionState.currentPeriodEnd) {
         profile = await syncUserSubscriptionState({
-          userId: user.id,
+          userId: profile.id,
           email: user.email,
           plan: normalizePlanId(profile.plan),
           status: normalizedStoredStatus,
@@ -188,7 +213,20 @@ export default async function DashboardPage() {
     }
   }
 
-  const brandProfiles = isSupabaseAdminConfigured() ? await listBrandProfiles(user.id) : [];
+  const profileUserId = profile?.id ?? user.id;
+  let brandProfiles: BrandProfile[] = [];
+
+  if (isSupabaseAdminConfigured()) {
+    try {
+      brandProfiles = await listBrandProfiles(profileUserId);
+    } catch (error) {
+      console.warn("Dashboard brand profile fetch failed", {
+        userId: profileUserId,
+        authenticatedUserId: user.id,
+        error
+      });
+    }
+  }
   const plan = normalizePlanId(profile?.plan);
   const status = normalizeSubscriptionStatus(profile?.subscription_status);
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
@@ -199,7 +237,7 @@ export default async function DashboardPage() {
   if (isSupabaseAdminConfigured()) {
     try {
       monthlyUsageCount = await getMonthlyUsageCount({
-        userId: user.id,
+        userId: profileUserId,
         periodEnd: profile?.subscription_current_period_end
       });
     } catch (error) {

@@ -8,7 +8,7 @@ import {
   planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
-import { getUserProfile, recordUsageEvent, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { getUserProfileForUser, recordUsageEvent, syncUserSubscriptionState } from "@/lib/supabase-rest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const profile = await getUserProfile(user.id);
+  const profile = await getUserProfileForUser(user.id, user.email);
 
   if (!profile) {
     return NextResponse.json(
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
 
       if (subscriptionState.stripeSubscriptionId || subscriptionState.stripeCustomerId) {
         await syncUserSubscriptionState({
-          userId: user.id,
+          userId: profile.id,
           email: user.email,
           ...subscriptionState
         });

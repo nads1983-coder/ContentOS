@@ -10,8 +10,8 @@ import {
   planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
-import { getUserProfile, syncUserSubscriptionState } from "@/lib/supabase-rest";
-import { PlanId } from "@/types/saas";
+import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { PlanId, UserProfile } from "@/types/saas";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +34,17 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
     return { plan: "free", authenticated: Boolean(user) };
   }
 
-  const profile = await getUserProfile(user.id);
+  let profile: UserProfile | null = null;
+
+  try {
+    profile = await getUserProfileForUser(user.id, user.email);
+  } catch (error) {
+    console.warn("Studio profile fetch failed", {
+      userId: user.id,
+      authenticatedEmail: user.email,
+      error
+    });
+  }
 
   if (!profile) {
     return { plan: "free", authenticated: true };
@@ -49,7 +59,7 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
       }), profile.plan);
 
       const synced = await syncUserSubscriptionState({
-        userId: user.id,
+        userId: profile.id,
         email: user.email,
         ...subscriptionState
       });

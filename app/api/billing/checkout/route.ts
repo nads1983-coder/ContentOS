@@ -9,7 +9,7 @@ import {
   hasActiveUnknownPaidSubscription,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
-import { getUserProfile, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/supabase-rest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
 
   try {
     const profile = user && isSupabaseAdminConfigured()
-      ? await getUserProfile(user.id)
+      ? await getUserProfileForUser(user.id, user.email)
       : null;
     const rawSubscriptionState = await getStripeSubscriptionState({
       stripeCustomerId: profile?.stripe_customer_id,
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
 
     if (user && isSupabaseAdminConfigured()) {
       await syncUserSubscriptionState({
-        userId: user.id,
+        userId: profile?.id ?? user.id,
         email: user.email,
         ...subscriptionState
       });
