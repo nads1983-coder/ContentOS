@@ -1,4 +1,5 @@
 import { CheckoutButton } from "@/components/billing-buttons";
+import { FoundingOffer } from "@/components/founding-offer";
 import { pageMetadata } from "@/lib/metadata";
 import { planCoversPlan } from "@/lib/plan-utils";
 import { pricingPlans } from "@/lib/pricing";
@@ -16,6 +17,10 @@ export default async function PricingPage() {
 
   return (
     <PublicPage title="Simple pricing for creators and teams">
+      <FoundingOffer
+        isLoggedIn={billingState.isLoggedIn}
+        currentPlan={billingState.plan}
+      />
       <section className="grid gap-4 md:grid-cols-3">
         {plans.map((plan) => (
           <div

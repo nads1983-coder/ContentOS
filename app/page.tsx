@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
+import { FoundingOffer } from "@/components/founding-offer";
 import { LogoutButton } from "@/components/logout-button";
 import { pageMetadata } from "@/lib/metadata";
 import { planCoversPlan } from "@/lib/plan-utils";
@@ -257,6 +258,11 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        <FoundingOffer
+          isLoggedIn={billingState.isLoggedIn}
+          currentPlan={billingState.plan}
+        />
 
         <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl">
