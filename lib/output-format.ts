@@ -1,4 +1,5 @@
 import { normaliseCopyText } from "./copy";
+import { normalizePlainText, normalizePlainTextLines } from "./text-normalize";
 import type { ContentTypeId, GeneratedSection } from "../types/content";
 
 export type OutputBlockKind =
@@ -36,7 +37,7 @@ function cleanDisplayText(value: unknown) {
 }
 
 function splitParagraphs(value: string) {
-  return value
+  return normalizePlainText(value)
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
@@ -47,7 +48,7 @@ function cleanLine(value: string) {
 }
 
 function splitLines(value: string) {
-  return value
+  return normalizePlainText(value)
     .split(/\n+/)
     .map(cleanLine)
     .filter(Boolean);
@@ -67,21 +68,19 @@ function extractHashtags(values: string[]) {
 }
 
 function removeHashtagOnlyLines(value: string) {
-  return value
+  return normalizePlainText(value)
     .split("\n")
     .filter((line) => !isHashtagLine(line))
     .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+    .replace(/\n{3,}/g, "\n\n");
 }
 
 function removeHashtagTokens(value: string) {
-  return value
+  return normalizePlainText(value)
     .replace(hashtagPattern, "")
     .replace(/[ \t]{2,}/g, " ")
     .replace(/\s+([.,!?])/g, "$1")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+    .replace(/\n{3,}/g, "\n\n");
 }
 
 function stripLeadingLabel(value: string) {
@@ -163,7 +162,7 @@ function baseCta(section: GeneratedSection) {
 }
 
 function makeBlock(kind: OutputBlockKind, label: string, lines: string[]): OutputBlock | null {
-  const cleanedLines = lines.map((line) => line.trim()).filter(Boolean);
+  const cleanedLines = normalizePlainTextLines(lines);
 
   if (!cleanedLines.length) {
     return null;

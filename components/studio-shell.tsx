@@ -44,6 +44,7 @@ import {
   copyPlainText
 } from "@/lib/copy";
 import { formatOutputSection, OutputBlock } from "@/lib/output-format";
+import { normalizePlainText } from "@/lib/text-normalize";
 import {
   ctaModes,
   contentTypes,
@@ -206,7 +207,7 @@ function isPaidContentType(id: ContentTypeId) {
 }
 
 function buildGenerationText(result: GenerationResult) {
-  return result.sections
+  return normalizePlainText(result.sections
     .map((section) =>
       [
         section.title,
@@ -217,7 +218,7 @@ function buildGenerationText(result: GenerationResult) {
         .filter(Boolean)
         .join("\n\n")
     )
-    .join("\n\n---\n\n");
+    .join("\n\n---\n\n"));
 }
 
 function refineText(text: string, action: string) {
@@ -708,14 +709,14 @@ export function StudioShell({
     setImagePending(true);
     setImageError("");
 
-    const outputText = [
+    const outputText = normalizePlainText([
       section.title,
       section.body,
       ...section.items.map((item) => `- ${item}`),
       section.cta ? `CTA: ${section.cta}` : ""
     ]
       .filter(Boolean)
-      .join("\n\n");
+      .join("\n\n"));
 
     try {
       const response = await fetch("/api/generate-image", {

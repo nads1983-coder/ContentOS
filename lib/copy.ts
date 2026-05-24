@@ -1,3 +1,5 @@
+import { normalizePlainText } from "./text-normalize";
+
 type CopyOptions = {
   allowImagePrompt?: boolean;
 };
@@ -59,20 +61,14 @@ function isLikelyTextKey(key: string, options: CopyOptions) {
 }
 
 function cleanTextSegment(value: string) {
-  const cleaned = value
-    .replace(/\\r\\n|\\n|\\r/g, "\n")
-    .replace(/\r\n?/g, "\n")
+  const cleaned = normalizePlainText(
+    value
     .replace(/\[object Object\]/g, "")
     .replace(/\bblob:[^\s]+/gi, "")
     .replace(/\bdata:image\/[^\s]+/gi, "")
     .replace(/\b\/_next\/[^\s]+/g, "")
     .replace(/\b\/api\/[^\s]+/g, "")
-    .split("\n")
-    .map((line) => line.trimEnd())
-    .join("\n")
-    .replace(/[ \t]{3,}/g, "  ")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  );
 
   if (/^(blob:|data:image\/|https?:\/\/[^/\s]*(?:\/_next\/|\/api\/)|\/_next\/|\/api\/)/i.test(cleaned)) {
     return "";
@@ -173,6 +169,10 @@ export function buildSectionCopyText(section: unknown, options: CopyOptions = {}
     return normaliseCopyText(section, options);
   }
 
+  const itemsText = Array.isArray(section.items)
+    ? section.items.map((item) => typeof item === "string" ? cleanTextSegment(item) : "").filter(Boolean).join("\n")
+    : tryNormaliseCopyText(section.items, options);
+
   const parts = [
     tryNormaliseCopyText(
       {
@@ -188,7 +188,7 @@ export function buildSectionCopyText(section: unknown, options: CopyOptions = {}
       },
       options
     ),
-    tryNormaliseCopyText(section.items, options),
+    itemsText,
     tryNormaliseCopyText(section.cta, options)
   ].filter(Boolean);
 
