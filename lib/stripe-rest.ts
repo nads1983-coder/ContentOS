@@ -498,15 +498,16 @@ export async function createCheckoutSession(input: {
     throw new Error("Stripe price ID is not configured.");
   }
 
-  const body = new URLSearchParams({
+  const body = new URLSearchParams(Object.entries({
     mode: "subscription",
     success_url: stripeRedirectUrl("/success?session_id={CHECKOUT_SESSION_ID}"),
     cancel_url: stripeRedirectUrl("/cancel"),
+    allow_promotion_codes: true,
     "line_items[0][price]": price,
     "line_items[0][quantity]": "1",
     "metadata[plan]": input.plan,
     "subscription_data[metadata][plan]": input.plan
-  });
+  }).map(([key, value]) => [key, String(value)]));
 
   if (input.userId) {
     body.set("client_reference_id", input.userId);
