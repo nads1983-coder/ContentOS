@@ -6,6 +6,7 @@ export type MarketingPlan = {
   schemaPrice?: string;
   body: string;
   socialProof?: string;
+  offerNote?: string;
   badge?: string;
   items: string[];
   cta: string;
@@ -29,6 +30,7 @@ export const pricingPlans: MarketingPlan[] = [
     billingPlan: "pro_creator",
     body: "AI social content generation for creators, founders and consultants.",
     socialProof: "Trusted by creators building consistently online.",
+    offerNote: "Founding100 offer available for the first 100 Creator users. Enter FOUNDING100 at checkout.",
     badge: "Most Popular",
     items: [
       "Unlimited generations",

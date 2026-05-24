@@ -38,6 +38,11 @@ export default async function PricingPage() {
                 {plan.socialProof}
               </p>
             ) : null}
+            {plan.offerNote ? (
+              <p className="mt-3 rounded border border-gold/35 bg-gold/[0.08] p-3 text-xs font-medium leading-5 text-goldSoft">
+                {plan.offerNote}
+              </p>
+            ) : null}
             <ul className="mt-4 grid gap-2 text-sm">
               {plan.items.map((item) => (
                 <li key={item} className="flex gap-2">

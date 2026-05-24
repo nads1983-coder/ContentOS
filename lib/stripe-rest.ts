@@ -524,6 +524,46 @@ export async function createCheckoutSession(input: {
   return stripeRequest<{ id: string; url: string }>("checkout/sessions", body);
 }
 
+export type StripeCheckoutSession = {
+  id: string;
+  metadata?: Record<string, string>;
+  discounts?: Array<{
+    promotion_code?: string | {
+      id?: string;
+      code?: string;
+    } | null;
+  }>;
+  line_items?: {
+    data: Array<{
+      price?: StripePrice;
+    }>;
+  };
+  total_details?: {
+    breakdown?: {
+      discounts?: Array<{
+        discount?: {
+          promotion_code?: string | {
+            id?: string;
+            code?: string;
+          } | null;
+        };
+      }>;
+    };
+  };
+};
+
+export async function retrieveCheckoutSession(sessionId: string) {
+  const query = new URLSearchParams();
+  query.append("expand[]", "line_items.data.price");
+  query.append("expand[]", "discounts.promotion_code");
+  query.append("expand[]", "total_details.breakdown.discounts.discount.promotion_code");
+
+  return stripeGet<StripeCheckoutSession>(
+    `checkout/sessions/${encodeURIComponent(sessionId)}`,
+    query
+  );
+}
+
 export async function createCustomerPortalSession(input: {
   customerId: string;
 }) {
