@@ -1,4 +1,4 @@
-import { normalizePlainText } from "./text-normalize";
+import { cleanPlainText } from "./text-normalize";
 
 type CopyOptions = {
   allowImagePrompt?: boolean;
@@ -61,7 +61,7 @@ function isLikelyTextKey(key: string, options: CopyOptions) {
 }
 
 function cleanTextSegment(value: string) {
-  const cleaned = normalizePlainText(
+  const cleaned = cleanPlainText(
     value
     .replace(/\[object Object\]/g, "")
     .replace(/\bblob:[^\s]+/gi, "")

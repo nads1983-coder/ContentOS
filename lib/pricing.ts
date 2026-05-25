@@ -33,7 +33,7 @@ export const pricingPlans: MarketingPlan[] = [
     offerNote: "Founding100 offer available for the first 100 Creator users. Enter FOUNDING100 at checkout.",
     badge: "Most Popular",
     items: [
-      "Unlimited generations",
+      "100 generations/month",
       "Multi-platform outputs",
       "Repurposing packs",
       "Carousel and video scripts",
@@ -53,9 +53,9 @@ export const pricingPlans: MarketingPlan[] = [
     body: "Advanced AI social content workspace for agencies, teams and high-volume creators.",
     socialProof: "Built for serious creators, consultants and growing brands.",
     items: [
+      "500 generations/month",
       "Multiple brand profiles",
       "Workspace organization",
-      "Higher usage limits",
       "Advanced workflows",
       "AI image generation",
       "Downloadable PNG visuals",

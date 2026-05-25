@@ -10,8 +10,9 @@ import {
   planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
-import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/supabase-rest";
-import { PlanId, UserProfile } from "@/types/saas";
+import { getMonthlyUsageCount, getUserProfileForUser, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { buildUsageSummary } from "@/lib/usage";
+import type { PlanId, UsageSummary, UserProfile } from "@/types/saas";
 
 export const dynamic = "force-dynamic";
 
@@ -27,11 +28,32 @@ export const metadata: Metadata = {
   }
 };
 
-async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: boolean }> {
+async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promise<UsageSummary> {
+  if (!profile || !isSupabaseAdminConfigured()) {
+    return buildUsageSummary(plan, 0);
+  }
+
+  try {
+    const used = await getMonthlyUsageCount({
+      userId: profile.id,
+      periodEnd: profile.subscription_current_period_end
+    });
+
+    return buildUsageSummary(plan, used, profile.subscription_current_period_end);
+  } catch (error) {
+    console.warn("Studio usage fetch failed", {
+      userId: profile.id,
+      error
+    });
+    return buildUsageSummary(plan, 0, profile.subscription_current_period_end);
+  }
+}
+
+async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: boolean; usage: UsageSummary }> {
   const user = await getCurrentUser();
 
   if (!user || !isSupabaseAdminConfigured()) {
-    return { plan: "free", authenticated: Boolean(user) };
+    return { plan: "free", authenticated: Boolean(user), usage: buildUsageSummary("free", 0) };
   }
 
   let profile: UserProfile | null = null;
@@ -47,7 +69,7 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
   }
 
   if (!profile) {
-    return { plan: "free", authenticated: true };
+    return { plan: "free", authenticated: true, usage: buildUsageSummary("free", 0) };
   }
 
   if (isStripeConfigured()) {
@@ -69,7 +91,11 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
       );
 
       if (planHasActiveEntitlement(syncedPlan, syncedStatus)) {
-        return { plan: syncedPlan, authenticated: true };
+        return {
+          plan: syncedPlan,
+          authenticated: true,
+          usage: await usageForProfile(synced ?? profile, syncedPlan)
+        };
       }
     } catch {
       // Use stored Supabase state if Stripe is temporarily unavailable.
@@ -80,12 +106,19 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
   const status = normalizeSubscriptionStatus(profile.subscription_status);
   return {
     plan: planHasActiveEntitlement(plan, status) ? plan : "free",
-    authenticated: true
+    authenticated: true,
+    usage: await usageForProfile(profile, planHasActiveEntitlement(plan, status) ? plan : "free")
   };
 }
 
 export default async function StudioPage() {
   const initialState = await getInitialStudioState();
 
-  return <StudioShell initialPlan={initialState.plan} authenticated={initialState.authenticated} />;
+  return (
+    <StudioShell
+      initialPlan={initialState.plan}
+      authenticated={initialState.authenticated}
+      initialUsage={initialState.usage}
+    />
+  );
 }

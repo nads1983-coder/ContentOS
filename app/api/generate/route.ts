@@ -6,7 +6,7 @@ import { isSupabaseAdminConfigured } from "@/lib/env";
 import { captureServerError } from "@/lib/monitoring";
 import { buildInput, buildInstructions, requestedTypeSet } from "@/lib/prompts";
 import { recordGeneration, recordUsageEvent } from "@/lib/supabase-rest";
-import { normalizePlainText } from "@/lib/text-normalize";
+import { cleanPlainText } from "@/lib/text-normalize";
 import {
   CtaModeId,
   ContentTypeId,
@@ -106,7 +106,7 @@ function normalizeRequest(body: unknown): GenerateRequest {
 }
 
 function sanitizeGeneratedText(value: string) {
-  return normalizePlainText(value)
+  return cleanPlainText(value)
     .replace(/[—–]/g, ", ")
     .replace(/--+/g, ", ")
     .replace(/[ \t]{2,}/g, " ")

@@ -1,26 +1,21 @@
-import { UsageSummary, PlanId } from "@/types/saas";
+import type { UsageSummary, PlanId } from "@/types/saas";
 
 const defaultPlanLimits: Record<PlanId, number> = {
   free: 3,
-  pro_creator: 1000,
-  pro_studio: 5000
+  pro_creator: 100,
+  pro_studio: 500
 };
-
-function configuredLimit(envName: string, fallback: number) {
-  const value = Number.parseInt(process.env[envName] ?? "", 10);
-  return Number.isFinite(value) && value > 0 ? value : fallback;
-}
 
 export function monthlyLimitForPlan(plan: PlanId) {
   if (plan === "pro_studio") {
-    return configuredLimit("PRO_STUDIO_MONTHLY_GENERATION_LIMIT", defaultPlanLimits.pro_studio);
+    return defaultPlanLimits.pro_studio;
   }
 
   if (plan === "pro_creator") {
-    return configuredLimit("PRO_CREATOR_MONTHLY_GENERATION_LIMIT", defaultPlanLimits.pro_creator);
+    return defaultPlanLimits.pro_creator;
   }
 
-  return configuredLimit("FREE_MONTHLY_GENERATION_LIMIT", defaultPlanLimits.free);
+  return defaultPlanLimits.free;
 }
 
 function addMonths(value: Date, months: number) {

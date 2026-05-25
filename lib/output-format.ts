@@ -1,5 +1,5 @@
 import { normaliseCopyText } from "./copy";
-import { normalizePlainText, normalizePlainTextLines } from "./text-normalize";
+import { cleanPlainText, normalizePlainTextLines } from "./text-normalize";
 import type { ContentTypeId, GeneratedSection } from "../types/content";
 
 export type OutputBlockKind =
@@ -37,7 +37,7 @@ function cleanDisplayText(value: unknown) {
 }
 
 function splitParagraphs(value: string) {
-  return normalizePlainText(value)
+  return cleanPlainText(value)
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
@@ -48,7 +48,7 @@ function cleanLine(value: string) {
 }
 
 function splitLines(value: string) {
-  return normalizePlainText(value)
+  return cleanPlainText(value)
     .split(/\n+/)
     .map(cleanLine)
     .filter(Boolean);
@@ -68,7 +68,7 @@ function extractHashtags(values: string[]) {
 }
 
 function removeHashtagOnlyLines(value: string) {
-  return normalizePlainText(value)
+  return cleanPlainText(value)
     .split("\n")
     .filter((line) => !isHashtagLine(line))
     .join("\n")
@@ -76,7 +76,7 @@ function removeHashtagOnlyLines(value: string) {
 }
 
 function removeHashtagTokens(value: string) {
-  return normalizePlainText(value)
+  return cleanPlainText(value)
     .replace(hashtagPattern, "")
     .replace(/[ \t]{2,}/g, " ")
     .replace(/\s+([.,!?])/g, "$1")

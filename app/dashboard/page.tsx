@@ -321,6 +321,11 @@ export default async function DashboardPage() {
             </p>
             <h2 className="mt-3 text-2xl font-semibold">{usage.used} / {usage.limit}</h2>
             <p className="mt-2 text-sm text-muted">
+              {usage.plan === "free"
+                ? `${usage.used} of ${usage.limit} free generations used. ${usage.remaining} free generations remaining.`
+                : `${usage.used} of ${usage.limit} monthly generations used. ${usage.remaining} monthly generations remaining.`}
+            </p>
+            <p className="mt-2 text-sm text-muted">
               Monthly generations reset on {new Date(usage.periodEnd).toLocaleDateString()}.
             </p>
           </article>

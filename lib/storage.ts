@@ -1,6 +1,7 @@
 "use client";
 
-import { Draft, GenerationResult, StudioStore } from "@/types/content";
+import type { Draft, GenerationResult, StudioStore } from "@/types/content";
+import { cleanPlainText } from "@/lib/text-normalize";
 
 const STORAGE_KEY = "social-content-os:v1";
 const emptyStore: StudioStore = {
@@ -9,6 +10,35 @@ const emptyStore: StudioStore = {
   saved: [],
   drafts: []
 };
+
+function cleanString(value: unknown) {
+  return typeof value === "string" ? cleanPlainText(value) : "";
+}
+
+function cleanGenerationResult(result: GenerationResult): GenerationResult {
+  return {
+    ...result,
+    source: cleanString(result.source),
+    title: cleanString(result.title),
+    summary: cleanString(result.summary),
+    sections: result.sections.map((section) => ({
+      ...section,
+      title: cleanString(section.title),
+      platform: cleanString(section.platform),
+      body: cleanString(section.body),
+      items: section.items.map(cleanString).filter(Boolean),
+      cta: cleanString(section.cta)
+    }))
+  };
+}
+
+function cleanDraft(draft: Draft): Draft {
+  return {
+    ...draft,
+    title: cleanString(draft.title),
+    source: cleanString(draft.source)
+  };
+}
 
 export function readStore(): StudioStore {
   if (typeof window === "undefined") {
@@ -28,9 +58,9 @@ export function readStore(): StudioStore {
 
     return {
       version: 1,
-      recent: Array.isArray(parsed.recent) ? parsed.recent : [],
-      saved: Array.isArray(parsed.saved) ? parsed.saved : [],
-      drafts: Array.isArray(parsed.drafts) ? parsed.drafts : []
+      recent: Array.isArray(parsed.recent) ? parsed.recent.map(cleanGenerationResult) : [],
+      saved: Array.isArray(parsed.saved) ? parsed.saved.map(cleanGenerationResult) : [],
+      drafts: Array.isArray(parsed.drafts) ? parsed.drafts.map(cleanDraft) : []
     };
   } catch {
     return emptyStore;
@@ -47,9 +77,9 @@ export function writeStore(store: StudioStore) {
       STORAGE_KEY,
       JSON.stringify({
         ...store,
-        recent: store.recent.slice(0, 20),
-        saved: store.saved.slice(0, 50),
-        drafts: store.drafts.slice(0, 20)
+        recent: store.recent.map(cleanGenerationResult).slice(0, 20),
+        saved: store.saved.map(cleanGenerationResult).slice(0, 50),
+        drafts: store.drafts.map(cleanDraft).slice(0, 20)
       })
     );
   } catch {
@@ -58,20 +88,23 @@ export function writeStore(store: StudioStore) {
 }
 
 export function addRecent(store: StudioStore, result: GenerationResult): StudioStore {
+  const cleanedResult = cleanGenerationResult(result);
+
   return {
     ...store,
-    recent: [result, ...store.recent.filter((item) => item.id !== result.id)].slice(0, 20)
+    recent: [cleanedResult, ...store.recent.filter((item) => item.id !== result.id)].slice(0, 20)
   };
 }
 
 export function toggleSaved(store: StudioStore, result: GenerationResult): StudioStore {
   const exists = store.saved.some((item) => item.id === result.id);
+  const cleanedResult = cleanGenerationResult(result);
 
   return {
     ...store,
     saved: exists
       ? store.saved.filter((item) => item.id !== result.id)
-      : [result, ...store.saved].slice(0, 50)
+      : [cleanedResult, ...store.saved].slice(0, 50)
   };
 }
 
@@ -83,8 +116,22 @@ export function removeSaved(store: StudioStore, id: string): StudioStore {
 }
 
 export function upsertDraft(store: StudioStore, draft: Draft): StudioStore {
+  const cleanedDraft = cleanDraft(draft);
+
   return {
     ...store,
-    drafts: [draft, ...store.drafts.filter((item) => item.id !== draft.id)].slice(0, 20)
+    drafts: [cleanedDraft, ...store.drafts.filter((item) => item.id !== draft.id)].slice(0, 20)
   };
 }
+
+export function monthlyStoredGenerationCount(store: StudioStore, now = new Date()) {
+  const month = now.getUTCMonth();
+  const year = now.getUTCFullYear();
+
+  return store.recent.filter((item) => {
+    const createdAt = new Date(item.createdAt);
+    return createdAt.getUTCFullYear() === year && createdAt.getUTCMonth() === month;
+  }).length;
+}
+
+export { cleanGenerationResult, cleanDraft };

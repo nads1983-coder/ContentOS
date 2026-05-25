@@ -1,5 +1,55 @@
+const htmlEntityMap: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: "\"",
+  apos: "'",
+  nbsp: " "
+};
+
+export function safeDecodeContent(value: string): string {
+  if (!value) return "";
+
+  if (!/%[0-9a-f]{2}/i.test(value)) {
+    return value;
+  }
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function decodeHtmlEntities(value: string) {
+  return value.replace(/&(#x?[0-9a-f]+|[a-z]+);/gi, (match, entity: string) => {
+    const normalized = entity.toLowerCase();
+
+    if (normalized.startsWith("#x")) {
+      const codePoint = Number.parseInt(normalized.slice(2), 16);
+      return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
+    }
+
+    if (normalized.startsWith("#")) {
+      const codePoint = Number.parseInt(normalized.slice(1), 10);
+      return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
+    }
+
+    return htmlEntityMap[normalized] ?? match;
+  });
+}
+
+function stripHtmlTags(value: string) {
+  return value
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p\s*>/gi, "\n\n")
+    .replace(/<\/div\s*>/gi, "\n")
+    .replace(/<\/li\s*>/gi, "\n")
+    .replace(/<[^>\n]+>/g, "");
+}
+
 export function normalizePlainText(value: string) {
-  const normalized = value
+  const normalized = decodeHtmlEntities(stripHtmlTags(safeDecodeContent(value)))
     .normalize("NFC")
     .replace(/\\r\\n|\\n|\\r/g, "\n")
     .replace(/\r\n?/g, "\n")
@@ -43,8 +93,12 @@ export function normalizePlainText(value: string) {
   return compacted.join("\n").trim();
 }
 
+export function cleanPlainText(value: string) {
+  return normalizePlainText(value);
+}
+
 export function normalizePlainTextLines(values: string[]) {
   return values
-    .map((value) => normalizePlainText(value))
+    .map((value) => cleanPlainText(value))
     .filter(Boolean);
 }

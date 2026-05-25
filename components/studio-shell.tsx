@@ -44,7 +44,7 @@ import {
   copyPlainText
 } from "@/lib/copy";
 import { formatOutputSection, OutputBlock } from "@/lib/output-format";
-import { normalizePlainText } from "@/lib/text-normalize";
+import { cleanPlainText } from "@/lib/text-normalize";
 import {
   ctaModes,
   contentTypes,
@@ -61,12 +61,15 @@ import {
 } from "@/lib/content-config";
 import {
   addRecent,
+  cleanGenerationResult,
+  monthlyStoredGenerationCount,
   readStore,
   toggleSaved,
   removeSaved,
   upsertDraft,
   writeStore
 } from "@/lib/storage";
+import { buildUsageSummary } from "@/lib/usage";
 import {
   ContentTypeId,
   CtaModeId,
@@ -80,6 +83,7 @@ import {
   StudioStore,
   ToneId
 } from "@/types/content";
+import type { UsageSummary } from "@/types/saas";
 
 const starterText =
   "We just launched a lightweight planning service for busy founders who need consistent content but do not have time to turn every idea into platform-ready posts.";
@@ -207,7 +211,7 @@ function isPaidContentType(id: ContentTypeId) {
 }
 
 function buildGenerationText(result: GenerationResult) {
-  return normalizePlainText(result.sections
+  return cleanPlainText(result.sections
     .map((section) =>
       [
         section.title,
@@ -257,8 +261,6 @@ type GeneratedImage = {
   format: ImageFormat;
   createdAt: string;
 };
-
-const FREE_GENERATION_LIMIT = 3;
 
 const imageStyles: Array<{ id: ImageStyle; label: string }> = [
   { id: "minimal", label: "Minimal" },
@@ -390,13 +392,15 @@ function prefixSelectedLines(text: string, numbered: boolean) {
 export function StudioShell({
   embedded = false,
   initialPlan = "free",
-  authenticated = false
+  authenticated = false,
+  initialUsage
 }: {
   embedded?: boolean;
   initialPlan?: PlanId;
   authenticated?: boolean;
+  initialUsage?: UsageSummary;
 }) {
-  const [source, setSource] = useState(starterText);
+  const [source, setSource] = useState(cleanPlainText(starterText));
   const [brandName, setBrandName] = useState("");
   const [audience, setAudience] = useState("");
   const [offer, setOffer] = useState("");
@@ -416,6 +420,8 @@ export function StudioShell({
     drafts: []
   });
   const [hasMounted, setHasMounted] = useState(false);
+  const [usageUsed, setUsageUsed] = useState(initialUsage?.used ?? 0);
+  const [anonymousUsed, setAnonymousUsed] = useState(0);
   const [result, setResult] = useState<GenerationResult>(sampleResult);
   const [error, setError] = useState("");
   const [copiedId, setCopiedId] = useState("");
@@ -436,12 +442,16 @@ export function StudioShell({
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
-      setStore(readStore());
+      const nextStore = readStore();
+      setStore(nextStore);
+      if (!authenticated) {
+        setAnonymousUsed(monthlyStoredGenerationCount(nextStore));
+      }
       setHasMounted(true);
     }, 0);
 
     return () => window.clearTimeout(timeout);
-  }, []);
+  }, [authenticated]);
 
   useEffect(() => {
     if (!hasMounted) {
@@ -513,8 +523,11 @@ export function StudioShell({
     return () => window.clearTimeout(timeout);
   }, [hasMounted, isPending, result.id, visibleSections.length]);
 
-  const usedGenerations = store.recent.length;
-  const freeRemaining = Math.max(0, FREE_GENERATION_LIMIT - usedGenerations);
+  const usage = buildUsageSummary(
+    plan,
+    authenticated ? usageUsed : anonymousUsed,
+    initialUsage?.periodEnd
+  );
   const hasPaidSelection = selectedTypes.some(isPaidContentType);
   const isPro = plan !== "free";
   const isProStudio = plan === "pro_studio";
@@ -522,7 +535,8 @@ export function StudioShell({
     source.trim().length > 7 &&
     selectedTypes.length > 0 &&
     !isPending &&
-    (isPro || (!hasPaidSelection && freeRemaining > 0));
+    usage.remaining > 0 &&
+    (isPro || !hasPaidSelection);
 
   function persistStore(nextStore: StudioStore) {
     setStore(nextStore);
@@ -531,14 +545,19 @@ export function StudioShell({
 
   async function generateContent(nextSource = source) {
     setError("");
+    const cleanedSource = cleanPlainText(nextSource);
 
     if (!isPro && hasPaidSelection) {
       setError("Upgrade to Pro to unlock repurposing, formatter presets, CTAs, carousels, video scripts, email drafts, and saved history.");
       return;
     }
 
-    if (!isPro && freeRemaining <= 0) {
-      setError("You have used the free generation limit. Upgrade to Pro to keep generating.");
+    if (usage.remaining <= 0) {
+      setError(
+        isPro
+          ? "You have used this month's generation allowance."
+          : "You have used the free generation limit. Upgrade to Pro to keep generating."
+      );
       return;
     }
 
@@ -547,7 +566,7 @@ export function StudioShell({
     setIsPending(true);
 
     const payload: GenerateRequest = {
-      source: nextSource,
+      source: cleanedSource,
       brandName,
       audience,
       offer,
@@ -580,9 +599,15 @@ export function StudioShell({
         throw new Error("Generation returned an unexpected response.");
       }
 
-      pendingAutoScrollIdRef.current = data.id;
-      setResult(data);
-      persistStore(addRecent(readStore(), data));
+      const cleanedResult = cleanGenerationResult(data);
+      pendingAutoScrollIdRef.current = cleanedResult.id;
+      setResult(cleanedResult);
+      persistStore(addRecent(readStore(), cleanedResult));
+      if (authenticated) {
+        setUsageUsed((current) => current + 1);
+      } else {
+        setAnonymousUsed(monthlyStoredGenerationCount(addRecent(readStore(), cleanedResult)));
+      }
     } catch (generationError) {
       setError(
         generationError instanceof Error
@@ -608,7 +633,7 @@ export function StudioShell({
       id: crypto.randomUUID(),
       updatedAt: new Date().toISOString(),
       title: source.trim().slice(0, 54) || "Untitled content note",
-      source,
+      source: cleanPlainText(source),
       tone,
       sharpness,
       ctaMode,
@@ -620,7 +645,7 @@ export function StudioShell({
   }
 
   function loadDraft(draft: Draft) {
-    setSource(draft.source);
+    setSource(cleanPlainText(draft.source));
     setTone(draft.tone);
     setSharpness(draft.sharpness ?? "balanced");
     setCtaMode(draft.ctaMode ?? "soft");
@@ -709,7 +734,7 @@ export function StudioShell({
     setImagePending(true);
     setImageError("");
 
-    const outputText = normalizePlainText([
+    const outputText = cleanPlainText([
       section.title,
       section.body,
       ...section.items.map((item) => `- ${item}`),
@@ -808,15 +833,15 @@ export function StudioShell({
               brandVoice={brandVoice}
               contentGoal={contentGoal}
               plan={plan}
-              freeRemaining={freeRemaining}
+              usage={usage}
               canGenerate={canGenerate}
               isPending={isPending}
-              onSourceChange={setSource}
-              onBrandNameChange={setBrandName}
-              onAudienceChange={setAudience}
-              onOfferChange={setOffer}
-              onBrandVoiceChange={setBrandVoice}
-              onContentGoalChange={setContentGoal}
+              onSourceChange={(value) => setSource(cleanPlainText(value))}
+              onBrandNameChange={(value) => setBrandName(cleanPlainText(value))}
+              onAudienceChange={(value) => setAudience(cleanPlainText(value))}
+              onOfferChange={(value) => setOffer(cleanPlainText(value))}
+              onBrandVoiceChange={(value) => setBrandVoice(cleanPlainText(value))}
+              onContentGoalChange={(value) => setContentGoal(cleanPlainText(value))}
               onToneChange={setTone}
               onSharpnessChange={setSharpness}
               onCtaModeChange={setCtaMode}
@@ -924,8 +949,9 @@ export function StudioShell({
             setMenuOpen(false);
           }}
           onLoadResult={(item) => {
-            setResult(item);
-            setSource(item.source);
+            const cleanedItem = cleanGenerationResult(item);
+            setResult(cleanedItem);
+            setSource(cleanPlainText(cleanedItem.source));
             setTone(item.tone);
             setSharpness(item.sharpness ?? "balanced");
             setCtaMode(item.ctaMode ?? "soft");
@@ -1124,7 +1150,7 @@ function ComposerPanel({
   brandVoice,
   contentGoal,
   plan,
-  freeRemaining,
+  usage,
   canGenerate,
   isPending,
   onSourceChange,
@@ -1155,7 +1181,7 @@ function ComposerPanel({
   brandVoice: string;
   contentGoal: string;
   plan: PlanId;
-  freeRemaining: number;
+  usage: UsageSummary;
   canGenerate: boolean;
   isPending: boolean;
   onSourceChange: (value: string) => void;
@@ -1202,10 +1228,14 @@ function ComposerPanel({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-base font-semibold text-bone sm:text-sm">
-              {isPro ? "Pro access enabled" : `${freeRemaining} free generations left`}
+              {isPro
+                ? `${usage.used} of ${usage.limit} monthly generations used`
+                : `${usage.used} of ${usage.limit} free generations used`}
             </p>
             <p className="mt-1 text-sm leading-6 text-muted sm:text-xs sm:leading-5">
-              Free includes basic generation. Pro unlocks full generation, formatter presets, repurposing, and saved history.
+              {isPro
+                ? `${usage.remaining} monthly generations remaining.`
+                : `${usage.remaining} free generations remaining. Pro unlocks full generation, formatter presets, repurposing, and saved history.`}
             </p>
           </div>
           <div className="grid w-full grid-cols-3 overflow-hidden rounded-lg border border-white/10 bg-ink/70 sm:w-64 sm:rounded">
@@ -1616,7 +1646,7 @@ function PlatformFormatterPanel({
   plan: PlanId;
   onPlanChange: (value: PlanId) => void;
 }) {
-  const [text, setText] = useState(formatterStarterText);
+  const [text, setText] = useState(cleanPlainText(formatterStarterText));
   const [previewMode, setPreviewMode] = useState<FormatterMode>("desktop");
   const [platform, setPlatform] = useState<FormatterPlatform>("linkedin");
   const [copied, setCopied] = useState(false);
@@ -1628,7 +1658,7 @@ function PlatformFormatterPanel({
   function replaceSelection(transform: (value: string) => string) {
     const textarea = textareaRef.current;
     if (!textarea) {
-      setText((current) => transform(current));
+      setText((current) => cleanPlainText(transform(current)));
       return;
     }
 
@@ -1636,12 +1666,12 @@ function PlatformFormatterPanel({
     const end = textarea.selectionEnd;
     const hasSelection = start !== end;
     const targetText = hasSelection ? text.slice(start, end) : text;
-    const replacement = transform(targetText);
+    const replacement = cleanPlainText(transform(targetText));
     const nextText = hasSelection
       ? `${text.slice(0, start)}${replacement}${text.slice(end)}`
       : replacement;
 
-    setText(nextText);
+    setText(cleanPlainText(nextText));
     window.requestAnimationFrame(() => {
       textarea.focus();
       if (hasSelection) {
@@ -1688,7 +1718,7 @@ function PlatformFormatterPanel({
 
     if (nextPlatform === "xThread") {
       setText((current) =>
-        current
+        cleanPlainText(current)
           .split(/\n{2,}/)
           .filter(Boolean)
           .map((line, index) => `${index + 1}. ${line.replace(/^\d+\.\s*/, "")}`)
@@ -1697,7 +1727,7 @@ function PlatformFormatterPanel({
     }
 
     if (nextPlatform === "shortVideoScript") {
-      setText((current) => `Hook:\n${current.split("\n")[0] ?? ""}\n\nBeat 1:\n\nBeat 2:\n\nOn-screen text:\n\nClose:`);
+      setText((current) => cleanPlainText(`Hook:\n${cleanPlainText(current).split("\n")[0] ?? ""}\n\nBeat 1:\n\nBeat 2:\n\nOn-screen text:\n\nClose:`));
     }
   }
 
@@ -1802,7 +1832,7 @@ function PlatformFormatterPanel({
           <textarea
             ref={textareaRef}
             value={text}
-            onChange={(event) => setText(event.target.value)}
+            onChange={(event) => setText(cleanPlainText(event.target.value))}
             rows={12}
             className="studio-scroll min-h-80 w-full resize-none rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:p-4 sm:text-base"
             placeholder="Write or paste platform copy here."
