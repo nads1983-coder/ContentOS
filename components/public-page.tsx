@@ -6,10 +6,14 @@ import { siteConfig } from "@/lib/site";
 
 export async function PublicPage({
   title,
-  children
+  children,
+  contactEmail = siteConfig.contactEmail,
+  contactLabel = "Contact"
 }: {
   title: string;
   children: React.ReactNode;
+  contactEmail?: string;
+  contactLabel?: string;
 }) {
   const billingState = await getServerBillingState();
 
@@ -34,7 +38,10 @@ export async function PublicPage({
             {children}
           </div>
           <p className="mt-8 text-xs text-muted">
-            Contact: {siteConfig.supportEmail}
+            {contactLabel}:{" "}
+            <a href={`mailto:${contactEmail}`} className="text-goldSoft hover:text-bone">
+              {contactEmail}
+            </a>
           </p>
         </article>
       </div>

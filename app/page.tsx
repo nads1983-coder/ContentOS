@@ -374,6 +374,9 @@ export default async function Home() {
           <nav className="flex flex-wrap gap-4" aria-label="Footer">
             <Link href="/features" className="hover:text-bone">Features</Link>
             <Link href="/pricing" className="hover:text-bone">Pricing</Link>
+            <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-bone">
+              {siteConfig.contactEmail}
+            </a>
             <Link href="/privacy" className="hover:text-bone">Privacy</Link>
             <Link href="/terms" className="hover:text-bone">Terms</Link>
           </nav>

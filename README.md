@@ -33,6 +33,7 @@ OPENAI_API_KEY=your_openai_key
 OPENAI_MODEL=gpt-5.2
 NEXT_PUBLIC_APP_URL=https://getcontentos.co
 NEXT_PUBLIC_SITE_URL=https://getcontentos.co
+NEXT_PUBLIC_CONTACT_EMAIL=hello@getcontentos.co
 NEXT_PUBLIC_SUPPORT_EMAIL=support@getcontentos.co
 
 NEXT_PUBLIC_SUPABASE_URL=
