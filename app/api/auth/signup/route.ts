@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { setAuthCookies } from "@/lib/auth";
 import { getEnv, isSupabaseConfigured } from "@/lib/env";
 import { absoluteUrl } from "@/lib/site";
+import { sendSignupNotification } from "@/lib/signup-notify";
 import { upsertUserProfile } from "@/lib/supabase-rest";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +78,15 @@ export async function POST(request: Request) {
     await upsertUserProfile({ id: createdUserId, email: createdUserEmail });
   } catch {
     // Best effort until Supabase service role is configured.
+  }
+
+  try {
+    await sendSignupNotification(createdUserEmail);
+  } catch (error) {
+    console.error("Signup notification email failed", {
+      email: createdUserEmail,
+      error
+    });
   }
 
   if (accessToken) {
