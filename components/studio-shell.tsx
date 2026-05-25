@@ -247,6 +247,57 @@ function refineText(text: string, action: string) {
   return `${action} version:\n\n${trimmed}`;
 }
 
+function imageFilename(title: string) {
+  return `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "contentos-image"}.png`;
+}
+
+function downloadDataUrl(dataUrl: string, filename: string) {
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+async function downloadVisualAsPng(dataUrl: string, filename: string) {
+  if (!dataUrl.startsWith("data:image/svg+xml")) {
+    downloadDataUrl(dataUrl, filename);
+    return;
+  }
+
+  const image = new Image();
+  image.decoding = "async";
+  const loaded = new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error("Unable to prepare PNG download."));
+  });
+  image.src = dataUrl;
+  await loaded;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = image.naturalWidth || 1080;
+  canvas.height = image.naturalHeight || 1080;
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    downloadDataUrl(dataUrl, filename.replace(/\.png$/i, ".svg"));
+    return;
+  }
+
+  context.drawImage(image, 0, 0);
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png", 0.95));
+
+  if (!blob) {
+    downloadDataUrl(dataUrl, filename.replace(/\.png$/i, ".svg"));
+    return;
+  }
+
+  const objectUrl = URL.createObjectURL(blob);
+  downloadDataUrl(objectUrl, filename);
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+}
+
 type FormatterMode = "desktop" | "mobile";
 type PlanId = "free" | "pro_creator" | "pro_studio";
 type FormatterPlatform = "linkedin" | "instagram" | "tiktok" | "xThread" | "shortVideoScript";
@@ -256,9 +307,12 @@ type ImageFormat = "square" | "landscape" | "vertical";
 
 type GeneratedImage = {
   image: string;
+  mimeType?: string;
   size: string;
   style: ImageStyle;
   format: ImageFormat;
+  template?: string;
+  warning?: string;
   createdAt: string;
 };
 
@@ -272,9 +326,9 @@ const imageStyles: Array<{ id: ImageStyle; label: string }> = [
 ];
 
 const imageFormats: Array<{ id: ImageFormat; label: string; helper: string }> = [
-  { id: "square", label: "Square 1:1", helper: "1024 x 1024" },
-  { id: "landscape", label: "Landscape 16:9", helper: "1536 x 1024" },
-  { id: "vertical", label: "Vertical 9:16", helper: "1024 x 1536" }
+  { id: "square", label: "Square 1:1", helper: "1080 x 1080" },
+  { id: "landscape", label: "Landscape 16:9", helper: "1350 x 760" },
+  { id: "vertical", label: "Portrait 4:5", helper: "1080 x 1350" }
 ];
 
 const formatterPlatforms: Array<{
@@ -766,9 +820,12 @@ export function StudioShell({
       });
       const data = (await response.json()) as {
         image?: string;
+        mimeType?: string;
         size?: string;
         style?: ImageStyle;
         format?: ImageFormat;
+        template?: string;
+        warning?: string;
         createdAt?: string;
         error?: string;
       };
@@ -783,9 +840,12 @@ export function StudioShell({
         ...current,
         [section.id]: {
           image: generatedImage,
+          mimeType: data.mimeType,
           size: data.size ?? "",
           style: data.style ?? imageStyle,
           format: data.format ?? imageFormat,
+          template: data.template,
+          warning: data.warning,
           createdAt: data.createdAt ?? new Date().toISOString()
         }
       }));
@@ -1994,17 +2054,21 @@ function OutputCard({
           />
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted">
-              {image.style} visual · {image.size || image.format}
+              {image.template ? `${image.template.replace(/_/g, " ")} · ` : ""}
+              {image.style} · {image.size || image.format}
             </p>
-            <a
-              href={image.image}
-              download={`${section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "contentos-image"}.png`}
+            <button
+              type="button"
+              onClick={() => void downloadVisualAsPng(image.image, imageFilename(section.title))}
               className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60 sm:rounded"
             >
               <FileText size={14} />
               Download PNG
-            </a>
+            </button>
           </div>
+          {image.warning ? (
+            <p className="mt-2 text-xs leading-5 text-goldSoft">{image.warning}</p>
+          ) : null}
         </div>
       ) : null}
 
@@ -2213,7 +2277,7 @@ function ImageGenerationPanel({
               Generate Visual
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted">
-              Create a platform-aware visual from this {section.platform} output.
+              Create a branded social graphic from this {section.platform} output. Text is rendered separately for cleaner, publication-ready results.
             </p>
           </div>
           <button
@@ -2237,7 +2301,7 @@ function ImageGenerationPanel({
                   Image generation is available on Pro Studio.
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-muted">
-                  Upgrade to generate real social images from your finished content packs.
+                  Upgrade to generate branded social graphics with clean app-rendered text from your finished content packs.
                 </p>
                 <div className="mt-4 max-w-xs">
                   <CheckoutButton plan="pro_studio">Upgrade to Pro Studio</CheckoutButton>
@@ -2248,6 +2312,9 @@ function ImageGenerationPanel({
         ) : (
           <>
             <div className="mt-5 grid gap-4">
+              <div className="rounded border border-gold/30 bg-gold/[0.08] p-3 text-xs leading-5 text-goldSoft">
+                AI is used for the background only. ContentOS renders every visible word with controlled typography, wrapping, and safe margins.
+              </div>
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
                   Style
@@ -2310,14 +2377,14 @@ function ImageGenerationPanel({
                   className="max-h-[68vh] w-full rounded border border-white/10 object-contain"
                 />
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  <a
-                    href={image.image}
-                    download={`${section.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "contentos-image"}.png`}
+                  <button
+                    type="button"
+                    onClick={() => void downloadVisualAsPng(image.image, imageFilename(section.title))}
                     className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
                   >
                     <FileText size={16} />
                     Download PNG
-                  </a>
+                  </button>
                   <button
                     type="button"
                     onClick={onGenerate}
@@ -2328,6 +2395,15 @@ function ImageGenerationPanel({
                     Regenerate image
                   </button>
                 </div>
+                <div className="mt-3 flex flex-col gap-1 text-xs leading-5 text-muted sm:flex-row sm:items-center sm:justify-between">
+                  <span>
+                    {image.template ? `${image.template.replace(/_/g, " ")} template` : "Template-rendered"} · {image.size || image.format}
+                  </span>
+                  <span>Clean text overlay</span>
+                </div>
+                {image.warning ? (
+                  <p className="mt-2 text-xs leading-5 text-goldSoft">{image.warning}</p>
+                ) : null}
               </div>
             ) : null}
 
