@@ -198,6 +198,9 @@ export default async function Home() {
               <a href="#pricing" className="transition hover:text-bone">
                 Pricing
               </a>
+              <Link href="/blog" className="transition hover:text-bone">
+                Blog
+              </Link>
               {billingState.isLoggedIn ? (
                 <>
                   <Link href="/dashboard" className="transition hover:text-bone">

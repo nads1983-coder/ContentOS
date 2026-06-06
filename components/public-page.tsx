@@ -26,6 +26,9 @@ export async function PublicPage({
             <Link href="/" className="hover:text-bone">
               Home
             </Link>
+            <Link href="/blog" className="hover:text-bone">
+              Blog
+            </Link>
             <Link href={billingState.isLoggedIn ? "/dashboard" : "/login"} className="hover:text-bone">
               {billingState.isLoggedIn ? "Account" : "Log in"}
             </Link>
