@@ -303,7 +303,7 @@ type PlanId = "free" | "pro_creator" | "pro_studio";
 type FormatterPlatform = "linkedin" | "instagram" | "tiktok" | "xThread" | "shortVideoScript";
 type TextStyle = "bold" | "italic" | "boldItalic" | "underline" | "strikethrough";
 type ImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";
-type ImageFormat = "square" | "landscape" | "vertical";
+type ImageFormat = "square" | "landscape" | "portrait" | "vertical";
 
 type GeneratedImage = {
   image: string;
@@ -327,8 +327,9 @@ const imageStyles: Array<{ id: ImageStyle; label: string }> = [
 
 const imageFormats: Array<{ id: ImageFormat; label: string; helper: string }> = [
   { id: "square", label: "Square 1:1", helper: "1080 x 1080" },
-  { id: "landscape", label: "Landscape 16:9", helper: "1350 x 760" },
-  { id: "vertical", label: "Portrait 4:5", helper: "1080 x 1350" }
+  { id: "portrait", label: "Instagram 4:5", helper: "1080 x 1350" },
+  { id: "vertical", label: "Shorts 9:16", helper: "1080 x 1920" },
+  { id: "landscape", label: "Blog / LinkedIn 16:9", helper: "1536 x 864" }
 ];
 
 const formatterPlatforms: Array<{
@@ -485,6 +486,8 @@ export function StudioShell({
   const [imageSection, setImageSection] = useState<GeneratedSection | null>(null);
   const [imageStyle, setImageStyle] = useState<ImageStyle>("premium");
   const [imageFormat, setImageFormat] = useState<ImageFormat>("square");
+  const [imageBrandColors, setImageBrandColors] = useState("Deep black, royal purple, refined gold, warm off-white");
+  const [imageVisualStyle, setImageVisualStyle] = useState("Premium dark SaaS editorial, clean depth, modern creator/business aesthetic");
   const [imagePending, setImagePending] = useState(false);
   const [imageError, setImageError] = useState("");
   const [generatedImages, setGeneratedImages] = useState<Record<string, GeneratedImage>>({});
@@ -814,7 +817,10 @@ export function StudioShell({
             audience,
             offer,
             brandVoice,
-            contentGoal
+            contentGoal,
+            brandColors: imageBrandColors,
+            visualStyle: imageVisualStyle,
+            contentTopic: `${section.title} ${labelForContentType(section.type)}`
           }
         })
       });
@@ -825,6 +831,7 @@ export function StudioShell({
         style?: ImageStyle;
         format?: ImageFormat;
         template?: string;
+        imageCreditsLimit?: number;
         warning?: string;
         createdAt?: string;
         error?: string;
@@ -1029,6 +1036,8 @@ export function StudioShell({
         plan={plan}
         style={imageStyle}
         format={imageFormat}
+        brandColors={imageBrandColors}
+        visualStyle={imageVisualStyle}
         image={imageSection ? generatedImages[imageSection.id] : undefined}
         isPending={imagePending}
         error={imageError}
@@ -1038,6 +1047,8 @@ export function StudioShell({
         }}
         onStyleChange={setImageStyle}
         onFormatChange={setImageFormat}
+        onBrandColorsChange={setImageBrandColors}
+        onVisualStyleChange={setImageVisualStyle}
         onGenerate={() => generateImage()}
       />
 
@@ -2239,24 +2250,32 @@ function ImageGenerationPanel({
   plan,
   style,
   format,
+  brandColors,
+  visualStyle,
   image,
   isPending,
   error,
   onClose,
   onStyleChange,
   onFormatChange,
+  onBrandColorsChange,
+  onVisualStyleChange,
   onGenerate
 }: {
   section: GeneratedSection | null;
   plan: PlanId;
   style: ImageStyle;
   format: ImageFormat;
+  brandColors: string;
+  visualStyle: string;
   image?: GeneratedImage;
   isPending: boolean;
   error: string;
   onClose: () => void;
   onStyleChange: (value: ImageStyle) => void;
   onFormatChange: (value: ImageFormat) => void;
+  onBrandColorsChange: (value: string) => void;
+  onVisualStyleChange: (value: string) => void;
   onGenerate: () => void;
 }) {
   if (!section) {
@@ -2360,6 +2379,31 @@ function ImageGenerationPanel({
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="grid gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                    Brand colours
+                  </span>
+                  <input
+                    value={brandColors}
+                    onChange={(event) => onBrandColorsChange(event.target.value)}
+                    className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
+                    placeholder="Deep black, violet, gold, off-white"
+                  />
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+                    Visual direction
+                  </span>
+                  <input
+                    value={visualStyle}
+                    onChange={(event) => onVisualStyleChange(event.target.value)}
+                    className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
+                    placeholder="Premium SaaS editorial, clean depth"
+                  />
+                </label>
               </div>
             </div>
 

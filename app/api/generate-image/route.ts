@@ -15,16 +15,17 @@ import {
   socialImageModelSize,
   svgToDataUrl
 } from "@/lib/social-image";
-import { getUserProfileForUser, recordUsageEvent, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { getMonthlyUsageCount, getUserProfileForUser, recordUsageEvent, syncUserSubscriptionState } from "@/lib/supabase-rest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 type ImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";
-type ImageFormat = "square" | "landscape" | "vertical";
+type ImageFormat = "square" | "landscape" | "portrait" | "vertical";
 
 const styles: ImageStyle[] = ["minimal", "premium", "corporate", "bold", "dark", "modern"];
-const formats: ImageFormat[] = ["square", "landscape", "vertical"];
+const formats: ImageFormat[] = ["square", "landscape", "portrait", "vertical"];
+const proStudioMonthlyImageLimit = 100;
 
 function cleanText(value: unknown, maxLength = 1800) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
@@ -40,6 +41,10 @@ function normalizeFormat(value: unknown): ImageFormat {
 
 function looksLikeImageTextFailure(message: string) {
   return /text|typography|letter|word|logo|symbol/i.test(message);
+}
+
+function preferredImageModel() {
+  return process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5";
 }
 
 async function imageUrlToDataUrl(url: string) {
@@ -113,6 +118,23 @@ export async function POST(request: Request) {
     );
   }
 
+  try {
+    const usedImages = await getMonthlyUsageCount({
+      userId: profile.id,
+      periodEnd: profile.subscription_current_period_end,
+      eventType: "image_generation"
+    });
+
+    if (usedImages >= proStudioMonthlyImageLimit) {
+      return NextResponse.json(
+        { error: "You have used this month's Pro Studio image credits." },
+        { status: 429 }
+      );
+    }
+  } catch {
+    // Keep the image tool available for entitled Pro Studio users if usage counting has a temporary outage.
+  }
+
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
   const outputText = cleanText(body?.outputText, 2600);
   const platform = cleanText(body?.platform, 80);
@@ -133,7 +155,10 @@ export async function POST(request: Request) {
     audience: cleanText(brandContextInput.audience, 220),
     offer: cleanText(brandContextInput.offer, 220),
     brandVoice: cleanText(brandContextInput.brandVoice, 180),
-    contentGoal: cleanText(brandContextInput.contentGoal, 180)
+    contentGoal: cleanText(brandContextInput.contentGoal, 180),
+    brandColors: cleanText(brandContextInput.brandColors, 180),
+    visualStyle: cleanText(brandContextInput.visualStyle, 180),
+    contentTopic: cleanText(brandContextInput.contentTopic, 180)
   };
 
   const posterContent = buildSocialPosterContent({
@@ -159,25 +184,54 @@ export async function POST(request: Request) {
         brandContext
       });
 
-      const response = await fetch("https://api.openai.com/v1/images/generations", {
+      const imageRequest = {
+        model: preferredImageModel(),
+        prompt: backgroundPrompt,
+        n: 1,
+        size: socialImageModelSize(format),
+        quality: "high",
+        output_format: "png",
+        background: "opaque",
+        moderation: "auto"
+      };
+
+      let response = await fetch("https://api.openai.com/v1/images/generations", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
-          prompt: backgroundPrompt,
-          n: 1,
-          size: socialImageModelSize(format)
-        }),
+        body: JSON.stringify(imageRequest),
         cache: "no-store"
       });
 
-      const data = (await response.json()) as {
+      let data = (await response.json()) as {
         data?: Array<{ b64_json?: string; url?: string }>;
         error?: { message?: string };
       };
+
+      if (
+        !response.ok &&
+        imageRequest.model !== "gpt-image-1" &&
+        /model|unsupported|not found|invalid/i.test(data.error?.message ?? "")
+      ) {
+        response = await fetch("https://api.openai.com/v1/images/generations", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ...imageRequest,
+            model: "gpt-image-1"
+          }),
+          cache: "no-store"
+        });
+        data = (await response.json()) as {
+          data?: Array<{ b64_json?: string; url?: string }>;
+          error?: { message?: string };
+        };
+      }
 
       if (!response.ok) {
         const message = data.error?.message ?? "OpenAI background generation failed.";
@@ -223,6 +277,8 @@ export async function POST(request: Request) {
           format,
           size: rendered.size,
           renderer: "svg_text_overlay",
+          imageCreditsLimit: proStudioMonthlyImageLimit,
+          model: preferredImageModel(),
           background: backgroundDataUrl ? "openai_textless" : "template_fallback"
         }
       });
@@ -240,6 +296,7 @@ export async function POST(request: Request) {
       style,
       format,
       template: posterContent.template,
+      imageCreditsLimit: proStudioMonthlyImageLimit,
       warning: [posterContent.warning, backgroundWarning].filter(Boolean).join(" ") || undefined,
       createdAt: new Date().toISOString()
     });

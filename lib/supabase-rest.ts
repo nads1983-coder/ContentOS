@@ -308,12 +308,14 @@ export async function recordUsageEvent(input: {
 export async function getMonthlyUsageCount(input: {
   userId: string;
   periodEnd?: string | null;
+  eventType?: "text_generation" | "image_generation";
 }) {
   const { periodStart, periodEnd } = currentUsageWindow(new Date(), input.periodEnd);
 
   const query = {
     user_id: `eq.${input.userId}`,
     created_at: [`gte.${periodStart}`, `lt.${periodEnd}`],
+    ...(input.eventType ? { event_type: `eq.${input.eventType}` } : {}),
     select: "id"
   };
 
@@ -330,6 +332,10 @@ export async function getMonthlyUsageCount(input: {
     });
   } catch {
     // Fall back to generation history for older installs while usage_events is being rolled out.
+  }
+
+  if (input.eventType) {
+    return usageEvents;
   }
 
   try {

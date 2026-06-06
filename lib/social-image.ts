@@ -1,6 +1,15 @@
 export type SocialImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";
-export type SocialImageFormat = "square" | "landscape" | "vertical";
-export type SocialImageTemplate = "authority_quote" | "dark_editorial" | "clean_creator";
+export type SocialImageFormat = "square" | "landscape" | "portrait" | "vertical";
+export type SocialImageTemplate =
+  | "linkedin_graphic"
+  | "instagram_square"
+  | "instagram_portrait"
+  | "blog_hero"
+  | "short_cover"
+  | "carousel_cover"
+  | "authority_quote"
+  | "dark_editorial"
+  | "clean_creator";
 
 export type SocialPosterContent = {
   headline: string;
@@ -18,6 +27,9 @@ type BrandContext = {
   offer?: string;
   brandVoice?: string;
   contentGoal?: string;
+  brandColors?: string;
+  visualStyle?: string;
+  contentTopic?: string;
 };
 
 type BuildPosterInput = {
@@ -47,13 +59,15 @@ const templateByStyle: Record<SocialImageStyle, SocialImageTemplate> = {
 
 const dimensionsByFormat: Record<SocialImageFormat, { width: number; height: number; label: string }> = {
   square: { width: 1080, height: 1080, label: "1080x1080" },
-  landscape: { width: 1350, height: 760, label: "1350x760" },
-  vertical: { width: 1080, height: 1350, label: "1080x1350" }
+  landscape: { width: 1536, height: 864, label: "1536x864" },
+  portrait: { width: 1080, height: 1350, label: "1080x1350" },
+  vertical: { width: 1080, height: 1920, label: "1080x1920" }
 };
 
 const modelSizeByFormat: Record<SocialImageFormat, string> = {
   square: "1024x1024",
   landscape: "1536x1024",
+  portrait: "1024x1536",
   vertical: "1024x1536"
 };
 
@@ -140,6 +154,32 @@ function truncateAtWord(value: string, maxLength: number) {
   return `${clipped.slice(0, boundary > 40 ? boundary : clipped.length).trim()}...`;
 }
 
+function platformTemplate(input: BuildPosterInput): SocialImageTemplate {
+  const platform = `${input.platform} ${input.contentType}`.toLowerCase();
+
+  if (/blog|article|hero/.test(platform)) {
+    return "blog_hero";
+  }
+
+  if (/carousel/.test(platform)) {
+    return "carousel_cover";
+  }
+
+  if (/tiktok|short|youtube/.test(platform) || input.format === "vertical") {
+    return "short_cover";
+  }
+
+  if (/instagram/.test(platform)) {
+    return input.format === "portrait" ? "instagram_portrait" : "instagram_square";
+  }
+
+  if (/linkedin/.test(platform)) {
+    return "linkedin_graphic";
+  }
+
+  return templateByStyle[input.style] ?? "authority_quote";
+}
+
 export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterContent {
   const cleaned = cleanText(input.outputText);
   const withoutHashtags = removeHashtagLines(cleaned);
@@ -156,9 +196,11 @@ export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterC
   const ctaLine = lines.find((line) => /^(cta|call to action)\s*:/i.test(line)) ?? "";
   const brandName = cleanText(input.brandContext.brandName ?? "", 64);
   const footer = brandName || "ContentOS";
-  const headline = truncateAtWord(sentenceCase(hookLine), input.format === "vertical" ? 92 : 82);
+  const template = platformTemplate(input);
+  const topic = cleanText(input.brandContext.contentTopic ?? "", 120);
+  const headline = truncateAtWord(sentenceCase(topic || hookLine), input.format === "vertical" ? 96 : 82);
   const bodySource = paragraphs.find((item) => !item.includes(hookLine) && item.length > 24) ?? paragraphs[1] ?? paragraphs[0] ?? "";
-  const body = truncateAtWord(stripLabels(bodySource), input.format === "vertical" ? 210 : 170);
+  const body = truncateAtWord(stripLabels(bodySource), input.format === "vertical" ? 190 : input.format === "portrait" ? 205 : 170);
   const cta = truncateAtWord(stripLabels(ctaLine || input.brandContext.contentGoal || ""), 90);
   const hashtags = extractHashtags(cleaned);
   const warning = cleaned.length > 900 ? "Long source content was condensed for image readability." : undefined;
@@ -169,7 +211,7 @@ export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterC
     cta,
     hashtags,
     footer,
-    template: templateByStyle[input.style] ?? "authority_quote",
+    template,
     warning
   };
 }
@@ -178,15 +220,22 @@ export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
   const audience = cleanText(input.brandContext.audience ?? "", 180);
   const offer = cleanText(input.brandContext.offer ?? "", 180);
   const voice = cleanText(input.brandContext.brandVoice ?? "", 160);
+  const colors = cleanText(input.brandContext.brandColors ?? "deep black, royal purple, refined gold, warm off-white", 180);
+  const visualStyle = cleanText(input.brandContext.visualStyle ?? input.style, 180);
+  const topic = cleanText(input.brandContext.contentTopic ?? input.contentType ?? input.outputText, 180);
+  const template = platformTemplate(input).replace(/_/g, " ");
 
   return [
-    "Create a premium abstract editorial background for a social media graphic.",
+    `Create a premium textless background for a ${template} social media visual.`,
     "CRITICAL: no text, no letters, no typography, no words, no captions, no hashtags, no logos, no symbols, no signage, no UI screenshots.",
-    "The image must be usable behind programmatically rendered text.",
-    "Use clean negative space, subtle depth, professional lighting, and a calm premium SaaS/content brand feel.",
-    `Style direction: ${input.style}.`,
+    "The image must be a professional background only; all visible text will be rendered later by the app.",
+    "Use clean negative space in the central text-safe area, subtle depth, crisp lighting, editorial composition, and modern SaaS polish.",
+    "No stock-photo clichés, no low-detail gradients, no cheap clipart, no fake product screenshots, no distorted interface elements.",
+    `Visual style: ${visualStyle}.`,
+    `Brand palette direction: ${colors}.`,
     `Canvas orientation: ${input.format}.`,
     `Platform context: ${cleanText(input.platform || "social media", 80)}.`,
+    `Content topic mood: ${topic}.`,
     audience ? `Audience mood: ${audience}.` : "",
     offer ? `Commercial context: ${offer}.` : "",
     voice ? `Brand voice mood: ${voice}.` : "",
@@ -261,17 +310,18 @@ export function renderSocialPosterSvg(input: RenderPosterInput) {
   const contentWidth = width - margin * 2;
   const isLandscape = input.format === "landscape";
   const isVertical = input.format === "vertical";
+  const isPortrait = input.format === "portrait";
   const headlineSize = input.content.template === "clean_creator"
     ? Math.round(width * (isLandscape ? 0.055 : 0.073))
-    : Math.round(width * (isLandscape ? 0.062 : 0.086));
+    : Math.round(width * (isLandscape ? 0.056 : isVertical ? 0.078 : 0.086));
   const bodySize = Math.round(width * (isLandscape ? 0.026 : 0.033));
   const smallSize = Math.round(width * (isLandscape ? 0.019 : 0.024));
-  const headlineLines = wrapText(input.content.headline, isLandscape ? 24 : 18, isVertical ? 5 : 4);
-  const bodyLines = wrapText(input.content.body, isLandscape ? 56 : 38, isVertical ? 5 : 4);
+  const headlineLines = wrapText(input.content.headline, isLandscape ? 30 : 18, isVertical ? 5 : 4);
+  const bodyLines = wrapText(input.content.body, isLandscape ? 64 : 38, isVertical ? 4 : isPortrait ? 5 : 4);
   const ctaLines = input.content.cta ? wrapText(input.content.cta, isLandscape ? 62 : 42, 2) : [];
   const hashtagLine = input.content.hashtags.join(" ");
   const hashtagLines = hashtagLine ? wrapText(hashtagLine, isLandscape ? 70 : 42, 2) : [];
-  const headlineY = isLandscape ? Math.round(height * 0.22) : Math.round(height * 0.26);
+  const headlineY = isLandscape ? Math.round(height * 0.24) : isVertical ? Math.round(height * 0.24) : Math.round(height * 0.26);
   const headlineLineHeight = Math.round(headlineSize * 1.04);
   const bodyY = headlineY + headlineLines.length * headlineLineHeight + Math.round(height * 0.075);
   const bodyLineHeight = Math.round(bodySize * 1.42);
