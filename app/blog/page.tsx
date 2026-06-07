@@ -18,7 +18,13 @@ export default function BlogIndexPage() {
         {blogPosts.map((post) => (
           <article key={post.slug} className="rounded border border-white/10 bg-white/[0.03] p-4">
             <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-goldSoft">
-              <time dateTime={post.published}>6 June 2026</time>
+              <time dateTime={post.published}>
+                {new Intl.DateTimeFormat("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric"
+                }).format(new Date(post.published))}
+              </time>
               <span aria-hidden="true">/</span>
               <span>{post.readingTime}</span>
             </div>
