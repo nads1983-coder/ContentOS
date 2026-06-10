@@ -22,7 +22,8 @@ export function AuthForm({ mode, initialPlan = null }: AuthFormProps) {
   const planQuery = checkoutPlan ? `?plan=${checkoutPlan}` : "";
 
   useEffect(() => {
-    setPendingPlan(getPendingCheckout());
+    const timeout = window.setTimeout(() => setPendingPlan(getPendingCheckout()), 0);
+    return () => window.clearTimeout(timeout);
   }, []);
 
   async function continueToCheckout() {

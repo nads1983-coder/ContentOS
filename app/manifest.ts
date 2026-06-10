@@ -3,20 +3,23 @@ import { siteConfig } from "@/lib/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ContentOS",
+    name: "GetContentOS",
     short_name: "ContentOS",
     description: siteConfig.description,
+    id: "/",
     start_url: "/",
     scope: "/",
     display: "standalone",
+    orientation: "portrait-primary",
     background_color: "#050509",
     theme_color: "#050509",
+    categories: ["business", "productivity", "social"],
     icons: [
       {
         src: "/icon",
         sizes: "any",
         type: "image/png",
-        purpose: "any"
+        purpose: "maskable"
       },
       {
         src: "/apple-icon",

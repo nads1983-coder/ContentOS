@@ -84,7 +84,7 @@ function removeHashtagTokens(value: string) {
 }
 
 function stripLeadingLabel(value: string) {
-  return value.replace(/^[A-Z][A-Za-z ]{1,24}\s*[:\-]\s*/, "").trim();
+  return value.replace(/^[A-Z][A-Za-z ]{1,24}\s*[:-]\s*/, "").trim();
 }
 
 function splitTagItem(value: string) {

@@ -5,6 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
+  applicationName: "GetContentOS",
   title: "ContentOS | AI Social Content Generator",
   description: siteConfig.description,
   keywords: [
@@ -44,6 +45,15 @@ export const metadata: Metadata = {
     index: true,
     follow: true
   },
+  appleWebApp: {
+    capable: true,
+    title: "ContentOS",
+    statusBarStyle: "black-translucent"
+  },
+  formatDetection: {
+    telephone: false
+  },
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icon",
     apple: "/apple-icon"

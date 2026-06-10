@@ -48,6 +48,22 @@ function stripHtmlTags(value: string) {
     .replace(/<[^>\n]+>/g, "");
 }
 
+function removeUnsafeControlCharacters(value: string) {
+  let result = "";
+
+  for (const character of value) {
+    const code = character.charCodeAt(0);
+
+    if (code === 127 || (code < 32 && code !== 9 && code !== 10 && code !== 13)) {
+      continue;
+    }
+
+    result += character;
+  }
+
+  return result;
+}
+
 export function normalizePlainText(value: string) {
   const normalized = decodeHtmlEntities(stripHtmlTags(safeDecodeContent(value)))
     .normalize("NFC")
@@ -56,10 +72,11 @@ export function normalizePlainText(value: string) {
     .replace(/[\u2028\u2029]/g, "\n")
     .replace(/[\u00a0\u1680\u180e\u2000-\u200a\u202f\u205f\u3000]/g, " ")
     .replace(/[\u200b-\u200d\u2060\ufeff\u00ad]/g, "")
-    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "")
     .replace(/\t/g, "  ");
 
-  const lines = normalized
+  const textWithoutControls = removeUnsafeControlCharacters(normalized);
+
+  const lines = textWithoutControls
     .split("\n")
     .map((line) =>
       line
