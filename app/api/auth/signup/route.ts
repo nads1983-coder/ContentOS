@@ -9,6 +9,31 @@ import { upsertUserProfile } from "@/lib/appwrite-rest";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+const signupDiagnosticPrefix = "[SIGNUP-DIAGNOSTIC]";
+
+function emailDomainOnly(email: string) {
+  const domain = email.split("@")[1]?.trim().toLowerCase();
+  return domain || "unknown";
+}
+
+function safeErrorDetails(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return { message: String(error || "Unknown error") };
+  }
+
+  const candidate = error as {
+    code?: unknown;
+    type?: unknown;
+    message?: unknown;
+  };
+
+  return {
+    code: typeof candidate.code === "number" || typeof candidate.code === "string" ? candidate.code : undefined,
+    type: typeof candidate.type === "string" ? candidate.type : undefined,
+    message: typeof candidate.message === "string" ? candidate.message : "Unknown error"
+  };
+}
+
 export async function POST(request: Request) {
   if (!isAppwriteConfigured()) {
     return NextResponse.json({ error: "Appwrite Auth is not configured." }, { status: 503 });
@@ -38,16 +63,25 @@ export async function POST(request: Request) {
 
     try {
       await upsertUserProfile({ id: createdUser.$id, email: createdUserEmail });
-    } catch {
+    } catch (error) {
+      const details = safeErrorDetails(error);
+      console.error(`${signupDiagnosticPrefix} profile sync failed`, {
+        userId: createdUser.$id,
+        emailDomain: emailDomainOnly(createdUserEmail),
+        appwriteCode: details.code,
+        appwriteType: details.type,
+        appwriteMessage: details.message
+      });
       // Best effort until the Appwrite database collection is configured.
     }
 
     try {
       await sendSignupNotification(createdUserEmail);
     } catch (error) {
+      const details = safeErrorDetails(error);
       console.error("Signup notification email failed", {
-        email: createdUserEmail,
-        error
+        emailDomain: emailDomainOnly(createdUserEmail),
+        message: details.message
       });
     }
 

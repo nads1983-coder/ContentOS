@@ -14,7 +14,6 @@ const execute = args.has("--execute");
 const dryRun = !execute;
 
 const requiredEnv = [
-  "NEXT_PUBLIC_APPWRITE_ENDPOINT",
   "APPWRITE_API_KEY",
   "APPWRITE_DATABASE_ID",
   "APPWRITE_USERS_COLLECTION_ID"
@@ -61,6 +60,9 @@ function loadLocalEnv() {
 
 function requireEnv() {
   const missing = requiredEnv.filter((key) => !process.env[key]);
+  if (!process.env.APPWRITE_ENDPOINT && !process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT) {
+    missing.push("APPWRITE_ENDPOINT or NEXT_PUBLIC_APPWRITE_ENDPOINT");
+  }
   if (!process.env.APPWRITE_PROJECT_ID && !process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID) {
     missing.push("APPWRITE_PROJECT_ID or NEXT_PUBLIC_APPWRITE_PROJECT_ID");
   }
@@ -93,7 +95,7 @@ function readManualUsers() {
 
 function createClients() {
   const client = new Client()
-    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
+    .setEndpoint(process.env.APPWRITE_ENDPOINT || process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
     .setProject(process.env.APPWRITE_PROJECT_ID || process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID)
     .setKey(process.env.APPWRITE_API_KEY);
 

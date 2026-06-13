@@ -39,6 +39,7 @@ NEXT_PUBLIC_SUPPORT_EMAIL=support@getcontentos.co
 RESEND_API_KEY=
 
 NEXT_PUBLIC_APPWRITE_ENDPOINT=
+APPWRITE_ENDPOINT=
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=
 APPWRITE_PROJECT_ID=
 APPWRITE_API_KEY=
@@ -70,13 +71,14 @@ Create an Appwrite Cloud project and enable Email/Password authentication. Add y
 Create a database and a users/account collection, then set these Vercel environment variables from the Appwrite Console:
 
 - `NEXT_PUBLIC_APPWRITE_ENDPOINT`
+- `APPWRITE_ENDPOINT`
 - `NEXT_PUBLIC_APPWRITE_PROJECT_ID`
 - `APPWRITE_PROJECT_ID`
 - `APPWRITE_API_KEY`
 - `APPWRITE_DATABASE_ID`
 - `APPWRITE_USERS_COLLECTION_ID`
 
-Set `APPWRITE_PROJECT_ID` to the same Appwrite project ID as `NEXT_PUBLIC_APPWRITE_PROJECT_ID`; server-side Appwrite clients prefer `APPWRITE_PROJECT_ID` and fall back to the public value only for compatibility. The server API key should have permissions for Databases and Users/Account operations. Do not expose `APPWRITE_API_KEY` to the browser.
+Set `APPWRITE_ENDPOINT` to the same Appwrite endpoint as `NEXT_PUBLIC_APPWRITE_ENDPOINT`, and set `APPWRITE_PROJECT_ID` to the same Appwrite project ID as `NEXT_PUBLIC_APPWRITE_PROJECT_ID`. Server-side Appwrite clients prefer the server-only values and fall back to the public values only for compatibility. The server API key should have permissions for Databases and Users/Account operations. Do not expose `APPWRITE_API_KEY` to the browser.
 
 The users collection should include these attributes:
 
@@ -133,6 +135,7 @@ Required Appwrite variables:
 
 ```bash
 NEXT_PUBLIC_APPWRITE_ENDPOINT=
+APPWRITE_ENDPOINT=
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=
 APPWRITE_PROJECT_ID=
 APPWRITE_API_KEY=

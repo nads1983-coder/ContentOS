@@ -44,6 +44,7 @@ export async function POST(request: Request) {
 
   console.log(`${loginDiagnosticPrefix} route called`, {
     endpoint: env.appwriteEndpoint,
+    appwriteEndpointSource: env.appwriteEndpointSource,
     expectedEndpoint: expectedAppwriteEndpoint,
     appwriteProjectId: env.appwriteProjectId,
     appwriteProjectIdSource: env.appwriteProjectIdSource,
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
 
   console.log(`${loginDiagnosticPrefix} request parsed`, {
     endpoint: env.appwriteEndpoint,
+    appwriteEndpointSource: env.appwriteEndpointSource,
     appwriteProjectId: env.appwriteProjectId,
     appwriteProjectIdSource: env.appwriteProjectIdSource,
     hasEmail: Boolean(email),
@@ -77,6 +79,7 @@ export async function POST(request: Request) {
     const { account } = createAppwriteAccountClient();
     console.log(`${loginDiagnosticPrefix} before createEmailPasswordSession`, {
       endpoint: env.appwriteEndpoint,
+      appwriteEndpointSource: env.appwriteEndpointSource,
       appwriteProjectId: env.appwriteProjectId,
       appwriteProjectIdSource: env.appwriteProjectIdSource,
       hasEmail: Boolean(email),
@@ -104,6 +107,7 @@ export async function POST(request: Request) {
     const details = safeAppwriteError(error);
     console.error(`${loginDiagnosticPrefix} createEmailPasswordSession failed`, {
       endpoint: env.appwriteEndpoint,
+      appwriteEndpointSource: env.appwriteEndpointSource,
       appwriteProjectId: env.appwriteProjectId,
       appwriteProjectIdSource: env.appwriteProjectIdSource,
       hasEmail: Boolean(email),

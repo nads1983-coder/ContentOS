@@ -11,12 +11,14 @@ function absoluteUrlEnv(value: string | undefined, fallback = fallbackAppUrl) {
   }
 }
 
+const appwriteEndpoint = process.env.APPWRITE_ENDPOINT?.trim() || process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT?.trim() || "";
 const appwriteProjectId = process.env.APPWRITE_PROJECT_ID?.trim() || process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID?.trim() || "";
 
 const serverEnv = {
   appUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL),
   siteUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_SITE_URL, absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL)),
-  appwriteEndpoint: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? "",
+  appwriteEndpoint,
+  appwriteEndpointSource: process.env.APPWRITE_ENDPOINT?.trim() ? "APPWRITE_ENDPOINT" : "NEXT_PUBLIC_APPWRITE_ENDPOINT",
   appwriteProjectId,
   appwriteProjectIdSource: process.env.APPWRITE_PROJECT_ID?.trim() ? "APPWRITE_PROJECT_ID" : "NEXT_PUBLIC_APPWRITE_PROJECT_ID",
   appwriteApiKey: process.env.APPWRITE_API_KEY ?? "",
