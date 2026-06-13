@@ -85,12 +85,14 @@ export async function POST(request: Request) {
       });
     }
 
-    if (session.secret) {
-      await setAuthCookies({
-        accessToken: session.secret,
-        expiresIn: 60 * 60 * 24 * 30
-      });
-    }
+    await setAuthCookies({
+      accessToken: session.secret,
+      user: {
+        id: createdUser.$id,
+        email: createdUserEmail
+      },
+      expiresIn: 60 * 60 * 24 * 30
+    });
 
     return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
   } catch (error) {

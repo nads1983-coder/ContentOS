@@ -37,6 +37,7 @@ NEXT_PUBLIC_SITE_URL=https://getcontentos.co
 NEXT_PUBLIC_CONTACT_EMAIL=hello@getcontentos.co
 NEXT_PUBLIC_SUPPORT_EMAIL=support@getcontentos.co
 RESEND_API_KEY=
+AUTH_SESSION_SECRET=
 
 NEXT_PUBLIC_APPWRITE_ENDPOINT=
 APPWRITE_ENDPOINT=
@@ -79,6 +80,8 @@ Create a database and a users/account collection, then set these Vercel environm
 - `APPWRITE_USERS_COLLECTION_ID`
 
 Set `APPWRITE_ENDPOINT` to the same Appwrite endpoint as `NEXT_PUBLIC_APPWRITE_ENDPOINT`, and set `APPWRITE_PROJECT_ID` to the same Appwrite project ID as `NEXT_PUBLIC_APPWRITE_PROJECT_ID`. Server-side Appwrite clients prefer the server-only values and fall back to the public values only for compatibility. The server API key should have permissions for Databases and Users/Account operations. Do not expose `APPWRITE_API_KEY` to the browser.
+
+Set `AUTH_SESSION_SECRET` to a long random server-only value for signing ContentOS session cookies. If it is absent, the app falls back to the Appwrite API key for signing, but a dedicated secret is preferred in production.
 
 The users collection should include these attributes:
 

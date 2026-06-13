@@ -87,7 +87,7 @@ export async function POST(request: Request) {
     });
     const session = await account.createEmailPasswordSession({ email, password });
 
-    if (!session.secret || !session.userId) {
+    if (!session.userId) {
       return NextResponse.json({ error: "Login failed." }, { status: 401 });
     }
 
@@ -99,6 +99,10 @@ export async function POST(request: Request) {
 
     await setAuthCookies({
       accessToken: session.secret,
+      user: {
+        id: session.userId,
+        email
+      },
       expiresIn: 60 * 60 * 24 * 30
     });
 
