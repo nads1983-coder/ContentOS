@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { isStripeConfigured, isSupabaseAdminConfigured } from "@/lib/env";
+import { isStripeConfigured, isAppwriteAdminConfigured } from "@/lib/env";
 import {
   getStripeSubscriptionState,
   normalizePlanId,
@@ -15,7 +15,7 @@ import {
   socialImageModelSize,
   svgToDataUrl
 } from "@/lib/social-image";
-import { getMonthlyUsageCount, getUserProfileForUser, recordUsageEvent, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { getMonthlyUsageCount, getUserProfileForUser, recordUsageEvent, syncUserSubscriptionState } from "@/lib/appwrite-rest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isSupabaseAdminConfigured()) {
+  if (!isAppwriteAdminConfigured()) {
     return NextResponse.json(
       { error: "Subscription checks are not configured yet." },
       { status: 503 }
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
         status = normalizeSubscriptionStatus(subscriptionState.status);
       }
     } catch {
-      // Fall back to stored Supabase state if Stripe is temporarily unavailable.
+      // Fall back to stored Appwrite state if Stripe is temporarily unavailable.
     }
   }
 

@@ -4,7 +4,7 @@ import {
   stripeSubscriptionToState,
   verifyStripeSignature
 } from "@/lib/stripe-rest";
-import { updateSubscriptionStatus } from "@/lib/supabase-rest";
+import { updateSubscriptionStatus } from "@/lib/appwrite-rest";
 
 type StripeWebhookEvent = {
   type: string;

@@ -52,6 +52,10 @@ export function normalizePlanId(value?: string | null): PlanId {
     return "pro_studio";
   }
 
+  if (normalized === "founder" || normalized === "founding-member") {
+    return "founder";
+  }
+
   if (
     normalized === "pro-creator" ||
     normalized === "procreator" ||
@@ -265,7 +269,7 @@ function planRank(plan: PlanId) {
     return 2;
   }
 
-  if (normalized === "pro_creator") {
+  if (normalized === "founder" || normalized === "pro_creator") {
     return 1;
   }
 

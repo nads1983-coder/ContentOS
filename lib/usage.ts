@@ -2,6 +2,7 @@ import type { UsageSummary, PlanId } from "@/types/saas";
 
 const defaultPlanLimits: Record<PlanId, number> = {
   free: 3,
+  founder: 100,
   pro_creator: 100,
   pro_studio: 500
 };
@@ -11,7 +12,7 @@ export function monthlyLimitForPlan(plan: PlanId) {
     return defaultPlanLimits.pro_studio;
   }
 
-  if (plan === "pro_creator") {
+  if (plan === "founder" || plan === "pro_creator") {
     return defaultPlanLimits.pro_creator;
   }
 

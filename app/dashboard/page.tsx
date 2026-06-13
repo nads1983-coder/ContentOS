@@ -4,7 +4,7 @@ import { BrandLogo } from "@/components/brand-logo";
 import { CheckoutButton, ManageBillingButton } from "@/components/billing-buttons";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentUser } from "@/lib/auth";
-import { isStripeConfigured, isSupabaseAdminConfigured } from "@/lib/env";
+import { isStripeConfigured, isAppwriteAdminConfigured } from "@/lib/env";
 import {
   getStripeSubscriptionState,
   normalizePlanId,
@@ -20,7 +20,7 @@ import {
   listBrandProfiles,
   syncUserSubscriptionState,
   upsertUserProfile
-} from "@/lib/supabase-rest";
+} from "@/lib/appwrite-rest";
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
 
@@ -36,6 +36,7 @@ export const metadata: Metadata = {
 
 const planLabels: Record<PlanId, string> = {
   free: "Free",
+  founder: "Founder",
   pro_creator: "Pro Creator",
   pro_studio: "Pro Studio"
 };
@@ -93,7 +94,7 @@ export default async function DashboardPage() {
 
   let profile: UserProfile | null = null;
 
-  if (isSupabaseAdminConfigured()) {
+  if (isAppwriteAdminConfigured()) {
     try {
       profile = await getUserProfileForUser(user.id, user.email);
 
@@ -110,7 +111,7 @@ export default async function DashboardPage() {
     }
   }
 
-  console.log("Dashboard fetched Supabase subscription state", {
+  console.log("Dashboard fetched Appwrite subscription state", {
     userId: user.id,
     authenticatedEmail: user.email,
     plan: profile?.plan,
@@ -216,7 +217,7 @@ export default async function DashboardPage() {
   const profileUserId = profile?.id ?? user.id;
   let brandProfiles: BrandProfile[] = [];
 
-  if (isSupabaseAdminConfigured()) {
+  if (isAppwriteAdminConfigured()) {
     try {
       brandProfiles = await listBrandProfiles(profileUserId);
     } catch (error) {
@@ -234,7 +235,7 @@ export default async function DashboardPage() {
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
   let monthlyUsageCount = 0;
 
-  if (isSupabaseAdminConfigured()) {
+  if (isAppwriteAdminConfigured()) {
     try {
       monthlyUsageCount = await getMonthlyUsageCount({
         userId: profileUserId,
@@ -336,7 +337,7 @@ export default async function DashboardPage() {
             </p>
             <h2 className="mt-3 break-all text-lg font-semibold">{user.email}</h2>
             <p className="mt-2 text-sm text-muted">
-              Supabase Auth session active.
+              Appwrite Auth session active.
             </p>
           </article>
         </section>
@@ -366,7 +367,7 @@ export default async function DashboardPage() {
           <article className="min-w-0 rounded border border-white/10 bg-panel/78 p-5">
             <h2 className="text-xl font-semibold">Recent generations</h2>
             <p className="mt-2 text-sm leading-6 text-muted">
-              Generation history is stored in Supabase when configured. Local recent work remains available in the workspace while you connect production persistence.
+              Generation history is stored in Appwrite when configured. Local recent work remains available in the workspace while you connect production persistence.
             </p>
           </article>
         </section>

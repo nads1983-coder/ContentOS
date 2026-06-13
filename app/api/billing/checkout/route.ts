@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/env";
+import { isAppwriteAdminConfigured, isAppwriteConfigured } from "@/lib/env";
 import {
   checkoutPlanIsCoveredByState,
   createCheckoutSession,
@@ -9,7 +9,7 @@ import {
   hasActiveUnknownPaidSubscription,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
-import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/supabase-rest";
+import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
   }
 
-  if (isSupabaseConfigured() && !user) {
+  if (isAppwriteConfigured() && !user) {
     return NextResponse.json(
       {
         error: "Create an account or log in before upgrading.",
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profile = user && isSupabaseAdminConfigured()
+    const profile = user && isAppwriteAdminConfigured()
       ? await getUserProfileForUser(user.id, user.email)
       : null;
     const rawSubscriptionState = await getStripeSubscriptionState({
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     });
     const subscriptionState = reconcileActiveSubscriptionPlan(rawSubscriptionState, profile?.plan);
 
-    if (user && isSupabaseAdminConfigured()) {
+    if (user && isAppwriteAdminConfigured()) {
       await syncUserSubscriptionState({
         userId: profile?.id ?? user.id,
         email: user.email,

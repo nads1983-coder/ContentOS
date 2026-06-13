@@ -2,10 +2,10 @@ import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { contentTypes, defaultSelectedTypes } from "@/lib/content-config";
-import { isSupabaseAdminConfigured } from "@/lib/env";
+import { isAppwriteAdminConfigured } from "@/lib/env";
 import { captureServerError } from "@/lib/monitoring";
 import { buildInput, buildInstructions, requestedTypeSet } from "@/lib/prompts";
-import { recordGeneration, recordUsageEvent } from "@/lib/supabase-rest";
+import { recordGeneration, recordUsageEvent } from "@/lib/appwrite-rest";
 import { cleanPlainText } from "@/lib/text-normalize";
 import {
   CtaModeId,
@@ -316,7 +316,7 @@ export async function POST(nextRequest: NextRequest) {
     const result = parseOpenAIJson(response.output_text, request);
     const user = await getCurrentUser();
 
-    if (user && isSupabaseAdminConfigured()) {
+    if (user && isAppwriteAdminConfigured()) {
       try {
         await recordGeneration(user.id, result);
       } catch (error) {

@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
+import { ID } from "node-appwrite";
+import { createAppwriteAccountClient } from "@/lib/appwrite";
 import { setAuthCookies } from "@/lib/auth";
-import { getEnv, isSupabaseConfigured } from "@/lib/env";
-import { absoluteUrl } from "@/lib/site";
+import { isAppwriteConfigured } from "@/lib/env";
 import { sendSignupNotification } from "@/lib/signup-notify";
-import { upsertUserProfile } from "@/lib/supabase-rest";
+import { upsertUserProfile } from "@/lib/appwrite-rest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase Auth is not configured." }, { status: 503 });
+  if (!isAppwriteConfigured()) {
+    return NextResponse.json({ error: "Appwrite Auth is not configured." }, { status: 503 });
   }
 
   const { email, password } = (await request.json()) as {
@@ -25,83 +26,47 @@ export async function POST(request: Request) {
     );
   }
 
-  const env = getEnv();
-  const response = await fetch(
-    `${env.supabaseUrl}/auth/v1/signup?redirect_to=${encodeURIComponent(absoluteUrl("/auth/callback"))}`,
-    {
-      method: "POST",
-      headers: {
-        apikey: env.supabaseAnonKey,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
+  try {
+    const { account } = createAppwriteAccountClient();
+    const createdUser = await account.create({
+      userId: ID.unique(),
+      email,
+      password
+    });
+    const session = await account.createEmailPasswordSession({ email, password });
+    const createdUserEmail = createdUser.email || email;
+
+    try {
+      await upsertUserProfile({ id: createdUser.$id, email: createdUserEmail });
+    } catch {
+      // Best effort until the Appwrite database collection is configured.
     }
-  );
 
-  const data = (await response.json()) as {
-    id?: string;
-    email?: string;
-    access_token?: string;
-    refresh_token?: string;
-    expires_in?: number;
-    session?: {
-      access_token?: string;
-      refresh_token?: string;
-      expires_in?: number;
-    } | null;
-    user?: { id?: string; email?: string };
-    msg?: string;
-    error_description?: string;
-    error?: string;
-  };
+    try {
+      await sendSignupNotification(createdUserEmail);
+    } catch (error) {
+      console.error("Signup notification email failed", {
+        email: createdUserEmail,
+        error
+      });
+    }
 
-  const createdUserId = data.user?.id ?? data.id;
-  const createdUserEmail = data.user?.email ?? data.email ?? email;
-  const accessToken = data.access_token ?? data.session?.access_token;
-  const refreshToken = data.refresh_token ?? data.session?.refresh_token;
-  const expiresIn = data.expires_in ?? data.session?.expires_in;
+    if (session.secret) {
+      await setAuthCookies({
+        accessToken: session.secret,
+        expiresIn: 60 * 60 * 24 * 30
+      });
+    }
 
-  if (!response.ok || !createdUserId) {
+    return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
+  } catch (error) {
     return NextResponse.json(
       {
-        error:
-          data.error_description ??
-          data.msg ??
-          data.error ??
-          "Unable to create account. Please try again."
+        error: error instanceof Error
+          ? error.message
+          : "Unable to create account. Please try again."
       },
       { status: 400 }
     );
   }
-
-  try {
-    await upsertUserProfile({ id: createdUserId, email: createdUserEmail });
-  } catch {
-    // Best effort until Supabase service role is configured.
-  }
-
-  try {
-    await sendSignupNotification(createdUserEmail);
-  } catch (error) {
-    console.error("Signup notification email failed", {
-      email: createdUserEmail,
-      error
-    });
-  }
-
-  if (accessToken) {
-    await setAuthCookies({
-      accessToken,
-      refreshToken,
-      expiresIn
-    });
-
-    return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
-  }
-
-  return NextResponse.json({
-    ok: true,
-    message: "Check your email to confirm your ContentOS account.",
-    status: "confirmation_required"
-  });
 }

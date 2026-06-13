@@ -19,8 +19,8 @@ ContentOS is built for founders, creators, consultants, freelancers, agencies, c
 - Platform formatter for LinkedIn, Instagram, TikTok, X threads, and video scripts
 - Output actions for copy all, save all, individual copy, refinement shortcuts, and `.txt` download
 - Saved library with filtering, sorting-ready structure, timestamps, and delete/copy actions
-- Supabase Auth REST architecture for signup, login, logout, password reset, account sessions, and dashboard protection
-- Supabase database schema for users, subscriptions, saved content, generations, onboarding, brand profiles, usage, and leads
+- Appwrite Cloud email/password auth for signup, login, logout, account sessions, and dashboard protection
+- Appwrite database profile records for account, billing, usage, onboarding, brand profile, and recent generation metadata
 - Stripe Checkout, Customer Portal, and webhook route architecture
 - Sitemap, robots, Open Graph image, favicon, apple icon, and structured JSON-LD
 - Legal/public pages for features, pricing, about, contact, FAQ, privacy, terms, refund policy
@@ -31,14 +31,18 @@ ContentOS is built for founders, creators, consultants, freelancers, agencies, c
 ```bash
 OPENAI_API_KEY=your_openai_key
 OPENAI_MODEL=gpt-5.2
+OPENAI_IMAGE_MODEL=gpt-image-1.5
 NEXT_PUBLIC_APP_URL=https://getcontentos.co
 NEXT_PUBLIC_SITE_URL=https://getcontentos.co
 NEXT_PUBLIC_CONTACT_EMAIL=hello@getcontentos.co
 NEXT_PUBLIC_SUPPORT_EMAIL=support@getcontentos.co
+RESEND_API_KEY=
 
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_APPWRITE_ENDPOINT=
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=
+APPWRITE_API_KEY=
+APPWRITE_DATABASE_ID=
+APPWRITE_USERS_COLLECTION_ID=
 
 STRIPE_SECRET_KEY=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
@@ -58,9 +62,80 @@ NEXT_PUBLIC_SENTRY_DSN=
 ADMIN_EMAILS=
 ```
 
-## Database
+## Appwrite Cloud Setup
 
-Run `lib/database-schema.sql` in Supabase to create the production tables and indexes.
+Create an Appwrite Cloud project and enable Email/Password authentication. Add your production domain and local development URL as Web platforms.
+
+Create a database and a users/account collection, then set these Vercel environment variables from the Appwrite Console:
+
+- `NEXT_PUBLIC_APPWRITE_ENDPOINT`
+- `NEXT_PUBLIC_APPWRITE_PROJECT_ID`
+- `APPWRITE_API_KEY`
+- `APPWRITE_DATABASE_ID`
+- `APPWRITE_USERS_COLLECTION_ID`
+
+The server API key should have permissions for Databases and Users/Account operations. Do not expose `APPWRITE_API_KEY` to the browser.
+
+The users collection should include these attributes:
+
+- `email` email, required
+- `full_name` string, optional
+- `plan` string, optional
+- `stripe_customer_id` string, optional
+- `stripe_subscription_id` string, optional
+- `subscription_status` string, optional
+- `subscription_current_period_end` datetime/string, optional
+- `subscription_cancel_at_period_end` boolean, optional
+- `subscription_canceled_at` datetime/string, optional
+- `created_at` datetime/string, optional
+- `updated_at` datetime/string, optional
+- `brand_profiles_json` long text, optional
+- `onboarding_json` long text, optional
+- `generation_history_json` long text, optional
+- `usage_events_json` long text, optional
+
+Add an index on `email` so account/profile lookup remains fast.
+
+## Manual Appwrite User Import
+
+Use the manual import utility for known Appwrite users. This utility imports only the users listed in the local ignored file `scripts/migrations/manual-users.json`.
+
+The real `manual-users.json` file is intentionally gitignored so private user emails are not committed. Use `scripts/migrations/manual-users.example.json` as the committed shape/reference.
+
+The manual import utility:
+
+- defaults to dry-run mode
+- requires `--execute` to write to Appwrite
+- creates Appwrite Auth users if they do not already exist
+- generates secure temporary passwords without printing them
+- creates or updates matching Appwrite users collection documents
+- matches duplicates by email
+- does not overwrite subscription fields unless they are explicitly present in `manual-users.json`
+- outputs found, created, skipped, updated, and errors
+
+Existing imported users should use the password reset flow before logging in.
+
+Dry run:
+
+```bash
+npm run migrate:manual-appwrite-users
+```
+
+Execute:
+
+```bash
+npm run migrate:manual-appwrite-users -- --execute
+```
+
+Required Appwrite variables:
+
+```bash
+NEXT_PUBLIC_APPWRITE_ENDPOINT=
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=
+APPWRITE_API_KEY=
+APPWRITE_DATABASE_ID=
+APPWRITE_USERS_COLLECTION_ID=
+```
 
 ## Stripe Products
 

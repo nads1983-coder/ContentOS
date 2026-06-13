@@ -6,7 +6,7 @@ export function planRank(plan: PlanId | BillingPlan) {
     return 2;
   }
 
-  if (plan === "pro_creator") {
+  if (plan === "founder" || plan === "pro_creator") {
     return 1;
   }
 

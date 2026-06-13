@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { saveOnboarding } from "@/lib/supabase-rest";
+import { saveOnboarding } from "@/lib/appwrite-rest";
 import { OnboardingData } from "@/types/saas";
 
 export const dynamic = "force-dynamic";

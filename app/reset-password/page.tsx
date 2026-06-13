@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AuthForm } from "@/components/auth-form";
+import { ResetPasswordForm } from "@/components/reset-password-form";
 import { BrandLogo } from "@/components/brand-logo";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -16,10 +16,10 @@ export default function ResetPasswordPage() {
         <BrandLogo />
         <h1 className="mt-8 font-display text-3xl uppercase tracking-normal">Reset password</h1>
         <p className="mt-2 text-sm leading-6 text-muted">
-          Send a password reset link through Supabase Auth.
+          Send a secure password reset link through ContentOS.
         </p>
         <div className="mt-6">
-          <AuthForm mode="reset" />
+          <ResetPasswordForm />
         </div>
         <Link href="/login" className="mt-6 block text-sm text-muted hover:text-bone">
           Back to login

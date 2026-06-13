@@ -18,7 +18,7 @@ export default function ContactPage() {
         For account access, billing support, password resets, or issue reports, email{" "}
         <a href={`mailto:${siteConfig.supportEmail}`}>{siteConfig.supportEmail}</a>.
       </p>
-      <p>The production contact form is ready to connect to the Supabase leads table included in the database schema.</p>
+      <p>The production contact form is ready to connect to the Appwrite leads collection included in the Appwrite collection setup.</p>
     </PublicPage>
   );
 }

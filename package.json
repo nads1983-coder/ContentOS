@@ -8,12 +8,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint app components lib types eslint.config.mjs next.config.ts tailwind.config.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "migrate:manual-appwrite-users": "node scripts/migrations/manual-appwrite-users.mjs"
   },
   "dependencies": {
     "clsx": "latest",
     "lucide-react": "latest",
     "next": "latest",
+    "node-appwrite": "^26.2.0",
     "openai": "latest",
     "react": "latest",
     "react-dom": "latest"

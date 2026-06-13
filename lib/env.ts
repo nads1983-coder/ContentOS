@@ -14,9 +14,11 @@ function absoluteUrlEnv(value: string | undefined, fallback = fallbackAppUrl) {
 const serverEnv = {
   appUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL),
   siteUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_SITE_URL, absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL)),
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-  supabaseAnonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
-  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
+  appwriteEndpoint: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? "",
+  appwriteProjectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? "",
+  appwriteApiKey: process.env.APPWRITE_API_KEY ?? "",
+  appwriteDatabaseId: process.env.APPWRITE_DATABASE_ID ?? "",
+  appwriteUsersCollectionId: process.env.APPWRITE_USERS_COLLECTION_ID ?? "",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   stripeProCreatorPriceId: process.env.STRIPE_PRO_CREATOR_PRICE_ID ?? "",
@@ -44,14 +46,17 @@ export function getEnv() {
   return serverEnv;
 }
 
-export function isSupabaseConfigured() {
-  return Boolean(serverEnv.supabaseUrl && serverEnv.supabaseAnonKey);
+export function isAppwriteConfigured() {
+  return Boolean(serverEnv.appwriteEndpoint && serverEnv.appwriteProjectId);
 }
 
-export function isSupabaseAdminConfigured() {
+export function isAppwriteAdminConfigured() {
   return Boolean(
-    serverEnv.supabaseUrl &&
-      serverEnv.supabaseServiceRoleKey
+    serverEnv.appwriteEndpoint &&
+      serverEnv.appwriteProjectId &&
+      serverEnv.appwriteApiKey &&
+      serverEnv.appwriteDatabaseId &&
+      serverEnv.appwriteUsersCollectionId
   );
 }
 

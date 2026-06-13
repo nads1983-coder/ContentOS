@@ -299,7 +299,7 @@ async function downloadVisualAsPng(dataUrl: string, filename: string) {
 }
 
 type FormatterMode = "desktop" | "mobile";
-type PlanId = "free" | "pro_creator" | "pro_studio";
+type PlanId = "free" | "founder" | "pro_creator" | "pro_studio";
 type FormatterPlatform = "linkedin" | "instagram" | "tiktok" | "xThread" | "shortVideoScript";
 type TextStyle = "bold" | "italic" | "boldItalic" | "underline" | "strikethrough";
 type ImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";

@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import { getEnv, isSupabaseConfigured } from "@/lib/env";
+import { createAppwriteAccountClient } from "@/lib/appwrite";
+import { isAppwriteConfigured } from "@/lib/env";
 import { absoluteUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  if (!isSupabaseConfigured()) {
-    return NextResponse.json({ error: "Supabase Auth is not configured." }, { status: 503 });
+  if (!isAppwriteConfigured()) {
+    return NextResponse.json({ error: "Appwrite Auth is not configured." }, { status: 503 });
   }
 
   const { email } = (await request.json()) as { email?: string };
@@ -16,22 +17,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email is required." }, { status: 400 });
   }
 
-  const env = getEnv();
-  const response = await fetch(`${env.supabaseUrl}/auth/v1/recover`, {
-    method: "POST",
-    headers: {
-      apikey: env.supabaseAnonKey,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
+  try {
+    const { account } = createAppwriteAccountClient();
+    await account.createRecovery({
       email,
-      redirect_to: absoluteUrl("/login")
-    })
-  });
-
-  if (!response.ok) {
-    return NextResponse.json({ error: "Password reset failed." }, { status: 400 });
+      url: absoluteUrl("/reset-password")
+    });
+  } catch {
+    // Avoid leaking whether an account exists for the submitted email.
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, message: "Check your inbox for a password reset link." });
 }

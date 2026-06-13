@@ -46,7 +46,7 @@ export default async function AdminPage() {
           ].map((item) => (
             <article key={item} className="rounded border border-white/10 bg-panel/78 p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">{item}</p>
-              <p className="mt-3 text-sm text-muted">Connect Supabase reporting views for live data.</p>
+              <p className="mt-3 text-sm text-muted">Connect Appwrite reporting views for live data.</p>
             </article>
           ))}
         </div>

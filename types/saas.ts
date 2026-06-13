@@ -1,4 +1,4 @@
-export type PlanId = "free" | "pro_creator" | "pro_studio";
+export type PlanId = "free" | "founder" | "pro_creator" | "pro_studio";
 
 export type SubscriptionStatus =
   | "none"

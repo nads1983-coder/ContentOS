@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { getUserProfileForUser } from "@/lib/supabase-rest";
+import { getUserProfileForUser } from "@/lib/appwrite-rest";
 import { createCustomerPortalSession } from "@/lib/stripe-rest";
 
 export const dynamic = "force-dynamic";
