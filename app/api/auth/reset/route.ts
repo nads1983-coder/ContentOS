@@ -210,6 +210,9 @@ export async function POST(request: Request) {
         emailDomain: emailDomainOnly(email),
         appwriteProjectId: resetEnv.appwriteProjectId,
         appwriteProjectIdSource: resetEnv.appwriteProjectIdSource,
+        endpoint: resetEnv.appwriteEndpoint,
+        hasServerProjectId: Boolean(process.env.APPWRITE_PROJECT_ID?.trim()),
+        hasPublicProjectId: Boolean(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID?.trim()),
         expectedAppwriteProjectId: "6a2a6be900011401e963",
         redirectUrl: resetEnv.redirectUrl
       });
