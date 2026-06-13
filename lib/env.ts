@@ -11,11 +11,14 @@ function absoluteUrlEnv(value: string | undefined, fallback = fallbackAppUrl) {
   }
 }
 
+const appwriteProjectId = process.env.APPWRITE_PROJECT_ID?.trim() || process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID?.trim() || "";
+
 const serverEnv = {
   appUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL),
   siteUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_SITE_URL, absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL)),
   appwriteEndpoint: process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? "",
-  appwriteProjectId: process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? "",
+  appwriteProjectId,
+  appwriteProjectIdSource: process.env.APPWRITE_PROJECT_ID?.trim() ? "APPWRITE_PROJECT_ID" : "NEXT_PUBLIC_APPWRITE_PROJECT_ID",
   appwriteApiKey: process.env.APPWRITE_API_KEY ?? "",
   appwriteDatabaseId: process.env.APPWRITE_DATABASE_ID ?? "",
   appwriteUsersCollectionId: process.env.APPWRITE_USERS_COLLECTION_ID ?? "",

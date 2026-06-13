@@ -15,7 +15,6 @@ const dryRun = !execute;
 
 const requiredEnv = [
   "NEXT_PUBLIC_APPWRITE_ENDPOINT",
-  "NEXT_PUBLIC_APPWRITE_PROJECT_ID",
   "APPWRITE_API_KEY",
   "APPWRITE_DATABASE_ID",
   "APPWRITE_USERS_COLLECTION_ID"
@@ -62,6 +61,9 @@ function loadLocalEnv() {
 
 function requireEnv() {
   const missing = requiredEnv.filter((key) => !process.env[key]);
+  if (!process.env.APPWRITE_PROJECT_ID && !process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID) {
+    missing.push("APPWRITE_PROJECT_ID or NEXT_PUBLIC_APPWRITE_PROJECT_ID");
+  }
   if (missing.length) {
     throw new Error(`Missing required environment variables: ${missing.join(", ")}`);
   }
@@ -92,7 +94,7 @@ function readManualUsers() {
 function createClients() {
   const client = new Client()
     .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
-    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID)
+    .setProject(process.env.APPWRITE_PROJECT_ID || process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID)
     .setKey(process.env.APPWRITE_API_KEY);
 
   return {

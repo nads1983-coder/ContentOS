@@ -40,6 +40,7 @@ RESEND_API_KEY=
 
 NEXT_PUBLIC_APPWRITE_ENDPOINT=
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=
+APPWRITE_PROJECT_ID=
 APPWRITE_API_KEY=
 APPWRITE_DATABASE_ID=
 APPWRITE_USERS_COLLECTION_ID=
@@ -70,11 +71,12 @@ Create a database and a users/account collection, then set these Vercel environm
 
 - `NEXT_PUBLIC_APPWRITE_ENDPOINT`
 - `NEXT_PUBLIC_APPWRITE_PROJECT_ID`
+- `APPWRITE_PROJECT_ID`
 - `APPWRITE_API_KEY`
 - `APPWRITE_DATABASE_ID`
 - `APPWRITE_USERS_COLLECTION_ID`
 
-The server API key should have permissions for Databases and Users/Account operations. Do not expose `APPWRITE_API_KEY` to the browser.
+Set `APPWRITE_PROJECT_ID` to the same Appwrite project ID as `NEXT_PUBLIC_APPWRITE_PROJECT_ID`; server-side Appwrite clients prefer `APPWRITE_PROJECT_ID` and fall back to the public value only for compatibility. The server API key should have permissions for Databases and Users/Account operations. Do not expose `APPWRITE_API_KEY` to the browser.
 
 The users collection should include these attributes:
 
@@ -132,6 +134,7 @@ Required Appwrite variables:
 ```bash
 NEXT_PUBLIC_APPWRITE_ENDPOINT=
 NEXT_PUBLIC_APPWRITE_PROJECT_ID=
+APPWRITE_PROJECT_ID=
 APPWRITE_API_KEY=
 APPWRITE_DATABASE_ID=
 APPWRITE_USERS_COLLECTION_ID=

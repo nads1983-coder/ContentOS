@@ -14,6 +14,7 @@ type ResetBody = {
 type ResetEnv = {
   appwriteEndpoint: string;
   appwriteProjectId: string;
+  appwriteProjectIdSource: "APPWRITE_PROJECT_ID" | "NEXT_PUBLIC_APPWRITE_PROJECT_ID";
   redirectUrl: string;
 };
 
@@ -59,7 +60,10 @@ function normaliseBaseUrl(value: string | undefined, fallback = "https://getcont
 
 function readResetEnv(): ResetEnv | null {
   const appwriteEndpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT?.trim() || "";
-  const appwriteProjectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID?.trim() || "";
+  const serverProjectId = process.env.APPWRITE_PROJECT_ID?.trim() || "";
+  const publicProjectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID?.trim() || "";
+  const appwriteProjectId = serverProjectId || publicProjectId;
+  const appwriteProjectIdSource = serverProjectId ? "APPWRITE_PROJECT_ID" : "NEXT_PUBLIC_APPWRITE_PROJECT_ID";
   const appUrl = normaliseBaseUrl(process.env.NEXT_PUBLIC_APP_URL);
   const siteUrl = normaliseBaseUrl(process.env.NEXT_PUBLIC_SITE_URL, appUrl);
 
@@ -70,6 +74,7 @@ function readResetEnv(): ResetEnv | null {
   return {
     appwriteEndpoint,
     appwriteProjectId,
+    appwriteProjectIdSource,
     redirectUrl: new URL("/reset-password", siteUrl).toString()
   };
 }
@@ -84,6 +89,9 @@ export async function POST(request: Request) {
       resetEnv = readResetEnv();
       console.log(`${diagnosticPrefix} step 1b after env read`, {
         configured: Boolean(resetEnv),
+        appwriteProjectId: resetEnv?.appwriteProjectId ?? "missing",
+        appwriteProjectIdSource: resetEnv?.appwriteProjectIdSource ?? "missing",
+        expectedAppwriteProjectId: "6a2a6be900011401e963",
         redirectUrl: resetEnv?.redirectUrl ?? "missing"
       });
     } catch (error) {
@@ -188,6 +196,9 @@ export async function POST(request: Request) {
 
       console.log(`${diagnosticPrefix} step 4b before Appwrite client creation`, {
         emailDomain: emailDomainOnly(email),
+        appwriteProjectId: resetEnv.appwriteProjectId,
+        appwriteProjectIdSource: resetEnv.appwriteProjectIdSource,
+        expectedAppwriteProjectId: "6a2a6be900011401e963",
         redirectUrl: resetEnv.redirectUrl
       });
       const client = new Client()
@@ -197,6 +208,9 @@ export async function POST(request: Request) {
 
       console.log(`${diagnosticPrefix} step 4 before createRecovery`, {
         emailDomain: emailDomainOnly(email),
+        appwriteProjectId: resetEnv.appwriteProjectId,
+        appwriteProjectIdSource: resetEnv.appwriteProjectIdSource,
+        expectedAppwriteProjectId: "6a2a6be900011401e963",
         redirectUrl: resetEnv.redirectUrl
       });
 
@@ -223,6 +237,9 @@ export async function POST(request: Request) {
         functionName: "node-appwrite import/Appwrite client/createRecovery",
         emailDomain: emailDomainOnly(email),
         redirectUrl: resetEnv.redirectUrl,
+        appwriteProjectId: resetEnv.appwriteProjectId,
+        appwriteProjectIdSource: resetEnv.appwriteProjectIdSource,
+        expectedAppwriteProjectId: "6a2a6be900011401e963",
         appwriteCode: details.code,
         appwriteType: details.type,
         appwriteMessage: details.message,
