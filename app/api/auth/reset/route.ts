@@ -32,22 +32,31 @@ function appwriteErrorDetails(error: unknown) {
 }
 
 export async function POST(request: Request) {
-  console.log(`${diagnosticPrefix} route called`);
+  console.log(`${diagnosticPrefix} step 1 route called`);
 
   if (!isAppwriteConfigured()) {
-    console.error(`${diagnosticPrefix} Appwrite Auth is not configured`);
-    return NextResponse.json({ error: "Appwrite Auth is not configured." }, { status: 503 });
+    console.error(`${diagnosticPrefix} step 1 failed Appwrite Auth is not configured`);
+    return NextResponse.json(
+      { success: false, diagnostic: "Appwrite Auth is not configured." },
+      { status: 503 }
+    );
   }
 
   const { email } = (await request.json()) as { email?: string };
+  console.log(`${diagnosticPrefix} step 2 request parsed`, {
+    emailDomain: email ? emailDomainOnly(email) : "missing"
+  });
 
   if (!email) {
-    console.warn(`${diagnosticPrefix} missing email`);
-    return NextResponse.json({ error: "Email is required." }, { status: 400 });
+    console.warn(`${diagnosticPrefix} step 2 failed missing email`);
+    return NextResponse.json(
+      { success: false, diagnostic: "Email is required." },
+      { status: 400 }
+    );
   }
 
   const redirectUrl = absoluteUrl("/reset-password");
-  console.log(`${diagnosticPrefix} recovery requested`, {
+  console.log(`${diagnosticPrefix} step 3 recovery request prepared`, {
     emailDomain: emailDomainOnly(email),
     redirectUrl,
     expectedProductionRedirectUrl: "https://getcontentos.co/reset-password"
@@ -55,20 +64,30 @@ export async function POST(request: Request) {
 
   try {
     const { account } = createAppwriteAccountClient();
+    console.log(`${diagnosticPrefix} step 4 before createRecovery`, {
+      emailDomain: emailDomainOnly(email),
+      redirectUrl
+    });
+
     await account.createRecovery({
       email,
       url: redirectUrl
     });
 
-    console.log(`${diagnosticPrefix} createRecovery succeeded`, {
+    console.log(`${diagnosticPrefix} step 5 after createRecovery`, {
       emailDomain: emailDomainOnly(email),
       redirectUrl
     });
 
-    return NextResponse.json({ ok: true, message: "Check your inbox for a password reset link." });
+    return NextResponse.json({
+      success: true,
+      diagnostic: "createRecovery succeeded"
+    });
   } catch (error) {
     const details = appwriteErrorDetails(error);
-    console.error(`${diagnosticPrefix} createRecovery failed`, {
+    const diagnostic = details.message || "createRecovery failed";
+
+    console.error(`${diagnosticPrefix} step 6 catch createRecovery failed`, {
       emailDomain: emailDomainOnly(email),
       redirectUrl,
       appwriteCode: details.code,
@@ -77,7 +96,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(
-      { error: "Password reset email could not be sent. Please try again or contact support." },
+      {
+        success: false,
+        diagnostic
+      },
       { status: 500 }
     );
   }
