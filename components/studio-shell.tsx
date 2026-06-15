@@ -471,6 +471,10 @@ function prefixSelectedLines(text: string, numbered: boolean) {
     .join("\n");
 }
 
+function formatFormatterPlainText(value: string) {
+  return cleanPlainText(value);
+}
+
 export function StudioShell({
   embedded = false,
   initialPlan = "free",
@@ -1799,6 +1803,7 @@ function PlatformFormatterPanel({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const isPro = plan !== "free";
   const activePlatform = formatterPlatforms.find((item) => item.id === platform) ?? formatterPlatforms[0];
+  const formattedText = formatFormatterPlainText(text);
 
   function replaceSelection(transform: (value: string) => string) {
     const textarea = textareaRef.current;
@@ -1841,7 +1846,7 @@ function PlatformFormatterPanel({
 
     try {
       setCopyError("");
-      await copyPlainText(text);
+      await copyPlainText(formattedText);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1400);
     } catch (formatterCopyError) {
@@ -1852,6 +1857,22 @@ function PlatformFormatterPanel({
           : "Unable to copy clean formatted text."
       );
     }
+  }
+
+  function downloadFormattedText() {
+    if (!isPro) {
+      onPlanChange("pro_creator");
+      return;
+    }
+
+    const blob = new Blob([formattedText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `contentos-${platform}-formatted.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 
   function applyPlatformTemplate(nextPlatform: FormatterPlatform) {
@@ -1983,9 +2004,9 @@ function PlatformFormatterPanel({
             placeholder="Write or paste platform copy here."
           />
 
-          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
+          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
             <p className="col-span-2 self-center text-xs text-muted sm:col-span-1">
-              {text.length.toLocaleString()} characters
+              {formattedText.length.toLocaleString()} characters
             </p>
             <button
               type="button"
@@ -1994,6 +2015,14 @@ function PlatformFormatterPanel({
             >
               <Eraser size={16} />
               Clear
+            </button>
+            <button
+              type="button"
+              onClick={downloadFormattedText}
+              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded"
+            >
+              <FileText size={16} />
+              Download
             </button>
             <button
               type="button"
@@ -2033,7 +2062,7 @@ function PlatformFormatterPanel({
               {activePlatform.helper}
             </p>
             <p className="mt-4 whitespace-pre-wrap text-sm leading-6">
-              {text || "Your formatted platform preview will appear here."}
+              {formattedText || "Your formatted platform preview will appear here."}
             </p>
 
             <div className="mt-4 flex items-center justify-between border-t border-[#d6d3cc] pt-3 text-xs text-[#666666]">
