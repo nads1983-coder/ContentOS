@@ -1945,7 +1945,7 @@ function PlatformFormatterPanel({
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <div className="grid gap-4 2xl:grid-cols-[minmax(28rem,0.95fr)_minmax(34rem,1.05fr)]">
         <div className="min-w-0">
           <div className="studio-scroll mb-3 flex gap-2 overflow-x-auto pb-1">
             {formatterPlatforms.map((item) => (
@@ -2004,34 +2004,36 @@ function PlatformFormatterPanel({
             placeholder="Write or paste platform copy here."
           />
 
-          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
-            <p className="col-span-2 self-center text-xs text-muted sm:col-span-1">
+          <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <p className="shrink-0 text-xs leading-5 text-muted">
               {formattedText.length.toLocaleString()} characters
             </p>
-            <button
-              type="button"
-              onClick={() => setText("")}
-              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
-            >
-              <Eraser size={16} />
-              Clear
-            </button>
-            <button
-              type="button"
-              onClick={downloadFormattedText}
-              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded"
-            >
-              <FileText size={16} />
-              Download
-            </button>
-            <button
-              type="button"
-              onClick={copyFormattedText}
-              className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep sm:rounded"
-            >
-              {copied ? <Check size={16} /> : <Copy size={16} />}
-              {isPro ? (copied ? "Copied" : "Copy") : "Unlock"}
-            </button>
+            <div className="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-3 lg:flex lg:flex-wrap lg:justify-end">
+              <button
+                type="button"
+                onClick={() => setText("")}
+                className="flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded lg:min-w-[7rem]"
+              >
+                <Eraser size={16} />
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={downloadFormattedText}
+                className="flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded lg:min-w-[8rem]"
+              >
+                <FileText size={16} />
+                Download
+              </button>
+              <button
+                type="button"
+                onClick={copyFormattedText}
+                className="flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep sm:rounded lg:min-w-[7rem]"
+              >
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                {isPro ? (copied ? "Copied" : "Copy") : "Unlock"}
+              </button>
+            </div>
           </div>
           {copyError ? (
             <p className="mt-2 text-xs leading-5 text-goldSoft">{copyError}</p>
@@ -2041,10 +2043,10 @@ function PlatformFormatterPanel({
         <div
           className={clsx(
             "min-w-0 rounded-xl border border-white/10 bg-ink/90 p-3 sm:rounded sm:p-4",
-            previewMode === "mobile" ? "mx-auto w-full max-w-none sm:max-w-sm" : "w-full"
+            previewMode === "mobile" ? "mx-auto w-full max-w-none sm:max-w-sm" : "w-full 2xl:min-w-[34rem]"
           )}
         >
-          <div className="rounded bg-[#f4f2ee] p-4 text-[#191919]">
+          <div className="mx-auto w-full max-w-[40rem] rounded bg-[#f4f2ee] p-4 text-[#191919] 2xl:max-w-none">
             <div className="flex items-start gap-3">
               <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#231832] text-sm font-bold text-[#e0bb58]">
                 CO
