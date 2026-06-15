@@ -20,8 +20,8 @@ assert.equal(freeUsage.limit, 3);
 assert.equal(freeUsage.used, 1);
 assert.equal(freeUsage.remaining, 2);
 
-assert.equal(monthlyLimitForPlan("pro_creator"), 100);
-assert.equal(monthlyLimitForPlan("pro_studio"), 500);
+assert.equal(monthlyLimitForPlan("pro_creator"), 50);
+assert.equal(monthlyLimitForPlan("pro_studio"), 250);
 
 const posterContent = buildSocialPosterContent({
   outputText:
