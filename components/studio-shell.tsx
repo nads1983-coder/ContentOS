@@ -88,6 +88,8 @@ import type { UsageSummary } from "@/types/saas";
 const starterText =
   "We just launched a lightweight planning service for busy founders who need consistent content but do not have time to turn every idea into platform-ready posts.";
 
+const LAST_USED_TONE_KEY = "contentos:last-used-tone";
+
 const sampleCreatedAt = "";
 
 const sampleResult: GenerationResult = {
@@ -178,6 +180,32 @@ function formatDate(value?: string | null) {
     hour: "numeric",
     minute: "2-digit"
   }).format(date);
+}
+
+function labelForPlan(plan: PlanId) {
+  if (plan === "pro_studio") {
+    return "Pro Plan";
+  }
+
+  if (plan === "founder") {
+    return "Founder Plan";
+  }
+
+  if (plan === "pro_creator") {
+    return "Creator Plan";
+  }
+
+  return "Free Plan";
+}
+
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return Boolean(
+    target.closest("input, textarea, select, [contenteditable='true'], [contenteditable='']")
+  );
 }
 
 function isSaved(store: StudioStore, result?: GenerationResult) {
@@ -472,6 +500,7 @@ export function StudioShell({
   const [writingStyle, setWritingStyle] = useState("");
   const [contentGoal, setContentGoal] = useState("");
   const [tone, setTone] = useState<ToneId>("professional");
+  const [lastUsedTone, setLastUsedTone] = useState<ToneId | null>(null);
   const [sharpness, setSharpness] = useState<SharpnessId>("balanced");
   const [ctaMode, setCtaMode] = useState<CtaModeId>("soft");
   const [presetTopic, setPresetTopic] = useState<PresetTopicId>("business");
@@ -510,7 +539,13 @@ export function StudioShell({
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       const nextStore = readStore();
+      const storedTone = window.localStorage.getItem(LAST_USED_TONE_KEY) as ToneId | null;
+
       setStore(nextStore);
+      if (storedTone && tones.some((item) => item.id === storedTone)) {
+        setTone(storedTone);
+        setLastUsedTone(storedTone);
+      }
       if (!authenticated) {
         setAnonymousUsed(monthlyStoredGenerationCount(nextStore));
       }
@@ -533,7 +568,11 @@ export function StudioShell({
   }, [isPending]);
 
   useEffect(() => {
-    const markUserInteraction = () => {
+    const markUserInteraction = (event: Event) => {
+      if (event.type === "keydown" && isEditableTarget(event.target)) {
+        return;
+      }
+
       if (isGeneratingRef.current) {
         userInteractedDuringGenerationRef.current = true;
       }
@@ -900,6 +939,7 @@ export function StudioShell({
               id="composer"
               source={source}
               tone={tone}
+              lastUsedTone={lastUsedTone}
               sharpness={sharpness}
               ctaMode={ctaMode}
               presetTopic={presetTopic}
@@ -919,7 +959,13 @@ export function StudioShell({
               onOfferChange={setOffer}
               onWritingStyleChange={setWritingStyle}
               onContentGoalChange={setContentGoal}
-              onToneChange={setTone}
+              onToneChange={(value) => {
+                setTone(value);
+                setLastUsedTone(value);
+                if (hasMounted) {
+                  window.localStorage.setItem(LAST_USED_TONE_KEY, value);
+                }
+              }}
               onSharpnessChange={setSharpness}
               onCtaModeChange={setCtaMode}
               onPresetTopicChange={setPresetTopic}
@@ -1019,6 +1065,8 @@ export function StudioShell({
         <HistoryPanel
           store={store}
           current={result}
+          plan={plan}
+          usage={usage}
           renderTimestamps={hasMounted}
           isOpen={historyOpen}
           onClose={() => {
@@ -1221,6 +1269,7 @@ function ComposerPanel({
   id,
   source,
   tone,
+  lastUsedTone,
   sharpness,
   ctaMode,
   presetTopic,
@@ -1252,6 +1301,7 @@ function ComposerPanel({
   id: string;
   source: string;
   tone: ToneId;
+  lastUsedTone: ToneId | null;
   sharpness: SharpnessId;
   ctaMode: CtaModeId;
   presetTopic: PresetTopicId;
@@ -1440,6 +1490,40 @@ function ComposerPanel({
       </div>
 
       <div className="mt-6 sm:mt-5">
+        <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
+          Content types
+        </p>
+        <div className="studio-scroll flex snap-x gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible">
+          {contentTypes.map((item) => {
+            const active = selectedTypes.includes(item.id);
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onToggleType(item.id)}
+                title={item.paidOnly && !isPro ? "Pro output" : item.label}
+                className={clsx(
+                  "flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-full border px-4 text-sm transition sm:min-h-10 sm:shrink sm:rounded sm:px-3",
+                  active
+                    ? "border-violet/70 bg-violet/20 text-bone"
+                    : "border-white/10 bg-white/[0.03] text-muted hover:border-violet/50"
+                )}
+              >
+                {item.paidOnly && !isPro ? (
+                  <Lock size={13} />
+                ) : active ? (
+                  <Check size={14} />
+                ) : (
+                  <span className="h-3.5 w-3.5 rounded border border-current" />
+                )}
+                {item.shortLabel}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-6 sm:mt-5">
         <div className="mb-2 flex items-center justify-between gap-3">
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             Tone
@@ -1459,7 +1543,14 @@ function ComposerPanel({
                   : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
               )}
             >
-              <span className="block text-[0.95rem] font-semibold text-bone sm:text-sm">{item.label}</span>
+              <span className="flex items-center justify-between gap-2 text-[0.95rem] font-semibold text-bone sm:text-sm">
+                {item.label}
+                {lastUsedTone === item.id ? (
+                  <span className="rounded-full border border-gold/40 bg-gold/10 px-2 py-0.5 text-[0.62rem] uppercase tracking-[0.12em] text-goldSoft">
+                    Last used
+                  </span>
+                ) : null}
+              </span>
               <span className="mt-1 block text-xs leading-5">{item.description}</span>
             </button>
           ))}
@@ -1517,40 +1608,6 @@ function ComposerPanel({
               {item.label}
             </button>
           ))}
-        </div>
-      </div>
-
-      <div className="mt-6 sm:mt-5">
-        <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-          Content types
-        </p>
-        <div className="studio-scroll flex snap-x gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible">
-          {contentTypes.map((item) => {
-            const active = selectedTypes.includes(item.id);
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onToggleType(item.id)}
-                title={item.paidOnly && !isPro ? "Pro output" : item.label}
-                className={clsx(
-                  "flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-full border px-4 text-sm transition sm:min-h-10 sm:shrink sm:rounded sm:px-3",
-                  active
-                    ? "border-violet/70 bg-violet/20 text-bone"
-                    : "border-white/10 bg-white/[0.03] text-muted hover:border-violet/50"
-                )}
-              >
-                {item.paidOnly && !isPro ? (
-                  <Lock size={13} />
-                ) : active ? (
-                  <Check size={14} />
-                ) : (
-                  <span className="h-3.5 w-3.5 rounded border border-current" />
-                )}
-                {item.shortLabel}
-              </button>
-            );
-          })}
         </div>
       </div>
     </section>
@@ -1637,6 +1694,10 @@ function OutputPanel({
         </div>
       ) : null}
 
+      {!isPending && result.id !== "sample" && result.sections.length ? (
+        <GenerationSummary sections={result.sections} />
+      ) : null}
+
       <div className="studio-scroll mt-5 flex snap-x scroll-px-4 gap-2 overflow-x-auto pb-2 sm:mt-4">
         {filters.map((filter) => (
           <button
@@ -1715,6 +1776,27 @@ function OutputPanel({
         </button>
       </div>
     </section>
+  );
+}
+
+function GenerationSummary({ sections }: { sections: GeneratedSection[] }) {
+  const labels = Array.from(new Set(sections.map((section) => labelForContentType(section.type))));
+
+  return (
+    <div className="mt-4 rounded-xl border border-violet/30 bg-violet/[0.08] p-3 sm:rounded">
+      <p className="text-sm font-semibold text-bone">Generated from 1 idea:</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {labels.map((label) => (
+          <span
+            key={label}
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-ink/60 px-3 py-1.5 text-xs font-semibold text-bone"
+          >
+            <Check size={13} className="text-goldSoft" />
+            {label}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -2635,6 +2717,8 @@ function SavedLibraryPanel({
 function HistoryPanel({
   store,
   current,
+  plan,
+  usage,
   renderTimestamps,
   isOpen,
   onClose,
@@ -2643,6 +2727,8 @@ function HistoryPanel({
 }: {
   store: StudioStore;
   current: GenerationResult;
+  plan: PlanId;
+  usage: UsageSummary;
   renderTimestamps: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -2686,6 +2772,8 @@ function HistoryPanel({
         </div>
 
         <div className="studio-scroll max-h-[calc(100vh-7rem)] space-y-5 overflow-y-auto pr-1">
+          <UsageSummaryCard plan={plan} usage={usage} />
+
           <HistoryGroup
             title="Recent generations"
             empty="Generated work will appear here."
@@ -2743,6 +2831,22 @@ function HistoryPanel({
         </div>
       </aside>
     </>
+  );
+}
+
+function UsageSummaryCard({ plan, usage }: { plan: PlanId; usage: UsageSummary }) {
+  return (
+    <section className="rounded-xl border border-gold/25 bg-gold/[0.07] p-3 sm:rounded">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-goldSoft">
+        {labelForPlan(plan)}
+      </p>
+      <p className="mt-2 text-lg font-semibold text-bone">
+        {usage.used} / {usage.limit} used
+      </p>
+      <p className="mt-1 text-xs text-muted">
+        {usage.remaining} remaining
+      </p>
+    </section>
   );
 }
 

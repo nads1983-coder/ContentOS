@@ -199,11 +199,11 @@ function formatCaption(section: GeneratedSection, label: string, source?: string
 
   return {
     blocks: compact([
-      makeBlock("hook", "Opening hook", hook ? [hook] : []),
-      makeBlock("body", label, bodyLines),
+      makeBlock("hook", "Opening Line", hook ? [hook] : []),
+      makeBlock("body", "Post Body", bodyLines),
       makeBlock("items", "Caption notes", captionItems),
-      makeBlock("hashtags", "Hashtags", hashtags),
-      makeBlock("cta", "CTA", cta ? [cta] : [])
+      makeBlock("cta", "CTA", cta ? [cta] : []),
+      makeBlock("hashtags", "Suggested Hashtags", hashtags)
     ])
   };
 }
@@ -321,9 +321,9 @@ function formatTwitterPost(section: GeneratedSection) {
 
   return {
     blocks: compact([
-      makeBlock("body", "X/Twitter post", splitParagraphs(body)),
-      makeBlock("hashtags", "Hashtags", hashtags),
-      makeBlock("cta", "CTA", cta ? [cta] : [])
+      makeBlock("body", "Post Body", splitParagraphs(body)),
+      makeBlock("cta", "CTA", cta ? [cta] : []),
+      makeBlock("hashtags", "Suggested Hashtags", hashtags)
     ])
   };
 }
@@ -336,10 +336,10 @@ function formatFacebook(section: GeneratedSection) {
 
   return {
     blocks: compact([
-      makeBlock("body", "Facebook post", splitParagraphs(body)),
+      makeBlock("body", "Post Body", splitParagraphs(body)),
       makeBlock("items", "Post notes", items.filter((item) => !item.includes("#"))),
       makeBlock("cta", "CTA", cta ? [cta] : []),
-      makeBlock("hashtags", "Hashtags", hashtags)
+      makeBlock("hashtags", "Suggested Hashtags", hashtags)
     ])
   };
 }
@@ -362,8 +362,8 @@ function formatYouTube(section: GeneratedSection) {
       makeBlock("title", "YouTube Shorts title", title.value ? [title.value] : []),
       makeBlock("body", "Shorts description", description.value ? [description.value] : splitParagraphs(description.lines.join("\n"))),
       makeBlock("items", "Shorts notes", supportItems),
-      makeBlock("tags", "Tags and keywords", tags),
-      makeBlock("cta", "CTA", cta ? [cta] : [])
+      makeBlock("cta", "CTA", cta ? [cta] : []),
+      makeBlock("tags", "Suggested Hashtags", tags)
     ])
   };
 }
@@ -397,10 +397,10 @@ function formatLinkedIn(section: GeneratedSection) {
 
   return {
     blocks: compact([
-      makeBlock("hook", "Opening line", paragraphs[0] ? [paragraphs[0]] : []),
-      makeBlock("body", "Post body", paragraphs.slice(1)),
-      makeBlock("items", "Structure notes", items),
-      makeBlock("cta", "CTA", cta ? [cta] : [])
+      makeBlock("hook", "Opening Line", paragraphs[0] ? [paragraphs[0]] : []),
+      makeBlock("body", "Post Body", paragraphs.slice(1)),
+      makeBlock("cta", "CTA", cta ? [cta] : []),
+      makeBlock("items", "Suggested Hashtags", items)
     ])
   };
 }
