@@ -44,7 +44,7 @@ const features = [
   "One-idea repurposing engine",
   "Platform-specific formatting",
   "Carousel and script generation",
-  "Brand voice memory",
+  "Writing style memory",
   "Saved content library",
   "Clean export tools",
   "Platform-aware optimization",
@@ -247,7 +247,7 @@ export default async function Home() {
                 <span className="block">content from one idea.</span>
               </h1>
               <p className="mt-6 max-w-2xl break-words text-base leading-7 text-muted sm:text-lg sm:leading-8">
-                ContentOS helps creators, founders, consultants and professionals turn rough ideas into structured posts, captions, scripts, hooks, CTAs and repurposing packs with a clearer, more authoritative voice.
+                ContentOS helps creators, founders, consultants and professionals turn rough ideas into structured posts, captions, scripts, hooks, CTAs and repurposing packs with a clearer, more authoritative style.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link

@@ -8,7 +8,7 @@ import {
 } from "@/lib/content-config";
 import { CtaModeId, ContentTypeId, GenerateRequest, SharpnessId } from "@/types/content";
 
-const systemVoice = `
+const systemPrompt = `
 You are an AI social media content operating system for creators, entrepreneurs, small businesses, coaches, consultants, and agencies.
 
 Product role:
@@ -16,7 +16,7 @@ Product role:
 - help users generate, format, repurpose, and organize content across multiple channels
 - keep the output useful, specific, and ready to edit
 
-Voice rules:
+Writing rules:
 - premium but not stiff
 - clear, human, and practical
 - platform-aware
@@ -63,7 +63,7 @@ const ctaInstructions: Record<CtaModeId, string> = {
 };
 
 export function buildInstructions() {
-  return `${systemVoice}
+  return `${systemPrompt}
 
 Return only valid JSON matching this shape:
 {
@@ -99,7 +99,7 @@ ${request.source}
 Brand/business name: ${request.brandName || "Not provided"}
 Target audience: ${request.audience || "Not provided"}
 Offer/product/service: ${request.offer || "Not provided"}
-Brand voice notes: ${request.brandVoice || "Not provided"}
+Writing style notes: ${request.writingStyle || "Not provided"}
 Content goal: ${request.contentGoal || "Not provided"}
 Tone selected: ${labelForTone(request.tone)}
 Sharpness selected: ${labelForSharpness(request.sharpness)}
@@ -121,7 +121,7 @@ General quality rules:
 - keep the user's source material at the center
 - make each output platform-native rather than copying the same post everywhere
 - preserve useful details from the source, but do not invent credentials, results, data, or customer proof
-- use the brand, audience, offer, brand voice, and content goal when provided
+- use the brand, audience, offer, writing style, and content goal when provided
 - favor clean structure, clear hooks, and practical takeaways
 - avoid sounding like a generic social media manager
 - avoid vague words like unlock, empower, thrive, game-changing, and revolutionary unless the source explicitly uses them

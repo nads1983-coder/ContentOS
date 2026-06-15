@@ -109,7 +109,7 @@ const sampleResult: GenerationResult = {
       title: "LinkedIn Post",
       platform: "LinkedIn",
       body:
-        "Consistent content does not usually fail because founders have no ideas.\n\nIt fails because the ideas stay scattered across notes, calls, voice memos, and half-written drafts.\n\nThat is the gap our new planning service is built for.\n\nWe take the raw thinking you already have and turn it into a usable content system, posts, captions, scripts, and repurposing paths that match the way your business actually sells.\n\nThe goal is not more noise.\n\nIt is a cleaner way to show up with useful ideas, clear offers, and enough structure to stay consistent.",
+        "Consistent content does not usually fail because founders have no ideas.\n\nIt fails because the ideas stay scattered across notes, calls, and half-written drafts.\n\nThat is the gap our new planning service is built for.\n\nWe take the raw thinking you already have and turn it into a usable content system, posts, captions, scripts, and repurposing paths that match the way your business actually sells.\n\nThe goal is not more noise.\n\nIt is a cleaner way to show up with useful ideas, clear offers, and enough structure to stay consistent.",
       items: ["Strong hook", "Short paragraphs", "Practical service positioning"],
       cta: "What part of your content workflow slows you down the most?"
     },
@@ -119,7 +119,7 @@ const sampleResult: GenerationResult = {
       title: "Instagram Caption",
       platform: "Instagram",
       body:
-        "Your best content ideas are probably already sitting somewhere.\n\nIn a voice note.\nIn a client call.\nIn a messy draft.\nIn the thing you explain every week.\n\nThe hard part is turning those ideas into posts you can actually use across platforms.\n\nThat is what our new planning service is designed to make easier.",
+        "Your best content ideas are probably already sitting somewhere.\n\nIn a note.\nIn a client call.\nIn a messy draft.\nIn the thing you explain every week.\n\nThe hard part is turning those ideas into posts you can actually use across platforms.\n\nThat is what our new planning service is designed to make easier.",
       items: [
         "#contentstrategy",
         "#smallbusinessmarketing",
@@ -469,7 +469,7 @@ export function StudioShell({
   const [brandName, setBrandName] = useState("");
   const [audience, setAudience] = useState("");
   const [offer, setOffer] = useState("");
-  const [brandVoice, setBrandVoice] = useState("");
+  const [writingStyle, setWritingStyle] = useState("");
   const [contentGoal, setContentGoal] = useState("");
   const [tone, setTone] = useState<ToneId>("professional");
   const [sharpness, setSharpness] = useState<SharpnessId>("balanced");
@@ -637,7 +637,7 @@ export function StudioShell({
       brandName,
       audience,
       offer,
-      brandVoice,
+      writingStyle,
       contentGoal,
       tone,
       sharpness,
@@ -826,7 +826,7 @@ export function StudioShell({
             brandName,
             audience,
             offer,
-            brandVoice,
+            writingStyle,
             contentGoal,
             brandColors: imageBrandColors,
             visualStyle: imageVisualStyle,
@@ -907,18 +907,18 @@ export function StudioShell({
               brandName={brandName}
               audience={audience}
               offer={offer}
-              brandVoice={brandVoice}
+              writingStyle={writingStyle}
               contentGoal={contentGoal}
               plan={plan}
               usage={usage}
               canGenerate={canGenerate}
               isPending={isPending}
-              onSourceChange={(value) => setSource(cleanPlainText(value))}
-              onBrandNameChange={(value) => setBrandName(cleanPlainText(value))}
-              onAudienceChange={(value) => setAudience(cleanPlainText(value))}
-              onOfferChange={(value) => setOffer(cleanPlainText(value))}
-              onBrandVoiceChange={(value) => setBrandVoice(cleanPlainText(value))}
-              onContentGoalChange={(value) => setContentGoal(cleanPlainText(value))}
+              onSourceChange={setSource}
+              onBrandNameChange={setBrandName}
+              onAudienceChange={setAudience}
+              onOfferChange={setOffer}
+              onWritingStyleChange={setWritingStyle}
+              onContentGoalChange={setContentGoal}
               onToneChange={setTone}
               onSharpnessChange={setSharpness}
               onCtaModeChange={setCtaMode}
@@ -1228,7 +1228,7 @@ function ComposerPanel({
   brandName,
   audience,
   offer,
-  brandVoice,
+  writingStyle,
   contentGoal,
   plan,
   usage,
@@ -1238,7 +1238,7 @@ function ComposerPanel({
   onBrandNameChange,
   onAudienceChange,
   onOfferChange,
-  onBrandVoiceChange,
+  onWritingStyleChange,
   onContentGoalChange,
   onToneChange,
   onSharpnessChange,
@@ -1259,7 +1259,7 @@ function ComposerPanel({
   brandName: string;
   audience: string;
   offer: string;
-  brandVoice: string;
+  writingStyle: string;
   contentGoal: string;
   plan: PlanId;
   usage: UsageSummary;
@@ -1269,7 +1269,7 @@ function ComposerPanel({
   onBrandNameChange: (value: string) => void;
   onAudienceChange: (value: string) => void;
   onOfferChange: (value: string) => void;
-  onBrandVoiceChange: (value: string) => void;
+  onWritingStyleChange: (value: string) => void;
   onContentGoalChange: (value: string) => void;
   onToneChange: (value: ToneId) => void;
   onSharpnessChange: (value: SharpnessId) => void;
@@ -1362,7 +1362,7 @@ function ComposerPanel({
         onChange={(event) => onSourceChange(event.target.value)}
         rows={10}
         className="studio-scroll mt-3 min-h-56 w-full resize-none rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:min-h-60 sm:rounded sm:text-base"
-        placeholder="Paste notes, a voice memo transcript, a launch idea, an offer, or the messy thought you want to turn into content."
+        placeholder="Paste notes, a customer insight, a launch idea, an offer, or the messy thought you want to turn into content."
       />
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -1385,10 +1385,10 @@ function ComposerPanel({
       </div>
 
       <label className="mt-4 grid gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-        Brand voice
+        Writing style
         <textarea
-          value={brandVoice}
-          onChange={(event) => onBrandVoiceChange(event.target.value)}
+          value={writingStyle}
+          onChange={(event) => onWritingStyleChange(event.target.value)}
           rows={3}
           placeholder="Confident, useful, concise, practical, lightly witty."
           className="studio-scroll rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] normal-case leading-7 tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:p-3 sm:text-sm sm:leading-6"
@@ -1913,7 +1913,7 @@ function PlatformFormatterPanel({
           <textarea
             ref={textareaRef}
             value={text}
-            onChange={(event) => setText(cleanPlainText(event.target.value))}
+            onChange={(event) => setText(event.target.value)}
             rows={12}
             className="studio-scroll min-h-80 w-full resize-none rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:p-4 sm:text-base"
             placeholder="Write or paste platform copy here."

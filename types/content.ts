@@ -107,7 +107,7 @@ export type GenerateRequest = {
   brandName?: string;
   audience?: string;
   offer?: string;
-  brandVoice?: string;
+  writingStyle?: string;
   contentGoal?: string;
   tone: ToneId;
   sharpness: SharpnessId;

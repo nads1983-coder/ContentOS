@@ -68,7 +68,7 @@ function normalizeRequest(body: unknown): GenerateRequest {
   const brandName = typeof candidate.brandName === "string" ? candidate.brandName.trim() : "";
   const audience = typeof candidate.audience === "string" ? candidate.audience.trim() : "";
   const offer = typeof candidate.offer === "string" ? candidate.offer.trim() : "";
-  const brandVoice = typeof candidate.brandVoice === "string" ? candidate.brandVoice.trim() : "";
+  const writingStyle = typeof candidate.writingStyle === "string" ? candidate.writingStyle.trim() : "";
   const contentGoal = typeof candidate.contentGoal === "string" ? candidate.contentGoal.trim() : "";
   const tone = toneIds.has(candidate.tone as ToneId)
     ? (candidate.tone as ToneId)
@@ -95,7 +95,7 @@ function normalizeRequest(body: unknown): GenerateRequest {
     brandName: brandName.slice(0, 180),
     audience: audience.slice(0, 240),
     offer: offer.slice(0, 240),
-    brandVoice: brandVoice.slice(0, 320),
+    writingStyle: writingStyle.slice(0, 320),
     contentGoal: contentGoal.slice(0, 180),
     tone,
     sharpness,

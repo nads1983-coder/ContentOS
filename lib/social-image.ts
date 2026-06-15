@@ -25,7 +25,7 @@ type BrandContext = {
   brandName?: string;
   audience?: string;
   offer?: string;
-  brandVoice?: string;
+  writingStyle?: string;
   contentGoal?: string;
   brandColors?: string;
   visualStyle?: string;
@@ -219,7 +219,7 @@ export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterC
 export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
   const audience = cleanText(input.brandContext.audience ?? "", 180);
   const offer = cleanText(input.brandContext.offer ?? "", 180);
-  const voice = cleanText(input.brandContext.brandVoice ?? "", 160);
+  const styleNotes = cleanText(input.brandContext.writingStyle ?? "", 160);
   const colors = cleanText(input.brandContext.brandColors ?? "deep black, royal purple, refined gold, warm off-white", 180);
   const visualStyle = cleanText(input.brandContext.visualStyle ?? input.style, 180);
   const topic = cleanText(input.brandContext.contentTopic ?? input.contentType ?? input.outputText, 180);
@@ -238,7 +238,7 @@ export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
     `Content topic mood: ${topic}.`,
     audience ? `Audience mood: ${audience}.` : "",
     offer ? `Commercial context: ${offer}.` : "",
-    voice ? `Brand voice mood: ${voice}.` : "",
+    styleNotes ? `Writing style mood: ${styleNotes}.` : "",
     "Avoid people unless they are abstract silhouettes with no identifiable faces.",
     "Avoid busy patterns and high contrast details in the central text-safe area."
   ]

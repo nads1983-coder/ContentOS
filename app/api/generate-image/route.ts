@@ -154,7 +154,7 @@ export async function POST(request: Request) {
     brandName: cleanText(brandContextInput.brandName, 140),
     audience: cleanText(brandContextInput.audience, 220),
     offer: cleanText(brandContextInput.offer, 220),
-    brandVoice: cleanText(brandContextInput.brandVoice, 180),
+    writingStyle: cleanText(brandContextInput.writingStyle, 180),
     contentGoal: cleanText(brandContextInput.contentGoal, 180),
     brandColors: cleanText(brandContextInput.brandColors, 180),
     visualStyle: cleanText(brandContextInput.visualStyle, 180),

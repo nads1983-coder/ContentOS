@@ -43,7 +43,7 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "X/Twitter Post",
     shortLabel: "X Post",
     group: "twitter",
-    prompt: "One concise X/Twitter post with a sharp idea, natural voice, and a clean ending."
+    prompt: "One concise X/Twitter post with a sharp idea, natural style, and a clean ending."
   },
   {
     id: "facebook",
@@ -248,7 +248,7 @@ export const presetTopics: Array<{
   {
     id: "personal-brand",
     label: "Personal Brand",
-    description: "Founder voice, credibility, visibility, trust, and audience connection."
+    description: "Founder style, credibility, visibility, trust, and audience connection."
   },
   {
     id: "motivation",

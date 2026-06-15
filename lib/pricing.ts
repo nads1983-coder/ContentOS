@@ -40,7 +40,7 @@ export const pricingPlans: MarketingPlan[] = [
       "Formatter tools",
       "Saved library",
       "Export tools",
-      "Brand voice memory"
+      "Writing style memory"
     ],
     featured: true,
     cta: "Start Creating"
