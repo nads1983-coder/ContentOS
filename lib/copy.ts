@@ -1,7 +1,10 @@
+import { formatSectionPlainText } from "./output-format";
 import { cleanPlainText } from "./text-normalize";
+import type { GeneratedSection } from "../types/content";
 
 type CopyOptions = {
   allowImagePrompt?: boolean;
+  sourceText?: string;
 };
 
 type RecordValue = Record<string, unknown>;
@@ -42,6 +45,14 @@ const blockedKeyPattern =
 
 function isRecord(value: unknown): value is RecordValue {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function isGeneratedSection(value: RecordValue) {
+  return typeof value.type === "string" && (
+    typeof value.body === "string" ||
+    Array.isArray(value.items) ||
+    typeof value.cta === "string"
+  );
 }
 
 function canUseKey(key: string, options: CopyOptions) {
@@ -169,6 +180,14 @@ export function buildSectionCopyText(section: unknown, options: CopyOptions = {}
     return normaliseCopyText(section, options);
   }
 
+  if (isGeneratedSection(section)) {
+    const formattedText = formatSectionPlainText(section as unknown as GeneratedSection, options.sourceText);
+
+    if (formattedText) {
+      return formattedText;
+    }
+  }
+
   const itemsText = Array.isArray(section.items)
     ? section.items.map((item) => typeof item === "string" ? cleanTextSegment(item) : "").filter(Boolean).join("\n")
     : tryNormaliseCopyText(section.items, options);
@@ -188,21 +207,23 @@ export function buildSectionCopyText(section: unknown, options: CopyOptions = {}
       },
       options
     ),
-    itemsText,
-    tryNormaliseCopyText(section.cta, options)
+    tryNormaliseCopyText(section.cta, options),
+    itemsText
   ].filter(Boolean);
 
   if (!parts.length) {
     return normaliseCopyText(section, options);
   }
 
-  return parts.join("\n\n");
+  return cleanTextSegment(parts.join("\n\n"));
 }
 
 export function buildGenerationCopyText(value: unknown, options: CopyOptions = {}) {
   if (isRecord(value) && Array.isArray(value.sections)) {
+    const sourceText = typeof value.source === "string" ? value.source : options.sourceText;
+
     return normaliseCopyText(
-      value.sections.map((section) => buildSectionCopyText(section, options)),
+      value.sections.map((section) => buildSectionCopyText(section, { ...options, sourceText })),
       options
     );
   }

@@ -249,18 +249,7 @@ function isPaidContentType(id: ContentTypeId) {
 }
 
 function buildGenerationText(result: GenerationResult) {
-  return cleanPlainText(result.sections
-    .map((section) =>
-      [
-        section.title,
-        section.body,
-        ...section.items.map((item) => `- ${item}`),
-        section.cta ? `CTA: ${section.cta}` : ""
-      ]
-        .filter(Boolean)
-        .join("\n\n")
-    )
-    .join("\n\n---\n\n"));
+  return buildGenerationCopyText(result);
 }
 
 function refineText(text: string, action: string) {
@@ -815,7 +804,7 @@ export function StudioShell({
   async function copySection(section: GeneratedSection) {
     try {
       setError("");
-      await copyPlainText(buildSectionCopyText(section));
+      await copyPlainText(buildSectionCopyText(section, { sourceText: result.source }));
       setCopiedId(section.id);
       window.setTimeout(() => setCopiedId(""), 1400);
     } catch (copyError) {
@@ -840,14 +829,7 @@ export function StudioShell({
     setImagePending(true);
     setImageError("");
 
-    const outputText = cleanPlainText([
-      section.title,
-      section.body,
-      ...section.items.map((item) => `- ${item}`),
-      section.cta ? `CTA: ${section.cta}` : ""
-    ]
-      .filter(Boolean)
-      .join("\n\n"));
+    const outputText = buildSectionCopyText(section, { sourceText: result.source });
 
     try {
       const response = await fetch("/api/generate-image", {
@@ -998,7 +980,7 @@ export function StudioShell({
               onCopyRefinement={async (section, action) => {
                 try {
                   setError("");
-                  const sectionText = buildSectionCopyText(section);
+                  const sectionText = buildSectionCopyText(section, { sourceText: result.source });
                   await copyPlainText(refineText(sectionText, action));
                   setCopiedId(`${section.id}-${action}`);
                   window.setTimeout(() => setCopiedId(""), 1400);

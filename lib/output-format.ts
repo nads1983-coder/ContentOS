@@ -1,4 +1,3 @@
-import { normaliseCopyText } from "./copy";
 import { cleanPlainText, normalizePlainTextLines } from "./text-normalize";
 import type { ContentTypeId, GeneratedSection } from "../types/content";
 
@@ -28,12 +27,20 @@ export type FormattedOutput = {
 
 const hashtagPattern = /#[\p{L}\p{N}_]+/gu;
 
-function cleanDisplayText(value: unknown) {
-  try {
-    return normaliseCopyText(value);
-  } catch {
-    return "";
+function cleanDisplayText(value: unknown): string {
+  if (typeof value === "string") {
+    return cleanPlainText(value);
   }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return cleanPlainText(String(value));
+  }
+
+  if (Array.isArray(value)) {
+    return cleanPlainText(value.map(cleanDisplayText).filter(Boolean).join("\n"));
+  }
+
+  return "";
 }
 
 function splitParagraphs(value: string) {
@@ -454,4 +461,26 @@ export function formatOutputSection(section: GeneratedSection, source?: string):
   };
 
   return formatters[section.type]?.() ?? formatDefault(section);
+}
+
+function blockToPlainText(block: OutputBlock) {
+  const body = cleanPlainText(block.lines.join("\n"));
+
+  if (!body) {
+    return "";
+  }
+
+  if (block.kind === "subject" || block.kind === "title" || block.kind === "preview" || block.kind === "platform") {
+    return `${block.label}:\n${body}`;
+  }
+
+  return body;
+}
+
+export function formattedOutputToPlainText(output: FormattedOutput) {
+  return cleanPlainText(output.blocks.map(blockToPlainText).filter(Boolean).join("\n\n"));
+}
+
+export function formatSectionPlainText(section: GeneratedSection, source?: string) {
+  return formattedOutputToPlainText(formatOutputSection(section, source));
 }
