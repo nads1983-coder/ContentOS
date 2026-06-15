@@ -321,9 +321,10 @@ function formatThread(section: GeneratedSection) {
 }
 
 function formatTwitterPost(section: GeneratedSection) {
-  const body = removeHashtagOnlyLines(baseBody(section));
+  const rawBody = baseBody(section);
   const items = baseItems(section);
-  const hashtags = extractHashtags([baseBody(section), ...items]);
+  const body = removeHashtagTokens(removeHashtagOnlyLines(rawBody));
+  const hashtags = extractHashtags([rawBody, ...items]);
   const cta = baseCta(section);
 
   return {
@@ -336,15 +337,15 @@ function formatTwitterPost(section: GeneratedSection) {
 }
 
 function formatFacebook(section: GeneratedSection) {
-  const body = removeHashtagOnlyLines(baseBody(section));
+  const rawBody = baseBody(section);
   const items = baseItems(section);
-  const hashtags = extractHashtags([baseBody(section), ...items]);
+  const body = removeHashtagTokens(removeHashtagOnlyLines(rawBody));
+  const hashtags = extractHashtags([rawBody, ...items]);
   const cta = baseCta(section);
 
   return {
     blocks: compact([
       makeBlock("body", "Post Body", splitParagraphs(body)),
-      makeBlock("items", "Post notes", items.filter((item) => !item.includes("#"))),
       makeBlock("cta", "CTA", cta ? [cta] : []),
       makeBlock("hashtags", "Suggested Hashtags", hashtags)
     ])
@@ -397,9 +398,11 @@ function formatEmail(section: GeneratedSection) {
 }
 
 function formatLinkedIn(section: GeneratedSection) {
-  const body = baseBody(section);
+  const rawBody = baseBody(section);
   const cta = baseCta(section);
   const items = baseItems(section);
+  const body = removeHashtagTokens(removeHashtagOnlyLines(rawBody));
+  const hashtags = extractHashtags([rawBody, ...items]);
   const paragraphs = splitParagraphs(body);
 
   return {
@@ -407,7 +410,7 @@ function formatLinkedIn(section: GeneratedSection) {
       makeBlock("hook", "Opening Line", paragraphs[0] ? [paragraphs[0]] : []),
       makeBlock("body", "Post Body", paragraphs.slice(1)),
       makeBlock("cta", "CTA", cta ? [cta] : []),
-      makeBlock("items", "Suggested Hashtags", items)
+      makeBlock("hashtags", "Suggested Hashtags", hashtags)
     ])
   };
 }
@@ -464,7 +467,8 @@ export function formatOutputSection(section: GeneratedSection, source?: string):
 }
 
 function blockToPlainText(block: OutputBlock) {
-  const body = cleanPlainText(block.lines.join("\n"));
+  const separator = block.kind === "hashtags" || block.kind === "tags" ? "\n" : "\n\n";
+  const body = cleanPlainText(block.lines.join(separator));
 
   if (!body) {
     return "";

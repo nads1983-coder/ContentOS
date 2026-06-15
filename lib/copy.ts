@@ -233,6 +233,7 @@ export function buildGenerationCopyText(value: unknown, options: CopyOptions = {
 
 export async function copyPlainText(value: unknown, options: CopyOptions = {}) {
   const text = normaliseCopyText(value, options);
+  console.log("[CONTENTOS-CLIPBOARD-PAYLOAD]", text);
   await navigator.clipboard.writeText(text);
   return text;
 }
