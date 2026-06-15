@@ -15,9 +15,32 @@ function cleanString(value: unknown) {
   return typeof value === "string" ? cleanPlainText(value) : "";
 }
 
-function cleanGenerationResult(result: GenerationResult): GenerationResult {
+type NormalizableGenerationResult = GenerationResult & {
+  created_at?: unknown;
+  generatedAt?: unknown;
+  timestamp?: unknown;
+};
+
+function cleanTimestamp(value: unknown) {
+  if (typeof value !== "string" || !value.trim()) {
+    return "";
+  }
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toISOString();
+}
+
+function timestampFromResult(result: NormalizableGenerationResult) {
+  return cleanTimestamp(result.createdAt)
+    || cleanTimestamp(result.created_at)
+    || cleanTimestamp(result.generatedAt)
+    || cleanTimestamp(result.timestamp);
+}
+
+function cleanGenerationResult(result: NormalizableGenerationResult): GenerationResult {
   return {
     ...result,
+    createdAt: timestampFromResult(result),
     source: cleanString(result.source),
     title: cleanString(result.title),
     summary: cleanString(result.summary),
@@ -35,6 +58,7 @@ function cleanGenerationResult(result: GenerationResult): GenerationResult {
 function cleanDraft(draft: Draft): Draft {
   return {
     ...draft,
+    updatedAt: cleanTimestamp(draft.updatedAt),
     title: cleanString(draft.title),
     source: cleanString(draft.source)
   };
@@ -88,7 +112,10 @@ export function writeStore(store: StudioStore) {
 }
 
 export function addRecent(store: StudioStore, result: GenerationResult): StudioStore {
-  const cleanedResult = cleanGenerationResult(result);
+  const cleanedResult = {
+    ...cleanGenerationResult(result),
+    createdAt: timestampFromResult(result) || new Date().toISOString()
+  };
 
   return {
     ...store,
@@ -98,7 +125,10 @@ export function addRecent(store: StudioStore, result: GenerationResult): StudioS
 
 export function toggleSaved(store: StudioStore, result: GenerationResult): StudioStore {
   const exists = store.saved.some((item) => item.id === result.id);
-  const cleanedResult = cleanGenerationResult(result);
+  const cleanedResult = {
+    ...cleanGenerationResult(result),
+    createdAt: timestampFromResult(result) || new Date().toISOString()
+  };
 
   return {
     ...store,

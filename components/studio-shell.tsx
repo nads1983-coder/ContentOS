@@ -88,7 +88,7 @@ import type { UsageSummary } from "@/types/saas";
 const starterText =
   "We just launched a lightweight planning service for busy founders who need consistent content but do not have time to turn every idea into platform-ready posts.";
 
-const sampleCreatedAt = "2026-01-01T09:00:00.000Z";
+const sampleCreatedAt = "";
 
 const sampleResult: GenerationResult = {
   id: "sample",
@@ -161,13 +161,23 @@ const sampleResult: GenerationResult = {
   ]
 };
 
-function formatDate(value: string) {
+function formatDate(value?: string | null) {
+  if (!value) {
+    return "Date unavailable";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Date unavailable";
+  }
+
   return new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit"
-  }).format(new Date(value));
+  }).format(date);
 }
 
 function isSaved(store: StudioStore, result?: GenerationResult) {
