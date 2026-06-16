@@ -16,7 +16,10 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
-  const { plan } = (await request.json()) as { plan?: BillingPlan };
+  const { plan, founderOffer } = (await request.json()) as {
+    plan?: BillingPlan;
+    founderOffer?: boolean;
+  };
 
   if (!plan || !["pro_creator", "pro_studio"].includes(plan)) {
     return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
@@ -75,7 +78,8 @@ export async function POST(request: Request) {
       plan,
       userId: user?.id,
       email: user?.email,
-      stripeCustomerId: subscriptionState.stripeCustomerId ?? profile?.stripe_customer_id
+      stripeCustomerId: subscriptionState.stripeCustomerId ?? profile?.stripe_customer_id,
+      founderOffer: Boolean(founderOffer && plan === "pro_creator")
     });
 
     return NextResponse.json({ url: session.url });

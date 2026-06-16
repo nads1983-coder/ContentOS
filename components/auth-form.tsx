@@ -2,29 +2,38 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { clearPendingCheckout, getPendingCheckout } from "@/components/billing-buttons";
+import {
+  clearPendingCheckout,
+  getPendingCheckout,
+  getPendingFounderOffer
+} from "@/components/billing-buttons";
 import { BillingPlan } from "@/lib/pricing";
 
 type AuthFormProps = {
   mode: "login" | "signup" | "reset";
   initialPlan?: BillingPlan | null;
+  initialFounderOffer?: boolean;
 };
 
-export function AuthForm({ mode, initialPlan = null }: AuthFormProps) {
+export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [messageKind, setMessageKind] = useState<"success" | "error" | "info">("info");
   const [isPending, setIsPending] = useState(false);
   const [pendingPlan, setPendingPlan] = useState<BillingPlan | null>(null);
+  const [pendingFounderOffer, setPendingFounderOffer] = useState(initialFounderOffer);
   const endpoint = mode === "login" ? "/api/auth/login" : mode === "signup" ? "/api/auth/signup" : "/api/auth/reset";
   const checkoutPlan = initialPlan ?? pendingPlan;
   const planQuery = checkoutPlan ? `?plan=${checkoutPlan}` : "";
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => setPendingPlan(getPendingCheckout()), 0);
+    const timeout = window.setTimeout(() => {
+      setPendingPlan(getPendingCheckout());
+      setPendingFounderOffer(initialFounderOffer || getPendingFounderOffer());
+    }, 0);
     return () => window.clearTimeout(timeout);
-  }, []);
+  }, [initialFounderOffer]);
 
   async function continueToCheckout() {
     if (!checkoutPlan) {
@@ -36,7 +45,7 @@ export function AuthForm({ mode, initialPlan = null }: AuthFormProps) {
     const response = await fetch("/api/billing/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan: checkoutPlan })
+      body: JSON.stringify({ plan: checkoutPlan, founderOffer: pendingFounderOffer })
     });
     const data = (await response.json()) as {
       url?: string;

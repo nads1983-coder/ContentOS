@@ -32,6 +32,11 @@ type StripeCustomer = {
   email?: string;
 };
 
+type StripePromotionCode = {
+  id: string;
+  code: string;
+};
+
 export type StripeSubscriptionState = {
   plan: PlanId;
   status: SubscriptionStatus;
@@ -96,6 +101,17 @@ function stripePriceId(plan: BillingPlan) {
   return plan === "pro_creator"
     ? env.stripeProCreatorPriceId
     : env.stripeProStudioPriceId;
+}
+
+async function findActivePromotionCodeId(code: string) {
+  const query = new URLSearchParams({
+    active: "true",
+    code,
+    limit: "1"
+  });
+
+  const result = await stripeGet<StripeList<StripePromotionCode>>("promotion_codes", query);
+  return result.data[0]?.id ?? null;
 }
 
 async function stripeRequest<T>(path: string, body: URLSearchParams) {
@@ -495,6 +511,7 @@ export async function createCheckoutSession(input: {
   userId?: string;
   email?: string;
   stripeCustomerId?: string;
+  founderOffer?: boolean;
 }) {
   const price = stripePriceId(input.plan);
 
@@ -506,12 +523,32 @@ export async function createCheckoutSession(input: {
     mode: "subscription",
     success_url: stripeRedirectUrl("/success?session_id={CHECKOUT_SESSION_ID}"),
     cancel_url: stripeRedirectUrl("/cancel"),
-    allow_promotion_codes: true,
     "line_items[0][price]": price,
     "line_items[0][quantity]": "1",
     "metadata[plan]": input.plan,
     "subscription_data[metadata][plan]": input.plan
   }).map(([key, value]) => [key, String(value)]));
+
+  if (input.founderOffer && input.plan === "pro_creator") {
+    try {
+      const promotionCodeId = await findActivePromotionCodeId("FOUNDING100");
+
+      if (promotionCodeId) {
+        body.set("discounts[0][promotion_code]", promotionCodeId);
+        body.set("metadata[founder_offer]", "FOUNDING100");
+        body.set("subscription_data[metadata][founder_offer]", "FOUNDING100");
+      } else {
+        body.set("allow_promotion_codes", "true");
+      }
+    } catch (error) {
+      console.warn("Unable to pre-apply FOUNDING100 promotion code", {
+        message: error instanceof Error ? error.message : "Unknown Stripe promotion code lookup error"
+      });
+      body.set("allow_promotion_codes", "true");
+    }
+  } else {
+    body.set("allow_promotion_codes", "true");
+  }
 
   if (input.userId) {
     body.set("client_reference_id", input.userId);

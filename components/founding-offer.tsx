@@ -31,7 +31,7 @@ export function FoundingOffer({
               Full Creator access. Free forever. Limited to 100 users.
             </p>
             <p className="mt-3 max-w-2xl text-xs leading-5 text-muted">
-              Enter FOUNDING100 manually in Stripe Checkout. This offer is for the Creator plan only.
+              We try to apply FOUNDING100 automatically for Creator checkout. If Stripe asks for a code, use FOUNDING100.
             </p>
           </div>
           <div className="w-full min-w-0 lg:w-56">
@@ -39,6 +39,7 @@ export function FoundingOffer({
               plan={creatorPlan}
               authenticated={isLoggedIn}
               covered={covered}
+              founderOffer
               className="w-full"
             >
               {covered ? "Go to dashboard" : "Claim Founder Access"}

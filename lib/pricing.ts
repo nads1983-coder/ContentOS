@@ -30,7 +30,7 @@ export const pricingPlans: MarketingPlan[] = [
     billingPlan: "pro_creator",
     body: "AI social content generation for creators, founders and consultants.",
     socialProof: "Trusted by creators building consistently online.",
-    offerNote: "Founding100 offer available for the first 100 Creator users. Enter FOUNDING100 at checkout.",
+    offerNote: "Founding100 offer available for the first 100 Creator users. Claim it through the founder offer flow.",
     badge: "Most Popular",
     items: [
       "50 generations/month",

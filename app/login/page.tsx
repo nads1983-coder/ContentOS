@@ -17,6 +17,11 @@ function parseBillingPlan(value?: string | string[]): BillingPlan | null {
   return plan === "pro_creator" || plan === "pro_studio" ? plan : null;
 }
 
+function parseFounderOffer(value?: string | string[]) {
+  const flag = Array.isArray(value) ? value[0] : value;
+  return flag === "1" || flag === "true";
+}
+
 export default async function LoginPage({
   searchParams
 }: {
@@ -25,6 +30,7 @@ export default async function LoginPage({
   const user = await getCurrentUser();
   const params = await searchParams;
   const plan = parseBillingPlan(params?.plan);
+  const founderOffer = parseFounderOffer(params?.founder);
 
   if (user) {
     redirect("/dashboard");
@@ -39,7 +45,7 @@ export default async function LoginPage({
           Access your ContentOS workspace, saved content, usage, and billing.
         </p>
         <div className="mt-6">
-          <AuthForm mode="login" initialPlan={plan} />
+          <AuthForm mode="login" initialPlan={plan} initialFounderOffer={founderOffer} />
         </div>
         <Link href="/" className="mt-6 block text-sm text-muted hover:text-bone">
           Back to ContentOS

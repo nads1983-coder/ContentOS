@@ -8,13 +8,15 @@ export function CheckoutButton({
   children,
   className,
   authenticated,
-  covered
+  covered,
+  founderOffer = false
 }: {
   plan: "pro_creator" | "pro_studio";
   children: React.ReactNode;
   className?: string;
   authenticated?: boolean;
   covered?: boolean;
+  founderOffer?: boolean;
 }) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState("");
@@ -27,8 +29,8 @@ export function CheckoutButton({
     }
 
     if (authenticated === false) {
-      setPendingCheckout(plan);
-      window.location.href = `/signup?plan=${plan}`;
+      setPendingCheckout(plan, founderOffer);
+      window.location.href = `/signup?plan=${plan}${founderOffer ? "&founder=1" : ""}`;
       return;
     }
 
@@ -39,7 +41,7 @@ export function CheckoutButton({
       const response = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan })
+        body: JSON.stringify({ plan, founderOffer })
       });
       const data = (await response.json()) as {
         url?: string;
@@ -90,10 +92,15 @@ export function CheckoutButton({
   );
 }
 
-function setPendingCheckout(plan: "pro_creator" | "pro_studio") {
+function setPendingCheckout(plan: "pro_creator" | "pro_studio", founderOffer = false) {
   try {
     window.localStorage.setItem("contentos_pending_checkout_plan", plan);
     window.localStorage.setItem("contentos_pending_checkout_at", new Date().toISOString());
+    if (founderOffer) {
+      window.localStorage.setItem("contentos_pending_founder_offer", "1");
+    } else {
+      window.localStorage.removeItem("contentos_pending_founder_offer");
+    }
   } catch {
     // Some browsers block localStorage; query params still preserve the plan.
   }
@@ -108,10 +115,19 @@ export function getPendingCheckout(): "pro_creator" | "pro_studio" | null {
   }
 }
 
+export function getPendingFounderOffer() {
+  try {
+    return window.localStorage.getItem("contentos_pending_founder_offer") === "1";
+  } catch {
+    return false;
+  }
+}
+
 export function clearPendingCheckout() {
   try {
     window.localStorage.removeItem("contentos_pending_checkout_plan");
     window.localStorage.removeItem("contentos_pending_checkout_at");
+    window.localStorage.removeItem("contentos_pending_founder_offer");
   } catch {
     // Ignore storage cleanup failures.
   }

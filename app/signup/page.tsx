@@ -16,6 +16,11 @@ function parseBillingPlan(value?: string | string[]): BillingPlan | null {
   return plan === "pro_creator" || plan === "pro_studio" ? plan : null;
 }
 
+function parseFounderOffer(value?: string | string[]) {
+  const flag = Array.isArray(value) ? value[0] : value;
+  return flag === "1" || flag === "true";
+}
+
 export default async function SignupPage({
   searchParams
 }: {
@@ -24,6 +29,7 @@ export default async function SignupPage({
   const user = await getCurrentUser();
   const params = await searchParams;
   const plan = parseBillingPlan(params?.plan);
+  const founderOffer = parseFounderOffer(params?.founder);
 
   if (user) {
     redirect("/dashboard");
@@ -38,7 +44,7 @@ export default async function SignupPage({
           Start generating content packs and save your best outputs.
         </p>
         <div className="mt-6">
-          <AuthForm mode="signup" initialPlan={plan} />
+          <AuthForm mode="signup" initialPlan={plan} initialFounderOffer={founderOffer} />
         </div>
       </section>
     </main>

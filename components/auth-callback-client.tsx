@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BrandLogo } from "@/components/brand-logo";
-import { clearPendingCheckout, getPendingCheckout } from "@/components/billing-buttons";
+import {
+  clearPendingCheckout,
+  getPendingCheckout,
+  getPendingFounderOffer
+} from "@/components/billing-buttons";
 
 type CallbackState = "checking" | "confirmed-login-required" | "redirecting" | "error";
 
@@ -59,12 +63,13 @@ export function AuthCallbackClient() {
       }
 
       const pendingPlan = getPendingCheckout();
+      const pendingFounderOffer = getPendingFounderOffer();
 
       if (pendingPlan) {
         const checkoutResponse = await fetch("/api/billing/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ plan: pendingPlan })
+          body: JSON.stringify({ plan: pendingPlan, founderOffer: pendingFounderOffer })
         });
         const checkoutData = (await checkoutResponse.json()) as {
           url?: string;
