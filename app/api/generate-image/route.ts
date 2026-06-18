@@ -16,6 +16,7 @@ import {
   svgToDataUrl
 } from "@/lib/social-image";
 import { getMonthlyUsageCount, getUserProfileForUser, recordUsageEvent, syncUserSubscriptionState } from "@/lib/appwrite-rest";
+import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -88,7 +89,7 @@ export async function POST(request: Request) {
   let plan = normalizePlanId(profile.plan);
   let status = normalizeSubscriptionStatus(profile.subscription_status);
 
-  if (isStripeConfigured()) {
+  if (isStripeConfigured() && !hasManualLifetimeEntitlement(profile)) {
     try {
       const subscriptionState = reconcileActiveSubscriptionPlan(await getStripeSubscriptionState({
         stripeCustomerId: profile.stripe_customer_id,

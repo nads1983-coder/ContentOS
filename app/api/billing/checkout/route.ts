@@ -10,6 +10,7 @@ import {
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
 import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
+import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -39,6 +40,16 @@ export async function POST(request: Request) {
     const profile = user && isAppwriteAdminConfigured()
       ? await getUserProfileForUser(user.id, user.email)
       : null;
+
+    if (profile && hasManualLifetimeEntitlement(profile)) {
+      return NextResponse.json(
+        {
+          error: "Your lifetime Pro Studio access already includes this plan.",
+          redirectUrl: "/dashboard"
+        },
+        { status: 409 }
+      );
+    }
     const rawSubscriptionState = await getStripeSubscriptionState({
       stripeCustomerId: profile?.stripe_customer_id,
       stripeSubscriptionId: profile?.stripe_subscription_id,

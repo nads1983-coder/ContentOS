@@ -23,6 +23,7 @@ import {
 } from "@/lib/appwrite-rest";
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
+import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 
@@ -121,7 +122,7 @@ export default async function DashboardPage() {
     currentPeriodEnd: profile?.subscription_current_period_end
   });
 
-  if (profile && isStripeConfigured()) {
+  if (profile && isStripeConfigured() && !hasManualLifetimeEntitlement(profile)) {
     try {
       const subscriptionState = reconcileActiveSubscriptionPlan(await getStripeSubscriptionState({
         stripeCustomerId: profile.stripe_customer_id,
@@ -230,6 +231,7 @@ export default async function DashboardPage() {
   }
   const plan = normalizePlanId(profile?.plan);
   const status = normalizeSubscriptionStatus(profile?.subscription_status);
+  const hasLifetimeAccess = hasManualLifetimeEntitlement(profile);
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
   const canUpgradeToCreator = !hasActiveSubscription;
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
@@ -289,9 +291,11 @@ export default async function DashboardPage() {
                 : status}
             </p>
             <p className="mt-2 text-sm text-muted">
-              {profile?.subscription_cancel_at_period_end && hasActiveSubscription
-                ? "Paid until"
-                : "Renewal date"}: {formatDate(profile?.subscription_current_period_end)}
+              {hasLifetimeAccess
+                ? "Access: Lifetime / no expiry"
+                : `${profile?.subscription_cancel_at_period_end && hasActiveSubscription
+                  ? "Paid until"
+                  : "Renewal date"}: ${formatDate(profile?.subscription_current_period_end)}`}
             </p>
             {profile?.subscription_cancel_at_period_end ? (
               <p className="mt-2 rounded border border-gold/40 bg-gold/10 p-3 text-sm text-bone">
@@ -309,7 +313,7 @@ export default async function DashboardPage() {
               ) : null}
               {!canUpgradeToCreator && !canUpgradeToStudio ? (
                 <p className="rounded border border-white/10 bg-white/[0.035] p-3 text-sm text-muted">
-                  Your current plan is active.
+                  {hasLifetimeAccess ? "Your lifetime Pro Studio access is active." : "Your current plan is active."}
                 </p>
               ) : null}
               {profile?.stripe_customer_id ? <ManageBillingButton /> : null}

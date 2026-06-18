@@ -13,6 +13,7 @@ import {
 import { getMonthlyUsageCount, getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
 import { buildUsageSummary } from "@/lib/usage";
 import type { PlanId, UsageSummary, UserProfile } from "@/types/saas";
+import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 
@@ -70,6 +71,14 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
 
   if (!profile) {
     return { plan: "free", authenticated: true, usage: buildUsageSummary("free", 0) };
+  }
+
+  if (hasManualLifetimeEntitlement(profile)) {
+    return {
+      plan: "pro_studio",
+      authenticated: true,
+      usage: await usageForProfile(profile, "pro_studio")
+    };
   }
 
   if (isStripeConfigured()) {

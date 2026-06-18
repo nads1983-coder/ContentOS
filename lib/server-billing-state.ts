@@ -9,6 +9,7 @@ import {
 } from "@/lib/stripe-rest";
 import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
 import { PlanId, SubscriptionStatus, UserProfile } from "@/types/saas";
+import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
 
 export type ServerBillingState = {
   isLoggedIn: boolean;
@@ -45,6 +46,10 @@ export async function getServerBillingState(): Promise<ServerBillingState> {
       plan: "free",
       status: "none"
     };
+  }
+
+  if (hasManualLifetimeEntitlement(profile)) {
+    return { isLoggedIn: true, plan: "pro_studio", status: "active" };
   }
 
   if (isStripeConfigured()) {

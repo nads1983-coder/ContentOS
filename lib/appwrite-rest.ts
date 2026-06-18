@@ -3,6 +3,7 @@ import { createAppwriteAdminClient } from "@/lib/appwrite";
 import { getEnv, isAppwriteAdminConfigured } from "@/lib/env";
 import { normalizePlanId, normalizeSubscriptionStatus } from "@/lib/stripe-rest";
 import { currentUsageWindow } from "@/lib/usage";
+import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
 import {
   BrandProfile,
   OnboardingData,
@@ -80,7 +81,8 @@ function toUserProfile(document: AppwriteProfileDocument): UserProfile {
     subscription_status: normalizeSubscriptionStatus(document.subscription_status),
     subscription_current_period_end: document.subscription_current_period_end ?? null,
     subscription_cancel_at_period_end: document.subscription_cancel_at_period_end ?? false,
-    subscription_canceled_at: document.subscription_canceled_at ?? null
+    subscription_canceled_at: document.subscription_canceled_at ?? null,
+    entitlement_source: document.entitlement_source ?? null
   };
 }
 
@@ -95,6 +97,7 @@ function profilePayload(profile: Partial<UserProfile> & { id: string; email: str
     subscription_current_period_end: profile.subscription_current_period_end ?? null,
     subscription_cancel_at_period_end: profile.subscription_cancel_at_period_end ?? false,
     subscription_canceled_at: profile.subscription_canceled_at ?? null,
+    entitlement_source: profile.entitlement_source ?? undefined,
     updated_at: new Date().toISOString()
   });
 }
@@ -337,6 +340,11 @@ export async function updateSubscriptionStatus(input: {
   const updated: UserProfile[] = [];
 
   for (const profile of matchingProfiles) {
+    if (hasManualLifetimeEntitlement(profile)) {
+      updated.push(profile);
+      continue;
+    }
+
     const saved = await updateProfileDocument(profile.id, {
       plan: normalizePlanId(input.plan),
       subscription_status: normalizeSubscriptionStatus(input.status),
