@@ -643,7 +643,6 @@ export async function retrieveCheckoutSession(sessionId: string) {
   const query = new URLSearchParams();
   query.append("expand[]", "line_items.data.price");
   query.append("expand[]", "discounts.promotion_code");
-  query.append("expand[]", "total_details.breakdown.discounts.discount.promotion_code");
 
   return stripeGet<StripeCheckoutSession>(
     `checkout/sessions/${encodeURIComponent(sessionId)}`,
