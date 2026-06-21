@@ -1153,6 +1153,8 @@ function TopBar({
             <span className="h-2 w-2 rounded-full bg-goldSoft" />
             {plan === "pro_studio"
               ? "Pro Studio workspace"
+              : plan === "founder"
+                ? "Founder workspace"
               : plan === "pro_creator"
                 ? "Pro Creator workspace"
                 : "Free workspace"}
