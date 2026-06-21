@@ -543,9 +543,12 @@ export async function createCheckoutSession(input: {
 
   if (input.founderOffer && input.plan === "pro_creator") {
     const env = getEnv();
-    const couponId = env.stripeFounderCouponId;
-    const promotionCodeId = couponId
+    const configuredFounderDiscountId = env.stripeFounderCouponId;
+    const couponId = configuredFounderDiscountId.startsWith("promo_")
       ? ""
+      : configuredFounderDiscountId;
+    const promotionCodeId = configuredFounderDiscountId.startsWith("promo_")
+      ? configuredFounderDiscountId
       : env.stripeFounderPromotionCodeId || await findActivePromotionCodeId("FOUNDING100");
 
     if (couponId) {
