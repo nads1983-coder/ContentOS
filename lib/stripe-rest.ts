@@ -5,6 +5,7 @@ import { PlanId, SubscriptionStatus } from "@/types/saas";
 export type BillingPlan = "pro_creator" | "pro_studio";
 
 const apiVersion = "2026-02-25.clover";
+const stripeRequestTimeoutMs = 12_000;
 
 type StripeList<T> = {
   data: T[];
@@ -136,6 +137,7 @@ async function stripeRequest<T>(path: string, body: URLSearchParams) {
       "Stripe-Version": apiVersion
     },
     body,
+    signal: AbortSignal.timeout(stripeRequestTimeoutMs),
     cache: "no-store"
   });
 
@@ -164,6 +166,7 @@ async function stripeGet<T>(path: string, query?: URLSearchParams) {
       Authorization: `Bearer ${env.stripeSecretKey}`,
       "Stripe-Version": apiVersion
     },
+    signal: AbortSignal.timeout(stripeRequestTimeoutMs),
     cache: "no-store"
   });
 

@@ -8,6 +8,7 @@ import {
   FounderCheckoutError,
   getStripeSubscriptionState,
   hasActiveUnknownPaidSubscription,
+  planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
 import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
@@ -58,6 +59,29 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
+
+    if (founderOffer) {
+      if (profile && planHasActiveEntitlement(profile.plan, profile.subscription_status)) {
+        return NextResponse.json(
+          {
+            error: "Your active account already includes paid access.",
+            redirectUrl: "/dashboard"
+          },
+          { status: 409 }
+        );
+      }
+
+      const session = await createCheckoutSession({
+        plan: "pro_creator",
+        userId: profile?.id ?? user?.id,
+        email: user?.email,
+        stripeCustomerId: profile?.stripe_customer_id,
+        founderOffer: true
+      });
+
+      return NextResponse.json({ url: session.url });
+    }
+
     const rawSubscriptionState = await getStripeSubscriptionState({
       stripeCustomerId: profile?.stripe_customer_id,
       stripeSubscriptionId: profile?.stripe_subscription_id,
