@@ -92,14 +92,20 @@ function profilePayload(profile: Partial<UserProfile> & { id: string; email: str
   return stripUndefined({
     email: profile.email,
     full_name: profile.full_name ?? undefined,
-    plan: normalizePlanId(profile.plan),
+    plan: profile.plan === undefined ? undefined : normalizePlanId(profile.plan),
     stripe_customer_id: profile.stripe_customer_id,
     stripe_subscription_id: profile.stripe_subscription_id,
     stripe_checkout_session_id: profile.stripe_checkout_session_id,
-    subscription_status: normalizeSubscriptionStatus(profile.subscription_status),
-    subscription_current_period_end: profile.subscription_current_period_end ?? null,
-    subscription_cancel_at_period_end: profile.subscription_cancel_at_period_end ?? false,
-    subscription_canceled_at: profile.subscription_canceled_at ?? null,
+    subscription_status: profile.subscription_status === undefined
+      ? undefined
+      : normalizeSubscriptionStatus(profile.subscription_status),
+    subscription_current_period_end: profile.subscription_current_period_end === undefined
+      ? undefined
+      : profile.subscription_current_period_end,
+    subscription_cancel_at_period_end: profile.subscription_cancel_at_period_end,
+    subscription_canceled_at: profile.subscription_canceled_at === undefined
+      ? undefined
+      : profile.subscription_canceled_at,
     entitlement_source: profile.entitlement_source ?? undefined,
     amount_paid: profile.amount_paid ?? undefined,
     updated_at: new Date().toISOString()
@@ -181,6 +187,11 @@ export async function upsertUserProfile(profile: Partial<UserProfile> & { id: st
       ...collection,
       documentId: profile.id,
       data: {
+        plan: "free",
+        subscription_status: "none",
+        subscription_current_period_end: null,
+        subscription_cancel_at_period_end: false,
+        subscription_canceled_at: null,
         ...payload,
         created_at: new Date().toISOString()
       }
