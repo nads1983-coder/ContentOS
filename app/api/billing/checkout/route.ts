@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { isAppwriteAdminConfigured, isAppwriteConfigured } from "@/lib/env";
+import { getEnv, isAppwriteAdminConfigured, isAppwriteConfigured } from "@/lib/env";
 import {
   checkoutPlanIsCoveredByState,
   createCheckoutSession,
   BillingPlan,
+  FounderCheckoutError,
   getStripeSubscriptionState,
   hasActiveUnknownPaidSubscription,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
 import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
-import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -26,11 +27,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
   }
 
-  if (isAppwriteConfigured() && !user) {
+  if (founderOffer && plan !== "pro_creator") {
+    return NextResponse.json(
+      { error: "Founder discount could not be applied. Please try again." },
+      { status: 400 }
+    );
+  }
+
+  if ((founderOffer || isAppwriteConfigured()) && !user) {
     return NextResponse.json(
       {
         error: "Create an account or log in before upgrading.",
-        redirectUrl: `/signup?plan=${plan}`
+        redirectUrl: `/signup?plan=${plan}${founderOffer ? "&founder=1" : ""}`
       },
       { status: 401 }
     );
@@ -41,10 +49,10 @@ export async function POST(request: Request) {
       ? await getUserProfileForUser(user.id, user.email)
       : null;
 
-    if (profile && hasManualLifetimeEntitlement(profile)) {
+    if (profile && hasLifetimeEntitlement(profile)) {
       return NextResponse.json(
         {
-          error: "Your lifetime Pro Studio access already includes this plan.",
+          error: "Your lifetime access already includes this plan.",
           redirectUrl: "/dashboard"
         },
         { status: 409 }
@@ -95,6 +103,23 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
+    if (founderOffer) {
+      const env = getEnv();
+      console.error("[Founder Checkout] Failed to apply founder discount", {
+        userId: user?.id,
+        email: user?.email,
+        couponId: env.stripeFounderCouponId || undefined,
+        promotionCodeId: env.stripeFounderPromotionCodeId || undefined,
+        error: error instanceof Error ? error.message : "Unknown founder checkout error",
+        errorType: error instanceof FounderCheckoutError ? error.name : "StripeCheckoutError"
+      });
+
+      return NextResponse.json(
+        { error: "Founder discount could not be applied. Please try again." },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Checkout failed." },
       { status: 500 }

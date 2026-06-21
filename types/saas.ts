@@ -30,10 +30,12 @@ export type UserProfile = {
   subscription_status: SubscriptionStatus;
   stripe_customer_id?: string;
   stripe_subscription_id?: string;
+  stripe_checkout_session_id?: string;
   subscription_current_period_end?: string | null;
   subscription_cancel_at_period_end?: boolean | null;
   subscription_canceled_at?: string | null;
   entitlement_source?: string | null;
+  amount_paid?: number | null;
   onboarding_completed?: boolean;
   created_at?: string;
   updated_at?: string;

@@ -42,7 +42,7 @@ const faqs = [
   {
     question: "Do I need a coupon code?",
     answer:
-      "We try to apply FOUNDING100 automatically for this page. If Stripe asks for a code, enter FOUNDING100 at checkout."
+      "No. The Founder discount is applied automatically before Stripe Checkout opens. If the discount cannot be confirmed, we will stop the checkout rather than send you to a paid session."
   },
   {
     question: "Who is this for?",
@@ -54,7 +54,7 @@ const faqs = [
 export default async function FounderPage() {
   const billingState = await getServerBillingState();
   const covered = planCoversPlan(billingState.plan, creatorPlan);
-  const cta = covered ? "Go to Your Workspace" : "Claim Your Free Lifetime Account";
+  const cta = covered ? "Go to Your Workspace" : "Claim Free Founder Access";
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-ink text-bone">
@@ -94,8 +94,14 @@ export default async function FounderPage() {
                 {cta}
               </CheckoutButton>
             </div>
+            <p className="mt-4 max-w-xl text-sm font-medium leading-6 text-bone">
+              Founder access is free today. No card required when the founder discount is applied.
+            </p>
             <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-              Only 100 free lifetime founder accounts are available. We will try to apply the Founding100 offer automatically before checkout.
+              Create your account, confirm your £0 checkout, and start using GetContentOS.
+            </p>
+            <p className="mt-2 max-w-xl text-xs leading-5 text-muted">
+              Only 100 free lifetime founder accounts are available.
             </p>
           </div>
 
@@ -179,6 +185,9 @@ export default async function FounderPage() {
               {cta}
             </CheckoutButton>
           </div>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-muted">
+            Create your account, confirm your £0 checkout, and start using GetContentOS.
+          </p>
         </div>
       </section>
     </main>

@@ -66,6 +66,13 @@ export function AuthCallbackClient() {
       const pendingFounderOffer = getPendingFounderOffer();
 
       if (pendingPlan) {
+        if (pendingFounderOffer) {
+          setState("redirecting");
+          setMessage("Account confirmed. Opening your free Founder checkout summary...");
+          window.location.replace("/founder/checkout");
+          return;
+        }
+
         const checkoutResponse = await fetch("/api/billing/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

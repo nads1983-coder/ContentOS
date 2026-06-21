@@ -23,7 +23,7 @@ import {
 } from "@/lib/appwrite-rest";
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
-import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
     currentPeriodEnd: profile?.subscription_current_period_end
   });
 
-  if (profile && isStripeConfigured() && !hasManualLifetimeEntitlement(profile)) {
+  if (profile && isStripeConfigured() && !hasLifetimeEntitlement(profile)) {
     try {
       const subscriptionState = reconcileActiveSubscriptionPlan(await getStripeSubscriptionState({
         stripeCustomerId: profile.stripe_customer_id,
@@ -231,7 +231,7 @@ export default async function DashboardPage() {
   }
   const plan = normalizePlanId(profile?.plan);
   const status = normalizeSubscriptionStatus(profile?.subscription_status);
-  const hasLifetimeAccess = hasManualLifetimeEntitlement(profile);
+  const hasLifetimeAccess = hasLifetimeEntitlement(profile);
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
   const canUpgradeToCreator = !hasActiveSubscription;
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");

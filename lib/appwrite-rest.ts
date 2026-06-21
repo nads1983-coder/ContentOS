@@ -3,7 +3,7 @@ import { createAppwriteAdminClient } from "@/lib/appwrite";
 import { getEnv, isAppwriteAdminConfigured } from "@/lib/env";
 import { normalizePlanId, normalizeSubscriptionStatus } from "@/lib/stripe-rest";
 import { currentUsageWindow } from "@/lib/usage";
-import { hasManualLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement } from "@/lib/entitlements";
 import {
   BrandProfile,
   OnboardingData,
@@ -78,11 +78,13 @@ function toUserProfile(document: AppwriteProfileDocument): UserProfile {
     plan: normalizePlanId(document.plan),
     stripe_customer_id: document.stripe_customer_id,
     stripe_subscription_id: document.stripe_subscription_id,
+    stripe_checkout_session_id: document.stripe_checkout_session_id,
     subscription_status: normalizeSubscriptionStatus(document.subscription_status),
     subscription_current_period_end: document.subscription_current_period_end ?? null,
     subscription_cancel_at_period_end: document.subscription_cancel_at_period_end ?? false,
     subscription_canceled_at: document.subscription_canceled_at ?? null,
-    entitlement_source: document.entitlement_source ?? null
+    entitlement_source: document.entitlement_source ?? null,
+    amount_paid: document.amount_paid ?? null
   };
 }
 
@@ -93,11 +95,13 @@ function profilePayload(profile: Partial<UserProfile> & { id: string; email: str
     plan: normalizePlanId(profile.plan),
     stripe_customer_id: profile.stripe_customer_id,
     stripe_subscription_id: profile.stripe_subscription_id,
+    stripe_checkout_session_id: profile.stripe_checkout_session_id,
     subscription_status: normalizeSubscriptionStatus(profile.subscription_status),
     subscription_current_period_end: profile.subscription_current_period_end ?? null,
     subscription_cancel_at_period_end: profile.subscription_cancel_at_period_end ?? false,
     subscription_canceled_at: profile.subscription_canceled_at ?? null,
     entitlement_source: profile.entitlement_source ?? undefined,
+    amount_paid: profile.amount_paid ?? undefined,
     updated_at: new Date().toISOString()
   });
 }
@@ -317,9 +321,12 @@ export async function updateSubscriptionStatus(input: {
   status: SubscriptionStatus;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  stripeCheckoutSessionId?: string;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
   canceledAt?: string | null;
+  entitlementSource?: string;
+  amountPaid?: number;
 }) {
   const matchingProfiles: UserProfile[] = [];
 
@@ -340,7 +347,7 @@ export async function updateSubscriptionStatus(input: {
   const updated: UserProfile[] = [];
 
   for (const profile of matchingProfiles) {
-    if (hasManualLifetimeEntitlement(profile)) {
+    if (hasLifetimeEntitlement(profile)) {
       updated.push(profile);
       continue;
     }
@@ -350,9 +357,12 @@ export async function updateSubscriptionStatus(input: {
       subscription_status: normalizeSubscriptionStatus(input.status),
       stripe_customer_id: input.stripeCustomerId,
       stripe_subscription_id: input.stripeSubscriptionId,
+      stripe_checkout_session_id: input.stripeCheckoutSessionId,
       subscription_current_period_end: input.currentPeriodEnd ?? null,
       subscription_cancel_at_period_end: input.cancelAtPeriodEnd ?? false,
       subscription_canceled_at: input.canceledAt ?? null,
+      entitlement_source: input.entitlementSource,
+      amount_paid: input.amountPaid,
       updated_at: new Date().toISOString()
     });
     updated.push(toUserProfile(saved));
@@ -368,9 +378,12 @@ export async function syncUserSubscriptionState(input: {
   status: SubscriptionStatus;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  stripeCheckoutSessionId?: string;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
   canceledAt?: string | null;
+  entitlementSource?: string;
+  amountPaid?: number;
 }) {
   await upsertUserProfile({ id: input.userId, email: input.email });
   const rows = await updateSubscriptionStatus(input);

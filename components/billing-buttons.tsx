@@ -28,6 +28,14 @@ export function CheckoutButton({
       return;
     }
 
+    if (founderOffer) {
+      setPendingCheckout(plan, true);
+      window.location.href = authenticated === false
+        ? `/signup?plan=${plan}&founder=1`
+        : "/founder/checkout";
+      return;
+    }
+
     if (authenticated === false) {
       setPendingCheckout(plan, founderOffer);
       window.location.href = `/signup?plan=${plan}${founderOffer ? "&founder=1" : ""}`;
@@ -88,6 +96,72 @@ export function CheckoutButton({
         {isPending ? "Opening checkout..." : children}
       </button>
       {error ? <p className="text-xs text-goldSoft">{error}</p> : null}
+    </div>
+  );
+}
+
+export function FounderCheckoutButton({ className }: { className?: string }) {
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState("");
+
+  async function confirmFounderCheckout() {
+    if (isPending) return;
+
+    setIsPending(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: "pro_creator", founderOffer: true })
+      });
+      const data = (await response.json()) as {
+        url?: string;
+        error?: string;
+        redirectUrl?: string;
+      };
+
+      if (response.status === 401 && data.redirectUrl) {
+        setPendingCheckout("pro_creator", true);
+        window.location.href = data.redirectUrl;
+        return;
+      }
+
+      if (response.status === 409 && data.redirectUrl) {
+        clearPendingCheckout();
+        window.location.href = data.redirectUrl;
+        return;
+      }
+
+      if (!response.ok || !data.url) {
+        setError("Founder discount could not be applied. Please try again.");
+        return;
+      }
+
+      clearPendingCheckout();
+      window.location.href = data.url;
+    } catch {
+      setError("Founder discount could not be applied. Please try again.");
+    } finally {
+      setIsPending(false);
+    }
+  }
+
+  return (
+    <div className="grid gap-2">
+      <button
+        type="button"
+        onClick={confirmFounderCheckout}
+        disabled={isPending}
+        className={clsx(
+          "min-h-12 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted",
+          className
+        )}
+      >
+        {isPending ? "Confirming discount..." : "Confirm £0 Founder Checkout"}
+      </button>
+      {error ? <p className="text-sm text-goldSoft">{error}</p> : null}
     </div>
   );
 }

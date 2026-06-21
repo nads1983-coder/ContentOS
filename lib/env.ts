@@ -28,6 +28,8 @@ const serverEnv = {
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   stripeProCreatorPriceId: process.env.STRIPE_PRO_CREATOR_PRICE_ID ?? "",
   stripeProStudioPriceId: process.env.STRIPE_PRO_STUDIO_PRICE_ID ?? "",
+  stripeFounderCouponId: process.env.STRIPE_FOUNDER_COUPON_ID ?? "",
+  stripeFounderPromotionCodeId: process.env.STRIPE_FOUNDER_PROMOTION_CODE_ID ?? "",
   stripeLegacyProCreatorPriceIds: (process.env.STRIPE_LEGACY_PRO_CREATOR_PRICE_IDS ?? "")
     .split(",")
     .map((priceId) => priceId.trim())

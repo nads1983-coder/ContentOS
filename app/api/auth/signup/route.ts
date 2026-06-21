@@ -39,9 +39,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Appwrite Auth is not configured." }, { status: 503 });
   }
 
-  const { email, password } = (await request.json()) as {
+  const { email, password, fullName } = (await request.json()) as {
     email?: string;
     password?: string;
+    fullName?: string;
   };
 
   if (!email || !password || password.length < 8) {
@@ -56,13 +57,18 @@ export async function POST(request: Request) {
     const createdUser = await account.create({
       userId: ID.unique(),
       email,
-      password
+      password,
+      name: fullName?.trim() || undefined
     });
     const session = await account.createEmailPasswordSession({ email, password });
     const createdUserEmail = createdUser.email || email;
 
     try {
-      await upsertUserProfile({ id: createdUser.$id, email: createdUserEmail });
+      await upsertUserProfile({
+        id: createdUser.$id,
+        email: createdUserEmail,
+        full_name: fullName?.trim() || undefined
+      });
     } catch (error) {
       const details = safeErrorDetails(error);
       console.error(`${signupDiagnosticPrefix} profile sync failed`, {

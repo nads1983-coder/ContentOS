@@ -37,6 +37,13 @@ type StripePromotionCode = {
   code: string;
 };
 
+export class FounderCheckoutError extends Error {
+  constructor(message = "Founder discount could not be applied.") {
+    super(message);
+    this.name = "FounderCheckoutError";
+  }
+}
+
 export type StripeSubscriptionState = {
   plan: PlanId;
   status: SubscriptionStatus;
@@ -521,8 +528,10 @@ export async function createCheckoutSession(input: {
 
   const body = new URLSearchParams(Object.entries({
     mode: "subscription",
-    success_url: stripeRedirectUrl("/success?session_id={CHECKOUT_SESSION_ID}"),
-    cancel_url: stripeRedirectUrl("/cancel"),
+    success_url: stripeRedirectUrl(input.founderOffer
+      ? "/success?session_id={CHECKOUT_SESSION_ID}&founder=success"
+      : "/success?session_id={CHECKOUT_SESSION_ID}"),
+    cancel_url: stripeRedirectUrl(input.founderOffer ? "/founder/checkout?canceled=1" : "/cancel"),
     "line_items[0][price]": price,
     "line_items[0][quantity]": "1",
     "metadata[plan]": input.plan,
@@ -530,22 +539,27 @@ export async function createCheckoutSession(input: {
   }).map(([key, value]) => [key, String(value)]));
 
   if (input.founderOffer && input.plan === "pro_creator") {
-    try {
-      const promotionCodeId = await findActivePromotionCodeId("FOUNDING100");
+    const env = getEnv();
+    const couponId = env.stripeFounderCouponId;
+    const promotionCodeId = couponId
+      ? ""
+      : env.stripeFounderPromotionCodeId || await findActivePromotionCodeId("FOUNDING100");
 
-      if (promotionCodeId) {
-        body.set("discounts[0][promotion_code]", promotionCodeId);
-        body.set("metadata[founder_offer]", "FOUNDING100");
-        body.set("subscription_data[metadata][founder_offer]", "FOUNDING100");
-      } else {
-        body.set("allow_promotion_codes", "true");
-      }
-    } catch (error) {
-      console.warn("Unable to pre-apply FOUNDING100 promotion code", {
-        message: error instanceof Error ? error.message : "Unknown Stripe promotion code lookup error"
-      });
-      body.set("allow_promotion_codes", "true");
+    if (couponId) {
+      body.set("discounts[0][coupon]", couponId);
+    } else if (promotionCodeId) {
+      body.set("discounts[0][promotion_code]", promotionCodeId);
+    } else {
+      throw new FounderCheckoutError();
     }
+
+    body.set("payment_method_collection", "if_required");
+    body.set("metadata[offer]", "founder");
+    body.set("metadata[founder_offer]", "true");
+    body.set("metadata[expected_total]", "0");
+    body.set("subscription_data[metadata][offer]", "founder");
+    body.set("subscription_data[metadata][founder_offer]", "true");
+    body.set("subscription_data[metadata][expected_total]", "0");
   } else {
     body.set("allow_promotion_codes", "true");
   }
@@ -562,11 +576,37 @@ export async function createCheckoutSession(input: {
     body.set("customer_email", input.email);
   }
 
-  return stripeRequest<{ id: string; url: string }>("checkout/sessions", body);
+  const session = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body);
+
+  if (input.founderOffer && session.amount_total !== 0) {
+    try {
+      await stripeRequest(`checkout/sessions/${encodeURIComponent(session.id)}/expire`, new URLSearchParams());
+    } catch (error) {
+      console.error("[Founder Checkout] Failed to expire non-zero session", {
+        sessionId: session.id,
+        error: error instanceof Error ? error.message : "Unknown Stripe error"
+      });
+    }
+
+    throw new FounderCheckoutError("Founder Checkout Session total was not zero.");
+  }
+
+  if (!session.url) {
+    throw input.founderOffer
+      ? new FounderCheckoutError("Founder Checkout Session did not return a URL.")
+      : new Error("Stripe Checkout did not return a URL.");
+  }
+
+  return session;
 }
 
 export type StripeCheckoutSession = {
   id: string;
+  url?: string | null;
+  amount_total?: number | null;
+  payment_status?: string;
+  customer?: string | null;
+  subscription?: string | null;
   metadata?: Record<string, string>;
   discounts?: Array<{
     promotion_code?: string | {
@@ -614,6 +654,17 @@ export async function createCustomerPortalSession(input: {
       customer: input.customerId,
       return_url: stripeRedirectUrl("/dashboard")
     })
+  );
+}
+
+export async function scheduleFounderSubscriptionCancellation(subscriptionId: string) {
+  if (!subscriptionId) {
+    return;
+  }
+
+  await stripeRequest(
+    `subscriptions/${encodeURIComponent(subscriptionId)}`,
+    new URLSearchParams({ cancel_at_period_end: "true" })
   );
 }
 

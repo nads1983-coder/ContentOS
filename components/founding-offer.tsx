@@ -31,7 +31,7 @@ export function FoundingOffer({
               Full Creator access. Free forever. Limited to 100 users.
             </p>
             <p className="mt-3 max-w-2xl text-xs leading-5 text-muted">
-              We try to apply FOUNDING100 automatically for Creator checkout. If Stripe asks for a code, use FOUNDING100.
+              The Founder discount is applied automatically. No coupon entry or card is required when Stripe confirms the £0 total.
             </p>
           </div>
           <div className="w-full min-w-0 lg:w-56">

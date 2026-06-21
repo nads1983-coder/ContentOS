@@ -52,6 +52,8 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_WEBHOOK_SECRET=
 STRIPE_PRO_CREATOR_PRICE_ID=
 STRIPE_PRO_STUDIO_PRICE_ID=
+STRIPE_FOUNDER_COUPON_ID=
+STRIPE_FOUNDER_PROMOTION_CODE_ID=
 STRIPE_LEGACY_PRO_CREATOR_PRICE_IDS=
 STRIPE_LEGACY_PRO_STUDIO_PRICE_IDS=
 
@@ -90,10 +92,13 @@ The users collection should include these attributes:
 - `plan` string, optional
 - `stripe_customer_id` string, optional
 - `stripe_subscription_id` string, optional
+- `stripe_checkout_session_id` string, optional
 - `subscription_status` string, optional
 - `subscription_current_period_end` datetime/string, optional
 - `subscription_cancel_at_period_end` boolean, optional
 - `subscription_canceled_at` datetime/string, optional
+- `entitlement_source` string, optional
+- `amount_paid` integer, optional
 - `created_at` datetime/string, optional
 - `updated_at` datetime/string, optional
 - `brand_profiles_json` long text, optional
@@ -151,6 +156,8 @@ APPWRITE_USERS_COLLECTION_ID=
 Pro Creator: AI social content generation for creators, founders and consultants. Includes multi-platform outputs, formatter tools, repurposing packs and saved content library.
 
 Pro Studio: Advanced AI social content workspace for agencies, teams and high-volume creators. Includes multiple brand profiles, advanced workflows and expanded usage limits.
+
+The Founder flow prefers `STRIPE_FOUNDER_COUPON_ID` or `STRIPE_FOUNDER_PROMOTION_CODE_ID`. If neither is configured, it resolves the active `FOUNDING100` promotion code server-side. Founder checkout fails closed unless Stripe returns a £0 Checkout Session; users are never redirected to a payable fallback session.
 
 ## Scripts
 

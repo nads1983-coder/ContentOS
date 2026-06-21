@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 
 const { cleanPlainText } = await import("../lib/text-normalize.ts");
 const { buildUsageSummary, monthlyLimitForPlan } = await import("../lib/usage.ts");
+const { hasLifetimeEntitlement } = await import("../lib/entitlements.ts");
 const {
   buildSocialPosterContent,
   buildTextlessBackgroundPrompt,
@@ -22,6 +23,17 @@ assert.equal(freeUsage.remaining, 2);
 
 assert.equal(monthlyLimitForPlan("pro_creator"), 50);
 assert.equal(monthlyLimitForPlan("pro_studio"), 250);
+
+assert.equal(hasLifetimeEntitlement({
+  plan: "founder",
+  subscription_status: "active",
+  entitlement_source: "founder_offer"
+}), true);
+assert.equal(hasLifetimeEntitlement({
+  plan: "founder",
+  subscription_status: "canceled",
+  entitlement_source: "founder_offer"
+}), false);
 
 const posterContent = buildSocialPosterContent({
   outputText:

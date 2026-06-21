@@ -16,6 +16,7 @@ type AuthFormProps = {
 };
 
 export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false }: AuthFormProps) {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -25,7 +26,10 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
   const [pendingFounderOffer, setPendingFounderOffer] = useState(initialFounderOffer);
   const endpoint = mode === "login" ? "/api/auth/login" : mode === "signup" ? "/api/auth/signup" : "/api/auth/reset";
   const checkoutPlan = initialPlan ?? pendingPlan;
-  const planQuery = checkoutPlan ? `?plan=${checkoutPlan}` : "";
+  const founderFlow = initialFounderOffer || pendingFounderOffer;
+  const planQuery = checkoutPlan
+    ? `?plan=${checkoutPlan}${founderFlow ? "&founder=1" : ""}`
+    : founderFlow ? "?founder=1" : "";
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -36,6 +40,11 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
   }, [initialFounderOffer]);
 
   async function continueToCheckout() {
+    if (founderFlow) {
+      window.location.href = "/founder/checkout";
+      return;
+    }
+
     if (!checkoutPlan) {
       clearPendingCheckout();
       window.location.href = "/dashboard";
@@ -88,7 +97,7 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, fullName: founderFlow ? fullName : undefined })
       });
       const data = (await response.json()) as {
         error?: string;
@@ -135,6 +144,19 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
 
   return (
     <form onSubmit={submit} className="grid gap-4">
+      {mode === "signup" && founderFlow ? (
+        <label className="grid gap-2 text-sm font-semibold text-bone">
+          Name
+          <input
+            type="text"
+            value={fullName}
+            onChange={(event) => setFullName(event.target.value)}
+            autoComplete="name"
+            className="min-h-12 rounded border border-line bg-ink/70 px-3 text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
+            required
+          />
+        </label>
+      ) : null}
       <label className="grid gap-2 text-sm font-semibold text-bone">
         Email
         <input
@@ -157,6 +179,11 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
             required
           />
         </label>
+      ) : null}
+      {mode === "signup" && founderFlow ? (
+        <p className="text-sm leading-6 text-muted">
+          Your account is needed so we can unlock your Founder access.
+        </p>
       ) : null}
       {message ? (
         <p

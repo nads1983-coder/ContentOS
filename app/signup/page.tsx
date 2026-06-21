@@ -32,7 +32,7 @@ export default async function SignupPage({
   const founderOffer = parseFounderOffer(params?.founder);
 
   if (user) {
-    redirect("/dashboard");
+    redirect(founderOffer ? "/founder/checkout" : "/dashboard");
   }
 
   return (
@@ -41,7 +41,9 @@ export default async function SignupPage({
         <BrandLogo />
         <h1 className="mt-8 font-display text-3xl uppercase tracking-normal">Create account</h1>
         <p className="mt-2 text-sm leading-6 text-muted">
-          Start generating content packs and save your best outputs.
+          {founderOffer
+            ? "Create your account to claim your free Founder access."
+            : "Start generating content packs and save your best outputs."}
         </p>
         <div className="mt-6">
           <AuthForm mode="signup" initialPlan={plan} initialFounderOffer={founderOffer} />

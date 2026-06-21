@@ -33,7 +33,7 @@ export default async function LoginPage({
   const founderOffer = parseFounderOffer(params?.founder);
 
   if (user) {
-    redirect("/dashboard");
+    redirect(founderOffer ? "/founder/checkout" : "/dashboard");
   }
 
   return (

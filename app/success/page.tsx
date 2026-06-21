@@ -57,10 +57,17 @@ async function isFoundingCreatorCheckout(sessionId?: string | string[]) {
 
   try {
     const session = await retrieveCheckoutSession(id);
+    const hasVerifiedFounderMetadata =
+      session.metadata?.offer === "founder" &&
+      session.metadata?.founder_offer === "true" &&
+      session.metadata?.expected_total === "0" &&
+      session.amount_total === 0;
     const hasFoundingCode = checkoutSessionPromotionCodes(session)
       .some((code) => code.toUpperCase() === "FOUNDING100");
 
-    return hasFoundingCode && checkoutSessionIsCreator(session);
+    return (hasVerifiedFounderMetadata || hasFoundingCode) &&
+      session.amount_total === 0 &&
+      checkoutSessionIsCreator(session);
   } catch (error) {
     console.warn("Unable to inspect checkout session for founding member success message", {
       sessionId: id,
@@ -79,17 +86,23 @@ export default async function SuccessPage({
   const showFoundingMessage = await isFoundingCreatorCheckout(params?.session_id);
 
   return (
-    <PublicPage title="Subscription started">
+    <PublicPage title={showFoundingMessage ? "Founder access active" : "Subscription started"}>
       <ClearPendingCheckout />
-      <p>Your Pro subscription has been activated successfully.</p>
-      <p>You now have access to your upgraded ContentOS features.</p>
       {showFoundingMessage ? (
         <section className="rounded border border-gold/35 bg-gold/[0.08] p-4 text-bone">
           <p className="font-semibold text-goldSoft">
+            Your Founder access is active. You have not been charged.
+          </p>
+          <p className="mt-2 text-sm text-muted">
             You&apos;re in as a Founding Member. Start creating your first content pack.
           </p>
         </section>
-      ) : null}
+      ) : (
+        <>
+          <p>Your Pro subscription has been activated successfully.</p>
+          <p>You now have access to your upgraded ContentOS features.</p>
+        </>
+      )}
       <Link href="/dashboard" className="text-goldSoft hover:text-bone">
         Go to dashboard
       </Link>
