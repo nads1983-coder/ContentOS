@@ -916,11 +916,11 @@ export function StudioShell({
         onToggleMenu={() => setMenuOpen((value) => !value)}
       />
 
-      <div className="relative mx-auto block w-full max-w-none min-w-0 space-y-4 px-3 pb-6 pt-4 sm:max-w-7xl sm:px-5 lg:grid lg:grid-cols-[5rem_minmax(0,1fr)_22rem] lg:gap-5 lg:space-y-0 lg:px-6 lg:pt-6">
+      <div className="relative mx-auto block w-full max-w-none min-w-0 space-y-4 px-3 pb-6 pt-4 sm:px-5 lg:grid lg:max-w-[96rem] lg:grid-cols-[4.5rem_minmax(0,1fr)_19rem] lg:gap-4 lg:space-y-0 lg:px-6 lg:pt-6 xl:max-w-[104rem] xl:grid-cols-[5rem_minmax(0,1fr)_21rem] 2xl:max-w-[112rem] 2xl:grid-cols-[5rem_minmax(0,1fr)_22rem] 2xl:gap-5">
         <DesktopRail onNavigate={handleRailAction} />
 
-        <div className="w-full min-w-0 space-y-4">
-          <section className="block w-full min-w-0 space-y-4 2xl:grid 2xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] 2xl:gap-4 2xl:space-y-0">
+        <div className="w-full min-w-0 overflow-hidden space-y-4">
+          <section className="block w-full min-w-0 space-y-4 2xl:grid 2xl:grid-cols-[minmax(24rem,0.9fr)_minmax(32rem,1.1fr)] 2xl:gap-4 2xl:space-y-0">
             <ComposerPanel
               id="composer"
               source={source}
@@ -1649,17 +1649,17 @@ function OutputPanel({
     <section
       id={id}
       ref={containerRef}
-      className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-coal/88 p-4 backdrop-blur-xl sm:rounded sm:border sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-coal/88 p-4 backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <div className="min-w-0 overflow-hidden">
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
             Output workspace
           </p>
           <h2 className="mt-2 line-clamp-2 font-display text-[1.7rem] uppercase leading-none tracking-normal text-bone sm:truncate sm:text-2xl">
             {result.title}
           </h2>
-          <p className="mt-3 text-sm leading-6 text-muted sm:mt-2">{result.summary}</p>
+          <p className="mt-3 break-words text-sm leading-6 text-muted sm:mt-2">{result.summary}</p>
         </div>
         <button
           type="button"
@@ -2127,13 +2127,13 @@ function OutputCard({
   const formattedOutput = formatOutputSection(section, sourceText);
 
   return (
-    <article className="w-full min-w-0 rounded-2xl border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:rounded sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
+    <article className="w-full min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:rounded sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
       <div className="mb-4 flex flex-col gap-3 sm:mb-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
+        <div className="min-w-0 overflow-hidden">
           <p className="text-[0.72rem] uppercase tracking-[0.14em] text-violet sm:text-xs sm:tracking-[0.18em]">
             {section.platform}
           </p>
-          <h3 className="mt-2 text-xl font-semibold leading-6 text-bone sm:mt-1 sm:text-lg">{section.title}</h3>
+          <h3 className="mt-2 break-words text-xl font-semibold leading-6 text-bone sm:mt-1 sm:text-lg">{section.title}</h3>
           <p className="mt-2 text-xs text-muted sm:mt-1">{labelForContentType(section.type)}</p>
         </div>
         <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0 sm:flex-wrap">
@@ -2221,7 +2221,7 @@ function PlatformOutputBlocks({ blocks }: { blocks: OutputBlock[] }) {
   }
 
   return (
-    <div className="grid gap-3">
+    <div className="grid min-w-0 gap-3">
       {blocks.map((block) => (
         <PlatformOutputBlock key={block.id} block={block} />
       ))}
@@ -2232,18 +2232,18 @@ function PlatformOutputBlocks({ blocks }: { blocks: OutputBlock[] }) {
 function PlatformOutputBlock({ block }: { block: OutputBlock }) {
   if (block.kind === "thread") {
     return (
-      <div className="grid gap-2">
+      <div className="grid min-w-0 gap-2">
         <OutputBlockLabel>{block.label}</OutputBlockLabel>
-        <ol className="grid gap-2">
+        <ol className="grid min-w-0 gap-2">
           {block.lines.map((line, index) => (
             <li
               key={`${line}-${index}`}
-              className="grid grid-cols-[2rem_minmax(0,1fr)] gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] p-3 text-sm leading-6 text-bone/90 sm:rounded"
+              className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] p-3 text-sm leading-6 text-bone/90 sm:rounded"
             >
               <span className="grid h-7 w-7 place-items-center rounded-full border border-gold/50 bg-gold/10 text-xs font-semibold text-goldSoft">
                 {index + 1}
               </span>
-              <span className="whitespace-pre-line">{line}</span>
+              <span className="min-w-0 whitespace-pre-line break-words">{line}</span>
             </li>
           ))}
         </ol>
@@ -2253,13 +2253,13 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "hashtags" || block.kind === "tags") {
     return (
-      <div className="rounded-xl border border-gold/25 bg-gold/[0.07] p-3 sm:rounded">
+      <div className="min-w-0 rounded-xl border border-gold/25 bg-gold/[0.07] p-3 sm:rounded">
         <OutputBlockLabel>{block.label}</OutputBlockLabel>
         <div className="mt-2 flex flex-wrap gap-2">
           {block.lines.map((line) => (
             <span
               key={line}
-              className="rounded-full border border-gold/25 bg-ink/60 px-3 py-1.5 text-xs font-semibold text-goldSoft"
+              className="max-w-full break-words rounded-full border border-gold/25 bg-ink/60 px-3 py-1.5 text-xs font-semibold text-goldSoft"
             >
               {line}
             </span>
@@ -2271,11 +2271,11 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "platform") {
     return (
-      <div className="rounded-xl border border-white/[0.08] bg-white/[0.035] p-4 sm:rounded">
+      <div className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.035] p-4 sm:rounded">
         <OutputBlockLabel>{block.label}</OutputBlockLabel>
         <div className="mt-3 grid gap-3">
           {block.lines.map((line, index) => (
-            <p key={`${line}-${index}`} className="whitespace-pre-line text-sm leading-6 text-bone/92">
+            <p key={`${line}-${index}`} className="min-w-0 whitespace-pre-line break-words text-sm leading-6 text-bone/92">
               {line}
             </p>
           ))}
@@ -2286,11 +2286,11 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "hook" || block.kind === "subject" || block.kind === "title") {
     return (
-      <div className="rounded-xl border border-violet/30 bg-violet/10 p-4 text-sm leading-6 text-bone sm:rounded">
+      <div className="min-w-0 rounded-xl border border-violet/30 bg-violet/10 p-4 text-sm leading-6 text-bone sm:rounded">
         <OutputBlockLabel>{block.label}</OutputBlockLabel>
-        <div className="mt-2 grid gap-2">
+        <div className="mt-2 grid min-w-0 gap-2">
           {block.lines.map((line) => (
-            <p key={line} className="text-[0.98rem] font-semibold leading-7 text-bone">
+            <p key={line} className="min-w-0 break-words text-[0.98rem] font-semibold leading-7 text-bone">
               {line}
             </p>
           ))}
@@ -2301,11 +2301,11 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "cta" || block.kind === "preview") {
     return (
-      <div className="rounded-xl border border-violet/35 bg-violet/[0.08] p-4 text-sm leading-6 text-bone sm:rounded sm:p-3">
+      <div className="min-w-0 rounded-xl border border-violet/35 bg-violet/[0.08] p-4 text-sm leading-6 text-bone sm:rounded sm:p-3">
         <OutputBlockLabel>{block.label}</OutputBlockLabel>
-        <div className="mt-2 grid gap-2">
+        <div className="mt-2 grid min-w-0 gap-2">
           {block.lines.map((line) => (
-            <p key={line} className="whitespace-pre-line text-bone/92">
+            <p key={line} className="min-w-0 whitespace-pre-line break-words text-bone/92">
               {line}
             </p>
           ))}
@@ -2316,13 +2316,13 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "items") {
     return (
-      <div className="grid gap-2">
+      <div className="grid min-w-0 gap-2">
         <OutputBlockLabel>{block.label}</OutputBlockLabel>
-        <ul className="grid gap-2">
+        <ul className="grid min-w-0 gap-2">
           {block.lines.map((line) => (
             <li
               key={line}
-              className="rounded-lg border-l-2 border-gold/70 bg-white/[0.035] py-2.5 pl-3 pr-2 text-sm leading-6 text-muted sm:rounded-none sm:bg-ink/42 sm:py-2 sm:pr-0"
+              className="min-w-0 break-words rounded-lg border-l-2 border-gold/70 bg-white/[0.035] py-2.5 pl-3 pr-2 text-sm leading-6 text-muted sm:rounded-none sm:bg-ink/42 sm:py-2 sm:pr-0"
             >
               {line}
             </li>
@@ -2333,10 +2333,10 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
   }
 
   return (
-    <div className="grid gap-3">
+    <div className="grid min-w-0 gap-3">
       <OutputBlockLabel>{block.label}</OutputBlockLabel>
       {block.lines.map((line) => (
-        <p key={line} className="whitespace-pre-line text-[0.95rem] leading-7 text-bone/92">
+        <p key={line} className="min-w-0 whitespace-pre-line break-words text-[0.95rem] leading-7 text-bone/92">
           {line}
         </p>
       ))}
@@ -2765,7 +2765,7 @@ function HistoryPanel({
       />
       <aside
         className={clsx(
-          "fixed bottom-0 right-0 top-0 z-50 w-full max-w-md border-l border-white/10 bg-coal p-4 transition-transform duration-300 lg:static lg:z-auto lg:block lg:max-w-none lg:translate-x-0 lg:rounded lg:border lg:bg-white/[0.035] lg:p-4",
+          "fixed bottom-0 right-0 top-0 z-50 w-full max-w-md border-l border-white/10 bg-coal p-4 transition-transform duration-300 lg:static lg:z-auto lg:block lg:min-w-0 lg:max-w-none lg:translate-x-0 lg:overflow-hidden lg:rounded lg:border lg:bg-white/[0.035] lg:p-4",
           isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
         )}
       >
