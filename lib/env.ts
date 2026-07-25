@@ -38,7 +38,6 @@ const serverEnv = {
     .split(",")
     .map((priceId) => priceId.trim())
     .filter(Boolean),
-  plausibleDomain: process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN ?? "",
   posthogKey: process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "",
   sentryDsn: process.env.NEXT_PUBLIC_SENTRY_DSN ?? "",
   adminEmails: (process.env.ADMIN_EMAILS ?? "")

@@ -3,6 +3,10 @@ import Script from "next/script";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
 
+const nadineAnalyticsSiteId = process.env.NEXT_PUBLIC_NADINE_ANALYTICS_SITE_ID;
+const nadineAnalyticsTrackingKey = process.env.NEXT_PUBLIC_NADINE_ANALYTICS_TRACKING_KEY;
+const nadineAnalyticsEndpoint = process.env.NEXT_PUBLIC_NADINE_ANALYTICS_ENDPOINT ?? "https://nadine-analytics.vercel.app";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   applicationName: "GetContentOS",
@@ -72,24 +76,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const shouldLoadAnalytics = process.env.NODE_ENV === "production";
-
   return (
     <html lang="en">
       <body>
         {children}
-        {shouldLoadAnalytics ? (
-          <>
-            <Script
-              async
-              src="https://plausible.io/js/pa-gi8LN7uDl7Mbn6ht4W3QU.js"
-              strategy="afterInteractive"
-            />
-            <Script id="plausible-init" strategy="afterInteractive">
-              {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-plausible.init()`}
-            </Script>
-          </>
+        {nadineAnalyticsSiteId && nadineAnalyticsTrackingKey ? (
+          <Script
+            id="nadine-analytics"
+            src={`${nadineAnalyticsEndpoint}/tracker.js`}
+            data-site-id={nadineAnalyticsSiteId}
+            data-tracking-key={nadineAnalyticsTrackingKey}
+            data-endpoint={`${nadineAnalyticsEndpoint}/api/events`}
+            strategy="afterInteractive"
+          />
         ) : null}
       </body>
     </html>
