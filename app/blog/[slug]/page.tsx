@@ -49,13 +49,34 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 function renderInline(text: string) {
-  return text.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={index}>{part.slice(2, -2)}</strong>;
-    }
+  return text
+    .split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*)/g)
+    .filter(Boolean)
+    .map((part, index) => {
+      if (part.startsWith("**") && part.endsWith("**")) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
+      }
 
-    return <span key={index}>{part}</span>;
-  });
+      const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (linkMatch) {
+        const [, label, href] = linkMatch;
+        if (href.startsWith("/")) {
+          return (
+            <Link key={index} href={href}>
+              {label}
+            </Link>
+          );
+        }
+
+        return (
+          <a key={index} href={href} target="_blank" rel="noreferrer">
+            {label}
+          </a>
+        );
+      }
+
+      return <span key={index}>{part}</span>;
+    });
 }
 
 function ArticleBody({ markdown }: { markdown: string }) {
