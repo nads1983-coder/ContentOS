@@ -2,11 +2,8 @@ import Link from "next/link";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
 import { FoundingOffer } from "@/components/founding-offer";
-import { LogoutButton } from "@/components/logout-button";
 import { pageMetadata } from "@/lib/metadata";
-import { planCoversPlan } from "@/lib/plan-utils";
 import { pricingPlans } from "@/lib/pricing";
-import { getServerBillingState } from "@/lib/server-billing-state";
 import { siteConfig } from "@/lib/site";
 
 export const metadata = pageMetadata({
@@ -176,9 +173,8 @@ const jsonLd = [
   }
 ];
 
-export default async function Home() {
-  const billingState = await getServerBillingState();
-  const studioHref = billingState.isLoggedIn ? "/studio" : "/signup";
+export default function Home() {
+  const studioHref = "/signup";
 
   return (
     <>
@@ -201,21 +197,9 @@ export default async function Home() {
               <Link href="/blog" className="transition hover:text-bone">
                 Blog
               </Link>
-              {billingState.isLoggedIn ? (
-                <>
-                  <Link href="/dashboard" className="transition hover:text-bone">
-                    Dashboard
-                  </Link>
-                  <Link href="/studio" className="transition hover:text-bone">
-                    Workspace
-                  </Link>
-                  <LogoutButton className="text-sm text-muted transition hover:text-bone" />
-                </>
-              ) : (
-                <Link href="/login" className="transition hover:text-bone">
-                  Log in
-                </Link>
-              )}
+              <Link href="/login" className="transition hover:text-bone">
+                Log in
+              </Link>
               <Link
                 href={studioHref}
                 className="rounded border border-gold/60 bg-gold/10 px-4 py-2 font-semibold text-bone transition hover:bg-gold/20"
@@ -225,12 +209,11 @@ export default async function Home() {
             </nav>
             <div className="flex shrink-0 items-center gap-2 md:hidden">
               <Link
-                href={billingState.isLoggedIn ? "/dashboard" : "/login"}
+                href="/login"
                 className="rounded border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-bone transition hover:border-gold/60"
               >
-                {billingState.isLoggedIn ? "Account" : "Log in"}
+                Log in
               </Link>
-              {billingState.isLoggedIn ? <LogoutButton /> : null}
             </div>
           </div>
         </section>
@@ -426,8 +409,8 @@ export default async function Home() {
         </section>
 
         <FoundingOffer
-          isLoggedIn={billingState.isLoggedIn}
-          currentPlan={billingState.plan}
+          isLoggedIn={false}
+          currentPlan="free"
         />
 
         <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
@@ -474,11 +457,10 @@ export default async function Home() {
                     {plan.billingPlan ? (
                       <CheckoutButton
                         plan={plan.billingPlan}
-                        authenticated={billingState.isLoggedIn}
-                        covered={planCoversPlan(billingState.plan, plan.billingPlan)}
+                        authenticated={false}
                         className="w-full"
                       >
-                        {planCoversPlan(billingState.plan, plan.billingPlan) ? "Go to dashboard" : plan.cta}
+                        {plan.cta}
                       </CheckoutButton>
                     ) : (
                       <Link

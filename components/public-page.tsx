@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
-import { LogoutButton } from "@/components/logout-button";
-import { getServerBillingState } from "@/lib/server-billing-state";
 import { siteConfig } from "@/lib/site";
 
-export async function PublicPage({
+export function PublicPage({
   title,
   children,
   contactEmail = siteConfig.contactEmail,
@@ -15,8 +13,6 @@ export async function PublicPage({
   contactEmail?: string;
   contactLabel?: string;
 }) {
-  const billingState = await getServerBillingState();
-
   return (
     <main className="min-h-screen overflow-x-hidden px-4 py-8 text-bone sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-4xl">
@@ -29,10 +25,9 @@ export async function PublicPage({
             <Link href="/blog" className="hover:text-bone">
               Blog
             </Link>
-            <Link href={billingState.isLoggedIn ? "/dashboard" : "/login"} className="hover:text-bone">
-              {billingState.isLoggedIn ? "Account" : "Log in"}
+            <Link href="/login" className="hover:text-bone">
+              Log in
             </Link>
-            {billingState.isLoggedIn ? <LogoutButton className="text-sm text-muted hover:text-bone" /> : null}
           </nav>
         </div>
         <article className="mt-10 rounded border border-white/10 bg-panel/78 p-4 shadow-violet sm:p-6">

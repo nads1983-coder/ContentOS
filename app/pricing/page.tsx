@@ -1,9 +1,7 @@
 import { CheckoutButton } from "@/components/billing-buttons";
 import { FoundingOffer } from "@/components/founding-offer";
 import { pageMetadata } from "@/lib/metadata";
-import { planCoversPlan } from "@/lib/plan-utils";
 import { pricingPlans } from "@/lib/pricing";
-import { getServerBillingState } from "@/lib/server-billing-state";
 import { PublicPage } from "@/components/public-page";
 
 export const metadata = pageMetadata({
@@ -11,15 +9,14 @@ export const metadata = pageMetadata({
   path: "/pricing"
 });
 
-export default async function PricingPage() {
+export default function PricingPage() {
   const plans = pricingPlans;
-  const billingState = await getServerBillingState();
 
   return (
     <PublicPage title="Simple pricing for creators and teams">
       <FoundingOffer
-        isLoggedIn={billingState.isLoggedIn}
-        currentPlan={billingState.plan}
+        isLoggedIn={false}
+        currentPlan="free"
       />
       <section className="grid gap-4 md:grid-cols-3">
         {plans.map((plan) => (
@@ -60,11 +57,10 @@ export default async function PricingPage() {
               <div className="mt-4">
                 <CheckoutButton
                   plan={plan.billingPlan}
-                  authenticated={billingState.isLoggedIn}
-                  covered={planCoversPlan(billingState.plan, plan.billingPlan)}
+                  authenticated={false}
                   className="w-full"
                 >
-                  {planCoversPlan(billingState.plan, plan.billingPlan) ? "Go to dashboard" : plan.cta}
+                  {plan.cta}
                 </CheckoutButton>
               </div>
             ) : null}

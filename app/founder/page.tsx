@@ -1,8 +1,6 @@
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
 import { pageMetadata } from "@/lib/metadata";
-import { planCoversPlan } from "@/lib/plan-utils";
-import { getServerBillingState } from "@/lib/server-billing-state";
 
 export const metadata = pageMetadata({
   title: "Claim Your Free Lifetime Founder Account | ContentOS",
@@ -51,11 +49,7 @@ const faqs = [
   }
 ];
 
-export default async function FounderPage() {
-  const billingState = await getServerBillingState();
-  const covered = planCoversPlan(billingState.plan, creatorPlan);
-  const cta = covered ? "Go to Your Workspace" : "Claim Free Founder Access";
-
+export default function FounderPage() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-ink text-bone">
       <section className="relative isolate border-b border-white/10 px-4 py-6 sm:px-6 lg:px-8">
@@ -86,12 +80,11 @@ export default async function FounderPage() {
             <div className="mt-8 max-w-sm">
               <CheckoutButton
                 plan={creatorPlan}
-                authenticated={billingState.isLoggedIn}
-                covered={covered}
+                authenticated={false}
                 founderOffer
                 className="w-full min-h-14 text-base"
               >
-                {cta}
+                Claim Free Founder Access
               </CheckoutButton>
             </div>
             <p className="mt-4 max-w-xl text-sm font-medium leading-6 text-bone">
@@ -177,12 +170,11 @@ export default async function FounderPage() {
           <div className="mx-auto mt-6 max-w-sm">
             <CheckoutButton
               plan={creatorPlan}
-              authenticated={billingState.isLoggedIn}
-              covered={covered}
+              authenticated={false}
               founderOffer
               className="w-full min-h-14 text-base"
             >
-              {cta}
+              Claim Free Founder Access
             </CheckoutButton>
           </div>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-muted">
