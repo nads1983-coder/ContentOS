@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/lib/blog";
 import { absoluteUrl } from "@/lib/site";
+import { workflowPages, workflowPath } from "@/lib/workflow-pages";
 
 const routes: Array<{
   path: string;
@@ -15,6 +16,7 @@ const routes: Array<{
   { path: "/contact", changeFrequency: "monthly", priority: 0.7 },
   { path: "/faq", changeFrequency: "monthly", priority: 0.7 },
   { path: "/blog", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/workflows", changeFrequency: "monthly", priority: 0.8 },
   { path: "/privacy", changeFrequency: "monthly", priority: 0.7 },
   { path: "/terms", changeFrequency: "monthly", priority: 0.7 },
   { path: "/refund-policy", changeFrequency: "monthly", priority: 0.7 }
@@ -33,6 +35,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(post.published),
       changeFrequency: "monthly" as const,
       priority: 0.8
+    })),
+    ...workflowPages.map((page) => ({
+      url: absoluteUrl(workflowPath(page.slug)),
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.75
     }))
   ];
 }

@@ -194,6 +194,9 @@ export default function Home() {
               <a href="#pricing" className="transition hover:text-bone">
                 Pricing
               </a>
+              <Link href="/workflows" className="transition hover:text-bone">
+                Workflows
+              </Link>
               <Link href="/blog" className="transition hover:text-bone">
                 Blog
               </Link>
@@ -522,6 +525,7 @@ export default function Home() {
           <nav className="flex flex-wrap gap-4" aria-label="Footer">
             <Link href="/features" className="hover:text-bone">Features</Link>
             <Link href="/pricing" className="hover:text-bone">Pricing</Link>
+            <Link href="/workflows" className="hover:text-bone">Workflows</Link>
             <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-bone">
               {siteConfig.contactEmail}
             </a>

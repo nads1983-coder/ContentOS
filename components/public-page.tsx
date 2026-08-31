@@ -22,6 +22,9 @@ export function PublicPage({
             <Link href="/" className="hover:text-bone">
               Home
             </Link>
+            <Link href="/workflows" className="hover:text-bone">
+              Workflows
+            </Link>
             <Link href="/blog" className="hover:text-bone">
               Blog
             </Link>
