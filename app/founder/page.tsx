@@ -1,4 +1,4 @@
-import { CheckoutButton } from "@/components/billing-buttons";
+import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -8,8 +8,6 @@ export const metadata = pageMetadata({
     "Claim one of 100 free lifetime ContentOS founder accounts and turn one idea into LinkedIn posts, blogs, emails and social content in minutes.",
   path: "/founder"
 });
-
-const creatorPlan = "pro_creator" as const;
 
 const benefits = [
   "Turn one rough idea into LinkedIn posts, blogs, emails and social content",
@@ -35,12 +33,12 @@ const faqs = [
   {
     question: "What happens after I claim it?",
     answer:
-      "Create your ContentOS account, continue to the Creator checkout flow, and start building your first content pack after the offer is applied."
+      "You go straight into ContentOS Studio so you can create your first content pack before setting anything else up."
   },
   {
-    question: "Do I need a coupon code?",
+    question: "Do I need a card or coupon code?",
     answer:
-      "No. The Founder discount is applied automatically before Stripe Checkout opens. If the discount cannot be confirmed, we will stop the checkout rather than send you to a paid session."
+      "No. Start in the free workspace without a card, coupon, or checkout step. Create an account later when you want to save your work."
   },
   {
     question: "Who is this for?",
@@ -78,20 +76,18 @@ export default function FounderPage() {
               Turn one idea into LinkedIn posts, blogs, emails and social content in minutes.
             </p>
             <div className="mt-8 max-w-sm">
-              <CheckoutButton
-                plan={creatorPlan}
-                authenticated={false}
-                founderOffer
-                className="w-full min-h-14 text-base"
+              <Link
+                href="/studio?from=founder"
+                className="flex min-h-14 w-full items-center justify-center rounded border border-violet/70 bg-violet px-4 text-base font-semibold text-white transition hover:bg-violetDeep"
               >
-                Claim Free Founder Access
-              </CheckoutButton>
+                Start Free in Studio
+              </Link>
             </div>
             <p className="mt-4 max-w-xl text-sm font-medium leading-6 text-bone">
-              Founder access is free today. No card required when the founder discount is applied.
+              Start creating for free now. No card, coupon, or checkout step.
             </p>
             <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-              Create your account, confirm your £0 checkout, and start using GetContentOS.
+              Open the studio first, then create an account when you want to save your work.
             </p>
             <p className="mt-2 max-w-xl text-xs leading-5 text-muted">
               Only 100 free lifetime founder accounts are available.
@@ -168,17 +164,15 @@ export default function FounderPage() {
             Claim your founder account before the 100 places are gone.
           </h2>
           <div className="mx-auto mt-6 max-w-sm">
-            <CheckoutButton
-              plan={creatorPlan}
-              authenticated={false}
-              founderOffer
-              className="w-full min-h-14 text-base"
+            <Link
+              href="/studio?from=founder"
+              className="flex min-h-14 w-full items-center justify-center rounded border border-violet/70 bg-violet px-4 text-base font-semibold text-white transition hover:bg-violetDeep"
             >
-              Claim Free Founder Access
-            </CheckoutButton>
+              Start Free in Studio
+            </Link>
           </div>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-muted">
-            Create your account, confirm your £0 checkout, and start using GetContentOS.
+            Open the studio first, then create an account when you want to save your work.
           </p>
         </div>
       </section>
