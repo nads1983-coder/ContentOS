@@ -1,3 +1,5 @@
+import { usesPostgres } from "@/lib/backend";
+import { authBridge } from "@/lib/auth-bridge";
 import { NextResponse } from "next/server";
 import { clearAuthCookies, getSessionToken } from "@/lib/auth";
 import { createAppwriteAccountClient } from "@/lib/appwrite";
@@ -5,7 +7,8 @@ import { createAppwriteAccountClient } from "@/lib/appwrite";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function POST() {
+export async function POST(request: Request) {
+  if (usesPostgres()) return authBridge(request, "logout");
   const session = await getSessionToken();
 
   if (session) {

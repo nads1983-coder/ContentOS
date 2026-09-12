@@ -1,3 +1,4 @@
+import { usesPostgres } from "@/lib/backend";
 import { NextResponse } from "next/server";
 import { isValidNotificationEmail, sendSignupNotification } from "@/lib/signup-notify";
 
@@ -5,6 +6,7 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  if (usesPostgres()) return NextResponse.json({ error: "Notifications are handled during account registration." }, { status: 410 });
   const body = (await request.json().catch(() => null)) as { email?: string } | null;
   const email = body?.email?.trim() ?? "";
 

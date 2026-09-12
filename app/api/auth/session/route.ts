@@ -1,7 +1,8 @@
+import { usesPostgres } from "@/lib/backend";
 import { NextResponse } from "next/server";
 import { fetchAuthUser, setAuthCookies } from "@/lib/auth";
 import { isAppwriteConfigured } from "@/lib/env";
-import { upsertUserProfile } from "@/lib/appwrite-rest";
+import { upsertUserProfile } from "@/lib/repository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -27,6 +28,7 @@ function safeErrorDetails(error: unknown) {
 }
 
 export async function POST(request: Request) {
+  if (usesPostgres()) return NextResponse.json({ error: "Sign in to create a session." }, { status: 410 });
   if (!isAppwriteConfigured()) {
     return NextResponse.json({ error: "Appwrite Auth is not configured." }, { status: 503 });
   }

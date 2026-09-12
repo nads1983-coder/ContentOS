@@ -1,10 +1,12 @@
+import { usesPostgres } from "@/lib/backend";
+import { authBridge } from "@/lib/auth-bridge";
 import { NextResponse } from "next/server";
 import { ID } from "node-appwrite";
 import { createAppwriteAccountClient, createAppwritePasswordSession } from "@/lib/appwrite";
 import { setAuthCookies } from "@/lib/auth";
 import { isAppwriteConfigured } from "@/lib/env";
 import { sendSignupNotification } from "@/lib/signup-notify";
-import { upsertUserProfile } from "@/lib/appwrite-rest";
+import { upsertUserProfile } from "@/lib/repository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -35,6 +37,7 @@ function safeErrorDetails(error: unknown) {
 }
 
 export async function POST(request: Request) {
+  if (usesPostgres()) return authBridge(request, "signup");
   if (!isAppwriteConfigured()) {
     return NextResponse.json({ error: "Appwrite Auth is not configured." }, { status: 503 });
   }

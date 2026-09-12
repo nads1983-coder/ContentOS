@@ -1,8 +1,10 @@
+import { usesPostgres } from "@/lib/backend";
+import { authBridge } from "@/lib/auth-bridge";
 import { NextResponse } from "next/server";
 import { createAppwritePasswordSession } from "@/lib/appwrite";
 import { setAuthCookies } from "@/lib/auth";
 import { getEnv, isAppwriteConfigured } from "@/lib/env";
-import { upsertUserProfile } from "@/lib/appwrite-rest";
+import { upsertUserProfile } from "@/lib/repository";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -40,6 +42,7 @@ function loginErrorMessage(error: unknown) {
 }
 
 export async function POST(request: Request) {
+  if (usesPostgres()) return authBridge(request, "login");
   const env = getEnv();
 
   console.log(`${loginDiagnosticPrefix} route called`, {

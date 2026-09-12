@@ -5,7 +5,7 @@ import {
   stripeSubscriptionToState,
   verifyStripeSignature
 } from "@/lib/stripe-rest";
-import { updateSubscriptionStatus } from "@/lib/appwrite-rest";
+import { updateSubscriptionStatus } from "@/lib/repository";
 import { FOUNDER_OFFER_ENTITLEMENT_SOURCE } from "@/lib/entitlements";
 
 type StripeWebhookEvent = {

@@ -9,6 +9,7 @@ export function ResetPasswordForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userId, setUserId] = useState("");
+  const [token, setToken] = useState("");
   const [secret, setSecret] = useState("");
   const [message, setMessage] = useState("");
   const [messageKind, setMessageKind] = useState<"success" | "error" | "info">("info");
@@ -19,12 +20,14 @@ export function ResetPasswordForm() {
     const callbackUserId = params.get("userId") ?? "";
     const callbackSecret = params.get("secret") ?? "";
 
-    if (!callbackUserId || !callbackSecret) {
+    const callbackToken = params.get("token") ?? "";
+    if (!callbackToken && (!callbackUserId || !callbackSecret)) {
       return undefined;
     }
 
     window.history.replaceState(window.history.state, "", window.location.pathname);
     const timeout = window.setTimeout(() => {
+      setToken(callbackToken);
       setUserId(callbackUserId);
       setSecret(callbackSecret);
       setMode("confirm");
@@ -47,7 +50,7 @@ export function ResetPasswordForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
           mode === "confirm"
-            ? { userId, secret, password }
+            ? { userId, secret, token, password }
             : { email }
         )
       });
@@ -70,6 +73,7 @@ export function ResetPasswordForm() {
       if (mode === "confirm") {
         setPassword("");
         setSecret("");
+        setToken("");
         setUserId("");
         window.location.assign("/login?password-reset=1");
       }
@@ -102,7 +106,7 @@ export function ResetPasswordForm() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className="min-h-12 rounded border border-line bg-ink/70 px-3 text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
-            minLength={8}
+            minLength={token ? 12 : 8}
             required
           />
         </label>

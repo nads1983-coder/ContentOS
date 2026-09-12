@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
-import { isStripeConfigured, isAppwriteAdminConfigured } from "@/lib/env";
+import { isDatabaseConfigured } from "@/lib/backend";
+import { isStripeConfigured } from "@/lib/env";
 import {
   getStripeSubscriptionState,
   normalizePlanId,
@@ -7,7 +8,7 @@ import {
   planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
-import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
+import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
 import { PlanId, SubscriptionStatus, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
 
@@ -20,7 +21,7 @@ export type ServerBillingState = {
 export async function getServerBillingState(): Promise<ServerBillingState> {
   const user = await getCurrentUser();
 
-  if (!user || !isAppwriteAdminConfigured()) {
+  if (!user || !isDatabaseConfigured()) {
     return {
       isLoggedIn: Boolean(user),
       plan: "free",

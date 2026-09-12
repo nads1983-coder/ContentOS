@@ -1,9 +1,12 @@
+import { usesPostgres } from "@/lib/backend";
+import { authBridge } from "@/lib/auth-bridge";
 import { NextResponse } from "next/server";
 import { createAppwriteAccountClient } from "@/lib/appwrite";
 import { isAppwriteConfigured } from "@/lib/env";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export async function POST(request: Request) {
+  if (usesPostgres()) return authBridge(request, "reset");
   if (!isAppwriteConfigured()) return NextResponse.json({ error: "Password reset is temporarily unavailable." }, { status: 503 });
   let body;
   try { body = await request.json(); } catch { return NextResponse.json({ error: "Send a valid reset request." }, { status: 400 }); }

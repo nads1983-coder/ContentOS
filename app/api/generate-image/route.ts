@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { isStripeConfigured, isAppwriteAdminConfigured } from "@/lib/env";
+import { isDatabaseConfigured } from "@/lib/backend";
+import { isStripeConfigured } from "@/lib/env";
 import {
   getStripeSubscriptionState,
   normalizePlanId,
@@ -15,7 +16,7 @@ import {
   socialImageModelSize,
   svgToDataUrl
 } from "@/lib/social-image";
-import { getMonthlyUsageCount, getUserProfileForUser, recordUsageEvent, syncUserSubscriptionState } from "@/lib/appwrite-rest";
+import { getMonthlyUsageCount, getUserProfileForUser, recordUsageEvent, syncUserSubscriptionState } from "@/lib/repository";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!isAppwriteAdminConfigured()) {
+  if (!isDatabaseConfigured()) {
     return NextResponse.json(
       { error: "Subscription checks are not configured yet." },
       { status: 503 }

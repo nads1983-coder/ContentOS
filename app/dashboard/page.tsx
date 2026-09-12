@@ -4,7 +4,8 @@ import { BrandLogo } from "@/components/brand-logo";
 import { CheckoutButton, ManageBillingButton } from "@/components/billing-buttons";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentUser } from "@/lib/auth";
-import { isStripeConfigured, isAppwriteAdminConfigured } from "@/lib/env";
+import { isDatabaseConfigured } from "@/lib/backend";
+import { isStripeConfigured } from "@/lib/env";
 import {
   getStripeSubscriptionState,
   normalizePlanId,
@@ -20,7 +21,7 @@ import {
   listBrandProfiles,
   syncUserSubscriptionState,
   upsertUserProfile
-} from "@/lib/appwrite-rest";
+} from "@/lib/repository";
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
@@ -95,7 +96,7 @@ export default async function DashboardPage() {
 
   let profile: UserProfile | null = null;
 
-  if (isAppwriteAdminConfigured()) {
+  if (isDatabaseConfigured()) {
     try {
       profile = await getUserProfileForUser(user.id, user.email);
 
@@ -218,7 +219,7 @@ export default async function DashboardPage() {
   const profileUserId = profile?.id ?? user.id;
   let brandProfiles: BrandProfile[] = [];
 
-  if (isAppwriteAdminConfigured()) {
+  if (isDatabaseConfigured()) {
     try {
       brandProfiles = await listBrandProfiles(profileUserId);
     } catch (error) {
@@ -237,7 +238,7 @@ export default async function DashboardPage() {
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
   let monthlyUsageCount = 0;
 
-  if (isAppwriteAdminConfigured()) {
+  if (isDatabaseConfigured()) {
     try {
       monthlyUsageCount = await getMonthlyUsageCount({
         userId: profileUserId,

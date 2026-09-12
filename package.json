@@ -13,23 +13,35 @@
     "migrate:manual-appwrite-users": "node scripts/migrations/manual-appwrite-users.mjs"
   },
   "dependencies": {
+    "@better-auth/drizzle-adapter": "1.7.4",
+    "@vercel/functions": "3.9.7",
+    "better-auth": "1.7.4",
     "clsx": "latest",
+    "drizzle-orm": "0.45.2",
     "lucide-react": "latest",
-    "next": "latest",
+    "next": "16.3.5",
     "node-appwrite": "^26.2.0",
     "openai": "latest",
+    "pg": "8.23.0",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
+    "@types/pg": "8.23.1",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "autoprefixer": "latest",
+    "drizzle-kit": "0.31.10",
     "eslint": "latest",
-    "eslint-config-next": "latest",
+    "eslint-config-next": "16.3.5",
     "postcss": "latest",
     "tailwindcss": "^3.4.17",
     "typescript": "latest"
+  },
+  "overrides": {
+    "@esbuild-kit/core-utils": {
+      "esbuild": "0.25.12"
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { getEnv, isAppwriteAdminConfigured, isAppwriteConfigured } from "@/lib/env";
+import { isDatabaseConfigured, isAuthConfigured } from "@/lib/backend";
+import { getEnv } from "@/lib/env";
 import {
   checkoutPlanIsCoveredByState,
   createCheckoutSession,
@@ -11,7 +12,7 @@ import {
   planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
-import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
+import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     );
   }
 
-  if ((founderOffer || isAppwriteConfigured()) && !user) {
+  if ((founderOffer || isAuthConfigured()) && !user) {
     return NextResponse.json(
       {
         error: "Create an account or log in before upgrading.",
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const profile = user && isAppwriteAdminConfigured()
+    const profile = user && isDatabaseConfigured()
       ? await getUserProfileForUser(user.id, user.email)
       : null;
 
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
     });
     const subscriptionState = reconcileActiveSubscriptionPlan(rawSubscriptionState, profile?.plan);
 
-    if (user && isAppwriteAdminConfigured()) {
+    if (user && isDatabaseConfigured()) {
       await syncUserSubscriptionState({
         userId: profile?.id ?? user.id,
         email: user.email,

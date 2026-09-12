@@ -1,3 +1,5 @@
+import { usesPostgres } from "@/lib/backend";
+import { headers } from "next/headers";
 import { cookies } from "next/headers";
 import { createAppwriteAccountClient } from "@/lib/appwrite";
 import { getEnv, isAppwriteConfigured } from "@/lib/env";
@@ -74,6 +76,14 @@ export async function clearAuthCookies() {
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
+  if (usesPostgres()) {
+    try {
+      const { auth } = await import("@/lib/auth-config");
+      const session = await auth.api.getSession({ headers: await headers() });
+      if (!session || session.user.disabled || !session.user.emailVerified) return null;
+      return { id: session.user.id, email: session.user.email };
+    } catch { console.error("[auth] session lookup unavailable"); return null; }
+  }
   const token = await getSessionToken();
   return fetchAuthUser(token);
 }

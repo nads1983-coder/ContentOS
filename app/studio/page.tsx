@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { StudioShell } from "@/components/studio-shell";
 import { getCurrentUser } from "@/lib/auth";
-import { isStripeConfigured, isAppwriteAdminConfigured } from "@/lib/env";
+import { isDatabaseConfigured } from "@/lib/backend";
+import { isStripeConfigured } from "@/lib/env";
 import { absoluteUrl } from "@/lib/site";
 import {
   getStripeSubscriptionState,
@@ -10,7 +11,7 @@ import {
   planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
-import { getMonthlyUsageCount, getUserProfileForUser, syncUserSubscriptionState } from "@/lib/appwrite-rest";
+import { getMonthlyUsageCount, getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
 import { buildUsageSummary } from "@/lib/usage";
 import type { PlanId, UsageSummary, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
 };
 
 async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promise<UsageSummary> {
-  if (!profile || !isAppwriteAdminConfigured()) {
+  if (!profile || !isDatabaseConfigured()) {
     return buildUsageSummary(plan, 0);
   }
 
@@ -53,7 +54,7 @@ async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promi
 async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: boolean; usage: UsageSummary }> {
   const user = await getCurrentUser();
 
-  if (!user || !isAppwriteAdminConfigured()) {
+  if (!user || !isDatabaseConfigured()) {
     return { plan: "free", authenticated: Boolean(user), usage: buildUsageSummary("free", 0) };
   }
 

@@ -119,7 +119,7 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
 
       if (mode === "reset") {
         setMessageKind("success");
-        setMessage("Check your inbox for a password reset link.");
+        setMessage(data.message ?? "If an account exists for that address, you will receive a password reset link.");
         return;
       }
 
@@ -175,7 +175,7 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className="min-h-12 rounded border border-line bg-ink/70 px-3 text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
-            minLength={8}
+            minLength={mode === "signup" ? 12 : 8}
             required
           />
         </label>
