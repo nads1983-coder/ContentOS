@@ -22,7 +22,7 @@ try {
   await db.query('COMMIT');
   const runtimeUrl = new URL(ownerUrl);
   runtimeUrl.username = "contentos_runtime"; runtimeUrl.password = password;
-  runtimeUrl.hostname = runtimeUrl.hostname.replace(/^(ep-[^.]+)(?=\.)/, "$1-pooler");
+  runtimeUrl.hostname = runtimeUrl.hostname.replace(/(-pooler)+(?=\.)/, "").replace(/^(ep-[^.]+)(?=\.)/, "$1-pooler");
   fs.writeFileSync(outputFile, runtimeUrl.toString(), { mode: 0o600 });
   console.log("Restricted runtime role created; private pooled URL saved. No schema, role, or ownership grants.");
 } finally { await db.end(); }
