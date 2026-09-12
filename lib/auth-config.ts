@@ -28,7 +28,12 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => { void queueAuthMail(user, url, "verification"); }
   },
   databaseHooks: {
-    user: { create: { after: async user => { await upsertUserProfile({ id: user.id, email: user.email, full_name: user.name }); } } },
+    user: { create: { before: async user => {
+      // Reserve orphaned legacy profiles without reactivating deleted accounts or transferring their data.
+      const reserved = await getPool().query('SELECT 1 FROM contentos_app.profiles WHERE email=$1 LIMIT 1', [user.email.toLowerCase()]);
+      if (reserved.rowCount) throw new APIError("BAD_REQUEST", { message: "Unable to create this account. Contact support." });
+      return { data: user };
+    }, after: async user => { await upsertUserProfile({ id: user.id, email: user.email, full_name: user.name }); } } },
     session: { create: { before: async session => {
       const result = await getPool().query('SELECT disabled,email_verified FROM contentos_auth."user" WHERE id=$1', [session.userId]);
       if (!result.rows[0] || result.rows[0].disabled || !result.rows[0].email_verified) throw new APIError("FORBIDDEN", { message: "Verify your email before signing in." });

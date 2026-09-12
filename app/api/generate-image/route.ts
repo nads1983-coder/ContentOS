@@ -1,3 +1,4 @@
+import { rejectUnsafeWrite } from "@/lib/request-security";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/backend";
@@ -62,6 +63,8 @@ async function imageUrlToDataUrl(url: string) {
 }
 
 export async function POST(request: Request) {
+  const rejected = rejectUnsafeWrite(request);
+  if (rejected) return rejected;
   const user = await getCurrentUser();
 
   if (!user) {

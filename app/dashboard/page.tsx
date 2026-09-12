@@ -1,10 +1,11 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BrandLogo } from "@/components/brand-logo";
 import { CheckoutButton, ManageBillingButton } from "@/components/billing-buttons";
 import { LogoutButton } from "@/components/logout-button";
 import { getCurrentUser } from "@/lib/auth";
-import { isDatabaseConfigured } from "@/lib/backend";
+import { isDatabaseConfigured, usesPostgres } from "@/lib/backend";
 import { isStripeConfigured } from "@/lib/env";
 import {
   getStripeSubscriptionState,
@@ -71,6 +72,7 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
 
   if (!user) {
+    if (usesPostgres()) redirect("/login");
     return (
       <main className="grid min-h-screen place-items-center overflow-x-hidden px-4 py-10 text-bone">
         <section className="w-full max-w-lg rounded border border-white/10 bg-panel/78 p-6 shadow-violet">

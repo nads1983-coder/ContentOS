@@ -1,3 +1,4 @@
+import { rejectUnsafeWrite } from "@/lib/request-security";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isDatabaseConfigured, isAuthConfigured } from "@/lib/backend";
@@ -19,6 +20,8 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
+  const rejected = rejectUnsafeWrite(request);
+  if (rejected) return rejected;
   const user = await getCurrentUser();
   const { plan, founderOffer } = (await request.json()) as {
     plan?: BillingPlan;

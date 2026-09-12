@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { usesPostgres } from "@/lib/backend";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BrandLogo } from "@/components/brand-logo";
@@ -13,6 +15,8 @@ export const metadata: Metadata = {
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
+
+  if (!user && usesPostgres()) redirect("/login");
 
   if (!user || !isAdminEmail(user.email)) {
     return (

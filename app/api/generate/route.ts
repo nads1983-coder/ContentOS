@@ -1,8 +1,9 @@
+import { rejectUnsafeWrite } from "@/lib/request-security";
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { contentTypes, defaultSelectedTypes } from "@/lib/content-config";
-import { isDatabaseConfigured } from "@/lib/backend";
+import { isDatabaseConfigured, usesPostgres } from "@/lib/backend";
 import { captureServerError } from "@/lib/monitoring";
 import { buildInput, buildInstructions, requestedTypeSet } from "@/lib/prompts";
 import { recordGeneration, recordUsageEvent } from "@/lib/repository";
@@ -244,6 +245,10 @@ function parseOpenAIJson(text: string, request: GenerateRequest): GenerationResu
 }
 
 export async function POST(nextRequest: NextRequest) {
+  const rejected = rejectUnsafeWrite(nextRequest);
+  if (rejected) return rejected;
+  const user = await getCurrentUser();
+  if (usesPostgres() && !user) return NextResponse.json({ error: "Login required." }, { status: 401 });
   let request: GenerateRequest;
 
   try {
@@ -314,7 +319,6 @@ export async function POST(nextRequest: NextRequest) {
     });
 
     const result = parseOpenAIJson(response.output_text, request);
-    const user = await getCurrentUser();
 
     if (user && isDatabaseConfigured()) {
       try {
