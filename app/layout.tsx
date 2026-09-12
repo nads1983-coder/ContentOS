@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import Script from "next/script";
+import { Analytics } from "@/components/analytics";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -81,14 +81,7 @@ export default function RootLayout({
       <body>
         {children}
         {nadineAnalyticsSiteId && nadineAnalyticsTrackingKey ? (
-          <Script
-            id="nadine-analytics"
-            src={`${nadineAnalyticsEndpoint}/tracker.js`}
-            data-site-id={nadineAnalyticsSiteId}
-            data-tracking-key={nadineAnalyticsTrackingKey}
-            data-endpoint={`${nadineAnalyticsEndpoint}/api/events`}
-            strategy="afterInteractive"
-          />
+          <Analytics siteId={nadineAnalyticsSiteId} trackingKey={nadineAnalyticsTrackingKey} endpoint={nadineAnalyticsEndpoint} />
         ) : null}
       </body>
     </html>

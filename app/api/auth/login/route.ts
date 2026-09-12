@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAppwriteAccountClient } from "@/lib/appwrite";
+import { createAppwriteAdminClient } from "@/lib/appwrite";
 import { setAuthCookies } from "@/lib/auth";
 import { getEnv, isAppwriteConfigured } from "@/lib/env";
 import { upsertUserProfile } from "@/lib/appwrite-rest";
@@ -76,7 +76,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { account } = createAppwriteAccountClient();
     console.log(`${loginDiagnosticPrefix} before createEmailPasswordSession`, {
       endpoint: env.appwriteEndpoint,
       appwriteEndpointSource: env.appwriteEndpointSource,
@@ -85,7 +84,7 @@ export async function POST(request: Request) {
       hasEmail: Boolean(email),
       hasPassword: Boolean(password)
     });
-    const session = await account.createEmailPasswordSession({ email, password });
+    const session = await createAppwriteAdminClient().account.createEmailPasswordSession({ email, password });
 
     if (!session.userId) {
       return NextResponse.json({ error: "Login failed." }, { status: 401 });
@@ -103,7 +102,7 @@ export async function POST(request: Request) {
         id: session.userId,
         email
       },
-      expiresIn: 60 * 60 * 24 * 30
+      expiresIn: Math.max(1, Math.floor((Date.parse(session.expire) - Date.now()) / 1000))
     });
 
     return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
@@ -118,7 +117,7 @@ export async function POST(request: Request) {
       hasPassword: Boolean(password),
       appwriteCode: details.code,
       appwriteType: details.type,
-      appwriteMessage: details.message
+
     });
 
     return NextResponse.json(

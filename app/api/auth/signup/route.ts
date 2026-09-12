@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ID } from "node-appwrite";
-import { createAppwriteAccountClient } from "@/lib/appwrite";
+import { createAppwriteAccountClient, createAppwriteAdminClient } from "@/lib/appwrite";
 import { setAuthCookies } from "@/lib/auth";
 import { isAppwriteConfigured } from "@/lib/env";
 import { sendSignupNotification } from "@/lib/signup-notify";
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       password,
       name: fullName?.trim() || undefined
     });
-    const session = await account.createEmailPasswordSession({ email, password });
+    const session = await createAppwriteAdminClient().account.createEmailPasswordSession({ email, password });
     const createdUserEmail = createdUser.email || email;
 
     try {
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
         emailDomain: emailDomainOnly(createdUserEmail),
         appwriteCode: details.code,
         appwriteType: details.type,
-        appwriteMessage: details.message
+
       });
       // Best effort until the Appwrite database collection is configured.
     }
@@ -87,7 +87,7 @@ export async function POST(request: Request) {
       const details = safeErrorDetails(error);
       console.error("Signup notification email failed", {
         emailDomain: emailDomainOnly(createdUserEmail),
-        message: details.message
+
       });
     }
 
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
         id: createdUser.$id,
         email: createdUserEmail
       },
-      expiresIn: 60 * 60 * 24 * 30
+      expiresIn: Math.max(1, Math.floor((Date.parse(session.expire) - Date.now()) / 1000))
     });
 
     return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });

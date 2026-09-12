@@ -23,6 +23,7 @@ export function ResetPasswordForm() {
       return undefined;
     }
 
+    window.history.replaceState(window.history.state, "", window.location.pathname);
     const timeout = window.setTimeout(() => {
       setUserId(callbackUserId);
       setSecret(callbackSecret);
@@ -68,6 +69,9 @@ export function ResetPasswordForm() {
 
       if (mode === "confirm") {
         setPassword("");
+        setSecret("");
+        setUserId("");
+        window.location.assign("/login?password-reset=1");
       }
     } catch {
       setMessageKind("error");
