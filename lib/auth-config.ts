@@ -18,14 +18,14 @@ export const auth = betterAuth({
   basePath: "/api/account",
   database: drizzleAdapter(getDb(), { provider: "pg", schemaName: "contentos_auth", schema, transaction: true }),
   emailAndPassword: { enabled: true, minPasswordLength: 12, maxPasswordLength: 128, requireEmailVerification: true, revokeSessionsOnPasswordReset: true, resetPasswordTokenExpiresIn: 1800,
-    sendResetPassword: async ({ user, url }) => { void queueAuthMail(user, url, "reset"); },
+    sendResetPassword: async ({ user, url }) => { await queueAuthMail(user, url, "reset"); },
     onPasswordReset: async ({ user }) => {
       // A consumed emailed token proves ownership, including migrated accounts without hashes.
       await getPool().query('UPDATE contentos_auth."user" SET email_verified=true,legacy_account=false,updated_at=now() WHERE id=$1', [user.id]);
     }
   },
   emailVerification: { sendOnSignUp: true, sendOnSignIn: true, autoSignInAfterVerification: false, expiresIn: 3600,
-    sendVerificationEmail: async ({ user, url }) => { void queueAuthMail(user, url, "verification"); void queueAuthMail(user, "", "signup_notice"); }
+    sendVerificationEmail: async ({ user, url }) => { await queueAuthMail(user, url, "verification"); await queueAuthMail(user, "", "signup_notice"); }
   },
   databaseHooks: {
     user: { create: { before: async user => {

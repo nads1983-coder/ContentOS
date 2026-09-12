@@ -1,4 +1,5 @@
 import "server-only";
+import { queueAfterTransactionHook } from "@better-auth/core/context";
 import { randomUUID } from "node:crypto";
 import { waitUntil } from "@vercel/functions";
 import { getPool } from "@/lib/db/client";
@@ -44,9 +45,11 @@ async function deliver(user: { id: string; email: string }, url: string, kind: "
     console.error("[auth-mail] delivery failed", { id, kind });
   }
 }
-export function queueAuthMail(user: { id: string; email: string }, url: string, kind: "verification" | "reset" | "signup_notice") {
-  // Vercel keeps the function alive without leaking account-existence through response timing.
-  const work = deliver(user, url, kind).catch(() => console.error("[auth-mail] delivery unavailable"));
-  if (process.env.VERCEL) waitUntil(work);
-  return work;
+export async function queueAuthMail(user: { id: string; email: string }, url: string, kind: "verification" | "reset" | "signup_notice") {
+  // Do not race the signup/reset transaction or send a link for a rolled-back account.
+  await queueAfterTransactionHook(async () => {
+    const work = deliver(user, url, kind).catch(() => console.error("[auth-mail] delivery unavailable"));
+    if (process.env.VERCEL) waitUntil(work);
+    else await work;
+  });
 }

@@ -13,6 +13,7 @@
     "migrate:manual-appwrite-users": "node scripts/migrations/manual-appwrite-users.mjs"
   },
   "dependencies": {
+    "@better-auth/core": "1.7.4",
     "@better-auth/drizzle-adapter": "1.7.4",
     "@vercel/functions": "3.9.7",
     "better-auth": "1.7.4",
