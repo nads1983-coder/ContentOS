@@ -25,7 +25,7 @@ export const auth = betterAuth({
     }
   },
   emailVerification: { sendOnSignUp: true, sendOnSignIn: true, autoSignInAfterVerification: false, expiresIn: 3600,
-    sendVerificationEmail: async ({ user, url }) => { void queueAuthMail(user, url, "verification"); }
+    sendVerificationEmail: async ({ user, url }) => { void queueAuthMail(user, url, "verification"); void queueAuthMail(user, "", "signup_notice"); }
   },
   databaseHooks: {
     user: { create: { before: async user => {

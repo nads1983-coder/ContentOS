@@ -9,13 +9,14 @@ const fixture=JSON.parse(fs.readFileSync(fixturePath,'utf8'));
 if(!/^nads1983\+contentos-/.test(fixture.email)) throw Error('Temporary test inbox required');
 const dir=path.dirname(fixturePath), jar=path.join(dir,'test-session.cookies');
 const cli=process.env.VERCEL_CLI;
-if(!cli) throw Error('Set VERCEL_CLI to the installed Vercel CLI entry point');
+const preview=deployment.endsWith('.vercel.app');
+if(preview&&!cli) throw Error('Set VERCEL_CLI to the installed Vercel CLI entry point');
 function request(route,body,options={}){
  const bodyFile=path.join(dir,'test-request.json'),resultFile=path.join(dir,'test-response.txt'),headerFile=path.join(dir,'test-headers.txt');
- const args=[cli,'curl',route,'--deployment',deployment,'--','--silent','--output',resultFile,'--dump-header',headerFile,'--write-out','%{http_code}'];
+ const args=[...(preview?[cli,'curl',route,'--deployment',deployment,'--']:[deployment+route]),'--silent','--output',resultFile,'--dump-header',headerFile,'--write-out','%{http_code}'];
  if(body!==undefined){fs.writeFileSync(bodyFile,JSON.stringify(body),{mode:0o600});args.push('--request','POST','--header','Content-Type: application/json','--header',`Origin: ${options.origin||deployment}`,'--data-binary',`@${bodyFile}`);}
  if(options.cookies!==false) args.push('--cookie',jar,'--cookie-jar',jar);
- const r=spawnSync('node',args,{encoding:'utf8'});
+ const r=spawnSync(preview?'node':'curl',args,{encoding:'utf8'});
  if(r.status!==0)throw Error('Vercel request failed');
  const status=Number(r.stdout.trim()),text=fs.readFileSync(resultFile,'utf8'),headers=fs.readFileSync(headerFile,'utf8');
  for(const p of [resultFile,headerFile,jar])if(fs.existsSync(p))fs.chmodSync(p,0o600);
