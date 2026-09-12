@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { ID } from "node-appwrite";
-import { createAppwriteAccountClient, createAppwriteAdminClient } from "@/lib/appwrite";
+import { createAppwriteAccountClient, createAppwritePasswordSession } from "@/lib/appwrite";
 import { setAuthCookies } from "@/lib/auth";
 import { isAppwriteConfigured } from "@/lib/env";
 import { sendSignupNotification } from "@/lib/signup-notify";
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       password,
       name: fullName?.trim() || undefined
     });
-    const session = await createAppwriteAdminClient().account.createEmailPasswordSession({ email, password });
+    const session = await createAppwritePasswordSession(email, password);
     const createdUserEmail = createdUser.email || email;
 
     try {
@@ -101,12 +101,10 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ ok: true, redirectUrl: "/dashboard" });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
-        error: error instanceof Error
-          ? error.message
-          : "Unable to create account. Please try again."
+        error: "Unable to create account. If you already registered, sign in or reset your password."
       },
       { status: 400 }
     );

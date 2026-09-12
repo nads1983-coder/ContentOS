@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createAppwriteAdminClient } from "@/lib/appwrite";
+import { createAppwritePasswordSession } from "@/lib/appwrite";
 import { setAuthCookies } from "@/lib/auth";
 import { getEnv, isAppwriteConfigured } from "@/lib/env";
 import { upsertUserProfile } from "@/lib/appwrite-rest";
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
       hasEmail: Boolean(email),
       hasPassword: Boolean(password)
     });
-    const session = await createAppwriteAdminClient().account.createEmailPasswordSession({ email, password });
+    const session = await createAppwritePasswordSession(email, password);
 
     if (!session.userId) {
       return NextResponse.json({ error: "Login failed." }, { status: 401 });
