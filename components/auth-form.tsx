@@ -212,7 +212,7 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
       {mode === "login" ? (
         <div className="flex justify-between text-sm text-muted">
           <Link href="/reset-password" className="hover:text-bone">
-            Reset password
+            Forgot password
           </Link>
           <Link href={`/signup${planQuery}`} className="hover:text-bone">
             Create account

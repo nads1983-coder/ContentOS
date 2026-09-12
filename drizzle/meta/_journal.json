@@ -8,6 +8,13 @@
       "when": 1789196090435,
       "tag": "0000_lush_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789202974750,
+      "tag": "0001_migration_email_ledger",
+      "breakpoints": true
     }
   ]
 }
