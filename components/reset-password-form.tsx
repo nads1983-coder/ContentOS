@@ -8,28 +8,24 @@ export function ResetPasswordForm() {
   const [mode, setMode] = useState<ResetMode>("request");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userId, setUserId] = useState("");
   const [token, setToken] = useState("");
-  const [secret, setSecret] = useState("");
   const [message, setMessage] = useState("");
   const [messageKind, setMessageKind] = useState<"success" | "error" | "info">("info");
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const callbackUserId = params.get("userId") ?? "";
-    const callbackSecret = params.get("secret") ?? "";
-
     const callbackToken = params.get("token") ?? "";
-    if (!callbackToken && (!callbackUserId || !callbackSecret)) {
-      return undefined;
+    if (params.has("error") || params.has("userId") || params.has("secret")) {
+      window.history.replaceState(window.history.state, "", window.location.pathname);
+      const timer = window.setTimeout(() => { setMessageKind("error"); setMessage("This reset link is invalid or expired. Request a new link."); }, 0);
+      return () => window.clearTimeout(timer);
     }
+    if (!callbackToken) return undefined;
 
     window.history.replaceState(window.history.state, "", window.location.pathname);
     const timeout = window.setTimeout(() => {
       setToken(callbackToken);
-      setUserId(callbackUserId);
-      setSecret(callbackSecret);
       setMode("confirm");
     }, 0);
 
@@ -50,7 +46,7 @@ export function ResetPasswordForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
           mode === "confirm"
-            ? { userId, secret, token, password }
+            ? { token, password }
             : { email }
         )
       });
@@ -72,9 +68,7 @@ export function ResetPasswordForm() {
 
       if (mode === "confirm") {
         setPassword("");
-        setSecret("");
         setToken("");
-        setUserId("");
         window.location.assign("/login?password-reset=1");
       }
     } catch {
@@ -106,7 +100,7 @@ export function ResetPasswordForm() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className="min-h-12 rounded border border-line bg-ink/70 px-3 text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
-            minLength={token ? 12 : 8}
+            minLength={12}
             required
           />
         </label>

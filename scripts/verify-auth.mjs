@@ -24,7 +24,20 @@ function request(route,body,options={}){
  return {status,text,headers,data};
 }
 function check(label,condition,extra=''){console.log(`${condition?'PASS':'FAIL'} ${label}${extra?' '+extra:''}`);if(!condition)process.exitCode=1;}
-if(action==='login'){
+if(action==='unverified'){
+ const r=request('/api/auth/login',fixture);check('unverified email cannot sign in',r.status===403);
+ check('unverified account has no session',request('/api/account/get-session').data===null);
+}else if(action==='session-revoked'){
+ check('prior session is invalid',request('/api/account/get-session').data===null);
+ const r=request('/dashboard');check('expired session redirects to login',r.status===307||r.status===303);
+}else if(action==='boundaries'){
+ let r=request('/api/onboarding',{businessName:'Unauthorized'},{cookies:false});check('unauthenticated write rejected',r.status===401);
+ r=request('/api/generate',{source:'Test invalid unauthenticated generation'},{cookies:false});check('unauthenticated paid API work rejected',r.status===401);
+ r=request('/api/account/update-user',{name:'Unauthorized'});check('unused account mutation endpoints hidden',r.status===404);
+}else if(action==='rate'){
+ const statuses=[];for(let i=0;i<6;i++)statuses.push(request('/api/auth/login',{email:fixture.email,password:'Incorrect-Password-Only'}).status);
+ check('repeated login attempts rate limited',statuses.includes(429),JSON.stringify(statuses));
+}else if(action==='login'){
  let r=request('/api/auth/login',{email:fixture.email,password:'Incorrect-Password-Only'});check('wrong password rejected',r.status===401);
  r=request('/api/auth/login',fixture);check('login succeeds',r.status===200,String(r.status));
  check('session cookie secure/HttpOnly',/set-cookie:.*contentos.*HttpOnly.*Secure/i.test(r.headers)||/set-cookie:.*contentos.*Secure.*HttpOnly/i.test(r.headers));

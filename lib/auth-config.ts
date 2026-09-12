@@ -9,10 +9,10 @@ import { upsertUserProfile } from "@/lib/postgres-repository";
 
 const baseURL = process.env.BETTER_AUTH_URL || (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://getcontentos.co");
 
-// Loaded only for the replacement backend; legacy production remains available until cutover.
+// Authentication and email run only in the server runtime.
 export const auth = betterAuth({
   appName: "ContentOS",
-  secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SESSION_SECRET,
+  secret: process.env.BETTER_AUTH_SECRET,
   baseURL,
   trustedOrigins: [baseURL],
   basePath: "/api/account",

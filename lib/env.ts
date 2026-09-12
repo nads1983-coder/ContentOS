@@ -11,19 +11,10 @@ function absoluteUrlEnv(value: string | undefined, fallback = fallbackAppUrl) {
   }
 }
 
-const appwriteEndpoint = process.env.APPWRITE_ENDPOINT?.trim() || process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT?.trim() || "";
-const appwriteProjectId = process.env.APPWRITE_PROJECT_ID?.trim() || process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID?.trim() || "";
 
 const serverEnv = {
   appUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL),
   siteUrl: absoluteUrlEnv(process.env.NEXT_PUBLIC_SITE_URL, absoluteUrlEnv(process.env.NEXT_PUBLIC_APP_URL)),
-  appwriteEndpoint,
-  appwriteEndpointSource: process.env.APPWRITE_ENDPOINT?.trim() ? "APPWRITE_ENDPOINT" : "NEXT_PUBLIC_APPWRITE_ENDPOINT",
-  appwriteProjectId,
-  appwriteProjectIdSource: process.env.APPWRITE_PROJECT_ID?.trim() ? "APPWRITE_PROJECT_ID" : "NEXT_PUBLIC_APPWRITE_PROJECT_ID",
-  appwriteApiKey: process.env.APPWRITE_API_KEY ?? "",
-  appwriteDatabaseId: process.env.APPWRITE_DATABASE_ID ?? "",
-  appwriteUsersCollectionId: process.env.APPWRITE_USERS_COLLECTION_ID ?? "",
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   stripeProCreatorPriceId: process.env.STRIPE_PRO_CREATOR_PRICE_ID ?? "",
@@ -50,20 +41,6 @@ export type AppEnv = typeof serverEnv;
 
 export function getEnv() {
   return serverEnv;
-}
-
-export function isAppwriteConfigured() {
-  return Boolean(serverEnv.appwriteEndpoint && serverEnv.appwriteProjectId);
-}
-
-export function isAppwriteAdminConfigured() {
-  return Boolean(
-    serverEnv.appwriteEndpoint &&
-      serverEnv.appwriteProjectId &&
-      serverEnv.appwriteApiKey &&
-      serverEnv.appwriteDatabaseId &&
-      serverEnv.appwriteUsersCollectionId
-  );
 }
 
 export function isStripeConfigured() {

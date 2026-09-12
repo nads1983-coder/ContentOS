@@ -6,8 +6,7 @@ import { profiles } from "@/lib/db/app-schema";
 import { normalizePlanId, normalizeSubscriptionStatus } from "@/lib/stripe-rest";
 import { currentUsageWindow } from "@/lib/usage";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
-import type { BrandProfile, OnboardingData, UserProfile } from "@/types/saas";
-import type * as LegacyRepository from "@/lib/appwrite-rest";
+import type { BrandProfile, OnboardingData, UserProfile, PlanId, SubscriptionStatus } from "@/types/saas";
 
 type Document = UserProfile & Record<string, unknown>;
 type UsageEvent = { id: string; user_id: string; event_type: string; created_at: string };
@@ -73,14 +72,23 @@ export async function recordGeneration(id: string, payload: unknown) {
     return { data: { ...d, generation_history_json: [saved, ...array<HistoryItem>(d.generation_history_json)].slice(0, 100) }, result: [saved] };
   });
 }
-export async function recordUsageEvent(input: Parameters<typeof LegacyRepository.recordUsageEvent>[0]) {
+export async function recordUsageEvent(input: {
+  userId: string;
+  email?: string;
+  eventType: "text_generation" | "image_generation";
+  metadata?: Record<string, unknown>;
+}) {
   await upsertUserProfile({ id: input.userId, email: input.email ?? "" });
   return mutate(input.userId, d => {
     const saved = { id: randomUUID(), user_id: input.userId, event_type: input.eventType, metadata: { ...input.metadata, email: input.email }, created_at: new Date().toISOString() };
     return { data: { ...d, usage_events_json: [saved, ...array<UsageEvent>(d.usage_events_json)].slice(0, 500) }, result: [saved] };
   });
 }
-export async function getMonthlyUsageCount(input: Parameters<typeof LegacyRepository.getMonthlyUsageCount>[0]) {
+export async function getMonthlyUsageCount(input: {
+  userId: string;
+  periodEnd?: string | null;
+  eventType?: "text_generation" | "image_generation";
+}) {
   const d = await document(input.userId);
   const { periodStart, periodEnd } = currentUsageWindow(new Date(), input.periodEnd);
   const start = Date.parse(periodStart), end = Date.parse(periodEnd);
@@ -89,7 +97,20 @@ export async function getMonthlyUsageCount(input: Parameters<typeof LegacyReposi
   if (input.eventType) return events.filter(e => e.event_type === input.eventType).length;
   return events.length + Math.max(0, array<HistoryItem>(d?.generation_history_json).filter(inWindow).length - events.filter(e => e.event_type === "text_generation").length);
 }
-export async function updateSubscriptionStatus(input: Parameters<typeof LegacyRepository.updateSubscriptionStatus>[0]) {
+export async function updateSubscriptionStatus(input: {
+  userId?: string;
+  email?: string;
+  plan: PlanId;
+  status: SubscriptionStatus;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  stripeCheckoutSessionId?: string;
+  currentPeriodEnd?: string | null;
+  cancelAtPeriodEnd?: boolean;
+  canceledAt?: string | null;
+  entitlementSource?: string;
+  amountPaid?: number;
+}) {
   const matching = new Map<string, UserProfile>();
   if (input.userId) { const p = await getUserProfile(input.userId); if (p) matching.set(p.id, p); }
   if (input.email) { const p = await getUserProfileByEmail(input.email); if (p) matching.set(p.id, p); }
@@ -103,7 +124,20 @@ export async function updateSubscriptionStatus(input: Parameters<typeof LegacyRe
   }
   return updated;
 }
-export async function syncUserSubscriptionState(input: Parameters<typeof LegacyRepository.syncUserSubscriptionState>[0]) {
+export async function syncUserSubscriptionState(input: {
+  userId: string;
+  email: string;
+  plan: PlanId;
+  status: SubscriptionStatus;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  stripeCheckoutSessionId?: string;
+  currentPeriodEnd?: string | null;
+  cancelAtPeriodEnd?: boolean;
+  canceledAt?: string | null;
+  entitlementSource?: string;
+  amountPaid?: number;
+}) {
   await upsertUserProfile({ id: input.userId, email: input.email });
   return (await updateSubscriptionStatus(input))[0] ?? null;
 }

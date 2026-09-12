@@ -112,7 +112,7 @@ export async function POST(request: Request) {
         status = normalizeSubscriptionStatus(subscriptionState.status);
       }
     } catch {
-      // Fall back to stored Appwrite state if Stripe is temporarily unavailable.
+      // Fall back to stored account state if Stripe is temporarily unavailable.
     }
   }
 
