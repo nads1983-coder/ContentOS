@@ -42,11 +42,8 @@ async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promi
     });
 
     return buildUsageSummary(plan, used, profile.subscription_current_period_end);
-  } catch (error) {
-    console.warn("Studio usage fetch failed", {
-      userId: profile.id,
-      error
-    });
+  } catch {
+    console.warn("Studio usage fetch failed");
     return buildUsageSummary(plan, 0, profile.subscription_current_period_end);
   }
 }
@@ -62,12 +59,8 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
 
   try {
     profile = await getUserProfileForUser(user.id, user.email);
-  } catch (error) {
-    console.warn("Studio profile fetch failed", {
-      userId: user.id,
-      authenticatedEmail: user.email,
-      error
-    });
+  } catch {
+    console.warn("Studio profile fetch failed");
   }
 
   if (!profile) {
@@ -108,7 +101,7 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
         };
       }
     } catch {
-      // Use stored Appwrite state if Stripe is temporarily unavailable.
+      // Use stored account state if Stripe is temporarily unavailable.
     }
   }
 

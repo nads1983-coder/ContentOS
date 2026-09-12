@@ -1,3 +1,4 @@
+import { usesPostgres } from "@/lib/backend";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
@@ -44,6 +45,11 @@ export default async function LoginPage({
         <p className="mt-2 text-sm leading-6 text-muted">
           Access your ContentOS workspace, saved content, usage, and billing.
         </p>
+        {usesPostgres() ? (
+          <p className="mt-4 rounded border border-violet/40 bg-violet/10 p-3 text-sm leading-6 text-bone">
+            Existing member? <Link href="/reset-password" className="underline">Reset your password once</Link> after our account upgrade. Your saved content and plan stay with your account.
+          </p>
+        ) : null}
         <div className="mt-6">
           <AuthForm mode="login" initialPlan={plan} initialFounderOffer={founderOffer} />
         </div>

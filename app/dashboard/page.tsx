@@ -105,25 +105,11 @@ export default async function DashboardPage() {
       if (!profile) {
         profile = await upsertUserProfile({ id: user.id, email: user.email });
       }
-    } catch (error) {
-      console.warn("Dashboard profile fetch/upsert failed. Rendering fallback billing state.", {
-        userId: user.id,
-        authenticatedEmail: user.email,
-        error
-      });
+    } catch {
+      console.warn("Dashboard profile fetch/upsert failed. Rendering fallback billing state.");
       profile = fallbackProfileForUser(user);
     }
   }
-
-  console.log("Dashboard fetched Appwrite subscription state", {
-    userId: user.id,
-    authenticatedEmail: user.email,
-    plan: profile?.plan,
-    subscriptionStatus: profile?.subscription_status,
-    stripeCustomerId: profile?.stripe_customer_id,
-    stripeSubscriptionId: profile?.stripe_subscription_id,
-    currentPeriodEnd: profile?.subscription_current_period_end
-  });
 
   if (profile && isStripeConfigured() && !hasLifetimeEntitlement(profile)) {
     try {
@@ -132,23 +118,6 @@ export default async function DashboardPage() {
         stripeSubscriptionId: profile.stripe_subscription_id,
         email: user.email
       }), profile.plan);
-
-      console.log("Dashboard fetched Stripe subscription state", {
-        userId: user.id,
-        authenticatedEmail: user.email,
-        dbPlan: profile.plan,
-        dbStatus: profile.subscription_status,
-        dbStripeCustomerId: profile.stripe_customer_id,
-        stripeCustomerIdMatches:
-          Boolean(profile.stripe_customer_id && subscriptionState.stripeCustomerId) &&
-          profile.stripe_customer_id === subscriptionState.stripeCustomerId,
-        plan: subscriptionState.plan,
-        status: subscriptionState.status,
-        cancelAtPeriodEnd: subscriptionState.cancelAtPeriodEnd,
-        stripeCustomerId: subscriptionState.stripeCustomerId,
-        stripeSubscriptionId: subscriptionState.stripeSubscriptionId,
-        currentPeriodEnd: subscriptionState.currentPeriodEnd
-      });
 
       profile = await syncUserSubscriptionState({
         userId: profile.id,
@@ -165,11 +134,7 @@ export default async function DashboardPage() {
         subscription_canceled_at: subscriptionState.canceledAt
       };
     } catch {
-      console.warn("Dashboard Stripe subscription sync failed", {
-        userId: user.id,
-        stripeCustomerId: profile.stripe_customer_id,
-        stripeSubscriptionId: profile.stripe_subscription_id
-      });
+      console.warn("Dashboard Stripe subscription sync failed");
       // Keep the stored profile if Stripe is temporarily unavailable.
     }
   }
@@ -211,10 +176,7 @@ export default async function DashboardPage() {
         };
       }
     } catch {
-      console.warn("Dashboard renewal date backfill failed", {
-        userId: user.id,
-        stripeSubscriptionId: profile.stripe_subscription_id
-      });
+      console.warn("Dashboard renewal date backfill failed");
     }
   }
 
@@ -224,12 +186,8 @@ export default async function DashboardPage() {
   if (isDatabaseConfigured()) {
     try {
       brandProfiles = await listBrandProfiles(profileUserId);
-    } catch (error) {
-      console.warn("Dashboard brand profile fetch failed", {
-        userId: profileUserId,
-        authenticatedUserId: user.id,
-        error
-      });
+    } catch {
+      console.warn("Dashboard brand profile fetch failed");
     }
   }
   const plan = normalizePlanId(profile?.plan);
@@ -246,28 +204,12 @@ export default async function DashboardPage() {
         userId: profileUserId,
         periodEnd: profile?.subscription_current_period_end
       });
-    } catch (error) {
-      console.warn("Dashboard usage fetch failed", {
-        userId: user.id,
-        error
-      });
+    } catch {
+      console.warn("Dashboard usage fetch failed");
     }
   }
 
   const usage = buildUsageSummary(plan, monthlyUsageCount, profile?.subscription_current_period_end);
-
-  console.log("Dashboard normalized subscription state", {
-    userId: user.id,
-    authenticatedEmail: user.email,
-    dbSubscriptionValue: profile?.subscription_status,
-    plan,
-    status,
-    cancelAtPeriodEnd: profile?.subscription_cancel_at_period_end,
-    hasActiveSubscription,
-    canUpgradeToCreator,
-    canUpgradeToStudio,
-    currentPeriodEnd: profile?.subscription_current_period_end
-  });
 
   return (
     <main className="min-h-screen overflow-x-hidden px-4 py-6 text-bone sm:px-6 lg:px-8">
@@ -344,7 +286,7 @@ export default async function DashboardPage() {
             </p>
             <h2 className="mt-3 break-all text-lg font-semibold">{user.email}</h2>
             <p className="mt-2 text-sm text-muted">
-              Appwrite Auth session active.
+              Secure account session active.
             </p>
           </article>
         </section>
@@ -374,7 +316,7 @@ export default async function DashboardPage() {
           <article className="min-w-0 rounded border border-white/10 bg-panel/78 p-5">
             <h2 className="text-xl font-semibold">Recent generations</h2>
             <p className="mt-2 text-sm leading-6 text-muted">
-              Generation history is stored in Appwrite when configured. Local recent work remains available in the workspace while you connect production persistence.
+              Your generation history is stored securely with your account. Recent work is also available in the workspace.
             </p>
           </article>
         </section>
