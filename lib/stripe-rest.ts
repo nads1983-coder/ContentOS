@@ -1,5 +1,13 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { getEnv, isStripeConfigured } from "@/lib/env";
+import {
+  checkoutSessionPromotionCodeIds,
+  FOUNDER_PROMOTION_CODE,
+  founderCheckoutDiscountParams,
+  founderCheckoutMetadata,
+  founderCheckoutSessionIsValid,
+  resolveFounderOfferAvailability
+} from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
 
 export type BillingPlan = "pro_creator" | "pro_studio";
@@ -36,12 +44,22 @@ type StripeCustomer = {
 type StripePromotionCode = {
   id: string;
   code: string;
+  active?: boolean;
+  max_redemptions?: number | null;
+  times_redeemed?: number;
 };
 
 export class FounderCheckoutError extends Error {
   constructor(message = "Founder discount could not be applied.") {
     super(message);
     this.name = "FounderCheckoutError";
+  }
+}
+
+export class FounderCheckoutInProgressError extends Error {
+  constructor(message = "A Founder checkout is already being prepared for this account.") {
+    super(message);
+    this.name = "FounderCheckoutInProgressError";
   }
 }
 
@@ -111,15 +129,20 @@ function stripePriceId(plan: BillingPlan) {
     : env.stripeProStudioPriceId;
 }
 
-async function findActivePromotionCodeId(code: string) {
-  const query = new URLSearchParams({
-    active: "true",
-    code,
-    limit: "1"
+export async function getFounderOfferAvailability() {
+  const env = getEnv();
+  const result = await stripeGet<StripeList<StripePromotionCode>>(
+    "promotion_codes",
+    new URLSearchParams({
+      active: "true",
+      code: FOUNDER_PROMOTION_CODE,
+      limit: "1"
+    })
+  );
+  return resolveFounderOfferAvailability(result.data[0] ?? null, {
+    configuredCouponId: env.stripeFounderCouponId,
+    configuredPromotionCodeId: env.stripeFounderPromotionCodeId
   });
-
-  const result = await stripeGet<StripeList<StripePromotionCode>>("promotion_codes", query);
-  return result.data[0]?.id ?? null;
 }
 
 async function stripeRequest<T>(path: string, body: URLSearchParams) {
@@ -542,38 +565,24 @@ export async function createCheckoutSession(input: {
   }).map(([key, value]) => [key, String(value)]));
 
   if (input.founderOffer && input.plan === "pro_creator") {
-    const env = getEnv();
-    const configuredFounderDiscountId = env.stripeFounderCouponId;
-    const couponId = configuredFounderDiscountId.startsWith("promo_")
-      ? ""
-      : configuredFounderDiscountId;
-    const promotionCodeId = configuredFounderDiscountId.startsWith("promo_")
-      ? configuredFounderDiscountId
-      : env.stripeFounderPromotionCodeId || await findActivePromotionCodeId("FOUNDING100");
+    const availability = await getFounderOfferAvailability();
 
-    if (couponId) {
-      body.set("discounts[0][coupon]", couponId);
-    } else if (promotionCodeId) {
-      body.set("discounts[0][promotion_code]", promotionCodeId);
-    } else {
-      throw new FounderCheckoutError();
-    }
-
-    body.set("payment_method_collection", "if_required");
-    body.set("metadata[offer]", "founder");
-    body.set("metadata[founder_offer]", "true");
-    body.set("metadata[expected_total]", "0");
-    body.set("subscription_data[metadata][offer]", "founder");
-    body.set("subscription_data[metadata][founder_offer]", "true");
-    body.set("subscription_data[metadata][expected_total]", "0");
+    Object.entries({
+      ...founderCheckoutDiscountParams(availability.promotionCodeId),
+      ...founderCheckoutMetadata(input.userId)
+    }).forEach(([key, value]) => {
+      body.set(key, value);
+    });
   } else {
     body.set("allow_promotion_codes", "true");
   }
 
   if (input.userId) {
     body.set("client_reference_id", input.userId);
-    body.set("metadata[user_id]", input.userId);
-    body.set("subscription_data[metadata][user_id]", input.userId);
+    if (!input.founderOffer) {
+      body.set("metadata[user_id]", input.userId);
+      body.set("subscription_data[metadata][user_id]", input.userId);
+    }
   }
 
   if (input.stripeCustomerId) {
@@ -583,6 +592,28 @@ export async function createCheckoutSession(input: {
   }
 
   const session = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body);
+
+  if (input.founderOffer) {
+    const availability = await getFounderOfferAvailability();
+    const inspectedSession = await retrieveCheckoutSession(session.id);
+    const promotionCodeIds = checkoutSessionPromotionCodeIds(inspectedSession);
+
+    if (
+      !founderCheckoutSessionIsValid(inspectedSession, availability.promotionCodeId) ||
+      !promotionCodeIds.has(availability.promotionCodeId)
+    ) {
+      try {
+        await stripeRequest(`checkout/sessions/${encodeURIComponent(session.id)}/expire`, new URLSearchParams());
+      } catch (error) {
+        console.error("[Founder Checkout] Failed to expire invalid founder session", {
+          sessionId: session.id,
+          error: error instanceof Error ? error.message : "Unknown Stripe error"
+        });
+      }
+
+      throw new FounderCheckoutError("Founder Checkout Session was not created with the expected £0 FOUNDING100 discount.");
+    }
+  }
 
   if (input.founderOffer && session.amount_total !== 0) {
     try {

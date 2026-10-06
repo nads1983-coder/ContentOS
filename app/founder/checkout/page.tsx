@@ -55,7 +55,8 @@ export default async function FounderCheckoutPage({
             Confirm your free access
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted">
-            You will confirm your free Founder access in Stripe. You will not be charged when the founder discount is applied.
+            Your account is ready, but Founder access is not active until Stripe confirms the £0 checkout.
+            You will not be charged when the Founder discount is applied.
           </p>
         </div>
 
@@ -80,7 +81,7 @@ export default async function FounderCheckoutPage({
 
         {canceled ? (
           <p className="mt-4 rounded border border-gold/35 bg-gold/[0.08] p-3 text-sm text-bone">
-            Checkout was canceled. Your account is safe and no charge was made.
+            Checkout was canceled. Your account is safe, no charge was made, and Founder access has not been activated yet.
           </p>
         ) : null}
 

@@ -25,10 +25,10 @@ export function FoundingOffer({
               Founding 100
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-bone/86">
-              We&apos;re opening 100 lifetime founding accounts for creators and professionals building authority online.
+              We&apos;re opening a limited lifetime founder cohort for creators and professionals building authority online.
             </p>
             <p className="mt-2 text-sm font-semibold leading-6 text-goldSoft">
-              Full Creator access. Free forever. Limited to 100 users.
+              Full Creator access. Free forever for the first 100 valid customer claims.
             </p>
             <p className="mt-3 max-w-2xl text-xs leading-5 text-muted">
               The Founder discount is applied automatically. No coupon entry or card is required when Stripe confirms the £0 total.

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
 import { BrandLogo } from "@/components/brand-logo";
 import { getCurrentUser } from "@/lib/auth";
+import { authenticatedFounderDestination } from "@/lib/founder-offer";
 import { pageMetadata } from "@/lib/metadata";
 import { BillingPlan } from "@/lib/pricing";
 
@@ -34,7 +35,7 @@ export default async function LoginPage({
   const founderOffer = parseFounderOffer(params?.founder);
 
   if (user) {
-    redirect(founderOffer ? "/founder/checkout" : "/dashboard");
+    redirect(authenticatedFounderDestination(founderOffer));
   }
 
   return (

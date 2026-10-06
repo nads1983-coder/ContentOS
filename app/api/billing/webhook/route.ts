@@ -6,7 +6,11 @@ import {
   verifyStripeSignature
 } from "@/lib/stripe-rest";
 import { updateSubscriptionStatus } from "@/lib/repository";
-import { FOUNDER_OFFER_ENTITLEMENT_SOURCE } from "@/lib/entitlements";
+import {
+  founderSubscriptionEntitlementState,
+  founderSubscriptionMetadataQualifies,
+  founderWebhookCheckoutQualifies
+} from "@/lib/founder-offer";
 
 type StripeWebhookEvent = {
   type: string;
@@ -50,14 +54,11 @@ export async function POST(request: Request) {
   const object = event.data.object;
 
   if (event.type === "checkout.session.completed") {
-    const isFounderCheckout =
-      object.metadata?.offer === "founder" &&
-      object.metadata?.founder_offer === "true" &&
-      object.metadata?.expected_total === "0";
+    const isFounderCheckout = founderSubscriptionMetadataQualifies(object.metadata);
 
     if (isFounderCheckout) {
-      if (object.amount_total !== 0) {
-        console.error("[Founder Checkout] Refused non-zero founder entitlement", {
+      if (!founderWebhookCheckoutQualifies(object)) {
+        console.error("[Founder Checkout] Refused invalid founder entitlement", {
           sessionId: object.id,
           userId: object.client_reference_id ?? object.metadata?.user_id,
           amountTotal: object.amount_total,
@@ -71,16 +72,11 @@ export async function POST(request: Request) {
         await updateSubscriptionStatus({
           userId: object.client_reference_id ?? object.metadata?.user_id,
           email: object.customer_email,
-          plan: "founder",
-          status: "active",
-          stripeCustomerId: object.customer,
-          stripeSubscriptionId: object.subscription,
-          stripeCheckoutSessionId: object.id,
-          currentPeriodEnd: null,
-          cancelAtPeriodEnd: false,
-          canceledAt: null,
-          entitlementSource: FOUNDER_OFFER_ENTITLEMENT_SOURCE,
-          amountPaid: 0
+          ...founderSubscriptionEntitlementState({
+            customer: object.customer,
+            subscription: object.subscription,
+            sessionId: object.id
+          })
         });
 
         console.log("[Founder Checkout] Lifetime entitlement activated", {
@@ -125,23 +121,16 @@ export async function POST(request: Request) {
       "customer.subscription.deleted"
     ].includes(event.type)
   ) {
-    const isFounderSubscription =
-      object.metadata?.offer === "founder" &&
-      object.metadata?.founder_offer === "true" &&
-      object.metadata?.expected_total === "0";
+    const isFounderSubscription = founderSubscriptionMetadataQualifies(object.metadata);
 
     if (isFounderSubscription) {
       await updateSubscriptionStatus({
         userId: object.metadata?.user_id,
         email: object.customer_email,
-        plan: "founder",
-        status: "active",
-        stripeCustomerId: object.customer,
-        stripeSubscriptionId: object.id,
-        currentPeriodEnd: null,
-        cancelAtPeriodEnd: false,
-        canceledAt: null,
-        entitlementSource: FOUNDER_OFFER_ENTITLEMENT_SOURCE
+        ...founderSubscriptionEntitlementState({
+          customer: object.customer,
+          subscription: object.id
+        })
       });
 
       return NextResponse.json({ received: true });

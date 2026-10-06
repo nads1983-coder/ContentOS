@@ -248,6 +248,19 @@ export default async function DashboardPage() {
               </p>
             ) : null}
             <div className="mt-5 grid gap-3">
+              {canUpgradeToCreator && plan === "free" ? (
+                <div className="rounded border border-gold/35 bg-gold/[0.08] p-3">
+                  <p className="text-sm font-semibold text-goldSoft">Founder claim not active yet</p>
+                  <p className="mt-1 text-xs leading-5 text-muted">
+                    If you came through the Founding 100 offer, finish the £0 checkout to activate lifetime Founder access.
+                  </p>
+                  <div className="mt-3">
+                    <CheckoutButton plan="pro_creator" authenticated founderOffer>
+                      Continue Founder claim
+                    </CheckoutButton>
+                  </div>
+                </div>
+              ) : null}
               {canUpgradeToCreator ? (
                 <CheckoutButton plan="pro_creator">Upgrade to Pro Creator</CheckoutButton>
               ) : null}

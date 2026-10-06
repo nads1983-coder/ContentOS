@@ -2,7 +2,11 @@ import { rejectUnsafeWrite } from "@/lib/request-security";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isDatabaseConfigured, isAuthConfigured } from "@/lib/backend";
-import { getEnv } from "@/lib/env";
+import {
+  createFounderClaimGate,
+  founderClaimConflict,
+  FounderOfferUnavailableError
+} from "@/lib/founder-offer";
 import {
   checkoutPlanIsCoveredByState,
   createCheckoutSession,
@@ -10,7 +14,6 @@ import {
   FounderCheckoutError,
   getStripeSubscriptionState,
   hasActiveUnknownPaidSubscription,
-  planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan
 } from "@/lib/stripe-rest";
 import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
@@ -18,6 +21,8 @@ import { hasLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+const founderClaimGate = createFounderClaimGate();
 
 export async function POST(request: Request) {
   const rejected = rejectUnsafeWrite(request);
@@ -54,6 +59,18 @@ export async function POST(request: Request) {
       ? await getUserProfileForUser(user.id, user.email)
       : null;
 
+    const founderConflict = founderOffer ? founderClaimConflict(profile) : null;
+
+    if (founderConflict) {
+      return NextResponse.json(
+        {
+          error: founderConflict.error,
+          redirectUrl: founderConflict.redirectUrl
+        },
+        { status: founderConflict.status }
+      );
+    }
+
     if (profile && hasLifetimeEntitlement(profile)) {
       return NextResponse.json(
         {
@@ -65,23 +82,16 @@ export async function POST(request: Request) {
     }
 
     if (founderOffer) {
-      if (profile && planHasActiveEntitlement(profile.plan, profile.subscription_status)) {
-        return NextResponse.json(
-          {
-            error: "Your active account already includes paid access.",
-            redirectUrl: "/dashboard"
-          },
-          { status: 409 }
-        );
-      }
-
-      const session = await createCheckoutSession({
-        plan: "pro_creator",
-        userId: profile?.id ?? user?.id,
-        email: user?.email,
-        stripeCustomerId: profile?.stripe_customer_id,
-        founderOffer: true
-      });
+      const lockKey = profile?.id ?? user?.id ?? user?.email ?? "anonymous";
+      const session = await founderClaimGate.run(lockKey, () =>
+        createCheckoutSession({
+          plan: "pro_creator",
+          userId: profile?.id ?? user?.id,
+          email: user?.email,
+          stripeCustomerId: profile?.stripe_customer_id,
+          founderOffer: true
+        })
+      );
 
       return NextResponse.json({ url: session.url });
     }
@@ -132,15 +142,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     if (founderOffer) {
-      const env = getEnv();
       console.error("[Founder Checkout] Failed to apply founder discount", {
         userId: user?.id,
         email: user?.email,
-        couponId: env.stripeFounderCouponId || undefined,
-        promotionCodeId: env.stripeFounderPromotionCodeId || undefined,
         error: error instanceof Error ? error.message : "Unknown founder checkout error",
         errorType: error instanceof FounderCheckoutError ? error.name : "StripeCheckoutError"
       });
+
+      if (error instanceof FounderOfferUnavailableError) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 409 }
+        );
+      }
 
       return NextResponse.json(
         { error: "Founder discount could not be applied. Please try again." },
