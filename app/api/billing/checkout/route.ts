@@ -120,7 +120,7 @@ export async function POST(request: Request) {
         validateOpenSession: founderOpenCheckoutSessionIsValid,
         validateCompletedSession: founderCompletedCheckoutSessionQualifies,
         persistFounderEntitlement: async (input) => {
-          await updateSubscriptionStatus({
+          const updated = await updateSubscriptionStatus({
             userId: input.userId,
             email: input.email,
             ...founderSubscriptionEntitlementState({
@@ -129,6 +129,9 @@ export async function POST(request: Request) {
               sessionId: input.sessionId
             })
           });
+          if (updated.length === 0) {
+            throw new Error("Founder entitlement profile update did not match an account.");
+          }
         }
       });
 

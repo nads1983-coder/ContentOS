@@ -167,6 +167,22 @@ test("completed checkout activation requires account association, customer and s
     ),
     false
   );
+  assert.equal(
+    founderCompletedCheckoutSessionQualifies(
+      { ...valid, client_reference_id: "other_user", metadata: { ...valid.metadata, user_id: "user_test" } },
+      "promo_founder_100",
+      "user_test"
+    ),
+    false
+  );
+  assert.equal(
+    founderCompletedCheckoutSessionQualifies(
+      { ...valid, client_reference_id: null, metadata: { ...valid.metadata, user_id: undefined } },
+      "promo_founder_100",
+      "user_test"
+    ),
+    false
+  );
   assert.equal(founderCompletedCheckoutSessionQualifies({ ...valid, customer: null }, "promo_founder_100", "user_test"), false);
   assert.equal(founderCompletedCheckoutSessionQualifies({ ...valid, amount_total: 1 }, "promo_founder_100", "user_test"), false);
 });
@@ -348,6 +364,9 @@ function serviceDeps(repository, stripe, entitlements = [], options = {}) {
       if (options.persistFails) {
         throw new Error("simulated entitlement persistence failure");
       }
+      if (options.noProfileUpdated) {
+        throw new Error("Founder entitlement profile update did not match an account.");
+      }
       if (options.idempotentPersist) {
         if (persistedSessions.has(input.sessionId)) return;
         persistedSessions.add(input.sessionId);
@@ -519,6 +538,27 @@ test("entitlement persistence failure remains retryable for Stripe webhooks", as
   assert.equal(stripe.canceled.length, 0);
 });
 
+test("missing entitlement target remains retryable for Stripe webhooks", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+  const entitlements = [];
+
+  await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe, entitlements));
+  stripe.retrieveCheckoutSession = async () => completedSession("cs_1");
+
+  const failure = await captureError(() =>
+    handleFounderCheckoutCompleted(
+      { sessionId: "cs_1", userId: "user_test" },
+      serviceDeps(repo, stripe, entitlements, { noProfileUpdated: true })
+    )
+  );
+
+  assert.match(failure.message, /profile update did not match/);
+  assert.equal(founderWebhookActivationStatus(failure), 500);
+  assert.equal(repo.claims[0].status, "open");
+  assert.equal(entitlements.length, 0);
+});
+
 test("Stripe checkout retrieval failure remains retryable for Stripe webhooks", async () => {
   const repo = createMemoryRepository();
   const stripe = createMockStripe();
@@ -561,6 +601,25 @@ test("claim completion failure after entitlement persistence is safe on retry", 
   assert.equal(repo.claims[0].status, "completed");
   assert.equal(entitlements.length, 1);
   assert.deepEqual(stripe.canceled, ["sub_test"]);
+});
+
+test("terminal non-completed Founder claims cannot be activated later", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+  const entitlements = [];
+
+  await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe, entitlements));
+  repo.claims[0].status = "invalid";
+  stripe.retrieveCheckoutSession = async () => completedSession("cs_1");
+
+  const failure = await captureError(() =>
+    handleFounderCheckoutCompleted({ sessionId: "cs_1", userId: "user_test" }, serviceDeps(repo, stripe, entitlements))
+  );
+
+  assert.ok(failure instanceof FounderPermanentActivationError);
+  assert.equal(founderWebhookActivationStatus(failure), 200);
+  assert.equal(repo.claims[0].status, "invalid");
+  assert.equal(entitlements.length, 0);
 });
 
 test("duplicate or reordered webhook events are idempotent", async () => {

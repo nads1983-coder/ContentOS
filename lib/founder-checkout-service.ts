@@ -353,6 +353,10 @@ export async function handleFounderCheckoutCompleted(input: {
     return;
   }
 
+  if (!["preparing", "open"].includes(claim.status)) {
+    throw new FounderPermanentActivationError("Founder checkout claim is no longer eligible for activation.");
+  }
+
   await activateCompletedFounderCheckout(session, claim, deps);
 }
 

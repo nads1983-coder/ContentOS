@@ -193,13 +193,16 @@ export function founderCompletedCheckoutSessionQualifies(
   expectedPromotionCodeId: string,
   expectedUserId: string
 ) {
+  const sessionUserIds = [session.client_reference_id, session.metadata?.user_id].filter(Boolean);
+
   return (
     hasFounderMetadata(session) &&
     session.amount_total === 0 &&
     session.mode === "subscription" &&
     session.status === "complete" &&
     (session.payment_status === "paid" || session.payment_status === "no_payment_required") &&
-    (session.client_reference_id === expectedUserId || session.metadata?.user_id === expectedUserId) &&
+    sessionUserIds.length > 0 &&
+    sessionUserIds.every((userId) => userId === expectedUserId) &&
     Boolean(session.customer) &&
     Boolean(session.subscription) &&
     checkoutSessionPromotionCodeIds(session).has(expectedPromotionCodeId)
