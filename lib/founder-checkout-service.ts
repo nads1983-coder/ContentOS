@@ -118,6 +118,21 @@ export class FounderCheckoutUnavailableError extends Error {
   }
 }
 
+export class FounderPermanentActivationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "FounderPermanentActivationError";
+  }
+}
+
+export function isPermanentFounderActivationError(error: unknown): error is FounderPermanentActivationError {
+  return error instanceof FounderPermanentActivationError;
+}
+
+export function founderWebhookActivationStatus(error: unknown): 200 | 500 {
+  return isPermanentFounderActivationError(error) ? 200 : 500;
+}
+
 function terminalStatusForStripeStatus(status?: string | null): Exclude<FounderClaimStatus, "preparing" | "open"> | null {
   if (status === "complete") return "completed";
   if (status === "expired") return "expired";
@@ -259,27 +274,44 @@ export async function activateCompletedFounderCheckout(
   deps: FounderCheckoutDeps
 ) {
   if (!deps.validateCompletedSession(session, claim.promotionCodeId, claim.userId)) {
-    await deps.repository.markTerminal({
-      claimId: claim.id,
-      status: "invalid",
-      error: "Completed Founder checkout failed validation."
-    });
-    throw new FounderCheckoutUnavailableError("Founder checkout completion could not be validated.");
+    try {
+      await deps.repository.markTerminal({
+        claimId: claim.id,
+        status: "invalid",
+        error: "Completed Founder checkout failed validation."
+      });
+    } catch (error) {
+      console.error("[Founder Checkout] Failed to record permanent Founder rejection", {
+        claimId: claim.id,
+        sessionId: session.id,
+        error: error instanceof Error ? error.message : "Unknown database error"
+      });
+    }
+
+    throw new FounderPermanentActivationError("Founder checkout completion could not be validated.");
   }
 
   const customerId = typeof session.customer === "string" ? session.customer : null;
   const subscriptionId = typeof session.subscription === "string" ? session.subscription : null;
 
   if (!customerId || !subscriptionId) {
-    await deps.repository.markTerminal({
-      claimId: claim.id,
-      status: "invalid",
-      error: "Completed Founder checkout was missing customer or subscription evidence."
-    });
-    throw new FounderCheckoutUnavailableError("Founder checkout completion was incomplete.");
+    try {
+      await deps.repository.markTerminal({
+        claimId: claim.id,
+        status: "invalid",
+        error: "Completed Founder checkout was missing customer or subscription evidence."
+      });
+    } catch (error) {
+      console.error("[Founder Checkout] Failed to record incomplete Founder checkout rejection", {
+        claimId: claim.id,
+        sessionId: session.id,
+        error: error instanceof Error ? error.message : "Unknown database error"
+      });
+    }
+
+    throw new FounderPermanentActivationError("Founder checkout completion was incomplete.");
   }
 
-  await deps.stripe.scheduleCancellation(subscriptionId);
   await deps.persistFounderEntitlement({
     userId: claim.userId,
     email: claim.email,
@@ -295,6 +327,7 @@ export async function activateCompletedFounderCheckout(
     stripeSubscriptionId: subscriptionId,
     amountTotal: session.amount_total ?? 0
   });
+  await deps.stripe.scheduleCancellation(subscriptionId);
 }
 
 export async function handleFounderCheckoutCompleted(input: {
@@ -310,10 +343,13 @@ export async function handleFounderCheckoutCompleted(input: {
   }
 
   if (!claim) {
-    throw new FounderCheckoutUnavailableError("Founder checkout claim record was not found.");
+    throw new FounderPermanentActivationError("Founder checkout claim record was not found.");
   }
 
   if (claim.status === "completed") {
+    if (claim.stripeSubscriptionId) {
+      await deps.stripe.scheduleCancellation(claim.stripeSubscriptionId);
+    }
     return;
   }
 

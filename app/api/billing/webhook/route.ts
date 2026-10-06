@@ -17,8 +17,10 @@ import {
 import { founderClaimRepository } from "@/lib/founder-claim-repository";
 import {
   FounderCheckoutUnavailableError,
+  founderWebhookActivationStatus,
   handleFounderCheckoutCompleted,
-  handleFounderSubscriptionEvent
+  handleFounderSubscriptionEvent,
+  isPermanentFounderActivationError
 } from "@/lib/founder-checkout-service";
 
 type StripeWebhookEvent = {
@@ -110,13 +112,30 @@ export async function POST(request: Request) {
           amountTotal: object.amount_total
         });
       } catch (error) {
-        console.error("[Founder Checkout] Refused invalid founder entitlement", {
+        if (isPermanentFounderActivationError(error)) {
+          console.error("[Founder Checkout] Refused permanently invalid founder entitlement", {
+            sessionId: object.id,
+            userId: object.client_reference_id ?? object.metadata?.user_id,
+            amountTotal: object.amount_total,
+            paymentStatus: object.payment_status,
+            error: error.message
+          });
+
+          return NextResponse.json({ received: true });
+        }
+
+        console.error("[Founder Checkout] Retryable founder entitlement processing failure", {
           sessionId: object.id,
           userId: object.client_reference_id ?? object.metadata?.user_id,
           amountTotal: object.amount_total,
           paymentStatus: object.payment_status,
           error: error instanceof Error ? error.message : "Unknown founder webhook error"
         });
+
+        return NextResponse.json(
+          { error: "Founder entitlement processing failed." },
+          { status: founderWebhookActivationStatus(error) }
+        );
       }
 
       return NextResponse.json({ received: true });
