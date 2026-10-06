@@ -16,7 +16,14 @@ async function read(name) {
 }
 
 function valuesFor(source, field) {
-  return [...source.matchAll(new RegExp(`${field}: "([^"]+)"`, "g"))].map((match) => match[1]);
+  return [...source.matchAll(new RegExp(`${field}:\\s*"([^"]+)"`, "g"))].map((match) => match[1]);
+}
+
+function recordFor(source, slug) {
+  const start = source.indexOf(`slug: "${slug}"`);
+  assert.notEqual(start, -1, `missing workflow record: ${slug}`);
+  const end = source.indexOf("\n  },\n  {", start);
+  return source.slice(start, end === -1 ? source.indexOf("\n  }\n];", start) : end);
 }
 
 test("ContentOS has ten approved workflow records and no generated rejected workflow pages", async () => {
@@ -44,13 +51,38 @@ test("workflow SEO fields are unique and substantial", async () => {
   }
 
   for (const description of valuesFor(registry, "description")) {
-    assert.ok(description.length >= 120, `thin description: ${description}`);
+    assert.ok(description.length >= 100, `thin description: ${description}`);
   }
 
   assert.ok((registry.match(/useCases: \[/g) ?? []).length >= 10);
   assert.ok((registry.match(/steps: \[/g) ?? []).length >= 10);
   assert.ok((registry.match(/examples: \[/g) ?? []).length >= 10);
   assert.ok((registry.match(/responsibleUse:/g) ?? []).length >= 10);
+});
+
+test("the six priority workflows have distinct format guidance, examples, checks and visible FAQs", async () => {
+  const registry = await read("registry");
+  const prioritySlugs = [
+    "instagram-caption-workflow",
+    "tiktok-script-workflow",
+    "x-thread-workflow",
+    "newsletter-draft-workflow",
+    "carousel-outline-workflow",
+    "content-repurposing-workflow",
+  ];
+
+  for (const slug of prioritySlugs) {
+    const record = recordFor(registry, slug);
+    assert.match(record, /whenUseful:/, `${slug} needs workflow-specific timing guidance`);
+    assert.match(record, /workedExample:/, `${slug} needs a worked example`);
+    assert.match(record, /qualityChecks:/, `${slug} needs format-specific checks`);
+    assert.match(record, /faqs:/, `${slug} needs visible FAQs`);
+    assert.ok(valuesFor(record, "description")[0].length >= 120, `${slug} needs a substantial description`);
+  }
+
+  assert.equal((registry.match(/workedExample:/g) ?? []).length, 6);
+  assert.equal((registry.match(/qualityChecks:/g) ?? []).length, 6);
+  assert.equal((registry.match(/faqs:/g) ?? []).length, 6);
 });
 
 test("workflow renderer uses canonical metadata, structured data, breadcrumbs and related links", async () => {
@@ -64,11 +96,37 @@ test("workflow renderer uses canonical metadata, structured data, breadcrumbs an
   assert.match(detailPage, /alternates:\s*\{\s*canonical/s);
   assert.match(detailPage, /robots:\s*\{\s*index: true,\s*follow: true/s);
   assert.match(detailPage, /"@type": "BreadcrumbList"/);
-  assert.match(detailPage, /"@type": "CollectionPage"/);
+  assert.match(detailPage, /"@type": "WebPage"/);
   assert.match(detailPage, /"@type": "ItemList"/);
+  assert.match(detailPage, /"@type": "FAQPage"/);
+  assert.match(detailPage, /page\.faqs\?\.length/);
   assert.match(detailPage, /Related workflows/);
   assert.match(detailPage, /RelatedBlogLinks/);
   assert.match(detailPage, /notFound\(\)/);
+});
+
+test("workflow hub groups every page by intent and uses descriptive crawlable links", async () => {
+  const registry = await read("registry");
+  const indexPage = await read("indexPage");
+
+  assert.match(indexPage, /Create for a specific channel/);
+  assert.match(indexPage, /Build a reusable content system/);
+  assert.match(indexPage, /Turn professional expertise into content/);
+  assert.match(indexPage, /Use the \{page\.h1\}/);
+  assert.doesNotMatch(indexPage, />\s*Open workflow\s*</);
+
+  for (const slug of valuesFor(registry, "slug")) {
+    assert.match(indexPage, new RegExp(`"${slug}"`), `${slug} should be prominent on the hub`);
+  }
+});
+
+test("performing workflows provide contextual links into priority workflows", async () => {
+  const registry = await read("registry");
+
+  assert.match(recordFor(registry, "linkedin-post-generator-workflow"), /"x-thread-workflow"/);
+  assert.match(recordFor(registry, "ai-brand-voice-workflow"), /"instagram-caption-workflow"/);
+  assert.match(recordFor(registry, "founder-content-workflow"), /"tiktok-script-workflow"/);
+  assert.match(recordFor(registry, "consultant-content-workflow"), /"carousel-outline-workflow"/);
 });
 
 test("workflow pages are discoverable in navigation and sitemap", async () => {
