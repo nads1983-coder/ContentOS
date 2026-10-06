@@ -1,11 +1,10 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { getEnv, isStripeConfigured } from "@/lib/env";
 import {
-  checkoutSessionPromotionCodeIds,
   FOUNDER_PROMOTION_CODE,
   founderCheckoutDiscountParams,
   founderCheckoutMetadata,
-  founderCheckoutSessionIsValid,
+  founderOpenCheckoutSessionIsValid,
   resolveFounderOfferAvailability
 } from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
@@ -53,13 +52,6 @@ export class FounderCheckoutError extends Error {
   constructor(message = "Founder discount could not be applied.") {
     super(message);
     this.name = "FounderCheckoutError";
-  }
-}
-
-export class FounderCheckoutInProgressError extends Error {
-  constructor(message = "A Founder checkout is already being prepared for this account.") {
-    super(message);
-    this.name = "FounderCheckoutInProgressError";
   }
 }
 
@@ -145,20 +137,26 @@ export async function getFounderOfferAvailability() {
   });
 }
 
-async function stripeRequest<T>(path: string, body: URLSearchParams) {
+async function stripeRequest<T>(path: string, body: URLSearchParams, options: { idempotencyKey?: string } = {}) {
   const env = getEnv();
 
   if (!isStripeConfigured()) {
     throw new Error("Stripe is not configured.");
   }
 
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${env.stripeSecretKey}`,
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Stripe-Version": apiVersion
+  };
+
+  if (options.idempotencyKey) {
+    headers["Idempotency-Key"] = options.idempotencyKey;
+  }
+
   const response = await fetch(`https://api.stripe.com/v1/${path}`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.stripeSecretKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Stripe-Version": apiVersion
-    },
+    headers,
     body,
     signal: AbortSignal.timeout(stripeRequestTimeoutMs),
     cache: "no-store"
@@ -545,6 +543,8 @@ export async function createCheckoutSession(input: {
   email?: string;
   stripeCustomerId?: string;
   founderOffer?: boolean;
+  founderPromotionCodeId?: string;
+  idempotencyKey?: string;
 }) {
   const price = stripePriceId(input.plan);
 
@@ -565,10 +565,13 @@ export async function createCheckoutSession(input: {
   }).map(([key, value]) => [key, String(value)]));
 
   if (input.founderOffer && input.plan === "pro_creator") {
-    const availability = await getFounderOfferAvailability();
+    const promotionCodeId = input.founderPromotionCodeId;
+    if (!promotionCodeId) {
+      throw new FounderCheckoutError("Founder promotion code was not resolved before checkout.");
+    }
 
     Object.entries({
-      ...founderCheckoutDiscountParams(availability.promotionCodeId),
+      ...founderCheckoutDiscountParams(promotionCodeId),
       ...founderCheckoutMetadata(input.userId)
     }).forEach(([key, value]) => {
       body.set(key, value);
@@ -591,17 +594,19 @@ export async function createCheckoutSession(input: {
     body.set("customer_email", input.email);
   }
 
-  const session = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body);
+  const session = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body, {
+    idempotencyKey: input.idempotencyKey
+  });
+  let inspectedFounderSession: StripeCheckoutSession | null = null;
 
   if (input.founderOffer) {
-    const availability = await getFounderOfferAvailability();
+    const promotionCodeId = input.founderPromotionCodeId;
+    if (!promotionCodeId) {
+      throw new FounderCheckoutError("Founder promotion code was not resolved before checkout.");
+    }
     const inspectedSession = await retrieveCheckoutSession(session.id);
-    const promotionCodeIds = checkoutSessionPromotionCodeIds(inspectedSession);
 
-    if (
-      !founderCheckoutSessionIsValid(inspectedSession, availability.promotionCodeId) ||
-      !promotionCodeIds.has(availability.promotionCodeId)
-    ) {
+    if (!founderOpenCheckoutSessionIsValid(inspectedSession, promotionCodeId)) {
       try {
         await stripeRequest(`checkout/sessions/${encodeURIComponent(session.id)}/expire`, new URLSearchParams());
       } catch (error) {
@@ -613,9 +618,11 @@ export async function createCheckoutSession(input: {
 
       throw new FounderCheckoutError("Founder Checkout Session was not created with the expected £0 FOUNDING100 discount.");
     }
+
+    inspectedFounderSession = inspectedSession;
   }
 
-  if (input.founderOffer && session.amount_total !== 0) {
+  if (input.founderOffer && inspectedFounderSession?.amount_total !== 0) {
     try {
       await stripeRequest(`checkout/sessions/${encodeURIComponent(session.id)}/expire`, new URLSearchParams());
     } catch (error) {
@@ -628,20 +635,26 @@ export async function createCheckoutSession(input: {
     throw new FounderCheckoutError("Founder Checkout Session total was not zero.");
   }
 
-  if (!session.url) {
+  const checkoutUrl = inspectedFounderSession?.url ?? session.url;
+
+  if (!checkoutUrl) {
     throw input.founderOffer
       ? new FounderCheckoutError("Founder Checkout Session did not return a URL.")
       : new Error("Stripe Checkout did not return a URL.");
   }
 
-  return session;
+  return inspectedFounderSession ?? session;
 }
 
 export type StripeCheckoutSession = {
   id: string;
   url?: string | null;
   amount_total?: number | null;
+  mode?: string | null;
+  status?: string | null;
   payment_status?: string;
+  client_reference_id?: string | null;
+  expires_at?: number | null;
   customer?: string | null;
   subscription?: string | null;
   metadata?: Record<string, string>;
@@ -678,6 +691,13 @@ export async function retrieveCheckoutSession(sessionId: string) {
   return stripeGet<StripeCheckoutSession>(
     `checkout/sessions/${encodeURIComponent(sessionId)}`,
     query
+  );
+}
+
+export async function expireCheckoutSession(sessionId: string) {
+  return stripeRequest(
+    `checkout/sessions/${encodeURIComponent(sessionId)}/expire`,
+    new URLSearchParams()
   );
 }
 

@@ -15,6 +15,13 @@
       "when": 1789202974750,
       "tag": "0001_migration_email_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791296400000,
+      "tag": "0002_founder_checkout_claims",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import {
+  expireCheckoutSession,
+  retrieveCheckoutSession,
   getStripeSubscriptionState,
   scheduleFounderSubscriptionCancellation,
   stripeSubscriptionToState,
@@ -7,10 +9,17 @@ import {
 } from "@/lib/stripe-rest";
 import { updateSubscriptionStatus } from "@/lib/repository";
 import {
+  founderCompletedCheckoutSessionQualifies,
+  founderOpenCheckoutSessionIsValid,
   founderSubscriptionEntitlementState,
   founderSubscriptionMetadataQualifies,
-  founderWebhookCheckoutQualifies
 } from "@/lib/founder-offer";
+import { founderClaimRepository } from "@/lib/founder-claim-repository";
+import {
+  FounderCheckoutUnavailableError,
+  handleFounderCheckoutCompleted,
+  handleFounderSubscriptionEvent
+} from "@/lib/founder-checkout-service";
 
 type StripeWebhookEvent = {
   type: string;
@@ -57,32 +66,56 @@ export async function POST(request: Request) {
     const isFounderCheckout = founderSubscriptionMetadataQualifies(object.metadata);
 
     if (isFounderCheckout) {
-      if (!founderWebhookCheckoutQualifies(object)) {
-        console.error("[Founder Checkout] Refused invalid founder entitlement", {
-          sessionId: object.id,
-          userId: object.client_reference_id ?? object.metadata?.user_id,
-          amountTotal: object.amount_total,
-          paymentStatus: object.payment_status
-        });
-      } else {
-        if (object.subscription) {
-          await scheduleFounderSubscriptionCancellation(object.subscription);
+      try {
+        if (!object.id) {
+          throw new FounderCheckoutUnavailableError("Founder checkout session id was missing.");
         }
 
-        await updateSubscriptionStatus({
-          userId: object.client_reference_id ?? object.metadata?.user_id,
-          email: object.customer_email,
-          ...founderSubscriptionEntitlementState({
-            customer: object.customer,
-            subscription: object.subscription,
-            sessionId: object.id
-          })
+        await handleFounderCheckoutCompleted({
+          sessionId: object.id,
+          userId: object.client_reference_id ?? object.metadata?.user_id
+        }, {
+          repository: founderClaimRepository,
+          stripe: {
+            resolvePromotionCode: async () => {
+              throw new Error("Promotion resolution is not used during webhook activation.");
+            },
+            createCheckoutSession: async () => {
+              throw new Error("Checkout creation is not used during webhook activation.");
+            },
+            retrieveCheckoutSession,
+            expireCheckoutSession: async (sessionId) => {
+              await expireCheckoutSession(sessionId);
+            },
+            scheduleCancellation: scheduleFounderSubscriptionCancellation
+          },
+          validateOpenSession: founderOpenCheckoutSessionIsValid,
+          validateCompletedSession: founderCompletedCheckoutSessionQualifies,
+          persistFounderEntitlement: async (input) => {
+            await updateSubscriptionStatus({
+              userId: input.userId,
+              email: input.email,
+              ...founderSubscriptionEntitlementState({
+                customer: input.customerId,
+                subscription: input.subscriptionId,
+                sessionId: input.sessionId
+              })
+            });
+          }
         });
 
         console.log("[Founder Checkout] Lifetime entitlement activated", {
           sessionId: object.id,
           userId: object.client_reference_id ?? object.metadata?.user_id,
           amountTotal: object.amount_total
+        });
+      } catch (error) {
+        console.error("[Founder Checkout] Refused invalid founder entitlement", {
+          sessionId: object.id,
+          userId: object.client_reference_id ?? object.metadata?.user_id,
+          amountTotal: object.amount_total,
+          paymentStatus: object.payment_status,
+          error: error instanceof Error ? error.message : "Unknown founder webhook error"
         });
       }
 
@@ -124,14 +157,44 @@ export async function POST(request: Request) {
     const isFounderSubscription = founderSubscriptionMetadataQualifies(object.metadata);
 
     if (isFounderSubscription) {
-      await updateSubscriptionStatus({
-        userId: object.metadata?.user_id,
-        email: object.customer_email,
-        ...founderSubscriptionEntitlementState({
-          customer: object.customer,
-          subscription: object.id
-        })
+      const hasCompletedFounderClaim = await handleFounderSubscriptionEvent({
+        subscriptionId: object.id
+      }, {
+        repository: founderClaimRepository,
+        stripe: {
+          resolvePromotionCode: async () => {
+            throw new Error("Promotion resolution is not used during subscription webhooks.");
+          },
+          createCheckoutSession: async () => {
+            throw new Error("Checkout creation is not used during subscription webhooks.");
+          },
+          retrieveCheckoutSession,
+          expireCheckoutSession: async (sessionId) => {
+            await expireCheckoutSession(sessionId);
+          },
+          scheduleCancellation: scheduleFounderSubscriptionCancellation
+        },
+        validateOpenSession: founderOpenCheckoutSessionIsValid,
+        validateCompletedSession: founderCompletedCheckoutSessionQualifies,
+        persistFounderEntitlement: async (input) => {
+          await updateSubscriptionStatus({
+            userId: input.userId,
+            email: input.email,
+            ...founderSubscriptionEntitlementState({
+              customer: input.customerId,
+              subscription: input.subscriptionId,
+              sessionId: input.sessionId
+            })
+          });
+        }
       });
+
+      if (!hasCompletedFounderClaim) {
+        console.warn("[Founder Checkout] Ignored founder subscription event before checkout confirmation", {
+          subscriptionId: object.id,
+          userId: object.metadata?.user_id
+        });
+      }
 
       return NextResponse.json({ received: true });
     }

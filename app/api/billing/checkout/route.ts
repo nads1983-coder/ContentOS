@@ -3,30 +3,39 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isDatabaseConfigured, isAuthConfigured } from "@/lib/backend";
 import {
-  createFounderClaimGate,
-  founderClaimConflict,
+  founderCompletedCheckoutSessionQualifies,
+  founderOpenCheckoutSessionIsValid,
+  founderSubscriptionEntitlementState,
   FounderOfferUnavailableError
 } from "@/lib/founder-offer";
 import {
   checkoutPlanIsCoveredByState,
   createCheckoutSession,
   BillingPlan,
-  FounderCheckoutError,
+  expireCheckoutSession,
+  getFounderOfferAvailability,
   getStripeSubscriptionState,
   hasActiveUnknownPaidSubscription,
-  reconcileActiveSubscriptionPlan
+  reconcileActiveSubscriptionPlan,
+  retrieveCheckoutSession,
+  scheduleFounderSubscriptionCancellation
 } from "@/lib/stripe-rest";
-import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
+import { founderClaimRepository } from "@/lib/founder-claim-repository";
+import {
+  FounderCheckoutUnavailableError,
+  FounderClaimConflictError,
+  startFounderCheckout
+} from "@/lib/founder-checkout-service";
+import { getUserProfileForUser, syncUserSubscriptionState, updateSubscriptionStatus } from "@/lib/repository";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const founderClaimGate = createFounderClaimGate();
-
 export async function POST(request: Request) {
   const rejected = rejectUnsafeWrite(request);
   if (rejected) return rejected;
+
   const user = await getCurrentUser();
   const { plan, founderOffer } = (await request.json()) as {
     plan?: BillingPlan;
@@ -59,15 +68,10 @@ export async function POST(request: Request) {
       ? await getUserProfileForUser(user.id, user.email)
       : null;
 
-    const founderConflict = founderOffer ? founderClaimConflict(profile) : null;
-
-    if (founderConflict) {
+    if (founderOffer && !isDatabaseConfigured()) {
       return NextResponse.json(
-        {
-          error: founderConflict.error,
-          redirectUrl: founderConflict.redirectUrl
-        },
-        { status: founderConflict.status }
+        { error: "Founder checkout is temporarily unavailable. Please try again later." },
+        { status: 503 }
       );
     }
 
@@ -82,18 +86,53 @@ export async function POST(request: Request) {
     }
 
     if (founderOffer) {
-      const lockKey = profile?.id ?? user?.id ?? user?.email ?? "anonymous";
-      const session = await founderClaimGate.run(lockKey, () =>
-        createCheckoutSession({
-          plan: "pro_creator",
-          userId: profile?.id ?? user?.id,
-          email: user?.email,
-          stripeCustomerId: profile?.stripe_customer_id,
-          founderOffer: true
-        })
-      );
+      const result = await startFounderCheckout({
+        userId: profile?.id ?? user?.id ?? "",
+        email: user?.email ?? "",
+        stripeCustomerId: profile?.stripe_customer_id,
+        alreadyEntitled: Boolean(profile && hasLifetimeEntitlement(profile)),
+        alreadyPaid: Boolean(
+          profile &&
+            profile.subscription_status === "active" &&
+            profile.plan !== "free" &&
+            !hasLifetimeEntitlement(profile)
+        )
+      }, {
+        repository: founderClaimRepository,
+        stripe: {
+          resolvePromotionCode: getFounderOfferAvailability,
+          createCheckoutSession: (input) =>
+            createCheckoutSession({
+              plan: "pro_creator",
+              userId: input.userId,
+              email: input.email,
+              stripeCustomerId: input.stripeCustomerId ?? undefined,
+              founderOffer: true,
+              founderPromotionCodeId: input.promotionCodeId,
+              idempotencyKey: input.idempotencyKey
+            }),
+          retrieveCheckoutSession,
+          expireCheckoutSession: async (sessionId) => {
+            await expireCheckoutSession(sessionId);
+          },
+          scheduleCancellation: scheduleFounderSubscriptionCancellation
+        },
+        validateOpenSession: founderOpenCheckoutSessionIsValid,
+        validateCompletedSession: founderCompletedCheckoutSessionQualifies,
+        persistFounderEntitlement: async (input) => {
+          await updateSubscriptionStatus({
+            userId: input.userId,
+            email: input.email,
+            ...founderSubscriptionEntitlementState({
+              customer: input.customerId,
+              subscription: input.subscriptionId,
+              sessionId: input.sessionId
+            })
+          });
+        }
+      });
 
-      return NextResponse.json({ url: session.url });
+      return NextResponse.json({ url: result.url });
     }
 
     const rawSubscriptionState = await getStripeSubscriptionState({
@@ -136,7 +175,7 @@ export async function POST(request: Request) {
       userId: user?.id,
       email: user?.email,
       stripeCustomerId: subscriptionState.stripeCustomerId ?? profile?.stripe_customer_id,
-      founderOffer: Boolean(founderOffer && plan === "pro_creator")
+      founderOffer: false
     });
 
     return NextResponse.json({ url: session.url });
@@ -146,10 +185,20 @@ export async function POST(request: Request) {
         userId: user?.id,
         email: user?.email,
         error: error instanceof Error ? error.message : "Unknown founder checkout error",
-        errorType: error instanceof FounderCheckoutError ? error.name : "StripeCheckoutError"
+        errorType: error instanceof Error ? error.name : "StripeCheckoutError"
       });
 
-      if (error instanceof FounderOfferUnavailableError) {
+      if (error instanceof FounderClaimConflictError) {
+        return NextResponse.json(
+          { error: error.message, redirectUrl: error.redirectUrl },
+          { status: error.status }
+        );
+      }
+
+      if (
+        error instanceof FounderOfferUnavailableError ||
+        error instanceof FounderCheckoutUnavailableError
+      ) {
         return NextResponse.json(
           { error: error.message },
           { status: 409 }

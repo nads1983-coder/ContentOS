@@ -49,3 +49,26 @@ export const migrationMailRecipient = appSchema.table("migration_mail_recipient"
   uniqueIndex("migration_mail_address_once").on(t.campaignId, t.recipientKey),
   uniqueIndex("migration_mail_provider_once").on(t.providerId)
 ]);
+
+export const founderCheckoutClaims = appSchema.table("founder_checkout_claims", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  email: text("email").notNull(),
+  status: text("status").notNull(),
+  attemptKey: text("attempt_key").notNull(),
+  promotionCodeId: text("promotion_code_id").notNull(),
+  stripeCheckoutSessionId: text("stripe_checkout_session_id"),
+  stripeCheckoutUrl: text("stripe_checkout_url"),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  amountTotal: integer("amount_total"),
+  error: text("error"),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+}, t => [
+  index("founder_checkout_claims_user_idx").on(t.userId),
+  uniqueIndex("founder_checkout_claims_attempt_once").on(t.attemptKey),
+  uniqueIndex("founder_checkout_claims_session_once").on(t.stripeCheckoutSessionId),
+  index("founder_checkout_claims_subscription_idx").on(t.stripeSubscriptionId)
+]);

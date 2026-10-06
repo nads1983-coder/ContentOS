@@ -4,16 +4,20 @@ import test from "node:test";
 import {
   authenticatedFounderDestination,
   checkoutSessionPromotionCodeIds,
-  createFounderClaimGate,
   founderCheckoutDiscountParams,
-  founderCheckoutSessionIsValid,
+  founderCompletedCheckoutSessionQualifies,
+  founderOpenCheckoutSessionIsValid,
   founderClaimConflict,
   founderLoginCallbackUrl,
   founderSubscriptionEntitlementState,
   founderSubscriptionMetadataQualifies,
-  founderWebhookCheckoutQualifies,
   resolveFounderOfferAvailability
 } from "../lib/founder-offer.ts";
+import {
+  handleFounderCheckoutCompleted,
+  handleFounderSubscriptionEvent,
+  startFounderCheckout
+} from "../lib/founder-checkout-service.ts";
 
 const activeFounding100 = {
   id: "promo_founder_100",
@@ -129,59 +133,40 @@ test("the checked FOUNDING100 promotion code is the one applied to checkout", ()
   assert.equal(params["metadata[expected_total]"], "0");
 });
 
-test("checkout inspection requires a zero total and the exact checked promotion code", () => {
+test("open checkout inspection allows null customer/subscription before completion", () => {
   const validSession = {
+    id: "cs_open_valid",
+    url: "https://checkout.test/open",
     amount_total: 0,
-    customer: "cus_test",
-    subscription: "sub_test",
+    mode: "subscription",
+    status: "open",
+    customer: null,
+    subscription: null,
     metadata: { offer: "founder", founder_offer: "true", expected_total: "0" },
     discounts: [{ promotion_code: { id: "promo_founder_100" } }]
   };
 
-  assert.equal(founderCheckoutSessionIsValid(validSession, "promo_founder_100"), true);
+  assert.equal(founderOpenCheckoutSessionIsValid(validSession, "promo_founder_100"), true);
   assert.deepEqual([...checkoutSessionPromotionCodeIds(validSession)], ["promo_founder_100"]);
-  assert.equal(founderCheckoutSessionIsValid({ ...validSession, amount_total: 900 }, "promo_founder_100"), false);
-  assert.equal(founderCheckoutSessionIsValid({ ...validSession, discounts: [{ promotion_code: "promo_other" }] }, "promo_founder_100"), false);
-  assert.equal(founderCheckoutSessionIsValid({ ...validSession, subscription: null }, "promo_founder_100"), false);
+  assert.equal(founderOpenCheckoutSessionIsValid({ ...validSession, amount_total: 900 }, "promo_founder_100"), false);
+  assert.equal(founderOpenCheckoutSessionIsValid({ ...validSession, discounts: [{ promotion_code: "promo_other" }] }, "promo_founder_100"), false);
+  assert.equal(founderOpenCheckoutSessionIsValid({ ...validSession, status: "complete" }, "promo_founder_100"), false);
 });
 
-test("repeated and concurrent Founder attempts for one account are gated and released after failure", async () => {
-  let now = 1_000;
-  const gate = createFounderClaimGate(() => now);
-  const first = gate.run("user_test", () => new Promise((resolve) => setTimeout(() => resolve("ok"), 20)));
+test("completed checkout activation requires account association, customer and subscription", () => {
+  const valid = completedSession();
 
-  await assert.rejects(
-    gate.run("user_test", async () => "duplicate"),
-    /already being prepared/
+  assert.equal(founderCompletedCheckoutSessionQualifies(valid, "promo_founder_100", "user_test"), true);
+  assert.equal(
+    founderCompletedCheckoutSessionQualifies(
+      { ...valid, client_reference_id: "other_user", metadata: { ...valid.metadata, user_id: "other_user" } },
+      "promo_founder_100",
+      "user_test"
+    ),
+    false
   );
-
-  assert.equal(await first, "ok");
-
-  await assert.rejects(
-    gate.run("user_test", async () => {
-      throw new Error("Stripe checkout failed");
-    }),
-    /Stripe checkout failed/
-  );
-
-  assert.equal(await gate.run("user_test", async () => "retry-ok"), "retry-ok");
-
-  now += 3 * 60 * 1000;
-  assert.equal(await gate.run("user_test", async () => "after-expiry"), "after-expiry");
-});
-
-test("webhook qualification activates only valid £0 Founder checkouts", () => {
-  const valid = {
-    amount_total: 0,
-    customer: "cus_test",
-    subscription: "sub_test",
-    metadata: { offer: "founder", founder_offer: "true", expected_total: "0" }
-  };
-
-  assert.equal(founderWebhookCheckoutQualifies(valid), true);
-  assert.equal(founderWebhookCheckoutQualifies({ ...valid, amount_total: 1 }), false);
-  assert.equal(founderWebhookCheckoutQualifies({ ...valid, metadata: { offer: "founder" } }), false);
-  assert.equal(founderWebhookCheckoutQualifies({ ...valid, customer: null }), false);
+  assert.equal(founderCompletedCheckoutSessionQualifies({ ...valid, customer: null }, "promo_founder_100", "user_test"), false);
+  assert.equal(founderCompletedCheckoutSessionQualifies({ ...valid, amount_total: 1 }, "promo_founder_100", "user_test"), false);
 });
 
 test("Founder subscription retries and cancellations preserve lifetime entitlement state", () => {
@@ -207,4 +192,300 @@ test("Founder subscription retries and cancellations preserve lifetime entitleme
       amountPaid: 0
     }
   );
+});
+
+function openSession(id = "cs_open_valid") {
+  return {
+    id,
+    url: `https://checkout.test/${id}`,
+    amount_total: 0,
+    mode: "subscription",
+    status: "open",
+    payment_status: "unpaid",
+    client_reference_id: "user_test",
+    customer: null,
+    subscription: null,
+    metadata: { offer: "founder", founder_offer: "true", expected_total: "0", user_id: "user_test" },
+    discounts: [{ promotion_code: { id: "promo_founder_100" } }],
+    expires_at: 1_900_000_000
+  };
+}
+
+function completedSession(id = "cs_open_valid") {
+  return {
+    ...openSession(id),
+    status: "complete",
+    payment_status: "paid",
+    customer: "cus_test",
+    subscription: "sub_test"
+  };
+}
+
+function createMemoryRepository(options = {}) {
+  const claims = [];
+  let saveOpenFailures = options.saveOpenFailures ?? 0;
+
+  const active = (userId) =>
+    claims.find((claim) => claim.userId === userId && ["preparing", "open"].includes(claim.status)) ?? null;
+
+  return {
+    claims,
+    async getActiveClaim(userId) {
+      return active(userId);
+    },
+    async reserveClaim(input) {
+      const existing = active(input.userId);
+      if (existing) return existing;
+      const claim = {
+        id: `claim_${claims.length + 1}`,
+        userId: input.userId,
+        email: input.email,
+        status: "preparing",
+        attemptKey: `attempt_${input.userId}_${claims.length + 1}`,
+        promotionCodeId: input.promotionCodeId,
+        stripeCheckoutSessionId: null,
+        stripeCheckoutUrl: null,
+        stripeCustomerId: null,
+        stripeSubscriptionId: null,
+        amountTotal: null,
+        expiresAt: null
+      };
+      claims.push(claim);
+      return claim;
+    },
+    async saveOpenSession(input) {
+      if (saveOpenFailures > 0) {
+        saveOpenFailures -= 1;
+        throw new Error("simulated database crash after Stripe creation");
+      }
+      const claim = claims.find((item) => item.id === input.claimId);
+      Object.assign(claim, {
+        status: "open",
+        stripeCheckoutSessionId: input.stripeCheckoutSessionId,
+        stripeCheckoutUrl: input.stripeCheckoutUrl,
+        amountTotal: input.amountTotal,
+        expiresAt: input.expiresAt
+      });
+      return claim;
+    },
+    async markTerminal(input) {
+      const claim = claims.find((item) => item.id === input.claimId);
+      Object.assign(claim, { status: input.status, error: input.error });
+    },
+    async findClaimBySession(sessionId) {
+      return claims.find((claim) => claim.stripeCheckoutSessionId === sessionId) ?? null;
+    },
+    async findActiveClaimForUser(userId) {
+      return active(userId);
+    },
+    async findCompletedClaimBySubscription(subscriptionId) {
+      return claims.find((claim) => claim.status === "completed" && claim.stripeSubscriptionId === subscriptionId) ?? null;
+    },
+    async completeClaim(input) {
+      const claim = claims.find((item) => item.id === input.claimId);
+      Object.assign(claim, {
+        status: "completed",
+        stripeCheckoutSessionId: input.stripeCheckoutSessionId,
+        stripeCustomerId: input.stripeCustomerId,
+        stripeSubscriptionId: input.stripeSubscriptionId,
+        amountTotal: input.amountTotal
+      });
+    }
+  };
+}
+
+function createMockStripe(options = {}) {
+  const sessionsByKey = new Map();
+  const sessionsById = new Map();
+  const stripe = {
+    created: 0,
+    expired: [],
+    canceled: [],
+    async resolvePromotionCode() {
+      if (options.exhausted) throw new Error("All Founder places have been claimed.");
+      return { promotionCodeId: "promo_founder_100" };
+    },
+    async createCheckoutSession(input) {
+      stripe.created += 1;
+      if (options.createFails) throw new Error("Stripe failed");
+      if (sessionsByKey.has(input.idempotencyKey)) return sessionsByKey.get(input.idempotencyKey);
+      const session = options.createSession?.(input, stripe.created) ?? openSession(`cs_${stripe.created}`);
+      sessionsByKey.set(input.idempotencyKey, session);
+      sessionsById.set(session.id, session);
+      return session;
+    },
+    async retrieveCheckoutSession(sessionId) {
+      const session = options.retrieveSession?.(sessionId, sessionsById.get(sessionId));
+      return session ?? sessionsById.get(sessionId);
+    },
+    async expireCheckoutSession(sessionId) {
+      stripe.expired.push(sessionId);
+      const session = sessionsById.get(sessionId);
+      if (session) session.status = "expired";
+    },
+    async scheduleCancellation(subscriptionId) {
+      stripe.canceled.push(subscriptionId);
+    }
+  };
+  return stripe;
+}
+
+function serviceDeps(repository, stripe, entitlements = []) {
+  return {
+    repository,
+    stripe,
+    validateOpenSession: founderOpenCheckoutSessionIsValid,
+    validateCompletedSession: founderCompletedCheckoutSessionQualifies,
+    async persistFounderEntitlement(input) {
+      entitlements.push(input);
+    }
+  };
+}
+
+const checkoutInput = {
+  userId: "user_test",
+  email: "member@example.test",
+  alreadyEntitled: false,
+  alreadyPaid: false
+};
+
+test("checkout orchestration returns a valid open £0 session with null customer/subscription", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+
+  const result = await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe));
+
+  assert.equal(result.url, "https://checkout.test/cs_1");
+  assert.equal(repo.claims[0].status, "open");
+  assert.equal(repo.claims[0].stripeCheckoutSessionId, "cs_1");
+});
+
+test("separate instances requesting concurrently share the persistent claim and Stripe idempotency key", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+
+  const [first, second] = await Promise.all([
+    startFounderCheckout(checkoutInput, serviceDeps(repo, stripe)),
+    startFounderCheckout(checkoutInput, serviceDeps(repo, stripe))
+  ]);
+
+  assert.equal(first.url, second.url);
+  assert.equal(repo.claims.length, 1);
+  assert.equal(repo.claims[0].attemptKey, "attempt_user_test_1");
+});
+
+test("sequential requests reuse the same valid open session", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+
+  const first = await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe));
+  const second = await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe));
+
+  assert.equal(first.url, second.url);
+  assert.equal(stripe.created, 1);
+});
+
+test("crash recovery reuses Stripe idempotency after creation but before database persistence", async () => {
+  const repo = createMemoryRepository({ saveOpenFailures: 1 });
+  const stripe = createMockStripe();
+
+  await assert.rejects(startFounderCheckout(checkoutInput, serviceDeps(repo, stripe)), /simulated database crash/);
+  const recovered = await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe));
+
+  assert.equal(recovered.url, "https://checkout.test/cs_1");
+  assert.equal(repo.claims.length, 1);
+  assert.equal(repo.claims[0].stripeCheckoutSessionId, "cs_1");
+});
+
+test("expired sessions become terminal and retry with a new logical attempt", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe({
+    createSession: (_input, count) => count === 1
+      ? { ...openSession("cs_expired"), status: "expired" }
+      : openSession("cs_retry")
+  });
+
+  const retry = await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe));
+
+  assert.equal(retry.url, "https://checkout.test/cs_retry");
+  assert.equal(repo.claims[0].status, "expired");
+  assert.equal(repo.claims[1].status, "open");
+});
+
+test("invalid discount or non-zero total is expired where possible and not converted to paid checkout", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe({
+    createSession: () => ({ ...openSession("cs_bad"), amount_total: 900 })
+  });
+
+  await assert.rejects(startFounderCheckout(checkoutInput, serviceDeps(repo, stripe)), /could not be validated/);
+  assert.deepEqual(stripe.expired, ["cs_bad"]);
+  assert.equal(repo.claims[0].status, "invalid");
+});
+
+test("offer exhaustion and Stripe failures mark attempts safely", async () => {
+  await assert.rejects(
+    startFounderCheckout(checkoutInput, serviceDeps(createMemoryRepository(), createMockStripe({ exhausted: true }))),
+    /All Founder places have been claimed/
+  );
+
+  const repo = createMemoryRepository();
+  await assert.rejects(
+    startFounderCheckout(checkoutInput, serviceDeps(repo, createMockStripe({ createFails: true }))),
+    /Stripe failed/
+  );
+  assert.equal(repo.claims[0].status, "failed");
+});
+
+test("completed checkout activates Founder access with qualifying evidence", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+  const entitlements = [];
+
+  await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe, entitlements));
+  stripe.retrieveCheckoutSession = async () => completedSession("cs_1");
+
+  await handleFounderCheckoutCompleted({ sessionId: "cs_1", userId: "user_test" }, serviceDeps(repo, stripe, entitlements));
+
+  assert.equal(repo.claims[0].status, "completed");
+  assert.deepEqual(stripe.canceled, ["sub_test"]);
+  assert.equal(entitlements.length, 1);
+  assert.equal(entitlements[0].subscriptionId, "sub_test");
+});
+
+test("duplicate or reordered webhook events are idempotent", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+  const entitlements = [];
+
+  await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe, entitlements));
+  stripe.retrieveCheckoutSession = async () => completedSession("cs_1");
+
+  await handleFounderCheckoutCompleted({ sessionId: "cs_1", userId: "user_test" }, serviceDeps(repo, stripe, entitlements));
+  await handleFounderCheckoutCompleted({ sessionId: "cs_1", userId: "user_test" }, serviceDeps(repo, stripe, entitlements));
+
+  assert.equal(entitlements.length, 1);
+  assert.equal(stripe.canceled.length, 1);
+});
+
+test("subscription events before checkout confirmation do not newly grant Founder access", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+  const entitlements = [];
+
+  assert.equal(await handleFounderSubscriptionEvent({ subscriptionId: "sub_test" }, serviceDeps(repo, stripe, entitlements)), false);
+  assert.equal(entitlements.length, 0);
+});
+
+test("lifetime access survives later subscription cancellation events after checkout confirmation", async () => {
+  const repo = createMemoryRepository();
+  const stripe = createMockStripe();
+  const entitlements = [];
+
+  await startFounderCheckout(checkoutInput, serviceDeps(repo, stripe, entitlements));
+  stripe.retrieveCheckoutSession = async () => completedSession("cs_1");
+  await handleFounderCheckoutCompleted({ sessionId: "cs_1", userId: "user_test" }, serviceDeps(repo, stripe, entitlements));
+
+  assert.equal(await handleFounderSubscriptionEvent({ subscriptionId: "sub_test" }, serviceDeps(repo, stripe, entitlements)), true);
+  assert.equal(entitlements.length, 1);
 });

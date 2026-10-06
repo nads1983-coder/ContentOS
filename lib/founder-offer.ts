@@ -1,5 +1,4 @@
 export const FOUNDER_PROMOTION_CODE = "FOUNDING100";
-export const FOUNDER_CHECKOUT_LOCK_MS = 2 * 60 * 1000;
 
 export type FounderPromotionCode = {
   id?: string | null;
@@ -144,8 +143,14 @@ export function checkoutSessionPromotionCodeIds(session: {
   return ids;
 }
 
-export function founderCheckoutSessionIsValid(session: {
+export type FounderCheckoutSessionLike = {
+  id?: string | null;
+  url?: string | null;
   amount_total?: number | null;
+  mode?: string | null;
+  status?: string | null;
+  payment_status?: string | null;
+  client_reference_id?: string | null;
   metadata?: Record<string, string>;
   customer?: string | null;
   subscription?: string | null;
@@ -159,31 +164,45 @@ export function founderCheckoutSessionIsValid(session: {
       }>;
     };
   };
-}, expectedPromotionCodeId: string) {
+};
+
+function hasFounderMetadata(session: FounderCheckoutSessionLike) {
   return (
     session.metadata?.offer === "founder" &&
     session.metadata?.founder_offer === "true" &&
-    session.metadata?.expected_total === "0" &&
+    session.metadata?.expected_total === "0"
+  );
+}
+
+export function founderOpenCheckoutSessionIsValid(
+  session: FounderCheckoutSessionLike,
+  expectedPromotionCodeId: string
+) {
+  return (
+    hasFounderMetadata(session) &&
     session.amount_total === 0 &&
-    Boolean(session.customer) &&
-    Boolean(session.subscription) &&
+    session.mode === "subscription" &&
+    session.status === "open" &&
+    Boolean(session.url) &&
     checkoutSessionPromotionCodeIds(session).has(expectedPromotionCodeId)
   );
 }
 
-export function founderWebhookCheckoutQualifies(session: {
-  amount_total?: number | null;
-  metadata?: Record<string, string>;
-  customer?: string | null;
-  subscription?: string | null;
-}) {
+export function founderCompletedCheckoutSessionQualifies(
+  session: FounderCheckoutSessionLike,
+  expectedPromotionCodeId: string,
+  expectedUserId: string
+) {
   return (
-    session.metadata?.offer === "founder" &&
-    session.metadata?.founder_offer === "true" &&
-    session.metadata?.expected_total === "0" &&
+    hasFounderMetadata(session) &&
     session.amount_total === 0 &&
+    session.mode === "subscription" &&
+    session.status === "complete" &&
+    (session.payment_status === "paid" || session.payment_status === "no_payment_required") &&
+    (session.client_reference_id === expectedUserId || session.metadata?.user_id === expectedUserId) &&
     Boolean(session.customer) &&
-    Boolean(session.subscription)
+    Boolean(session.subscription) &&
+    checkoutSessionPromotionCodeIds(session).has(expectedPromotionCodeId)
   );
 }
 
@@ -248,27 +267,4 @@ export function founderClaimConflict(profile?: {
   }
 
   return null;
-}
-
-export function createFounderClaimGate(clock = () => Date.now()) {
-  const locks = new Map<string, number>();
-
-  return {
-    async run<T>(key: string, work: () => Promise<T>) {
-      const now = clock();
-      const existing = locks.get(key);
-
-      if (existing && existing > now) {
-        throw new FounderOfferUnavailableError("A Founder checkout is already being prepared for this account.");
-      }
-
-      locks.set(key, now + FOUNDER_CHECKOUT_LOCK_MS);
-
-      try {
-        return await work();
-      } finally {
-        locks.delete(key);
-      }
-    }
-  };
 }
