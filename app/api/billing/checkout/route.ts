@@ -2,18 +2,31 @@ import { rejectUnsafeWrite } from "@/lib/request-security";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isDatabaseConfigured, isAuthConfigured } from "@/lib/backend";
-import { getEnv } from "@/lib/env";
+import {
+  founderCompletedCheckoutSessionQualifies,
+  founderOpenCheckoutSessionIsValid,
+  founderSubscriptionEntitlementState,
+  FounderOfferUnavailableError
+} from "@/lib/founder-offer";
 import {
   checkoutPlanIsCoveredByState,
   createCheckoutSession,
   BillingPlan,
-  FounderCheckoutError,
+  expireCheckoutSession,
+  getFounderOfferAvailability,
   getStripeSubscriptionState,
   hasActiveUnknownPaidSubscription,
-  planHasActiveEntitlement,
-  reconcileActiveSubscriptionPlan
+  reconcileActiveSubscriptionPlan,
+  retrieveCheckoutSession,
+  scheduleFounderSubscriptionCancellation
 } from "@/lib/stripe-rest";
-import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
+import { founderClaimRepository } from "@/lib/founder-claim-repository";
+import {
+  FounderCheckoutUnavailableError,
+  FounderClaimConflictError,
+  startFounderCheckout
+} from "@/lib/founder-checkout-service";
+import { getUserProfileForUser, syncUserSubscriptionState, updateSubscriptionStatus } from "@/lib/repository";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +35,7 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   const rejected = rejectUnsafeWrite(request);
   if (rejected) return rejected;
+
   const user = await getCurrentUser();
   const { plan, founderOffer } = (await request.json()) as {
     plan?: BillingPlan;
@@ -54,6 +68,13 @@ export async function POST(request: Request) {
       ? await getUserProfileForUser(user.id, user.email)
       : null;
 
+    if (founderOffer && !isDatabaseConfigured()) {
+      return NextResponse.json(
+        { error: "Founder checkout is temporarily unavailable. Please try again later." },
+        { status: 503 }
+      );
+    }
+
     if (profile && hasLifetimeEntitlement(profile)) {
       return NextResponse.json(
         {
@@ -65,25 +86,56 @@ export async function POST(request: Request) {
     }
 
     if (founderOffer) {
-      if (profile && planHasActiveEntitlement(profile.plan, profile.subscription_status)) {
-        return NextResponse.json(
-          {
-            error: "Your active account already includes paid access.",
-            redirectUrl: "/dashboard"
-          },
-          { status: 409 }
-        );
-      }
-
-      const session = await createCheckoutSession({
-        plan: "pro_creator",
-        userId: profile?.id ?? user?.id,
-        email: user?.email,
+      const result = await startFounderCheckout({
+        userId: profile?.id ?? user?.id ?? "",
+        email: user?.email ?? "",
         stripeCustomerId: profile?.stripe_customer_id,
-        founderOffer: true
+        alreadyEntitled: Boolean(profile && hasLifetimeEntitlement(profile)),
+        alreadyPaid: Boolean(
+          profile &&
+            profile.subscription_status === "active" &&
+            profile.plan !== "free" &&
+            !hasLifetimeEntitlement(profile)
+        )
+      }, {
+        repository: founderClaimRepository,
+        stripe: {
+          resolvePromotionCode: getFounderOfferAvailability,
+          createCheckoutSession: (input) =>
+            createCheckoutSession({
+              plan: "pro_creator",
+              userId: input.userId,
+              email: input.email,
+              stripeCustomerId: input.stripeCustomerId ?? undefined,
+              founderOffer: true,
+              founderPromotionCodeId: input.promotionCodeId,
+              idempotencyKey: input.idempotencyKey
+            }),
+          retrieveCheckoutSession,
+          expireCheckoutSession: async (sessionId) => {
+            await expireCheckoutSession(sessionId);
+          },
+          scheduleCancellation: scheduleFounderSubscriptionCancellation
+        },
+        validateOpenSession: founderOpenCheckoutSessionIsValid,
+        validateCompletedSession: founderCompletedCheckoutSessionQualifies,
+        persistFounderEntitlement: async (input) => {
+          const updated = await updateSubscriptionStatus({
+            userId: input.userId,
+            email: input.email,
+            ...founderSubscriptionEntitlementState({
+              customer: input.customerId,
+              subscription: input.subscriptionId,
+              sessionId: input.sessionId
+            })
+          });
+          if (updated.length === 0) {
+            throw new Error("Founder entitlement profile update did not match an account.");
+          }
+        }
       });
 
-      return NextResponse.json({ url: session.url });
+      return NextResponse.json({ url: result.url });
     }
 
     const rawSubscriptionState = await getStripeSubscriptionState({
@@ -126,21 +178,35 @@ export async function POST(request: Request) {
       userId: user?.id,
       email: user?.email,
       stripeCustomerId: subscriptionState.stripeCustomerId ?? profile?.stripe_customer_id,
-      founderOffer: Boolean(founderOffer && plan === "pro_creator")
+      founderOffer: false
     });
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
     if (founderOffer) {
-      const env = getEnv();
       console.error("[Founder Checkout] Failed to apply founder discount", {
         userId: user?.id,
         email: user?.email,
-        couponId: env.stripeFounderCouponId || undefined,
-        promotionCodeId: env.stripeFounderPromotionCodeId || undefined,
         error: error instanceof Error ? error.message : "Unknown founder checkout error",
-        errorType: error instanceof FounderCheckoutError ? error.name : "StripeCheckoutError"
+        errorType: error instanceof Error ? error.name : "StripeCheckoutError"
       });
+
+      if (error instanceof FounderClaimConflictError) {
+        return NextResponse.json(
+          { error: error.message, redirectUrl: error.redirectUrl },
+          { status: error.status }
+        );
+      }
+
+      if (
+        error instanceof FounderOfferUnavailableError ||
+        error instanceof FounderCheckoutUnavailableError
+      ) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 409 }
+        );
+      }
 
       return NextResponse.json(
         { error: "Founder discount could not be applied. Please try again." },

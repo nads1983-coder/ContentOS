@@ -8,7 +8,7 @@ An offline, private snapshot preserved 11 Appwrite account IDs and 17 applicatio
 
 Password hashes were not exported. Existing members use the normal reset-password flow once to create a new scrypt credential after proving email ownership. This retains their ID, profile and entitlement. New registrations must verify email. Disabled accounts cannot receive auth mail or create/use an application session.
 
-The original Appwrite project `6a2a6be900011401e963` has not been deleted. It is a historical source, not a live replica. Never overwrite the new database with the old snapshot after users have claimed accounts or saved new work.
+At cutover, the original Appwrite project `6a2a6be900011401e963` was treated as a historical source, not a live replica. A follow-up audit on 6 October 2026 found Appwrite returning `project_not_found` for that project id. Never overwrite the new database with any old snapshot after users have claimed accounts or saved new work.
 
 ## Security and operation
 

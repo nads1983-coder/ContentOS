@@ -159,7 +159,7 @@ export function FounderCheckoutButton({ className }: { className?: string }) {
           className
         )}
       >
-        {isPending ? "Confirming discount..." : "Confirm £0 Founder Checkout"}
+        {isPending ? "Confirming discount..." : "Activate Founder access for £0"}
       </button>
       {error ? <p className="text-sm text-goldSoft">{error}</p> : null}
     </div>

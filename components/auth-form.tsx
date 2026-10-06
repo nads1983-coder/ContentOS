@@ -22,6 +22,7 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
   const [message, setMessage] = useState("");
   const [messageKind, setMessageKind] = useState<"success" | "error" | "info">("info");
   const [isPending, setIsPending] = useState(false);
+  const [founderSignupPendingVerification, setFounderSignupPendingVerification] = useState(false);
   const [pendingPlan, setPendingPlan] = useState<BillingPlan | null>(null);
   const [pendingFounderOffer, setPendingFounderOffer] = useState(initialFounderOffer);
   const endpoint = mode === "login" ? "/api/auth/login" : mode === "signup" ? "/api/auth/signup" : "/api/auth/reset";
@@ -92,12 +93,19 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
     setIsPending(true);
     setMessage("");
     setMessageKind("info");
+    setFounderSignupPendingVerification(false);
 
     try {
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, fullName: founderFlow ? fullName : undefined })
+        body: JSON.stringify({
+          email,
+          password,
+          fullName: founderFlow ? fullName : undefined,
+          plan: checkoutPlan,
+          founderOffer: founderFlow
+        })
       });
       const data = (await response.json()) as {
         error?: string;
@@ -126,6 +134,7 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
       if (data.message && !data.redirectUrl) {
         setMessageKind("success");
         setMessage(data.message);
+        setFounderSignupPendingVerification(mode === "signup" && founderFlow);
         return;
       }
 
@@ -195,6 +204,14 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
         >
           {message}
         </p>
+      ) : null}
+      {founderSignupPendingVerification ? (
+        <Link
+          href="/login?plan=pro_creator&founder=1"
+          className="rounded border border-gold/35 bg-gold/[0.08] px-4 py-3 text-center text-sm font-semibold text-goldSoft transition hover:border-gold/60 hover:text-bone"
+        >
+          I have verified my email. Continue Founder claim
+        </Link>
       ) : null}
       <button
         type="submit"

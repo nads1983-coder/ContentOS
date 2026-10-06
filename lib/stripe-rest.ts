@@ -1,5 +1,12 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { getEnv, isStripeConfigured } from "@/lib/env";
+import {
+  FOUNDER_PROMOTION_CODE,
+  founderCheckoutDiscountParams,
+  founderCheckoutMetadata,
+  founderOpenCheckoutSessionIsValid,
+  resolveFounderOfferAvailability
+} from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
 
 export type BillingPlan = "pro_creator" | "pro_studio";
@@ -36,6 +43,9 @@ type StripeCustomer = {
 type StripePromotionCode = {
   id: string;
   code: string;
+  active?: boolean;
+  max_redemptions?: number | null;
+  times_redeemed?: number;
 };
 
 export class FounderCheckoutError extends Error {
@@ -111,31 +121,42 @@ function stripePriceId(plan: BillingPlan) {
     : env.stripeProStudioPriceId;
 }
 
-async function findActivePromotionCodeId(code: string) {
-  const query = new URLSearchParams({
-    active: "true",
-    code,
-    limit: "1"
+export async function getFounderOfferAvailability() {
+  const env = getEnv();
+  const result = await stripeGet<StripeList<StripePromotionCode>>(
+    "promotion_codes",
+    new URLSearchParams({
+      active: "true",
+      code: FOUNDER_PROMOTION_CODE,
+      limit: "1"
+    })
+  );
+  return resolveFounderOfferAvailability(result.data[0] ?? null, {
+    configuredCouponId: env.stripeFounderCouponId,
+    configuredPromotionCodeId: env.stripeFounderPromotionCodeId
   });
-
-  const result = await stripeGet<StripeList<StripePromotionCode>>("promotion_codes", query);
-  return result.data[0]?.id ?? null;
 }
 
-async function stripeRequest<T>(path: string, body: URLSearchParams) {
+async function stripeRequest<T>(path: string, body: URLSearchParams, options: { idempotencyKey?: string } = {}) {
   const env = getEnv();
 
   if (!isStripeConfigured()) {
     throw new Error("Stripe is not configured.");
   }
 
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${env.stripeSecretKey}`,
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Stripe-Version": apiVersion
+  };
+
+  if (options.idempotencyKey) {
+    headers["Idempotency-Key"] = options.idempotencyKey;
+  }
+
   const response = await fetch(`https://api.stripe.com/v1/${path}`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.stripeSecretKey}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-      "Stripe-Version": apiVersion
-    },
+    headers,
     body,
     signal: AbortSignal.timeout(stripeRequestTimeoutMs),
     cache: "no-store"
@@ -522,6 +543,8 @@ export async function createCheckoutSession(input: {
   email?: string;
   stripeCustomerId?: string;
   founderOffer?: boolean;
+  founderPromotionCodeId?: string;
+  idempotencyKey?: string;
 }) {
   const price = stripePriceId(input.plan);
 
@@ -542,38 +565,27 @@ export async function createCheckoutSession(input: {
   }).map(([key, value]) => [key, String(value)]));
 
   if (input.founderOffer && input.plan === "pro_creator") {
-    const env = getEnv();
-    const configuredFounderDiscountId = env.stripeFounderCouponId;
-    const couponId = configuredFounderDiscountId.startsWith("promo_")
-      ? ""
-      : configuredFounderDiscountId;
-    const promotionCodeId = configuredFounderDiscountId.startsWith("promo_")
-      ? configuredFounderDiscountId
-      : env.stripeFounderPromotionCodeId || await findActivePromotionCodeId("FOUNDING100");
-
-    if (couponId) {
-      body.set("discounts[0][coupon]", couponId);
-    } else if (promotionCodeId) {
-      body.set("discounts[0][promotion_code]", promotionCodeId);
-    } else {
-      throw new FounderCheckoutError();
+    const promotionCodeId = input.founderPromotionCodeId;
+    if (!promotionCodeId) {
+      throw new FounderCheckoutError("Founder promotion code was not resolved before checkout.");
     }
 
-    body.set("payment_method_collection", "if_required");
-    body.set("metadata[offer]", "founder");
-    body.set("metadata[founder_offer]", "true");
-    body.set("metadata[expected_total]", "0");
-    body.set("subscription_data[metadata][offer]", "founder");
-    body.set("subscription_data[metadata][founder_offer]", "true");
-    body.set("subscription_data[metadata][expected_total]", "0");
+    Object.entries({
+      ...founderCheckoutDiscountParams(promotionCodeId),
+      ...founderCheckoutMetadata(input.userId)
+    }).forEach(([key, value]) => {
+      body.set(key, value);
+    });
   } else {
     body.set("allow_promotion_codes", "true");
   }
 
   if (input.userId) {
     body.set("client_reference_id", input.userId);
-    body.set("metadata[user_id]", input.userId);
-    body.set("subscription_data[metadata][user_id]", input.userId);
+    if (!input.founderOffer) {
+      body.set("metadata[user_id]", input.userId);
+      body.set("subscription_data[metadata][user_id]", input.userId);
+    }
   }
 
   if (input.stripeCustomerId) {
@@ -582,9 +594,35 @@ export async function createCheckoutSession(input: {
     body.set("customer_email", input.email);
   }
 
-  const session = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body);
+  const session = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body, {
+    idempotencyKey: input.idempotencyKey
+  });
+  let inspectedFounderSession: StripeCheckoutSession | null = null;
 
-  if (input.founderOffer && session.amount_total !== 0) {
+  if (input.founderOffer) {
+    const promotionCodeId = input.founderPromotionCodeId;
+    if (!promotionCodeId) {
+      throw new FounderCheckoutError("Founder promotion code was not resolved before checkout.");
+    }
+    const inspectedSession = await retrieveCheckoutSession(session.id);
+
+    if (!founderOpenCheckoutSessionIsValid(inspectedSession, promotionCodeId)) {
+      try {
+        await stripeRequest(`checkout/sessions/${encodeURIComponent(session.id)}/expire`, new URLSearchParams());
+      } catch (error) {
+        console.error("[Founder Checkout] Failed to expire invalid founder session", {
+          sessionId: session.id,
+          error: error instanceof Error ? error.message : "Unknown Stripe error"
+        });
+      }
+
+      throw new FounderCheckoutError("Founder Checkout Session was not created with the expected £0 FOUNDING100 discount.");
+    }
+
+    inspectedFounderSession = inspectedSession;
+  }
+
+  if (input.founderOffer && inspectedFounderSession?.amount_total !== 0) {
     try {
       await stripeRequest(`checkout/sessions/${encodeURIComponent(session.id)}/expire`, new URLSearchParams());
     } catch (error) {
@@ -597,20 +635,26 @@ export async function createCheckoutSession(input: {
     throw new FounderCheckoutError("Founder Checkout Session total was not zero.");
   }
 
-  if (!session.url) {
+  const checkoutUrl = inspectedFounderSession?.url ?? session.url;
+
+  if (!checkoutUrl) {
     throw input.founderOffer
       ? new FounderCheckoutError("Founder Checkout Session did not return a URL.")
       : new Error("Stripe Checkout did not return a URL.");
   }
 
-  return session;
+  return inspectedFounderSession ?? session;
 }
 
 export type StripeCheckoutSession = {
   id: string;
   url?: string | null;
   amount_total?: number | null;
+  mode?: string | null;
+  status?: string | null;
   payment_status?: string;
+  client_reference_id?: string | null;
+  expires_at?: number | null;
   customer?: string | null;
   subscription?: string | null;
   metadata?: Record<string, string>;
@@ -647,6 +691,13 @@ export async function retrieveCheckoutSession(sessionId: string) {
   return stripeGet<StripeCheckoutSession>(
     `checkout/sessions/${encodeURIComponent(sessionId)}`,
     query
+  );
+}
+
+export async function expireCheckoutSession(sessionId: string) {
+  return stripeRequest(
+    `checkout/sessions/${encodeURIComponent(sessionId)}/expire`,
+    new URLSearchParams()
   );
 }
 

@@ -5,7 +5,7 @@ import { pageMetadata } from "@/lib/metadata";
 export const metadata = pageMetadata({
   title: "Claim Your Free Lifetime Founder Account | ContentOS",
   description:
-    "Claim one of 100 free lifetime ContentOS founder accounts and turn one idea into LinkedIn posts, blogs, emails and social content in minutes.",
+    "Claim a free lifetime ContentOS founder account and turn one idea into LinkedIn posts, blogs, emails and social content in minutes.",
   path: "/founder"
 });
 
@@ -28,17 +28,17 @@ const faqs = [
   {
     question: "Is it really free?",
     answer:
-      "Yes. The Founding100 offer is for 100 lifetime founder accounts on the Creator workflow. Availability is limited to the first 100 valid claims."
+      "Yes. The Founding100 offer is for 100 lifetime founder accounts on the Creator workflow. Founder access activates only after Stripe confirms the £0 checkout."
   },
   {
     question: "What happens after I claim it?",
     answer:
-      "You go straight into ContentOS Studio so you can create your first content pack before setting anything else up."
+      "You create or log in to your account, confirm the £0 Founder checkout, then go into ContentOS Studio with Founder access active."
   },
   {
     question: "Do I need a card or coupon code?",
     answer:
-      "No. Start in the free workspace without a card, coupon, or checkout step. Create an account later when you want to save your work."
+      "No. The Founder discount is applied automatically in Stripe. You do need to complete the £0 checkout so the lifetime entitlement is recorded."
   },
   {
     question: "Who is this for?",
@@ -58,7 +58,7 @@ export default function FounderPage() {
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between">
           <BrandLogo />
           <span className="hidden rounded border border-gold/35 bg-gold/[0.08] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-goldSoft sm:inline-flex">
-            100 accounts only
+            100 valid claims
           </span>
         </div>
       </section>
@@ -77,20 +77,20 @@ export default function FounderPage() {
             </p>
             <div className="mt-8 max-w-sm">
               <Link
-                href="/studio?from=founder"
+                href="/signup?plan=pro_creator&founder=1"
                 className="flex min-h-14 w-full items-center justify-center rounded border border-violet/70 bg-violet px-4 text-base font-semibold text-white transition hover:bg-violetDeep"
               >
-                Start Free in Studio
+                Claim Founder Access
               </Link>
             </div>
             <p className="mt-4 max-w-xl text-sm font-medium leading-6 text-bone">
-              Start creating for free now. No card, coupon, or checkout step.
+              Create your account, verify your email, then confirm the £0 Founder checkout.
             </p>
             <p className="mt-4 max-w-xl text-sm leading-6 text-muted">
-              Open the studio first, then create an account when you want to save your work.
+              Registration alone does not activate Founder access. The lifetime entitlement is recorded after the qualifying Stripe checkout completes.
             </p>
             <p className="mt-2 max-w-xl text-xs leading-5 text-muted">
-              Only 100 free lifetime founder accounts are available.
+              Founder access is limited to 100 valid customer claims.
             </p>
           </div>
 
@@ -161,18 +161,18 @@ export default function FounderPage() {
         <div className="mx-auto rounded border border-gold/35 bg-gold/[0.07] p-6 text-center shadow-gold sm:max-w-4xl sm:p-8">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-goldSoft">Final call</p>
           <h2 className="mt-3 font-display text-3xl uppercase tracking-normal text-bone sm:text-4xl">
-            Claim your founder account before the 100 places are gone.
+            Claim your founder account before the valid customer places are gone.
           </h2>
           <div className="mx-auto mt-6 max-w-sm">
             <Link
-              href="/studio?from=founder"
+              href="/signup?plan=pro_creator&founder=1"
               className="flex min-h-14 w-full items-center justify-center rounded border border-violet/70 bg-violet px-4 text-base font-semibold text-white transition hover:bg-violetDeep"
             >
-              Start Free in Studio
+              Claim Founder Access
             </Link>
           </div>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-muted">
-            Open the studio first, then create an account when you want to save your work.
+            Your Founder account is active only after Stripe confirms the £0 checkout.
           </p>
         </div>
       </section>
