@@ -95,9 +95,9 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
       { "@type": "ListItem", position: 3, name: page.h1, item: pageUrl }
     ]
   };
-  const collectionSchema = {
+  const webPageSchema = {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
+    "@type": "WebPage",
     name: page.h1,
     headline: page.h1,
     description: page.description,
@@ -118,12 +118,27 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
       name: example.replace(/^Prompt: /, "")
     }))
   };
+  const faqSchema = page.faqs?.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: page.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer
+          }
+        }))
+      }
+    : null;
 
   return (
     <PublicPage title={page.h1}>
       <JsonLd data={breadcrumbSchema} />
-      <JsonLd data={collectionSchema} />
+      <JsonLd data={webPageSchema} />
       <JsonLd data={itemListSchema} />
+      {faqSchema ? <JsonLd data={faqSchema} /> : null}
       <nav className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-goldSoft" aria-label="Breadcrumb">
         <Link href="/">Home</Link>
         <span aria-hidden="true">/</span>
@@ -133,6 +148,13 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
       </nav>
 
       <p>{page.intro}</p>
+
+      {page.whenUseful ? (
+        <section className="grid gap-3">
+          <h2 className="font-display text-2xl uppercase tracking-normal text-bone">When to use this workflow</h2>
+          <p>{page.whenUseful}</p>
+        </section>
+      ) : null}
 
       <section className="grid gap-3 rounded border border-white/10 bg-white/[0.03] p-4">
         <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Who this helps</h2>
@@ -186,6 +208,29 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
         </div>
       </section>
 
+      {page.workedExample ? (
+        <section className="grid gap-3 rounded border border-white/10 bg-white/[0.03] p-4">
+          <h2 className="font-display text-2xl uppercase tracking-normal text-bone">{page.workedExample.heading}</h2>
+          <p>{page.workedExample.scenario}</p>
+          <ul className="grid gap-2 pl-5">
+            {page.workedExample.output.map((item) => (
+              <li key={item} className="list-disc">{item}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {page.qualityChecks?.length ? (
+        <section className="grid gap-3">
+          <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Format-specific quality checks</h2>
+          <ul className="grid gap-2 pl-5">
+            {page.qualityChecks.map((item) => (
+              <li key={item} className="list-disc">{item}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <section className="grid gap-3 rounded border border-white/10 bg-white/[0.03] p-4">
         <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Responsible use</h2>
         <p>{page.responsibleUse}</p>
@@ -215,6 +260,18 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
       </section>
 
       <RelatedBlogLinks slugs={page.blogLinks} />
+
+      {page.faqs?.length ? (
+        <section className="grid gap-3">
+          <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Frequently asked questions</h2>
+          {page.faqs.map((faq) => (
+            <details key={faq.question} className="rounded border border-white/10 bg-white/[0.03] p-4">
+              <summary className="cursor-pointer font-semibold text-bone">{faq.question}</summary>
+              <p className="mt-3">{faq.answer}</p>
+            </details>
+          ))}
+        </section>
+      ) : null}
     </PublicPage>
   );
 }
