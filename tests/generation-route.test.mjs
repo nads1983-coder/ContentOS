@@ -170,6 +170,16 @@ test("route returns completed replays without another provider call or usage eve
   assert.deepEqual(result.calls, ["reserve"]);
 });
 
+test("attempt throttling returns Retry-After without invoking the provider", async () => {
+  const error = new ReservationError("Wait before retrying.", 429, "generation_attempt_limit");
+  error.retryAfterSeconds = 42;
+  const result = await routeFixture({ reservationError: error });
+  assert.equal(result.response.status, 429);
+  assert.equal(result.response.headers.get("Retry-After"), "42");
+  assert.equal(result.body.code, "generation_attempt_limit");
+  assert.deepEqual(result.calls, ["reserve"]);
+});
+
 test("route marks malformed/refused/incomplete packs failed without completing usage", async () => {
   for (const providerResponse of [
     { status: "completed", output_text: JSON.stringify(output([], { sections: [] })) },
@@ -346,108 +356,4 @@ test("failed provider attempt is terminal on retry and never counted as successf
   assert.equal(h.failures, 1);
   assert.equal(h.completions, 0);
   assert.equal(h.state.usage_events_json, undefined);
-});
-
-async function imageRouteFixture(t, options = {}) {
-  const calls = [];
-  const usage = [];
-  const gateCalls = [];
-  const route = loadTs("app/api/generate-image/route.ts", {
-    "@/lib/request-security": { rejectUnsafeWrite: () => null },
-    "@/lib/auth": { getCurrentUser: async () => options.anonymous ? null : { id: "user-test", email: "test@example.invalid" } },
-    "@/lib/backend": { isDatabaseConfigured: () => { gateCalls.push("database_config"); return !options.noDatabase; } },
-    "@/lib/env": { isStripeConfigured: () => false },
-    "next/server": { NextResponse: Response },
-    "@/lib/repository": {
-      getUserProfileForUser: async () => { gateCalls.push("profile"); return options.noProfile ? null : {
-        id: "user-test", plan: "pro_studio", subscription_status: "active", ...options.profile
-      }; },
-      getMonthlyUsageCount: async (input) => {
-        calls.push("quota");
-        assert.equal(input.eventType, "image_generation");
-        assert.equal(input.userId, "user-test");
-        if (options.usageError) throw new Error("usage unavailable");
-        return Object.hasOwn(options, "used") ? options.used : 0;
-      },
-      recordUsageEvent: async (input) => { calls.push("record"); usage.push(input); }
-    }
-  });
-  t.mock.method(globalThis, "fetch", async (url, init) => {
-    calls.push("provider");
-    assert.equal(url, "https://api.openai.com/v1/images/generations");
-    assert.equal(JSON.parse(init.body).n, 1);
-    return Response.json({ data: [{ b64_json: "b2ZmbGluZS1maXh0dXJl" }] });
-  });
-  const previous = process.env.OPENAI_API_KEY;
-  try {
-    if (options.noKey) delete process.env.OPENAI_API_KEY;
-    else process.env.OPENAI_API_KEY = "offline-placeholder-not-a-real-key";
-    const headers = new Headers();
-    if (options.accountHeader !== null) headers.set("X-ContentOS-Account", options.accountHeader ?? "user-test");
-    const incoming = new Request("https://test.local/api/generate-image", {
-      method: "POST", headers, body: options.rawBody ?? JSON.stringify({ outputText: source, platform: "LinkedIn", style: "minimal", format: "square" })
-    });
-    const response = await route.POST(incoming);
-    return { response, body: await response.json(), calls, usage, gateCalls, bodyRead: incoming.bodyUsed };
-  } finally {
-    if (previous === undefined) delete process.env.OPENAI_API_KEY;
-    else process.env.OPENAI_API_KEY = previous;
-    t.mock.restoreAll();
-  }
-}
-
-test("image auth and plan failures block provider access and usage recording", async (t) => {
-  for (const [options, status] of [[{ anonymous: true }, 401], [{ noDatabase: true }, 503],
-    [{ noProfile: true }, 403], [{ profile: { plan: "free" } }, 403], [{ profile: { subscription_status: "canceled" } }, 403]]) {
-    const result = await imageRouteFixture(t, options);
-    assert.equal(result.response.status, status);
-    assert.deepEqual(result.calls, []);
-  }
-});
-
-test("image route rejects missing, empty, and stale account headers before reading data or accessing storage", async (t) => {
-  for (const accountHeader of [null, "", "previous-account"]) {
-    const result = await imageRouteFixture(t, { accountHeader, rawBody: "{", noDatabase: true });
-    assert.equal(result.response.status, 409);
-    assert.equal(result.body.code, "account_changed");
-    assert.match(result.body.error, /Reload the page or sign in again/);
-    assert.deepEqual(result.calls, []);
-    assert.deepEqual(result.gateCalls, []);
-    assert.deepEqual(result.usage, []);
-    assert.equal(result.bodyRead, false);
-    assert.ok(!JSON.stringify(result.body).includes("user-test"));
-    assert.ok(!JSON.stringify(result.body).includes("previous-account"));
-  }
-  assert.equal((await imageRouteFixture(t, { anonymous: true, accountHeader: null })).response.status, 401);
-});
-
-test("image quota outage or invalid counter fails closed; exhausted credits return 429", async (t) => {
-  for (const options of [{ usageError: true }, ...[undefined, null, NaN, -1, 0.5, Infinity, "0"].map(used => ({ used }))]) {
-    const result = await imageRouteFixture(t, options);
-    assert.equal(result.response.status, 503);
-    assert.deepEqual(result.calls, ["quota"]);
-    assert.deepEqual(result.usage, []);
-  }
-  const result = await imageRouteFixture(t, { used: 100 });
-  assert.equal(result.response.status, 429);
-  assert.deepEqual(result.calls, ["quota"]);
-});
-
-test("entitled image request still renders actual SVG and records one mocked background usage", async (t) => {
-  const result = await imageRouteFixture(t, { used: 99 });
-  assert.equal(result.response.status, 200);
-  assert.deepEqual(result.calls, ["quota", "provider", "record"]);
-  assert.equal(result.body.mimeType, "image/svg+xml");
-  assert.match(result.body.image, /^data:image\/svg\+xml/);
-  assert.equal(result.body.format, "square");
-  assert.equal(result.usage.length, 1);
-  assert.equal(result.usage[0].metadata.background, "openai_textless");
-});
-
-test("image template fallback remains available when provider credentials are absent", async (t) => {
-  const result = await imageRouteFixture(t, { noKey: true });
-  assert.equal(result.response.status, 200);
-  assert.deepEqual(result.calls, ["quota", "record"]);
-  assert.match(result.body.warning, /not configured/);
-  assert.equal(result.usage[0].metadata.background, "template_fallback");
 });

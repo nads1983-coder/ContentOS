@@ -413,36 +413,6 @@ export async function getStripeSubscriptionState(input: {
 }) {
   let customerId = input.stripeCustomerId ?? undefined;
   const subscriptions: StripeSubscription[] = [];
-  const diagnostic = {
-    authenticatedEmail: input.email,
-    storedStripeCustomerId: input.stripeCustomerId,
-    storedStripeSubscriptionId: input.stripeSubscriptionId,
-    stripeCustomersFoundByEmail: [] as string[],
-    subscriptionsReturned: [] as Array<{
-      id: string;
-      customer: string;
-      rawStatus: string;
-      effectiveStatus: SubscriptionStatus;
-      cancelAtPeriodEnd?: boolean;
-      currentPeriodEnd?: string | null;
-      resolvedPlan: PlanId;
-    }>
-  };
-
-  function trackSubscriptions(nextSubscriptions: StripeSubscription[]) {
-    nextSubscriptions.forEach((subscription) => {
-      diagnostic.subscriptionsReturned.push({
-        id: subscription.id,
-        customer: subscription.customer,
-        rawStatus: subscription.status,
-        effectiveStatus: effectiveSubscriptionStatus(subscription),
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        currentPeriodEnd: timestampToIso(subscription.current_period_end),
-        resolvedPlan: planFromSubscription(subscription)
-      });
-    });
-  }
-
   function selectBestSubscription() {
     return subscriptions
       .filter((subscription, index, all) =>
@@ -463,7 +433,6 @@ export async function getStripeSubscriptionState(input: {
     try {
       const subscription = await retrieveStripeSubscription(input.stripeSubscriptionId);
       subscriptions.push(subscription);
-      trackSubscriptions([subscription]);
       customerId = subscription.customer;
     } catch {
       // Fall back to customer/email lookup if the stored subscription is no longer retrievable.
@@ -472,7 +441,6 @@ export async function getStripeSubscriptionState(input: {
 
   if (!customerId && input.email) {
     const customers = await listStripeCustomersByEmail(input.email);
-    diagnostic.stripeCustomersFoundByEmail = customers.data.map((customer) => customer.id);
     const customer = customers.data[0] ?? null;
     customerId = customer?.id;
   }
@@ -480,7 +448,6 @@ export async function getStripeSubscriptionState(input: {
   if (customerId) {
     const customerSubscriptions = await listStripeCustomerSubscriptions(customerId);
     subscriptions.push(...customerSubscriptions.data);
-    trackSubscriptions(customerSubscriptions.data);
   }
 
   const bestKnownSubscription = selectBestSubscription();
@@ -490,7 +457,6 @@ export async function getStripeSubscriptionState(input: {
     (!bestKnownSubscription || subscriptionRank(bestKnownSubscription) < 3)
   ) {
     const customers = await listStripeCustomersByEmail(input.email);
-    diagnostic.stripeCustomersFoundByEmail = customers.data.map((customer) => customer.id);
 
     for (const customer of customers.data) {
       if (customer.id === customerId) {
@@ -499,7 +465,6 @@ export async function getStripeSubscriptionState(input: {
 
       const customerSubscriptions = await listStripeCustomerSubscriptions(customer.id);
       subscriptions.push(...customerSubscriptions.data);
-      trackSubscriptions(customerSubscriptions.data);
 
       const bestSubscription = selectBestSubscription();
 
@@ -513,23 +478,7 @@ export async function getStripeSubscriptionState(input: {
   const bestSubscription = selectBestSubscription();
 
   const state = stripeSubscriptionToState(bestSubscription);
-  console.log("Stripe subscription lookup diagnostic", {
-    ...diagnostic,
-    selectedSubscription: bestSubscription
-      ? {
-        id: bestSubscription.id,
-        customer: bestSubscription.customer,
-        rawStatus: bestSubscription.status,
-        effectiveStatus: effectiveSubscriptionStatus(bestSubscription),
-        cancelAtPeriodEnd: bestSubscription.cancel_at_period_end,
-        currentPeriodEnd: timestampToIso(bestSubscription.current_period_end),
-        resolvedBillingPlan: state.plan
-      }
-      : null,
-    finalStatus: state.status,
-    finalPlan: state.plan,
-    finalStripeCustomerId: state.stripeCustomerId ?? customerId
-  });
+  console.log("billing.subscription_lookup", { status: "resolved", count: subscriptions.length });
 
   return {
     ...state,
@@ -609,11 +558,8 @@ export async function createCheckoutSession(input: {
     if (!founderOpenCheckoutSessionIsValid(inspectedSession, promotionCodeId)) {
       try {
         await stripeRequest(`checkout/sessions/${encodeURIComponent(session.id)}/expire`, new URLSearchParams());
-      } catch (error) {
-        console.error("[Founder Checkout] Failed to expire invalid founder session", {
-          sessionId: session.id,
-          error: error instanceof Error ? error.message : "Unknown Stripe error"
-        });
+      } catch {
+        console.error("billing.founder_expiration", { status: "invalid_session_failed", count: 1 });
       }
 
       throw new FounderCheckoutError("Founder Checkout Session was not created with the expected £0 FOUNDING100 discount.");
@@ -625,11 +571,8 @@ export async function createCheckoutSession(input: {
   if (input.founderOffer && inspectedFounderSession?.amount_total !== 0) {
     try {
       await stripeRequest(`checkout/sessions/${encodeURIComponent(session.id)}/expire`, new URLSearchParams());
-    } catch (error) {
-      console.error("[Founder Checkout] Failed to expire non-zero session", {
-        sessionId: session.id,
-        error: error instanceof Error ? error.message : "Unknown Stripe error"
-      });
+    } catch {
+      console.error("billing.founder_expiration", { status: "nonzero_session_failed", count: 1 });
     }
 
     throw new FounderCheckoutError("Founder Checkout Session total was not zero.");
@@ -724,32 +667,33 @@ export async function scheduleFounderSubscriptionCancellation(subscriptionId: st
   );
 }
 
-export function verifyStripeSignature(payload: string, signatureHeader: string | null) {
+export const STRIPE_SIGNATURE_TOLERANCE_SECONDS = 300;
+
+export function verifyStripeSignature(payload: string, signatureHeader: string | null, nowSeconds = Math.floor(Date.now() / 1000)) {
   const secret = getEnv().stripeWebhookSecret;
 
-  if (!secret || !signatureHeader) {
+  if (!secret || !signatureHeader || signatureHeader.length > 8192 || !Number.isSafeInteger(nowSeconds)) {
     return false;
   }
 
-  const parts = Object.fromEntries(
-    signatureHeader.split(",").map((part) => {
-      const [key, value] = part.split("=");
-      return [key, value];
-    })
-  );
-
-  if (!parts.t || !parts.v1) {
+  const timestamps: string[] = [];
+  const signatures: string[] = [];
+  for (const part of signatureHeader.split(",")) {
+    const separator = part.indexOf("=");
+    if (separator < 0) continue;
+    const key = part.slice(0, separator).trim(), value = part.slice(separator + 1).trim();
+    if (key === "t") timestamps.push(value);
+    if (key === "v1" && /^[a-fA-F0-9]{64}$/.test(value)) signatures.push(value);
+  }
+  if (timestamps.length !== 1 || !/^\d+$/.test(timestamps[0]) || !signatures.length) {
     return false;
   }
+  const timestamp = Number(timestamps[0]);
+  if (!Number.isSafeInteger(timestamp) || timestamp <= 0 || Math.abs(nowSeconds - timestamp) > STRIPE_SIGNATURE_TOLERANCE_SECONDS) return false;
 
-  const signedPayload = `${parts.t}.${payload}`;
+  const signedPayload = `${timestamps[0]}.${payload}`;
   const expected = createHmac("sha256", secret).update(signedPayload).digest("hex");
-  const actual = Buffer.from(parts.v1, "hex");
   const expectedBuffer = Buffer.from(expected, "hex");
-
-  if (actual.length !== expectedBuffer.length) {
-    return false;
-  }
-
-  return timingSafeEqual(actual, expectedBuffer);
+  // Rotation can produce multiple v1 entries; any valid signature for our secret is sufficient.
+  return signatures.some(signature => timingSafeEqual(Buffer.from(signature, "hex"), expectedBuffer));
 }

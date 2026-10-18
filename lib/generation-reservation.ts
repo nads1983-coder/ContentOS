@@ -11,11 +11,13 @@ import type { PlanId, UserProfile } from "@/types/saas";
 export class GenerationReservationError extends Error {
   status: number;
   code: string;
-  constructor(message: string, status: number, code: string) {
+  retryAfterSeconds?: number;
+  constructor(message: string, status: number, code: string, retryAfterSeconds?: number) {
     super(message);
     this.name = "GenerationReservationError";
     this.status = status;
     this.code = code;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 }
 export type GenerationAdmission =
@@ -45,6 +47,36 @@ export const GENERATION_RETENTION = {
   replayEntries: 2000,
   concurrentRequests: 16
 } as const;
+export const TEXT_ATTEMPT_BUDGET = { windowMs: 60_000, max: 20, dailyMax: 100 } as const;
+
+function admitTextAttempt(data: Document, now: Date) {
+  const stored = data.text_generation_attempts_json ?? [];
+  if (!Array.isArray(stored) || stored.length > TEXT_ATTEMPT_BUDGET.max || stored.some(time => !Number.isSafeInteger(time) || time < 0)) {
+    throw new GenerationReservationError("Generation attempt accounting is unavailable.", 503, "invalid_attempt_budget");
+  }
+  const time = now.getTime();
+  const day = now.toISOString().slice(0, 10), dayStart = Date.parse(`${day}T00:00:00.000Z`);
+  // Existing profiles may have minute accounting only; preserve the known attempts from today.
+  const daily = data.text_generation_daily_attempts_json === undefined
+    ? { day, count: stored.filter(at => at >= dayStart && at < dayStart + 86_400_000).length }
+    : data.text_generation_daily_attempts_json;
+  if (!daily || typeof daily !== "object" || Array.isArray(daily) ||
+      !("day" in daily) || typeof daily.day !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(daily.day) ||
+      !Number.isFinite(Date.parse(daily.day)) || new Date(daily.day).toISOString().slice(0, 10) !== daily.day || daily.day > day ||
+      !("count" in daily) || typeof daily.count !== "number" || !Number.isSafeInteger(daily.count) || daily.count < 0 || daily.count > TEXT_ATTEMPT_BUDGET.dailyMax) {
+    throw new GenerationReservationError("Generation attempt accounting is unavailable.", 503, "invalid_attempt_budget");
+  }
+  const count = daily.day === day ? daily.count : 0;
+  const recent = (stored as number[]).filter(at => at > time - TEXT_ATTEMPT_BUDGET.windowMs).sort((a, b) => a - b);
+  if (recent.length >= TEXT_ATTEMPT_BUDGET.max || count >= TEXT_ATTEMPT_BUDGET.dailyMax) {
+    const rollingWait = recent.length >= TEXT_ATTEMPT_BUDGET.max ? recent[0] + TEXT_ATTEMPT_BUDGET.windowMs - time : 0;
+    const dailyWait = count >= TEXT_ATTEMPT_BUDGET.dailyMax ? dayStart + 86_400_000 - time : 0;
+    const retryAfter = Math.max(1, Math.ceil(Math.max(rollingWait, dailyWait) / 1000));
+    throw new GenerationReservationError("Too many generation attempts. Please wait before trying again.", 429, "generation_attempt_limit", retryAfter);
+  }
+  // Persisted in the admission transaction, independently of successful credits and replay retention.
+  return { recent: [...recent, time], daily: { day, count: count + 1 } };
+}
 
 export function effectiveGenerationPlan(data: UserProfile, now = new Date()): PlanId {
   const profile = { ...data, plan: normalizePlanId(data.plan), subscription_status: normalizeSubscriptionStatus(data.subscription_status) };
@@ -82,10 +114,12 @@ function reservations(data: Document): Reservation[] {
   }
   return entries;
 }
-function counters(data: Document): Record<string, number> {
-  const value = data.generation_usage_json;
+function counters(data: Document, field: "generation_usage_json" | "image_generation_usage_json" = "generation_usage_json"): Record<string, number> {
+  const value = data[field];
   if (value == null) return {};
-  if (typeof value !== "object" || Array.isArray(value) || Object.values(value).some(n => !Number.isSafeInteger(n) || (n as number) < 0)) {
+  if (typeof value !== "object" || Array.isArray(value) || Object.entries(value).some(([key, n]) =>
+    !Number.isSafeInteger(n) || (n as number) < 0 ||
+    (field === "image_generation_usage_json" && (key.length > 32 || !Number.isFinite(Date.parse(key)))))) {
     throw new GenerationReservationError("Stored generation usage is unavailable.", 503, "invalid_usage");
   }
   return value as Record<string, number>;
@@ -95,7 +129,8 @@ function usageInWindow(data: Document, userId: string, start: string, end: strin
   const events = profileArray<UsageEvent>(data.usage_events_json).filter(inWindow);
   const text = events.filter(e => e.event_type === "text_generation").length;
   const history = profileArray<HistoryItem>(data.generation_history_json).filter(inWindow).length;
-  return { text: Math.max(text, history, counters(data)[start] ?? 0), other: events.filter(e => e.event_type !== "text_generation").length };
+  const images = Math.max(events.filter(e => e.event_type === "image_generation").length, counters(data, "image_generation_usage_json")[start] ?? 0);
+  return { text: Math.max(text, history, counters(data)[start] ?? 0), other: images + events.filter(e => e.event_type !== "text_generation" && e.event_type !== "image_generation").length };
 }
 function requestHash(requestId: string) {
   return createHash("sha256").update(requestId).digest("hex");
@@ -165,8 +200,9 @@ export function reserveGenerationInProfile(data: Document, userId: string, reque
   const used = usageInWindow(data, userId, periodStart, periodEnd);
   const pending = entries.filter(r => r.status === "reserved" && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
   if (used.text + used.other + pending >= monthlyLimitForPlan(plan)) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
+  const attempts = admitTextAttempt(data, now);
   const reservation: Reservation = { requestId, fingerprint, plan, status: "reserved", createdAt: now.toISOString(), periodStart, periodEnd };
-  const updated = { ...data, generation_reservations_json: [...entries, reservation], generation_usage_json: { ...counters(data), [periodStart]: used.text } };
+  const updated = { ...data, text_generation_attempts_json: attempts.recent, text_generation_daily_attempts_json: attempts.daily, generation_reservations_json: [...entries, reservation], generation_usage_json: { ...counters(data), [periodStart]: used.text } };
   return { data: updated, result: { status: "reserved", requestId, fingerprint, plan } };
 }
 function matchingReservation(data: Document, userId: string, requestId: string, fingerprint: string, now: Date) {

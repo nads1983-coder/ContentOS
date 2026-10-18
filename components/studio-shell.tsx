@@ -491,10 +491,13 @@ export function StudioShell({
   const [historyWarning, setHistoryWarning] = useState("");
   const [undoResults, setUndoResults] = useState<GenerationResult[]>([]);
   const requestAttempt = useRef<{ fingerprint: string; id: string } | null>(null);
+  const imageRequestAttempt = useRef<{ fingerprint: string; id: string } | null>(null);
+  const imageInFlight = useRef(false);
   const retryIntent = useRef<{ source: string; refinement?: { section: GeneratedSection; action: string } } | null>(null);
   const workspaceWriter = useRef<ReturnType<typeof createWorkspaceWriter> | null>(null);
   const activeAccount = useRef(accountId);
   const lastWorkspaceState = useRef("");
+  const needsWorkspaceBaseline = useRef(true);
   const [workspaceReady, setWorkspaceReady] = useState(false);
   const [store, setStore] = useState<StudioStore>({
     version: 1,
@@ -533,7 +536,12 @@ export function StudioShell({
       setHasMounted(false);
       setWorkspaceReady(false);
       lastWorkspaceState.current = "";
+      needsWorkspaceBaseline.current = true;
       requestAttempt.current = null;
+      imageRequestAttempt.current = null;
+      setGeneratedImages({});
+      setImageSection(null);
+      setImageError("");
       retryIntent.current = null;
       const nextStore = readStore(accountId);
       let storedTone: ToneId | null = null;
@@ -625,8 +633,15 @@ export function StudioShell({
     const draft: Draft = { ...preferences, id: "current-draft", title: source.trim().slice(0, 54) || "Current draft", source, tone, selectedTypes, updatedAt: new Date().toISOString() };
     const nextStore = upsertDraft(store, draft);
     const localSaved = writeStore(nextStore, accountId);
+    const stateKey = JSON.stringify({ source, preferences, store });
+    // Hydration is a read, not an edit. A passive second device must not advance
+    // the server revision or make an actively editing device stale.
+    if (needsWorkspaceBaseline.current) {
+      needsWorkspaceBaseline.current = false;
+      lastWorkspaceState.current = stateKey;
+      return;
+    }
     const timer = window.setTimeout(() => {
-      const stateKey = JSON.stringify({ source, preferences, store });
       if (stateKey === lastWorkspaceState.current) return;
       lastWorkspaceState.current = stateKey;
       if (workspaceReady && workspaceWriter.current) void workspaceWriter.current.enqueue({ store: nextStore, preferences });
@@ -891,10 +906,14 @@ export function StudioShell({
   function viewPlans() { window.location.assign("/pricing"); }
 
   function scrollToStudioSection(target: "composer" | "outputs" | "formatter") {
-    document.getElementById(target)?.scrollIntoView({
+    const section = document.getElementById(target);
+    const disclosure = section?.closest("details");
+    if (disclosure) disclosure.open = true;
+    section?.scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
+    if (target === "formatter") section?.querySelector<HTMLTextAreaElement>("textarea")?.focus({ preventScroll: true });
   }
 
   function handleRailAction(action: RailAction) {
@@ -945,7 +964,7 @@ export function StudioShell({
   }
 
   async function generateImage(section = imageSection) {
-    if (!section) {
+    if (!section || imageInFlight.current) {
       return;
     }
 
@@ -954,35 +973,40 @@ export function StudioShell({
       return;
     }
 
+    imageInFlight.current = true;
     setImagePending(true);
     setImageError("");
 
-    const outputText = buildSectionCopyText(section, { sourceText: result.source });
-
     try {
+      // The image uses a bounded excerpt; the original section and preferences stay intact.
+      const excerpt = (value: string, limit: number) => value.trim().slice(0, limit);
+      const outputText = excerpt(buildSectionCopyText(section, { sourceText: result.source }), 2600);
+      const payload = {
+        outputText,
+        platform: excerpt(section.platform, 80),
+        contentType: excerpt(labelForContentType(section.type), 80),
+        style: imageStyle,
+        format: imageFormat,
+        brandContext: {
+          brandName: excerpt(brandName, 140), audience: excerpt(audience, 220), offer: excerpt(offer, 220),
+          writingStyle: excerpt(writingStyle, 180), contentGoal: excerpt(contentGoal, 180),
+          brandColors: excerpt(imageBrandColors, 180),
+          visualStyle: excerpt(imageVisualStyle, 180),
+          contentTopic: excerpt(`${section.title} ${labelForContentType(section.type)}`, 180)
+        }
+      };
+      const fingerprint = JSON.stringify({ accountId, ...payload });
+      if (imageRequestAttempt.current?.fingerprint !== fingerprint) {
+        imageRequestAttempt.current = { fingerprint, id: crypto.randomUUID() };
+      }
+      const attempt = imageRequestAttempt.current;
       const response = await fetch("/api/generate-image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-ContentOS-Account": accountId ?? ""
         },
-        body: JSON.stringify({
-          outputText,
-          platform: section.platform,
-          contentType: labelForContentType(section.type),
-          style: imageStyle,
-          format: imageFormat,
-          brandContext: {
-            brandName,
-            audience,
-            offer,
-            writingStyle,
-            contentGoal,
-            brandColors: imageBrandColors,
-            visualStyle: imageVisualStyle,
-            contentTopic: `${section.title} ${labelForContentType(section.type)}`
-          }
-        })
+        body: JSON.stringify({ ...payload, requestId: attempt.id })
       });
       const data = (await response.json()) as {
         image?: string;
@@ -992,16 +1016,22 @@ export function StudioShell({
         format?: ImageFormat;
         template?: string;
         imageCreditsLimit?: number;
+        creditCharged?: boolean;
         warning?: string;
         createdAt?: string;
         error?: string;
+        code?: string;
       };
       if (activeAccount.current !== accountId) return;
 
       if (!response.ok || !data.image) {
+        // Only terminal failures permit a fresh ID on the next explicit click.
+        // Pending, network errors and uncertain saves must keep the original ID.
+        if (data.code === "request_failed" || data.code === "request_expired") imageRequestAttempt.current = null;
         throw new Error(data.error ?? "Image generation failed. Try again.");
       }
 
+      imageRequestAttempt.current = null;
       const generatedImage = data.image;
 
       setGeneratedImages((current) => ({
@@ -1018,12 +1048,14 @@ export function StudioShell({
         }
       }));
     } catch (imageGenerationError) {
+      if (activeAccount.current !== accountId) return;
       setImageError(
         imageGenerationError instanceof Error
           ? imageGenerationError.message
           : "Image generation failed. Try again."
       );
     } finally {
+      imageInFlight.current = false;
       setImagePending(false);
     }
   }
@@ -1313,18 +1345,25 @@ function TopBar({
           )}
         </div>
 
-        <div className="relative z-[90] flex shrink-0 items-center lg:hidden">
+        <div className="relative z-[90] flex shrink-0 items-center lg:hidden" onKeyDown={event => {
+          if (event.key === "Escape" && menuOpen) {
+            event.preventDefault();
+            onToggleMenu();
+            event.currentTarget.querySelector<HTMLButtonElement>("button[aria-expanded]")?.focus();
+          }
+        }}>
           <button
             type="button"
             onClick={onToggleMenu}
             className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-muted"
             aria-label={menuOpen ? "Close account menu" : "Open account menu"}
             aria-expanded={menuOpen}
+            aria-controls="studio-account-menu"
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
           {menuOpen ? (
-            <div className="absolute right-0 top-full z-[100] mt-2 w-[11.25rem] rounded-xl border border-white/10 bg-[#07050d] p-1.5 shadow-[0_18px_45px_rgba(0,0,0,0.55)]">
+            <div id="studio-account-menu" className="absolute right-0 top-full z-[100] mt-2 w-[11.25rem] rounded-xl border border-white/10 bg-[#07050d] p-1.5 shadow-[0_18px_45px_rgba(0,0,0,0.55)]">
               {authenticated ? (
                 <>
                   <Link
@@ -1484,6 +1523,7 @@ function OutputPanel({
             key={filter.id}
             type="button"
             onClick={() => onFilterChange(filter.id)}
+            aria-pressed={activeFilter === filter.id}
             className={clsx(
               "min-h-11 shrink-0 rounded-full border px-4 text-sm transition sm:min-h-10 sm:rounded sm:px-3",
               activeFilter === filter.id
@@ -2184,21 +2224,27 @@ function ImageGenerationPanel({
   onVisualStyleChange: (value: string) => void;
   onGenerate: () => void;
 }) {
-  if (!section) {
-    return null;
-  }
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (section && !dialog.open) dialog.showModal();
+    if (!section && dialog.open) dialog.close();
+  }, [section]);
 
   const isProStudio = plan === "pro_studio";
 
   return (
-    <div className="fixed inset-0 z-[70] overflow-y-auto bg-black/70 px-4 py-6 backdrop-blur-sm">
-      <div className="mx-auto w-full max-w-2xl rounded border border-white/10 bg-coal p-4 shadow-violet sm:p-5">
+    <dialog ref={dialogRef} aria-labelledby="image-generation-title" onCancel={onClose} onClose={onClose}
+      className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-y-auto overscroll-contain rounded border border-white/10 bg-coal p-4 text-bone shadow-violet backdrop:bg-black/70 backdrop:backdrop-blur-sm sm:p-5"
+    >
+      {section ? <div className="min-w-0">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
               Image generation
             </p>
-            <h2 className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
+            <h2 id="image-generation-title" className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
               Generate Visual
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted">
@@ -2250,8 +2296,10 @@ function ImageGenerationPanel({
                       key={item.id}
                       type="button"
                       onClick={() => onStyleChange(item.id)}
+                      disabled={isPending}
+                      aria-pressed={style === item.id}
                       className={clsx(
-                        "min-h-11 rounded border px-3 text-sm font-semibold transition",
+                        "min-h-11 rounded border px-3 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60",
                         style === item.id
                           ? "border-gold/70 bg-gold/10 text-bone"
                           : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
@@ -2273,8 +2321,10 @@ function ImageGenerationPanel({
                       key={item.id}
                       type="button"
                       onClick={() => onFormatChange(item.id)}
+                      disabled={isPending}
+                      aria-pressed={format === item.id}
                       className={clsx(
-                        "min-h-14 rounded border px-3 text-left transition",
+                        "min-h-14 rounded border px-3 text-left transition disabled:cursor-wait disabled:opacity-60",
                         format === item.id
                           ? "border-gold/70 bg-gold/10 text-bone"
                           : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
@@ -2294,6 +2344,8 @@ function ImageGenerationPanel({
                   </span>
                   <input
                     value={brandColors}
+                    maxLength={180}
+                    disabled={isPending}
                     onChange={(event) => onBrandColorsChange(event.target.value)}
                     className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
                     placeholder="Deep black, violet, gold, off-white"
@@ -2305,6 +2357,8 @@ function ImageGenerationPanel({
                   </span>
                   <input
                     value={visualStyle}
+                    maxLength={180}
+                    disabled={isPending}
                     onChange={(event) => onVisualStyleChange(event.target.value)}
                     className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
                     placeholder="Premium SaaS editorial, clean depth"
@@ -2314,7 +2368,7 @@ function ImageGenerationPanel({
             </div>
 
             {error ? (
-              <div className="mt-4 rounded border border-gold/40 bg-gold/10 p-3 text-sm leading-6 text-bone">
+              <div role="alert" className="mt-4 rounded border border-gold/40 bg-gold/10 p-3 text-sm leading-6 text-bone">
                 {error}
               </div>
             ) : null}
@@ -2370,8 +2424,8 @@ function ImageGenerationPanel({
             ) : null}
           </>
         )}
-      </div>
-    </div>
+      </div> : null}
+    </dialog>
   );
 }
 

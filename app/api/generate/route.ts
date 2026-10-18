@@ -81,7 +81,10 @@ export async function POST(nextRequest: NextRequest) {
   } catch (error) {
     report("failure");
     if (error instanceof GenerationReservationError) {
-      return NextResponse.json({ error: error.message, code: error.code, requestId }, { status: error.status, headers });
+      return NextResponse.json({ error: error.message, code: error.code, requestId }, {
+        status: error.status,
+        headers: { ...headers, ...(error.retryAfterSeconds !== undefined ? { "Retry-After": String(error.retryAfterSeconds) } : {}) }
+      });
     }
     logGenerationFailure(error, "reservation");
     return NextResponse.json({ error: "Could not reserve this generation. No generation was started.", requestId }, { status: 503, headers });

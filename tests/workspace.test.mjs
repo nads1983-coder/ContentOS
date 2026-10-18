@@ -158,6 +158,17 @@ test("route bounds streamed body size and rejects invalid JSON before repository
   assert.equal((await h.routes.PUT(request("{"))).status, 400);
   assert.equal(h.calls.length, 0);
 });
+test("stalled workspace uploads terminate without a database write", async () => {
+  const h = routeHarness();
+  let canceled = false;
+  const body = new ReadableStream({ cancel() { canceled = true; } });
+  const response = await h.routes.PUT(new Request("https://app.test/api/workspace", {
+    method: "PUT", duplex: "half", headers: { "X-ContentOS-Account": "alice" }, body
+  }));
+  assert.equal(response.status, 408);
+  assert.equal(canceled, true);
+  assert.deepEqual(h.calls, []);
+});
 
 test("a stale account tab cannot load or save content under a changed session", async () => {
   const h = routeHarness();

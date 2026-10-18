@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import test from "node:test";
 import ts from "typescript";
+import { sql } from "drizzle-orm";
 
 const root = resolve(import.meta.dirname, "..");
 const nativeRequire = createRequire(import.meta.url);
@@ -108,7 +109,7 @@ function repositoryHarness() {
     update: () => ({ set: value => ({ where: async id => { if (failWrites) throw Error("Database write failed"); writes++; rows.set(id, structuredClone(value.data)); } }) })
   };
   const db = { ...session, transaction: fn => { const job = queue.then(() => fn(session)); queue = job.catch(() => {}); return job; } };
-  const repo = loadTs("lib/postgres-repository.ts", { "server-only": {}, "drizzle-orm": { eq: (_column, id) => id }, "@/lib/db/client": { getDb: () => db }, "@/lib/db/app-schema": { profiles: { id: "id" } } });
+  const repo = loadTs("lib/postgres-repository.ts", { "server-only": {}, "drizzle-orm": { sql, eq: (_column, id) => id }, "@/lib/db/client": { getDb: () => db }, "@/lib/db/app-schema": { profiles: { id: "id" } } });
   return { repo, rows, failWrites: () => { failWrites = true; }, get writes() { return writes; }, get locks() { return locks; } };
 }
 test("repository row-lock serializes duplicate admission and completion across callers", async () => {
@@ -233,4 +234,169 @@ test("usage summary uses durable text count even after recent event truncation",
   h.rows.set("alice", profile({ generation_usage_json: { [start]: 200 }, usage_events_json: [{ event_type: "image_generation", created_at: date.toISOString() }] }));
   assert.equal(await h.repo.getMonthlyUsageCount({ userId: "alice" }), 201);
   assert.equal(await h.repo.getMonthlyUsageCount({ userId: "alice", eventType: "text_generation" }), 200);
+});
+
+test("durable attempt budget counts failures without charging successful credits", () => {
+  let data = profile();
+  for (let i = 0; i < helpers.TEXT_ATTEMPT_BUDGET.max; i++) {
+    const id = `attempt-${i}`;
+    const admission = reserve(data, "alice", id, request(), now);
+    data = fail(admission.data, "alice", id, admission.result.fingerprint, now).data;
+  }
+  assert.equal(data.text_generation_attempts_json.length, 20);
+  assert.equal(data.generation_usage_json["2026-10-01T00:00:00.000Z"], 0);
+  assert.equal(data.usage_events_json, undefined);
+  const before = JSON.stringify(data);
+  assert.throws(() => reserve(data, "alice", "attempt-next", request(), now), e => e.status === 429 && e.code === "generation_attempt_limit" && e.retryAfterSeconds === 60);
+  assert.equal(JSON.stringify(data), before);
+  assert.throws(() => reserve(data, "alice", "attempt-next", request(), later(59_001)), e => e.retryAfterSeconds === 1);
+  const next = reserve(data, "alice", "attempt-next", request(), later(60_000));
+  assert.deepEqual(next.data.text_generation_attempts_json, [later(60_000).getTime()]);
+  assert.throws(() => reserve(next.data, "alice", "attempt-0", request(), later(60_000)), code("request_failed"));
+  assert.equal(reserve(profile({ id: "bob" }), "bob", "attempt-next", request(), now).result.status, "reserved");
+});
+
+test("replays and rejected duplicate IDs never consume attempt capacity", () => {
+  const admission = reserve(profile(), "alice", "attempt-success", request(), now);
+  const saved = complete(admission.data, "alice", "attempt-success", admission.result.fingerprint, result(), now);
+  const data = { ...saved.data, text_generation_attempts_json: Array(20).fill(now.getTime()) };
+  assert.equal(reserve(data, "alice", "attempt-success", request(), now).result.status, "replay");
+  assert.deepEqual(complete(data, "alice", "attempt-success", admission.result.fingerprint, result(), now).data.text_generation_attempts_json, data.text_generation_attempts_json);
+  assert.throws(() => reserve(data, "alice", "attempt-success", request({ source: "Changed original source" }), now), code("request_mismatch"));
+  assert.throws(() => reserve(admission.data, "alice", "attempt-other", request(), now), code("duplicate_in_progress"));
+  assert.equal(admission.data.text_generation_attempts_json.length, 1);
+});
+
+test("attempt budget is rolling, bounded, fail-closed, and does not reset on backwards clock", () => {
+  const times = Array.from({ length: 20 }, (_, i) => now.getTime() - i * 1000);
+  const data = profile({ text_generation_attempts_json: times });
+  assert.throws(() => reserve(data, "alice", "attempt-new", request(), now), e => e.retryAfterSeconds === 41);
+  assert.throws(() => reserve(data, "alice", "attempt-new", request(), later(-1000)), code("generation_attempt_limit"));
+  const next = reserve(data, "alice", "attempt-new", request(), later(41_000));
+  assert.equal(next.data.text_generation_attempts_json.length, 20);
+  for (const invalid of [{}, "[]", [-1], [NaN], [1.5], Array(21).fill(1)]) {
+    assert.throws(() => reserve(profile({ text_generation_attempts_json: invalid }), "alice", "attempt-new", request(), now), code("invalid_attempt_budget"));
+  }
+});
+
+test("repository serializes the last attempt slot across callers and preserves it on failed completion", async () => {
+  const h = repositoryHarness();
+  h.rows.set("alice", profile({ text_generation_attempts_json: Array(19).fill(Date.now()) }));
+  const outcomes = await Promise.allSettled([h.repo.reserveTextGeneration("alice", "attempt-one", request()), h.repo.reserveTextGeneration("alice", "attempt-two", request({ source: "Different source for race" }))]);
+  assert.equal(outcomes.filter(x => x.status === "fulfilled").length, 1);
+  assert.equal(outcomes.find(x => x.status === "rejected").reason.code, "generation_attempt_limit");
+  const admitted = outcomes.find(x => x.status === "fulfilled").value;
+  assert.equal(h.rows.get("alice").text_generation_attempts_json.length, 20);
+  h.failWrites();
+  await assert.rejects(h.repo.completeTextGeneration("alice", admitted.requestId, admitted.fingerprint, result()), /write failed/);
+  assert.equal(h.rows.get("alice").text_generation_attempts_json.length, 20);
+  assert.equal(h.rows.get("alice").text_generation_daily_attempts_json.count, 20);
+});
+
+test("monthly total uses the image event/counter maximum plus other events without double-counting", () => {
+  const start = "2026-10-01T00:00:00.000Z";
+  const event = event_type => ({ event_type, user_id: "alice", created_at: now.toISOString() });
+  for (const [imageCount, imageEvents] of [[2, 1], [1, 2], [2, 2]]) {
+    const data = profile({ image_generation_usage_json: { [start]: imageCount }, usage_events_json: Array.from({ length: imageEvents }, () => event("image_generation")) });
+    const admitted = reserve(data, "alice", "image-total", request(), now);
+    assert.equal(admitted.result.status, "reserved");
+    assert.equal(admitted.data.generation_usage_json[start], 0);
+    assert.deepEqual(admitted.data.image_generation_usage_json, data.image_generation_usage_json);
+    assert.throws(() => reserve(admitted.data, "alice", "image-total-next", request({ source: "Different source for pending quota" }), now), code("quota_exceeded"));
+    assert.throws(() => reserve({ ...data, usage_events_json: [...data.usage_events_json, event("other_generation")] }, "alice", "image-total-other", request(), now), code("quota_exceeded"));
+  }
+  const pruned = profile({ image_generation_usage_json: { [start]: 3 }, usage_events_json: [] });
+  assert.throws(() => reserve(pruned, "alice", "pruned-images", request(), now), code("quota_exceeded"));
+  assert.equal(reserve(pruned, "alice", "next-month-images", request(), new Date("2026-11-01")).result.status, "reserved");
+  const foreignAndOld = profile({ usage_events_json: [{ ...event("image_generation"), user_id: "bob" }, { ...event("image_generation"), created_at: "2026-09-01" }], image_generation_usage_json: { [start]: 2 } });
+  assert.equal(reserve(foreignAndOld, "alice", "valid-images", request(), now).result.status, "reserved");
+});
+
+test("malformed durable image accounting fails closed before text admission or completion", () => {
+  const start = "2026-10-01T00:00:00.000Z";
+  for (const invalid of [[], "{}", 3, { bad: 1 }, { [start]: -1 }, { [start]: 1.5 }, { [start]: "1" }, { [start]: NaN }, { [start]: Number.MAX_SAFE_INTEGER + 1 }]) {
+    const data = profile({ image_generation_usage_json: invalid });
+    assert.throws(() => reserve(data, "alice", "invalid-images", request(), now), e => e.status === 503 && e.code === "invalid_usage");
+    assert.equal(data.text_generation_attempts_json, undefined);
+    const admission = reserve(profile(), "alice", "valid-admission", request(), now);
+    assert.throws(() => complete({ ...admission.data, image_generation_usage_json: invalid }, "alice", "valid-admission", admission.result.fingerprint, result(), now), code("invalid_usage"));
+  }
+});
+
+test("durable image accounting preserves all existing monthly plan limits and lifetime entitlements", () => {
+  const start = "2026-10-01T00:00:00.000Z";
+  for (const [extra, limit] of [[{}, 3], [{ plan: "pro_creator", subscription_status: "active" }, 50], [{ plan: "pro_studio", subscription_status: "active" }, 250], [{ plan: "founder", subscription_status: "active", entitlement_source: "founder_offer" }, 50], [{ plan: "pro_studio", subscription_status: "active", entitlement_source: "manual_lifetime_upgrade_cousin" }, 250]]) {
+    const original = profile({ ...extra, generation_usage_json: { [start]: limit - 2 }, image_generation_usage_json: { [start]: 1 } });
+    const admitted = reserve(original, "alice", "last-total-credit", request(), now);
+    const saved = complete(admitted.data, "alice", "last-total-credit", admitted.result.fingerprint, result(), now).data;
+    assert.equal(saved.generation_usage_json[start], limit - 1);
+    assert.equal(saved.image_generation_usage_json[start], 1);
+    assert.equal(saved.plan, original.plan);
+    assert.equal(saved.entitlement_source, original.entitlement_source);
+    assert.throws(() => reserve(saved, "alice", "beyond-total-credit", request(), now), code("quota_exceeded"));
+  }
+  const renewal = profile({ plan: "pro_studio", subscription_status: "active", subscription_current_period_end: "2026-10-25T00:00:00.000Z", image_generation_usage_json: { "2026-09-25T00:00:00.000Z": 250 } });
+  assert.throws(() => reserve(renewal, "alice", "billing-window-full", request(), now), code("quota_exceeded"));
+  assert.equal(reserve({ ...renewal, image_generation_usage_json: { [start]: 250 } }, "alice", "outside-billing-window", request(), now).result.status, "reserved");
+});
+
+test("100 daily attempts include failures across minute windows while replay and success credits stay independent", () => {
+  let data = profile(), last;
+  for (let i = 0; i < helpers.TEXT_ATTEMPT_BUDGET.dailyMax; i++) {
+    const at = later(i * 60_000), id = `daily-attempt-${i}`;
+    const admitted = reserve(data, "alice", id, request(), at);
+    data = i === 99 ? complete(admitted.data, "alice", id, admitted.result.fingerprint, result(), at).data : fail(admitted.data, "alice", id, admitted.result.fingerprint, at).data;
+    last = at;
+  }
+  assert.deepEqual(data.text_generation_daily_attempts_json, { day: "2026-10-18", count: 100 });
+  assert.equal(data.generation_usage_json["2026-10-01T00:00:00.000Z"], 1);
+  assert.equal(data.usage_events_json.length, 1);
+  const retry = Math.ceil((Date.parse("2026-10-19T00:00:00Z") - last.getTime()) / 1000);
+  const before = JSON.stringify(data);
+  assert.throws(() => reserve(data, "alice", "daily-attempt-101", request(), last), e => e.status === 429 && e.code === "generation_attempt_limit" && e.retryAfterSeconds === retry);
+  assert.equal(reserve(data, "alice", "daily-attempt-99", request(), last).result.status, "replay");
+  assert.throws(() => reserve(data, "alice", "daily-attempt-0", request(), last), code("request_failed"));
+  assert.equal(JSON.stringify(data), before);
+  const next = reserve(data, "alice", "daily-tomorrow", request(), new Date("2026-10-19T00:00:00Z"));
+  assert.deepEqual(next.data.text_generation_daily_attempts_json, { day: "2026-10-19", count: 1 });
+  assert.equal(next.data.generation_usage_json["2026-10-01T00:00:00.000Z"], 1);
+  assert.equal(reserve(profile({ id: "bob" }), "bob", "daily-independent", request(), last).data.text_generation_daily_attempts_json.count, 1);
+});
+
+test("UTC daily rollover preserves rolling cap and Retry-After covers both limits", () => {
+  const time = new Date("2026-10-18T23:59:50Z");
+  const data = profile({ text_generation_attempts_json: Array(20).fill(time.getTime()), text_generation_daily_attempts_json: { day: "2026-10-18", count: 100 } });
+  assert.throws(() => reserve(data, "alice", "daily-midnight", request(), time), e => e.retryAfterSeconds === 60);
+  assert.throws(() => reserve(data, "alice", "daily-midnight", request(), new Date("2026-10-19T00:00:01Z")), e => e.retryAfterSeconds === 49);
+  const next = reserve(data, "alice", "daily-midnight", request(), new Date("2026-10-19T00:00:50Z"));
+  assert.deepEqual(next.data.text_generation_daily_attempts_json, { day: "2026-10-19", count: 1 });
+  assert.equal(next.data.text_generation_attempts_json.length, 1);
+  const both = { ...data, text_generation_attempts_json: Array(20).fill(now.getTime()) };
+  assert.throws(() => reserve(both, "alice", "daily-both-limits", request(), now), e => e.retryAfterSeconds === 43200);
+});
+
+test("daily budget fails closed for corruption or backwards days and seeds known legacy attempts", () => {
+  for (const invalid of [null, [], "{}", {}, { day: "2026-10-18", count: -1 }, { day: "2026-10-18", count: 101 }, { day: "2026-10-18", count: 1.5 }, { day: "2026-10-18", count: "1" }, { day: "2026-10-18", count: NaN }, { day: "2026-02-30", count: 0 }, { day: "2026-10-19", count: 1 }, { day: "garbage", count: 0 }]) {
+    assert.throws(() => reserve(profile({ text_generation_daily_attempts_json: invalid }), "alice", "invalid-daily", request(), now), e => e.status === 503 && e.code === "invalid_attempt_budget");
+  }
+  const legacy = profile({ text_generation_attempts_json: [later(-60_000).getTime(), now.getTime()] });
+  const migrated = reserve(legacy, "alice", "daily-migration", request(), now);
+  assert.deepEqual(migrated.data.text_generation_daily_attempts_json, { day: "2026-10-18", count: 3 });
+  assert.equal(migrated.data.text_generation_attempts_json.length, 2);
+});
+
+test("repository serializes the final daily slot and failures or failed writes never refund it", async () => {
+  const h = repositoryHarness(), day = new Date().toISOString().slice(0, 10);
+  h.rows.set("alice", profile({ text_generation_daily_attempts_json: { day, count: 99 } }));
+  const outcomes = await Promise.allSettled([h.repo.reserveTextGeneration("alice", "daily-race-one", request()), h.repo.reserveTextGeneration("alice", "daily-race-two", request({ source: "Another daily race source" }))]);
+  assert.equal(outcomes.filter(x => x.status === "fulfilled").length, 1);
+  assert.equal(outcomes.find(x => x.status === "rejected").reason.code, "generation_attempt_limit");
+  const admitted = outcomes.find(x => x.status === "fulfilled").value;
+  await h.repo.failTextGeneration("alice", admitted.requestId, admitted.fingerprint);
+  assert.equal(h.rows.get("alice").text_generation_daily_attempts_json.count, 100);
+  const fresh = repositoryHarness();
+  fresh.failWrites();
+  await assert.rejects(fresh.repo.reserveTextGeneration("alice", "daily-write-failed", request()), /write failed/);
+  assert.equal(fresh.rows.get("alice").text_generation_daily_attempts_json, undefined);
+  assert.equal(fresh.rows.get("alice").text_generation_attempts_json, undefined);
 });

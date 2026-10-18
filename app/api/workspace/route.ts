@@ -34,18 +34,25 @@ async function readInput(request: Request) {
   if (!reader) throw new WorkspaceError("Invalid request.");
   const chunks: Uint8Array[] = [];
   let size = 0;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      reject(new WorkspaceError("Workspace upload timed out.", 408));
+      void reader.cancel().catch(() => {});
+    }, 10_000);
+  });
   try {
     while (true) {
-      const chunk = await reader.read();
+      const chunk = await Promise.race([reader.read(), deadline]);
       if (chunk.done) break;
       size += chunk.value.byteLength;
       if (size > MAX_WORKSPACE_BYTES) {
-        await reader.cancel();
+        void reader.cancel().catch(() => {});
         throw new WorkspaceError("Workspace is too large.", 413);
       }
       chunks.push(chunk.value);
     }
-  } finally { reader.releaseLock(); }
+  } finally { clearTimeout(timer); reader.releaseLock(); }
   try { return parseWorkspaceWrite(JSON.parse(Buffer.concat(chunks).toString("utf8"))); }
   catch (error) {
     if (error instanceof WorkspaceError) throw error;
