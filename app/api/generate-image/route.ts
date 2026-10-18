@@ -130,6 +130,10 @@ export async function POST(request: Request) {
       eventType: "image_generation"
     });
 
+    if (!Number.isSafeInteger(usedImages) || usedImages < 0) {
+      throw new Error("Image usage is unavailable.");
+    }
+
     if (usedImages >= proStudioMonthlyImageLimit) {
       return NextResponse.json(
         { error: "You have used this month's Pro Studio image credits." },
@@ -137,7 +141,10 @@ export async function POST(request: Request) {
       );
     }
   } catch {
-    // Keep the image tool available for entitled Pro Studio users if usage counting has a temporary outage.
+    return NextResponse.json(
+      { error: "Image usage could not be verified. No image was generated. Please try again later." },
+      { status: 503 }
+    );
   }
 
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
@@ -289,8 +296,7 @@ export async function POST(request: Request) {
       });
     } catch {
       console.warn("Image generation usage tracking failed", {
-        route: "/api/generate-image",
-        userId: user.id
+        route: "/api/generate-image"
       });
     }
 

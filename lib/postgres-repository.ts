@@ -6,6 +6,9 @@ import { profiles } from "@/lib/db/app-schema";
 import { normalizePlanId, normalizeSubscriptionStatus } from "@/lib/stripe-rest";
 import { currentUsageWindow } from "@/lib/usage";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { workspaceFromProfile, updateWorkspaceProfile } from "@/lib/workspace-contract";
+import { reserveGenerationInProfile, completeGenerationInProfile, failGenerationInProfile } from "@/lib/generation-reservation";
+import type { GenerateRequest, GenerationResult } from "@/types/content";
 import type { BrandProfile, OnboardingData, UserProfile, PlanId, SubscriptionStatus } from "@/types/saas";
 
 type Document = UserProfile & Record<string, unknown>;
@@ -37,6 +40,24 @@ async function mutate<T>(id: string, fn: (d: Document) => { data: Document; resu
   });
 }
 export async function getUserProfile(id: string) { const d = await document(id); return d ? profile(d) : null; }
+export async function getWorkspace(userId: string) {
+  const data = await document(userId);
+  if (!data) throw new Error("Account profile is unavailable.");
+  return workspaceFromProfile(data, userId);
+}
+export async function saveWorkspace(userId: string, input: unknown) {
+  return mutate(userId, data => updateWorkspaceProfile(data, userId, input));
+}
+// Each operation commits before returning; provider/network work belongs between reserve and complete.
+export async function reserveTextGeneration(userId: string, requestId: string, request: GenerateRequest) {
+  return mutate(userId, data => reserveGenerationInProfile(data, userId, requestId, request));
+}
+export async function completeTextGeneration(userId: string, requestId: string, fingerprint: string, result: GenerationResult) {
+  return mutate(userId, data => completeGenerationInProfile(data, userId, requestId, fingerprint, result));
+}
+export async function failTextGeneration(userId: string, requestId: string, fingerprint: string) {
+  return mutate(userId, data => failGenerationInProfile(data, userId, requestId, fingerprint));
+}
 // Only trusted server billing code may look up an email. User access always uses the session ID.
 export async function getUserProfileByEmail(email: string) {
   const row = (await getDb().select().from(profiles).where(eq(profiles.email, email.trim().toLowerCase())).limit(1))[0];
@@ -94,8 +115,11 @@ export async function getMonthlyUsageCount(input: {
   const start = Date.parse(periodStart), end = Date.parse(periodEnd);
   const inWindow = (v: { created_at: string }) => Date.parse(v.created_at) >= start && Date.parse(v.created_at) < end;
   const events = array<UsageEvent>(d?.usage_events_json).filter(inWindow);
+  const counters = d?.generation_usage_json as Record<string, number> | undefined;
+  const textCount = Math.max(counters?.[periodStart] ?? 0, events.filter(e => e.event_type === "text_generation").length, array<HistoryItem>(d?.generation_history_json).filter(inWindow).length);
+  if (input.eventType === "text_generation") return textCount;
   if (input.eventType) return events.filter(e => e.event_type === input.eventType).length;
-  return events.length + Math.max(0, array<HistoryItem>(d?.generation_history_json).filter(inWindow).length - events.filter(e => e.event_type === "text_generation").length);
+  return events.filter(e => e.event_type !== "text_generation").length + textCount;
 }
 export async function updateSubscriptionStatus(input: {
   userId?: string;
