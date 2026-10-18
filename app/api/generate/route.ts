@@ -11,12 +11,14 @@ import {
   GenerationOutputError,
   generationOutputSchema,
   parseGenerationOutput,
+  remainingGenerationTime,
   readGenerationRequest
 } from "@/lib/generation-contract";
 import type { GenerationInput } from "@/lib/generation-contract";
 import { GenerationReservationError } from "@/lib/generation-reservation";
 import type { GenerationAdmission } from "@/lib/generation-reservation";
 import { completeTextGeneration, failTextGeneration, reserveTextGeneration } from "@/lib/repository";
+import { GROUNDING_LIMITS, GroundingError, groundGeneration, groundingReviewInstructions, groundingReviewSchema } from "@/lib/factual-grounding";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -96,6 +98,17 @@ export async function POST(nextRequest: NextRequest) {
 
   let result;
   try {
+    // All provider stages share one deadline and the original durable admission.
+    const remaining = Math.floor(remainingGenerationTime(performance.now() - startedAt));
+    if (!remaining) throw new DOMException("Generation deadline exceeded.", "TimeoutError");
+    const signal = AbortSignal.any([nextRequest.signal, AbortSignal.timeout(remaining)]);
+    signal.throwIfAborted();
+    const addUsage = (usage: { input_tokens?: number; output_tokens?: number; total_tokens?: number } | undefined) => {
+      for (const key of ["input_tokens", "output_tokens", "total_tokens"] as const) {
+        const count = usage?.[key];
+        if (typeof count === "number" && Number.isSafeInteger(count) && count >= 0) providerTokens[key] = (providerTokens[key] ?? 0) + count;
+      }
+    };
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
       timeout: GENERATION_LIMITS.timeoutMs,
@@ -104,6 +117,8 @@ export async function POST(nextRequest: NextRequest) {
     });
     const response = await client.responses.create({
       model: process.env.OPENAI_MODEL ?? "gpt-5.2",
+      store: false,
+      service_tier: "default",
       instructions: buildInstructions(),
       input: buildInput(request),
       max_output_tokens: GENERATION_LIMITS.maxOutputTokens,
@@ -116,14 +131,23 @@ export async function POST(nextRequest: NextRequest) {
         }
       }
     }, {
-      signal: AbortSignal.any([nextRequest.signal, AbortSignal.timeout(GENERATION_LIMITS.timeoutMs)])
+      signal
     });
-    for (const key of ["input_tokens", "output_tokens", "total_tokens"] as const) {
-      const count = response.usage?.[key];
-      if (typeof count === "number" && Number.isSafeInteger(count) && count >= 0) providerTokens[key] = count;
-    }
+    addUsage(response.usage);
     if (response.status !== "completed") throw new GenerationOutputError("The provider did not complete the generation.");
     result = parseGenerationOutput(response.output_text, request);
+    result = await groundGeneration(result, request, async input => {
+      signal.throwIfAborted();
+      const review = await client.responses.create({
+        model: process.env.OPENAI_MODEL ?? "gpt-5.2", store: false, service_tier: "default",
+        instructions: groundingReviewInstructions, input,
+        max_output_tokens: GROUNDING_LIMITS.reviewOutputTokens,
+        text: { format: { type: "json_schema", name: "content_grounding_review", strict: true, schema: groundingReviewSchema() } }
+      }, { signal });
+      addUsage(review.usage);
+      if (review.status !== "completed") throw new GroundingError();
+      return review.output_text;
+    });
   } catch (error) {
     // Only complete, validated packs may enter history or successful usage accounting.
     try {
@@ -134,15 +158,20 @@ export async function POST(nextRequest: NextRequest) {
     logGenerationFailure(error, "provider");
     report("failure");
     const invalidOutput = error instanceof GenerationOutputError;
+    const ungrounded = error instanceof GroundingError;
     const timedOut = error instanceof APIConnectionTimeoutError || error instanceof APIUserAbortError ||
       (error instanceof Error && ["AbortError", "TimeoutError", "APIConnectionTimeoutError", "APIUserAbortError"].includes(error.name));
     return NextResponse.json({
-      error: invalidOutput
+      error: ungrounded
+        ? error.reason === "unresolved_claims"
+          ? "The pack still contains claims that could not be supported. Clarify the facts in your brief before trying again. No successful generation was recorded."
+          : "The factual check could not be completed. The unchecked pack was not saved or delivered. No successful generation was recorded."
+        : invalidOutput
         ? "The AI returned an incomplete or invalid pack. No successful generation was recorded."
         : timedOut
           ? "Generation timed out or was cancelled. No successful generation was recorded."
           : "Generation failed. No successful generation was recorded.",
-      code: invalidOutput ? "invalid_generation" : timedOut ? "generation_timeout" : "generation_failed",
+      code: ungrounded ? "grounding_failed" : invalidOutput ? "invalid_generation" : timedOut ? "generation_timeout" : "generation_failed",
       requestId
     }, { status: invalidOutput ? 502 : timedOut ? 504 : 500, headers });
   }

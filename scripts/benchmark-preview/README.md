@@ -7,6 +7,10 @@ or migration. Do not run `ledger.sql` against production or reset/recreate its c
 Both authorized temporary deployments have been removed. The six initial jobs and three
 separately approved corrected-prompt jobs are complete; the runner role is revoked and
 disabled. No additional live execution is authorized by the presence of these scripts.
+The prompt-only candidate is now pinned to its historical revision, and operator
+setup/deploy plus CLI live/init entry points are disabled. These scripts do not
+benchmark the newer multi-stage grounding pipeline. See
+`docs/grounding-benchmark-proposal.md` for the unapproved held-out follow-up.
 
 ## Controls
 

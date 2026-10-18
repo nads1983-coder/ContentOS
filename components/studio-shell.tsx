@@ -798,7 +798,7 @@ export function StudioShell({
       if (activeAccount.current !== accountId) return;
 
       if (!response.ok) {
-        if ("code" in data && ["generation_failed", "invalid_generation", "generation_timeout", "request_failed", "request_expired"].includes(data.code ?? "")) setCanStartNewAttempt(true);
+        if ("code" in data && ["generation_failed", "invalid_generation", "grounding_failed", "generation_timeout", "request_failed", "request_expired"].includes(data.code ?? "")) setCanStartNewAttempt(true);
         const message = "error" in data ? data.error : undefined;
         throw new Error(message ?? "Generation failed.");
       }

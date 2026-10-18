@@ -4,11 +4,13 @@ Date: 2026-10-18. Repository `nads1983-coder/ContentOS`, existing branch `feat/a
 
 ## Verdict: NO-GO
 
-Keep PR #3 in draft. Secure access is resolved, but **the corrected-prompt live recheck still failed factual grounding**. Six original paired requests plus three separately approved corrected-candidate requests completed with no provider failure, uncertainty or retry. Usage-derived total cost was **USD 0.50587425, approximately GBP 0.3817327 of GBP 5 authorized**. The conservative permanent spending reservation is GBP 4.804294; measured lower cost does not replenish it.
+Keep PR #3 in draft. **Server-side factual grounding and bounded correction are now implemented and locally tested; their live quality gate is pending new approval.** The previous prompt-only live recheck failed factual grounding. Six original paired requests plus three separately approved corrected-candidate requests completed with no provider failure, uncertainty or retry. Usage-derived total cost was **USD 0.50587425, approximately GBP 0.3817327 of GBP 5 authorized**. The conservative permanent spending reservation is GBP 4.804294; measured lower cost does not replenish it. No further paid calls or temporary benchmark deployments ran during the grounding implementation.
 
 The owner approved one protected temporary Preview and then one follow-up. Both one-shot builds accessed the existing OpenAI Secret securely in Vercel, without exporting it. A restricted atomic ledger on the existing isolated Neon branch enforced cumulative admission. Both temporary deployments/staging were removed; the runner role is disabled/revoked and all nine audit rows remain. No new OpenAI key/account, service or Vercel project was created.
 
 ## Completed Corrections
+
+- Added server-side source provenance, exhaustive unit review across all 14 formats, deterministic claim guards, one bounded correction/revalidation pass and fail-closed delivery. Ten new route tests, 106 grounding tests/subtests, 70 synthetic fixtures, and browser error recovery cover actual behavior. Details and semantic limitations: [factual grounding](factual-grounding-2026-10-18.md). Next independently prepared held-out evaluation: [proposal](grounding-benchmark-proposal.md), not executed or authorized.
 
 - Durable atomic image admission, monthly holds, per-account concurrency and attempt limits, stable UUID/fingerprint deduplication, successful accounting before response and bounded replay. Real row locks coordinate separate application instances; provider calls never hold a database transaction.
 - Failed work releases only its application hold, not its attempt budget or provider spend. Uncertain completion never releases/re-dispatches; same-ID replay recovers a committed result. Expired IDs become terminal and require an explicit new attempt. Free template fallback is clearly disclosed and consumes no successful image credit.
@@ -26,21 +28,22 @@ The owner approved one protected temporary Preview and then one follow-up. Both 
 
 | Gate / command | Result and scope |
 | --- | --- |
-| `npm test` | PASS, 249/249, no skipped tests, rerun after the final prompt and follow-up ledger changes. Real route/helper logic with isolated mocks, including provider failures, replay, billing/lifetime, auth/reset faults, benchmark guard and read projection. |
+| `npm test` | PASS, 366/366, no skipped tests, rerun after the grounding implementation. Real route/helper logic with isolated mocks, including correction/revalidation, bounded review failures, replay, billing/lifetime, auth/reset faults, benchmark guard and read projection. Semantic model decisions are mocked, not a live accuracy certification. |
 | `npm run typecheck` | PASS. |
 | `npm run lint` | PASS. |
 | `npm run build` | PASS, Next.js 16.3.8, 51 generated pages. |
 | `git diff --check` | PASS. |
 | `npm audit --omit=dev --json` | PASS, zero findings. |
 | `npm audit --json` | Exit 1, seven high development-only findings; intentionally not reported as a pass. |
-| `node scripts/benchmark-content.mjs --dry-run` | PASS, no network/provider calls; fixed default-tier gpt-5.2, six-request maximum GBP 3.413760 conservative reservation. 19 guard tests pass. |
-| `node --test tests/benchmark-preview.test.mjs tests/benchmark-budget.test.mjs` | PASS, 37/37, including 18 signed-manifest/runtime/atomic-dispatch/follow-up/failure tests. |
+| Historical benchmark tooling | Archived prompt-only candidate pinned; live/init/setup/deploy entry points disabled pending a new pipeline-specific authorization. 20 budget guard tests and 18 Preview tests pass. This tooling is not evidence of new pipeline quality. |
+| `node --test tests/benchmark-preview.test.mjs tests/benchmark-budget.test.mjs` | PASS within full suite, 38/38, including 18 signed-manifest/runtime/atomic-dispatch/follow-up/failure tests and the new closed-entry-point test. |
 | Isolated benchmark ledger test | PASS, 18 real PostgreSQL checks: restricted access, null-safe binding, rollback, concurrent admission, uncertainty, durability, idempotency, expiry, exact/cumulative caps, prior-row preservation, old-job refusal and automatic close. |
 | Temporary benchmark dependencies | PASS, locked pg-only staging dependency audit, zero advisories; install scripts disabled. |
 | Live paired benchmark and follow-up | 9/9 completed, 126 sections across all 14 formats. Original/corrected candidate contract acceptance 6/6. Factual-quality gate FAIL; see below. |
 | `tests/auth-isolated.mjs --browser --reset-faults` | PASS against existing isolated Neon and local production build, real Better Auth and PostgreSQL. See below. |
 | `tests/image-isolated.mjs` | PASS, nine real-Neon checks; eight synthetic profiles cleaned up. |
 | `npm run test:browser` with localhost:3212 | PASS, four mocked responses; manual edits, undo, targeted refinement, source retention, TXT export, injected failure/new-attempt recovery and local draft reload; 1440/768/390 widths; zero unexpected errors. |
+| Grounding recovery browser rerun, localhost:3213 | PASS, four mocked responses, real production-build UI, 1440/768/390 widths. `grounding_failed` retains copy and enables an explicit new request ID. No provider/database credentials; no paid calls. Screenshots in `/tmp/contentos-grounding-browser`. |
 
 The Neon launcher retrieves the existing isolated connection through the supported CLI into a private child-process pipe, validates the exact temporary branch endpoint/database and strips provider credentials. No connection string is in the repository, output or command arguments. Opt-in scripts themselves reject production/unknown endpoints and provider credentials. Existing temporary branch retained.
 
@@ -88,7 +91,7 @@ Prompt mitigations explicitly preserve the meaning of source numbers; prohibit i
 - The fictional class's 45-minute duration becomes a promise to organize the workspace in 45 minutes in an email subject and CTA option.
 - The model invents specific storage-zone assignments and presents them as curriculum, across thread, script, carousel and repurposed carousel.
 
-Publisher-facing CTA instructions and categorical population claims also remain editorial risks. Stronger prompts alone did not establish a pass. Keep the tested mitigation but do not promote this branch until a grounding/claim-validation correction is implemented and verified with a newly authorized controlled evaluation. No budget increase was made. Only GBP 0.195706 of conservative reservation headroom remains; the lower measured cost is not authorization to erase reservations or keep calling the provider. Neither a third benchmark Preview nor more provider calls were authorized or created.
+Publisher-facing CTA instructions and categorical population claims also remained editorial risks in that historical run. Stronger prompts alone did not establish a pass. The grounding/claim-validation correction is now implemented and locally validated, but has not undergone a newly authorized live evaluation. Exact quotations and deterministic checks do not guarantee semantic entailment; false positives and missed claims remain possible. See the new report and proposal above. No budget increase was applied. Only GBP 0.195706 of conservative old reservation headroom remains; measured savings do not authorize more calls. No third benchmark Preview or further provider calls were created.
 
 ## Residual Risks and Boundaries
 

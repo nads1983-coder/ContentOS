@@ -56,7 +56,7 @@ async function routeFixture(options = {}) {
       captureServerError: (error, context) => errors.push({ message: error.message, context }),
       analyticsEvent: (event, fields) => { if (options.analyticsError) throw new Error("logger unavailable"); analytics.push({ event, fields }); }
     },
-    "@/lib/generation-contract": contract,
+    "@/lib/generation-contract": options.providerBudgetMs === undefined ? contract : { ...contract, remainingGenerationTime: () => options.providerBudgetMs },
     "@/lib/generation-reservation": options.reservationModule ?? { GenerationReservationError: ReservationError },
     "next/server": { NextResponse: Response },
     "@/lib/repository": {
@@ -87,10 +87,23 @@ async function routeFixture(options = {}) {
         }
       }
       responses = { create: async (input, config) => {
+        if (input.text.format.name === "content_grounding_review") {
+          calls.push("review");
+          assert.equal(input.max_output_tokens, 16_000);
+          assert.equal(input.store, false);
+          assert.ok(config.signal instanceof AbortSignal);
+          if (options.reviewError) throw options.reviewError;
+          const data = JSON.parse(input.input);
+          const decisions = data.units.map(unit => ({ id: unit.id, kind: "supported",
+            references: data.sources.map(s => ({ sourceId: s.id, quote: s.text })), reason: "none", replacement: null }));
+          return options.reviewResponse?.(data, calls.filter(c => c === "review").length) ??
+            { status: "completed", output_text: JSON.stringify({ decisions }) };
+        }
         calls.push("provider");
         providerInput = input;
         assert.ok(config.signal instanceof AbortSignal);
         if (options.providerError) throw options.providerError;
+        if (options.cancelAfterGeneration) options.controller.abort();
         return options.providerResponse ?? { status: "completed", output_text: JSON.stringify(output()) };
       } };
     }
@@ -102,7 +115,8 @@ async function routeFixture(options = {}) {
     const headers = new Headers();
     if (options.accountHeader !== null) headers.set("X-ContentOS-Account", options.accountHeader ?? "user-test");
     const incoming = new Request("https://test.local/api/generate", {
-      method: "POST", headers, body: options.rawBody ?? JSON.stringify(options.body ?? { source, selectedTypes: ["linkedin"], requestId })
+      method: "POST", headers, signal: options.controller?.signal,
+      body: options.rawBody ?? JSON.stringify(options.body ?? { source, selectedTypes: ["linkedin"], requestId })
     });
     const response = await route.POST(incoming);
     return { response, body: await response.json(), calls, clientOptions, providerInput, analytics, errors, gateCalls, bodyRead: incoming.bodyUsed };
@@ -115,7 +129,7 @@ async function routeFixture(options = {}) {
 test("route reserves before a bounded provider call and completes only validated output", async () => {
   const { response, body, calls, clientOptions, providerInput } = await routeFixture();
   assert.equal(response.status, 200);
-  assert.deepEqual(calls, ["reserve", "provider", "complete"]);
+  assert.deepEqual(calls, ["reserve", "provider", "review", "complete"]);
   assert.equal(body.sections.length, 1);
   assert.equal(clientOptions.maxRetries, 0);
   assert.equal(clientOptions.logLevel, "off");
@@ -209,7 +223,7 @@ test("uncertain completion keeps reservation intact and returns request ID for r
   assert.equal(result.response.status, 503);
   assert.equal(result.body.code, "generation_save_uncertain");
   assert.equal(result.body.requestId, "a189b831-43ea-479c-89ab-e639734983ab");
-  assert.deepEqual(result.calls, ["reserve", "provider", "complete"]);
+  assert.deepEqual(result.calls, ["reserve", "provider", "review", "complete"]);
 });
 
 test("installed OpenAI SDK makes one fetch on 429, 500, connection failure, and timeout", async () => {
@@ -274,7 +288,7 @@ test("raw provider and repository errors never enter route logs or analytics", a
 test("analytics failures cannot turn a committed generation into an error", async () => {
   const result = await routeFixture({ analyticsError: true });
   assert.equal(result.response.status, 200);
-  assert.deepEqual(result.calls, ["reserve", "provider", "complete"]);
+  assert.deepEqual(result.calls, ["reserve", "provider", "review", "complete"]);
 });
 
 // Real reservation transitions, with an in-memory commit boundary. This tests
@@ -317,7 +331,7 @@ test("lost completion acknowledgement replays committed output and charges exact
   const h = statefulReservationHarness("lost-ack");
   const first = await routeFixture(h);
   assert.equal(first.response.status, 503);
-  assert.deepEqual(first.calls, ["provider"]);
+  assert.deepEqual(first.calls, ["provider", "review"]);
   const retry = await routeFixture(h);
   assert.equal(retry.response.status, 200);
   assert.deepEqual(retry.calls, []);
@@ -356,4 +370,117 @@ test("failed provider attempt is terminal on retry and never counted as successf
   assert.equal(h.failures, 1);
   assert.equal(h.completions, 0);
   assert.equal(h.state.usage_events_json, undefined);
+});
+
+function reviewResult(data, transform = d => d) {
+  return { status: "completed", output_text: JSON.stringify({ decisions: data.units.map(unit => transform({
+    id: unit.id, kind: "supported", references: data.sources.map(s => ({ sourceId: s.id, quote: s.text })),
+    reason: "none", replacement: null
+  }, unit)) }) };
+}
+
+test("grounding repairs actual generated copy, rechecks it, and persists only the corrected pack", async () => {
+  let saved;
+  const result = await routeFixture({
+    providerResponse: { status: "completed", output_text: JSON.stringify(output(["linkedin"], {
+      sections: [section("linkedin", { body: "Our checklist guarantees 90% higher income." })]
+    })) },
+    reviewResponse: (data, pass) => reviewResult(data, (decision, unit) => {
+      if (pass === 1 && unit.text.includes("90%")) return { ...decision, kind: "unsupported", reason: "guarantee", replacement: source };
+      assert.ok(pass === 1 || !unit.text.includes("90%"));
+      return decision;
+    }),
+    repository: { completeTextGeneration: async (_u, _id, _fp, value) => { saved = value; return value; } }
+  });
+  assert.equal(result.response.status, 200);
+  assert.equal(saved.sections[0].body, source);
+  assert.deepEqual(result.calls, ["reserve", "provider", "review", "review"]);
+  assert.ok(!JSON.stringify(saved).includes("90%"));
+});
+
+test("failed, incomplete, missing-coverage and counterfeit reviews never deliver or persist draft copy", async () => {
+  for (const reviewResponse of [
+    () => ({ status: "incomplete", output_text: "{}" }),
+    () => ({ status: "completed", output_text: JSON.stringify({ decisions: [] }) }),
+    data => reviewResult(data, d => ({ ...d, references: [{ sourceId: "invented-source", quote: "made up" }] }))
+  ]) {
+    const result = await routeFixture({ reviewResponse });
+    assert.equal(result.response.status, 502);
+    assert.equal(result.body.code, "grounding_failed");
+    assert.deepEqual(result.calls, ["reserve", "provider", "review", "fail"]);
+    assert.ok(!JSON.stringify(result.body).includes(source));
+  }
+});
+
+test("a second review violation fails closed without a third review or another generation", async () => {
+  const result = await routeFixture({ reviewResponse: data => reviewResult(data, (d, unit) => unit.path === "sections.0.body"
+    ? { ...d, kind: "unsupported", reason: "missing_evidence", replacement: "A different unsupported claim." } : d) });
+  assert.equal(result.response.status, 502);
+  assert.equal(result.body.code, "grounding_failed");
+  assert.deepEqual(result.calls, ["reserve", "provider", "review", "review", "fail"]);
+});
+
+test("review infrastructure errors release failed admission without provider retries or leaking copy", async () => {
+  const result = await routeFixture({ reviewError: new Error("Private model response or credential") });
+  assert.equal(result.response.status, 500);
+  assert.deepEqual(result.calls, ["reserve", "provider", "review", "fail"]);
+  assert.ok(!JSON.stringify({ body: result.body, errors: result.errors }).includes("Private model"));
+});
+
+test("review tokens are counted alongside generation tokens, without storing review text in telemetry", async () => {
+  const result = await routeFixture({
+    providerResponse: { status: "completed", output_text: JSON.stringify(output()), usage: { input_tokens: 10, output_tokens: 20, total_tokens: 30 } },
+    reviewResponse: data => ({ ...reviewResult(data), usage: { input_tokens: 40, output_tokens: 50, total_tokens: 90 } })
+  });
+  assert.equal(result.response.status, 200);
+  assert.equal(result.analytics[0].fields.total_tokens, 120);
+  assert.equal(result.analytics[0].fields.input_tokens, 50);
+  assert.equal(result.analytics[0].fields.output_tokens, 70);
+});
+
+test("grounding failure is terminal for the request and never consumes a successful credit", async () => {
+  const h = statefulReservationHarness();
+  const first = await routeFixture({ ...h, reviewResponse: () => ({ status: "completed", output_text: "{}" }) });
+  assert.equal(first.response.status, 502);
+  assert.equal(h.completions, 0);
+  assert.equal(h.failures, 1);
+  const replay = await routeFixture(h);
+  assert.equal(replay.body.code, "request_failed");
+  assert.deepEqual(replay.calls, []);
+  assert.equal(h.state.usage_events_json, undefined);
+});
+
+test("the route reserves persistence time after slow admission and does not start work after the deadline", async () => {
+  for (const [elapsed, expected] of [[0, 90_000], [10_000, 90_000], [35_000, 65_000], [99_999, 1], [100_000, 0], [120_000, 0]]) {
+    assert.equal(contract.remainingGenerationTime(elapsed), expected);
+  }
+  const result = await routeFixture({ providerBudgetMs: 0 });
+  assert.equal(result.response.status, 504);
+  assert.deepEqual(result.calls, ["reserve", "fail"]);
+});
+
+test("cancellation after generation cannot start a paid review or save an unchecked draft", async () => {
+  const result = await routeFixture({ controller: new AbortController(), cancelAfterGeneration: true });
+  assert.equal(result.response.status, 504);
+  assert.deepEqual(result.calls, ["reserve", "provider", "fail"]);
+});
+
+test("cancellation between correction and final review never dispatches another call", async () => {
+  const controller = new AbortController();
+  const result = await routeFixture({ controller, reviewResponse: data => {
+    controller.abort();
+    return reviewResult(data, (d, u) => u.path === "sections.0.body"
+      ? { ...d, kind: "unsupported", reason: "missing_evidence", replacement: source } : d);
+  } });
+  assert.equal(result.response.status, 504);
+  assert.deepEqual(result.calls, ["reserve", "provider", "review", "fail"]);
+});
+
+test("operational review failure and unresolved source claims have distinct actionable messages", async () => {
+  const operational = await routeFixture({ reviewResponse: () => ({ status: "incomplete", output_text: "{}" }) });
+  assert.match(operational.body.error, /check could not be completed/);
+  assert.doesNotMatch(operational.body.error, /Clarify/);
+  const claims = await routeFixture({ reviewResponse: data => reviewResult(data, (d, u) => u.path === "sections.0.body"
+    ? { ...d, kind: "unsupported", reason: "missing_evidence", replacement: source } : d) });
+  assert.match(claims.body.error, /Clarify the facts/);
 });

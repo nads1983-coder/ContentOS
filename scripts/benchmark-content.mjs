@@ -8,6 +8,8 @@ import { runInNewContext } from "node:vm";
 import ts from "typescript";
 
 export const BASELINE = "6c75fab8e995e94c53bec400aed01991e1ee0642";
+// Historical prompt-only campaign. It does not exercise the new grounding pipeline.
+export const ARCHIVED_CANDIDATE = "d34873f4f8e6560a45cd01d675bc02f5ba0d94e6";
 // Rates supplied for this benchmark; the operator must confirm official pricing before --live.
 export const POLICY = Object.freeze({
   model: "gpt-5.2", serviceTier: "default", inputUsdPerMillion: 1.75, outputUsdPerMillion: 14,
@@ -103,7 +105,7 @@ function routeFormat(source, candidateSchema) {
   return { type: literal(property(format, "type")), name: literal(property(format, "name")), strict: literal(property(format, "strict")), schema: candidateSchema };
 }
 export function buildBenchmarkPlan(root = ROOT) {
-  const baseline = sourceLoader(root, BASELINE), candidate = sourceLoader(root);
+  const baseline = sourceLoader(root, BASELINE), candidate = sourceLoader(root, ARCHIVED_CANDIDATE);
   const baselinePrompts = baseline.load("lib/prompts.ts"), candidatePrompts = candidate.load("lib/prompts.ts");
   const contract = candidate.load("lib/generation-contract.ts");
   const types = Array.from(candidate.load("lib/content-config.ts").contentTypes, t => t.id);
@@ -309,6 +311,7 @@ export async function runBenchmark(plan, { apiKey, model = POLICY.model, budgetD
 async function main() {
   const args = process.argv.slice(2);
   requireSafe(args.length === 1 && ["--dry-run", "--init-budget", "--live"].includes(args[0]), "use_dry_run_init_budget_or_live");
+  requireSafe(args[0] === "--dry-run", "historical_campaign_closed_new_pipeline_requires_approval");
   requireSafe(!process.env.OPENAI_MODEL || process.env.OPENAI_MODEL === POLICY.model, "unpriced_model");
   requireSafe(!process.env.OPENAI_BASE_URL || process.env.OPENAI_BASE_URL === "https://api.openai.com/v1", "custom_endpoint_forbidden");
   const plan = buildBenchmarkPlan();

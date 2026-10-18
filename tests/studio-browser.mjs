@@ -28,7 +28,7 @@ await page.route("**/api/generate", async route => {
   const input = route.request().postDataJSON();
   payloads.push(input);
   await new Promise(r => setTimeout(r, 250));
-  if (failNext) { failNext = false; await route.fulfill({ status: 502, json: { error: "Incomplete pack. Your draft is unchanged.", code: "invalid_generation" } }); return; }
+  if (failNext) { failNext = false; await route.fulfill({ status: 502, json: { error: "The factual check could not be completed. Your draft is unchanged.", code: "grounding_failed" } }); return; }
   await route.fulfill({ json: {
     ...input, id: `fixture-pack-${calls}`, createdAt: new Date().toISOString(), title: "Planning pilot", summary: "A small pilot without invented results.",
     sections: input.selectedTypes.map(type => ({ id: `fixture-${type}`, type, title: `${type} draft`, platform: type, body: input.refinement ? "A shorter planning draft. The pilot is still in progress." : "Our weekly planning pilot is underway.\n\nFive designers are testing a checklist. Results are not yet available.", items: [], cta: "What helps you plan?" }))
@@ -69,7 +69,7 @@ try {
   assert.ok((await download).suggestedFilename().endsWith(".txt"));
   failNext = true;
   await page.getByRole("button", { name: "Regenerate current set", exact: true }).click();
-  await page.getByRole("alert").filter({ hasText: "Incomplete pack" }).waitFor();
+  await page.getByRole("alert").filter({ hasText: "The factual check could not be completed" }).waitFor();
   assert.ok(await page.getByText("A shorter planning draft. The pilot is still in progress.", { exact: true }).count());
   assert.equal(await source.inputValue(), payloads[0].source);
   await page.getByRole("button", { name: "Start a new attempt", exact: true }).click();

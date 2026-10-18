@@ -1,5 +1,9 @@
 # Generation contract and offline quality evaluation
 
+## Current grounding implementation
+
+The newer [server-side grounding report](factual-grounding-2026-10-18.md) supersedes prompt-only mitigation as the implementation. Its extraction, structured semantic review, deterministic guards, one correction pass and fresh revalidation run before successful persistence/delivery. Local tests pass, but **none of the historical live results below evaluate this pipeline**. A [new held-out benchmark](grounding-benchmark-proposal.md) requires explicit budget/deployment approval. No new paid calls ran.
+
 ## Scope and baseline
 
 The original sections below describe offline structural/prompt-contract evaluation. The live evaluation adds six paired requests and three separately authorized corrected-candidate requests with synthetic briefs on 2026-10-18. Production and customer content were not used. The small sample does not certify conversion, originality, factual accuracy or population failure rates.

@@ -1,7 +1,7 @@
 /* global AbortController, AbortSignal, Buffer, Response */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -22,6 +22,15 @@ function fixture(t, initialize = true) {
   return { dir, budgetDirectory, outputDirectory, root, apiKey: key };
 }
 const ledgerAt = config => JSON.parse(readFileSync(join(config.budgetDirectory, "ledger.json"), "utf8"));
+
+test("closed historical campaign refuses live/init/setup/deploy before credential or database access", () => {
+  for (const [script, mode] of [["scripts/benchmark-content.mjs", "--live"], ["scripts/benchmark-content.mjs", "--init-budget"],
+    ["scripts/benchmark-preview/operator.mjs", "setup"], ["scripts/benchmark-preview/operator.mjs", "deploy-followup"]]) {
+    const result = spawnSync(process.execPath, [script, mode], { cwd: root, env: {}, encoding: "utf8", timeout: 5000 });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /historical_campaign_closed_new_pipeline_requires_approval/);
+  }
+});
 
 test("fixed rates and conservative UTF-8/token bound cap six worst-case attempts at GBP 3.413760", () => {
   assert.equal(worstCaseReservation("gpt-5.2", 64000), 568960);
@@ -88,7 +97,7 @@ test("only explicit default service tier passes validation, reservation, and the
   assert.equal(calls, 0);
   for (const job of plan.jobs) assert.equal(JSON.parse(job.body).service_tier, "default");
 });
-test("six jobs reuse the actual baseline prompt/schema and current candidate sources for all 14 formats", () => {
+test("archived six jobs retain the actual baseline and historical prompt-only candidate for all 14 formats", () => {
   assert.equal(plan.jobs.length, 6);
   assert.equal(plan.types.length, 14);
   const baseline = JSON.parse(plan.jobs[0].body), candidate = JSON.parse(plan.jobs[1].body);

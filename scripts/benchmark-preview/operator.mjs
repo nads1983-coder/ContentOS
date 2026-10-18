@@ -8,6 +8,10 @@ import { buildBenchmarkPlan, BUDGET_DIRECTORY } from "../benchmark-content.mjs";
 import { PROJECT, ROLE, SCHEMA, demand, reservationForJob } from "./runner.mjs";
 
 const mode=process.argv[2], followup=mode?.endsWith("-followup"), action=mode?.replace("-followup","");
+if (["setup", "deploy"].includes(action)) {
+  console.error(JSON.stringify({ error: "historical_campaign_closed_new_pipeline_requires_approval", providerCallsFromLocalOperator: 0 }));
+  process.exit(1);
+}
 const basePrivate="/tmp/contentos-benchmark-operator-20261018";
 const privateDir=basePrivate+(followup?"-followup":""), stage="/tmp/contentos-benchmark-preview-20261018"+(followup?"-followup":"");
 const cli="/Users/nadinepierre/.npm/_npx/67eb4586ca667318/node_modules/vercel/dist/vc.js";

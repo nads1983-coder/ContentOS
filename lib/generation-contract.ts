@@ -1,5 +1,6 @@
 import { contentTypes, ctaModes, defaultSelectedTypes, presetTopics, sharpnessModes, tones } from "@/lib/content-config";
 import { cleanPlainText } from "@/lib/text-normalize";
+import { hasNoCtaInstruction } from "@/lib/cta-policy";
 import type { ContentTypeId, GenerateRequest, GeneratedSection, GenerationResult } from "@/types/content";
 
 export const REFINEMENT_ACTIONS = {
@@ -36,6 +37,11 @@ export const GENERATION_LIMITS = {
 
 export class GenerationValidationError extends Error {}
 export class GenerationOutputError extends Error {}
+
+export function remainingGenerationTime(elapsedMs: number) {
+  // Leave twenty seconds of the 120-second route window for cleanup and persistence.
+  return Math.max(0, Math.min(GENERATION_LIMITS.timeoutMs, 100_000 - Math.max(0, elapsedMs)));
+}
 
 function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -110,6 +116,7 @@ export function normalizeGenerationRequest(body: unknown): GenerationInput {
     }
     result.refinement = { action, section };
   }
+  if (hasNoCtaInstruction(result)) result.ctaMode = "none";
   return result;
 }
 

@@ -1,6 +1,6 @@
 # AI-first Studio implementation and release review
 
-Date: 2026-10-18. This branch is a reviewable preview, not a production rollout. Current launch verdict and executed evidence: [release gates](release-gates-2026-10-18.md). The authorized live benchmark and corrected-prompt recheck ran; persistent factual-grounding defects keep the verdict NO-GO.
+Date: 2026-10-18. This branch is a reviewable preview, not a production rollout. Current launch verdict and executed evidence: [release gates](release-gates-2026-10-18.md). The previous live benchmark exposed factual-grounding defects. A [server-side validation and correction pipeline](factual-grounding-2026-10-18.md) is now implemented and locally tested; the mandatory held-out live evaluation awaits fresh budget/deployment approval, so the verdict remains NO-GO.
 
 ## Verified baseline and boundaries
 
