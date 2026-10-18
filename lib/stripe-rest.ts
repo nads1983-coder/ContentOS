@@ -38,6 +38,7 @@ type StripeSubscription = {
 type StripeCustomer = {
   id: string;
   email?: string;
+  deleted?: boolean;
 };
 
 type StripePromotionCode = {
@@ -588,8 +589,25 @@ export async function createCheckoutSession(input: {
     }
   }
 
-  if (input.stripeCustomerId) {
-    body.set("customer", input.stripeCustomerId);
+  let customerId = input.stripeCustomerId;
+  if (input.founderOffer && customerId) {
+    const customer = await stripeGet<StripeCustomer>(`customers/${encodeURIComponent(customerId)}`);
+    if (customer.id !== customerId) {
+      throw new FounderCheckoutError("Founder customer lookup could not be verified.");
+    }
+    // Stripe returns a tombstone for deleted customers, but refuses them at
+    // Checkout. Only that definitive result permits email-based customer creation.
+    // Keep the same claim/idempotency key; never retry an uncertain POST here.
+    if (customer.deleted === true) {
+      if (!input.userId || !input.email?.trim() || !input.idempotencyKey) {
+        throw new FounderCheckoutError("Founder customer recovery requires an authenticated claim.");
+      }
+      customerId = undefined;
+    }
+  }
+
+  if (customerId) {
+    body.set("customer", customerId);
   } else if (input.email) {
     body.set("customer_email", input.email);
   }
