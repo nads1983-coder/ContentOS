@@ -1,5 +1,7 @@
 # Generation contract and offline quality evaluation
 
+Latest campaign: [staged live validation](staged-live-validation-2026-10-18.md). One unseen brief produced all 14 raw formats, but the first factual review was rejected by the deterministic validator. No final validated pack exists; independent raw-content assessment is diagnostic, not a delivered-quality pass. Two calls completed without timeout; the GBP4 campaign is closed and cleaned up.
+
 ## Current grounding implementation
 
 Latest runtime: [durable staged delivery](staged-grounding-delivery-2026-10-18.md). Offline replay covers all 719 captured units and completes all three packs through actual-route mocked reviews and isolated Neon persistence. This establishes protocol/coverage/recovery behavior, not new live semantic quality or model speed. There are no new live quality scores. Final HTTP 200 shape remains unchanged, but clients must drive HTTP 202 stage continuations; older one-shot clients need a reload.

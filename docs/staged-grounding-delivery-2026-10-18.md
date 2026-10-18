@@ -2,6 +2,8 @@
 
 ## Verdict
 
+Subsequent authorized live result: [final staged validation](staged-live-validation-2026-10-18.md). The GBP4 campaign is now closed after two calls: a 50.446s draft and 10.641s review, followed by deterministic review rejection. No validated pack completed. The proposal at the end of this document is historical, consumed authorization, not permission to retry.
+
 **NO-GO for production; local delivery gates pass, live end-to-end delivery remains unverified.** This work replaces the single-request delivery bottleneck, not the factual-quality requirement. No paid calls, temporary benchmark deployments, production writes, customer access or merge are authorized or performed by this change. PR #3 stays draft until live end-to-end validation and separate production approval.
 
 ## Evidence and diagnosis
@@ -84,8 +86,8 @@ The browser initially exposed a real hydration race: the Resume control was clic
 
 Observed existing local warnings: pg SSL-alias deprecation, Better Auth missing trusted client-IP fallback in the local harness, and a migration-email module-type warning. No production configuration was changed. Dependency manifests are unchanged; the previously documented seven development-only advisories are not claimed newly resolved or rescanned by this delivery work.
 
-## Minimal live proposal (not authorized or executed)
+## Historical minimal live proposal (subsequently authorized and closed)
 
-After local gates pass: **one new synthetic brief, all 14 formats, one fresh draft through final save**, with a maximum **GBP4 cumulative API budget**, at most 23 calls, no retry, and stop immediately on uncertainty or a material factual defect. No baseline rerun: this validates the changed delivery architecture, not a new comparative quality claim. Independently evaluate the 14 final assets and any corrections against sealed source facts, including No CTA and duration versus promised results.
+Original proposal after local gates passed: **one new synthetic brief, all 14 formats, one fresh draft through final save**, with a maximum **GBP4 cumulative API budget**, at most 23 calls, no retry, and stop immediately on uncertainty or a material factual defect. No baseline rerun: this validates the changed delivery architecture, not a new comparative quality claim. Independently evaluate the 14 final assets and any corrections against sealed source facts, including No CTA and duration versus promised results.
 
-This would require separate approval for one protected, operator-only, isolated non-production execution using the existing Vercel credential and temporary Neon infrastructure, with a fresh atomic GBP ledger. Reverify rates/FX and the exact payload bounds before dispatch; refuse if GBP4 cannot be guaranteed. Remove temporary execution/access afterward. The prior GBP5/GBP9 campaigns remain closed. No deployment or paid call has been created by this proposal, and success would still not authorize production release.
+The owner subsequently granted that separate approval. Rates, FX and bounds were checked; a protected operator-only build used the existing Vercel credential and fresh isolated ledger. It stopped on the first rejected review, then removed temporary execution/access. Results are linked above. All three campaigns are now closed. No further spending or production release is authorized.

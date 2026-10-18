@@ -1,5 +1,7 @@
 # Server-side factual grounding
 
+Latest outcome: [staged live validation](staged-live-validation-2026-10-18.md) completed a draft and first review without a timeout, but the deterministic validator refused the batch. No pack completed. The GBP4 campaign is closed and cleaned up; contextual certificate/claim classification is the next local correction. Historical implementation and campaign evidence below remains unchanged in scope.
+
 Status: implemented and locally tested; **live release gate failed** in the subsequently authorized [controlled benchmark](controlled-grounding-benchmark-2026-10-18.md). Six drafts completed; the first candidate review ended uncertain at the shared deadline and stopped the campaign. No candidate pack completed grounding. PR #3 stays draft. The original implementation made no paid calls; the separate authorized campaign is now closed and its temporary Preview/access removed. Production and customer data remain unchanged.
 
 Latest correction: [durable staged delivery](staged-grounding-delivery-2026-10-18.md) replaces the shared-deadline route, preserving the semantic/deterministic validation described here. All local gates pass (456 tests, plus isolated Neon and staged browser checks); live end-to-end delivery is still unverified. No new paid call or benchmark deployment was made.
@@ -50,4 +52,4 @@ Semantic decisions in tests are explicitly mocked: accepting an honest unsupport
 
 ## Next approval boundary
 
-See the [minimal staged delivery proposal](staged-grounding-delivery-2026-10-18.md#minimal-live-proposal-not-authorized-or-executed): one unseen synthetic brief across all 14 formats, GBP4 maximum and at most 23 provider calls, no retry. Separate approval is required for both spend and protected isolated execution. The old campaigns remain closed and pinned to their historical candidates; audit records remain intact. No prior authorization is reused.
+The [staged live validation](staged-live-validation-2026-10-18.md) consumed the later GBP4 authorization and stopped after two calls. Every campaign is closed. Any future live call or temporary execution requires fresh explicit approval; unused budget is not permission to retry.
