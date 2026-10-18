@@ -1,0 +1,773 @@
+{
+  "assessmentType": "independent_raw_diagnostic",
+  "assessmentDate": "2026-10-18",
+  "inputs": [
+    "brief.json",
+    "raw-draft.json"
+  ],
+  "independence": "Only the two specified new input files were read. No execution.json, validator implementation, prior assessment for this brief, other assessors' findings, network, database, provider or deployment was consulted. The assignment explicitly highlighted the page-layout ambiguity, so this was not a fully blinded assessment. The remaining assessment was independent.",
+  "deliveryStatus": "There is no final validated pack. This assesses captured RAW copy only and does not establish delivery, validation or publication success.",
+  "rubric": {
+    "scale": "0=unusable/absent; 1=weak; 2=adequate with substantial editing; 3=good with editing; 4=strong for the requested purpose.",
+    "dimensions": [
+      "relevance",
+      "naturalness",
+      "originality",
+      "platformFit",
+      "usefulness"
+    ],
+    "maximumPerFormat": 20,
+    "interpretation": "Editorial scores assess writing, audience/brand relevance and usable format structure. They do not override material factual findings. Metaphors, subjective permission and clearly hypothetical examples are not automatically factual failures."
+  },
+  "criticalFactualVerdict": {
+    "materialFailure": true,
+    "rootIssueCount": 1,
+    "rootIssue": "Unconfirmed physical page layout is repeatedly presented as a confirmed Fieldline specification.",
+    "materialFindingCount": 10,
+    "affectedFormatCount": 8,
+    "explicitPerPageFindingCount": 8,
+    "otherLayoutFindingCount": 2,
+    "countingRule": "Count one finding per materially unsupported asset assertion; the main video's spoken and on-screen versions are grouped into one finding. These are repetitions of one root issue, not ten independent inventions.",
+    "keyConclusion": "A5 paper format and three printed section headings do NOT establish three headings printed on every individual page. They also do not establish that a page is divided into three areas or that all three headings share one page.",
+    "certainty": "The brief is silent about page-by-page placement. The raw claims are unsupported, not proven physically false.",
+    "sourceQuotes": [
+      "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+      "These are the only confirmed product specifications."
+    ],
+    "safeSpecification": "Fieldline is an A5 notebook with a moss green cover and three printed section headings: Notice, Sketch and Revisit."
+  },
+  "editorialTotals": {
+    "formatCount": 14,
+    "dimensionTotals": {
+      "relevance": 52,
+      "naturalness": 45,
+      "originality": 35,
+      "platformFit": 51,
+      "usefulness": 40
+    },
+    "dimensionMaximum": 56,
+    "scoreSum": 223,
+    "maximumSum": 280,
+    "meanPerFormat": 15.93,
+    "meanMaximum": 20,
+    "summary": "Mostly readable, gentle and coherent with the unfinished-page theme. Concrete imaginary-square details add interest. Product awareness is weaker in unbranded short assets; repeated page/permission language limits variety. The repurposed video has unfinished scaffolding. These editorial totals do not certify factual safety."
+  },
+  "titleAndSummary": {
+    "materialFactualFailure": false,
+    "scores": {
+      "relevance": 4,
+      "naturalness": 4,
+      "originality": 2,
+      "platformFit": 4,
+      "usefulness": 3,
+      "total": 17
+    },
+    "assessment": "The pack title and summary name Fieldline, its three headings and the authorized unfinished-page creative stance. Neither specifies the headings' page-by-page placement or claims measured outcomes. They are internal pack metadata, not proof of successful delivery."
+  },
+  "sourceAudit": [
+    {
+      "topic": "Confirmed product facts",
+      "result": "partly_preserved_with_material_layout_extension",
+      "sourceQuotes": [
+        "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+        "Its cover is moss green.",
+        "These are the only confirmed product specifications."
+      ],
+      "assessment": "Names, A5 format, moss-green colour, the three heading names and intended informal-observation audience are supported. Per-page repetition, co-location and page divisions are not."
+    },
+    {
+      "topic": "Outdated waterproof offer",
+      "result": "not_promoted",
+      "sourceQuotes": [
+        "Current notebook information replaces the old saved brand offer of a waterproof travel journal."
+      ],
+      "assessment": "No waterproof or weather-resistant claim appears in the assets. References to imaginary outdoor places do not by themselves claim weather resistance."
+    },
+    {
+      "topic": "Unannounced specifications and logistics",
+      "result": "not_invented_except_layout",
+      "sourceQuotes": [
+        "No event date, price, product price, page count, paper weight, recycled content, binding type, weather resistance, delivery arrangements, downloadable materials, recordings, attendee limit, qualifications, customer testimonials or measured outcomes have been announced."
+      ],
+      "assessment": "No numeric price, page count, paper weight, material certification, binding, shipping, recording or other listed detail is invented. 'Small headings' is a minor unconfirmed physical descriptor, not counted as a material feature claim."
+    },
+    {
+      "topic": "Event and duration",
+      "result": "not_claimed_in_assets",
+      "sourceQuotes": [
+        "A separate event called A Page Outside is a 28-minute live online demonstration by studio founder Rowan.",
+        "The 28 minutes is only the event duration, not a promise of improved creativity, observation, productivity or wellbeing."
+      ],
+      "assessment": "The assets omit the event, Rowan and 28-minute duration. Consequently no duration-to-outcome conversion or invented event activity was found. The brief's central requested goal is notebook awareness, so omission of the separate event is not itself a factual failure."
+    },
+    {
+      "topic": "Hypothetical examples",
+      "result": "allowed",
+      "sourceQuotes": [
+        "Clearly hypothetical notes about an imaginary square are welcome as creative examples, not product features, event curriculum or customer experiences."
+      ],
+      "assessment": "The imaginary-square sounds, chalk, bench, fountain and map details are explicitly hypothetical where developed. They are not evidence of actual customers or promised event curriculum. A hypothetical note may use all three headings conceptually without proving their physical co-location."
+    },
+    {
+      "topic": "Subjective benefits and wellbeing",
+      "result": "not_material_outcome_promises",
+      "sourceQuotes": [
+        "Create engaging awareness content about the three headings and the freedom to leave a page unfinished."
+      ],
+      "assessment": "'No pressure', 'calm', 'without guilt', 'still a complete page' and 'permission' are read as subjective creative framing. No measurable creativity, productivity, observation or wellbeing improvement is promised. These phrases should not later be repurposed as proven benefits."
+    },
+    {
+      "topic": "No CTA",
+      "result": "no_listed_solicitation_found_with_instructional_ambiguity",
+      "sourceQuotes": [
+        "No CTA anywhere, including captions, questions, scripts and hashtags: no requests to book, buy, visit, click, follow, save, share, comment, message or subscribe.",
+        "Leave CTA suggestion items empty with a short neutral explanation."
+      ],
+      "assessment": "All CTA fields are empty and the CTA set is empty. No listed commercial/social engagement request or audience-response question appears. 'Try one line' and the numbered Fill/Add/Leave steps are practice instructions rather than engagement solicitations. A literal ban on every directive would also reject them; safest editing is to frame them as optional hypothetical examples. This interpretation risk is not counted as a confirmed factual fabrication or definite engagement-CTA failure."
+    },
+    {
+      "topic": "Publisher-facing instructions",
+      "result": "localized_editorial_defect",
+      "sourceQuotes": [
+        "Avoid publisher-facing instructions."
+      ],
+      "assessment": "Script beat/on-screen labels, subject headers and carousel outline labels are appropriate formats. However, the nested video beat 'Optional imaginary square example for each heading' supplies a writing instruction rather than a finished example or spoken line."
+    }
+  ],
+  "coverage": {
+    "formatCount": 14,
+    "topLevelItemCount": 57,
+    "scope": "Title and summary; every section title, platform, body, item and CTA; all three Instagram and TikTok alternatives; twelve YouTube keyword items; six thread posts; full five-beat script and on-screen lines; eight carousel slides; three subject alternatives; seven nested repurposed assets including eight carousel slides and three video beats; eight hooks; six platform hashtag/keyword sets.",
+    "excluded": "No execution evidence, final validated output, actual notebook/photos, actual video, external facts or other assessments."
+  },
+  "formats": [
+    {
+      "type": "linkedin",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [
+        {
+          "id": "F01",
+          "path": "sections.0.body",
+          "quote": "Margin Tide’s new Fieldline notebook (A5, moss green cover) has three printed section headings on every page:",
+          "relatedQuotes": [],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "explicit_every_page",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "A5 describes paper format; the three named headings are confirmed at notebook/section level. Neither fact establishes that all three headings are printed on every individual page.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.0.title",
+          "quote": "The three-heading page that invites unfinished work",
+          "category": "layout_implication",
+          "materialFactualFailure": false,
+          "issue": "The title reinforces a three-heading single-page design. Keep the unfinished-page concept but avoid treating that layout as confirmed."
+        },
+        {
+          "path": "sections.0.body",
+          "quote": "A practical way to use a page like this:\n1) Fill one line in Notice.\n2) Add the smallest mark in Sketch.\n3) Leave Revisit blank on purpose.",
+          "category": "instruction_vs_hypothesis",
+          "materialFactualFailure": false,
+          "issue": "Useful illustrative practice, but its single-page arrangement follows the unverified physical layout. Frame it explicitly as an optional way to arrange notes. The imperatives are notebook-use guidance, not requests for commercial or social engagement."
+        },
+        {
+          "path": "sections.0.body",
+          "quote": "That is still a complete page.",
+          "category": "subjective_framing",
+          "materialFactualFailure": false,
+          "issue": "An acceptable creative definition of completeness, not a claim that the notebook performs a task. Similar language recurs throughout the pack."
+        }
+      ],
+      "assessment": "Product name, A5 format, cover colour and intended audience are faithful. The actual per-page printing claim is material. The body is readable but longer and more instructional than necessary for the requested concise awareness content."
+    },
+    {
+      "type": "instagram",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 4,
+        "originality": 3,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 18
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.1.body",
+          "quote": "Leaving the page unfinished is part of the method.",
+          "category": "interpretation_not_specification",
+          "materialFactualFailure": false,
+          "issue": "The brief authorizes the unfinished-page theme but does not announce an official method. This can be read as editorial philosophy; 'one way to use it' would avoid suggesting a prescribed product system."
+        },
+        {
+          "path": "sections.1.body",
+          "quote": "Fieldline (A5, moss green) prints three small headings that do a lot of work: Notice, Sketch, Revisit.",
+          "category": "minor_physical_ambiguity",
+          "materialFactualFailure": false,
+          "issue": "The three headings are supported, but their printed size is not specified. 'Small' is low-stakes descriptive language rather than a material feature claim; omit it if exact specification fidelity is required."
+        }
+      ],
+      "assessment": "All three alternatives and the hashtag set inspected. The imagined square is explicitly labelled optional and imaginary, so its sensory details are permitted. 'Some days you fill all three' does not by itself prove a false every-page assertion: the headings could be used across sections. Clear and warm, with relatively concrete imagery; local framing should not imply an officially specified page layout."
+    },
+    {
+      "type": "tiktok",
+      "scores": {
+        "relevance": 3,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 2,
+        "total": 14
+      },
+      "materialFailures": [
+        {
+          "id": "F02",
+          "path": "sections.2.body",
+          "quote": "A5 notebook page with three prompts, no pressure: Notice. Sketch. Revisit.",
+          "relatedQuotes": [
+            "This page format is built for unfinished notes: Notice, Sketch, Revisit."
+          ],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "unconfirmed_single_page_colocation",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "The brief does not locate all three headings together on one page or say that pages are subdivided into three labelled areas. This might be the design, but it is not established.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.2.body",
+          "quote": "Try one line in Notice, one scribble in Sketch, and leave Revisit blank. That still counts as a page.",
+          "category": "instructional_imperative",
+          "materialFactualFailure": false,
+          "issue": "This is a suggestion for using a notebook, not a request to buy, follow or respond. Under an especially literal 'no CTA anywhere' reading, 'Try' is avoidable; an optional hypothetical example would preserve usefulness without ambiguity."
+        }
+      ],
+      "assessment": "Three alternatives and the hashtag set inspected. The second caption explicitly puts all three prompts on an A5 page, an unconfirmed layout. The copy is short but never names Fieldline or Margin Tide, weakening standalone product awareness."
+    },
+    {
+      "type": "twitter",
+      "scores": {
+        "relevance": 3,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 2,
+        "total": 14
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.3.body",
+          "quote": "A page that gives you a starting point and a built-in place to leave things unfinished.",
+          "category": "product_capability_ambiguity",
+          "materialFactualFailure": false,
+          "issue": "'Built-in place' could be a metaphor for the Revisit heading or a claim about a dedicated physical area. The brief confirms the heading, not reserved blank space. Rephrase as a possible use rather than silently infer a feature."
+        },
+        {
+          "path": "sections.3.body",
+          "quote": "That’s a surprisingly calm way to keep everyday observation on paper.",
+          "category": "subjective_language",
+          "materialFactualFailure": false,
+          "issue": "A natural subjective assessment, not an established wellbeing outcome. It is allowed, but generic without a product name or specific example."
+        }
+      ],
+      "assessment": "Concise and readable. No unambiguous every-page statement or measurable benefit promise. Fieldline and Margin Tide are absent, so the post is weak as a standalone awareness asset. The physical-versus-metaphorical 'built-in' phrasing needs clarification."
+    },
+    {
+      "type": "facebook",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 3,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 17
+      },
+      "materialFailures": [
+        {
+          "id": "F03",
+          "path": "sections.4.body",
+          "quote": "Each page has three printed headings: Notice, Sketch, Revisit.",
+          "relatedQuotes": [],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "explicit_every_page",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "A5 describes paper format; the three named headings are confirmed at notebook/section level. Neither fact establishes that all three headings are printed on every individual page.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.4.body",
+          "quote": "The part I love most is what it implies: the page can be partial.",
+          "category": "voice_choice",
+          "materialFactualFailure": false,
+          "issue": "This is a subjective narrator opinion, not a customer testimonial or evidence of first-hand results. However, a brand/team asset should choose a consistent 'I' or studio voice rather than assume a named speaker."
+        }
+      ],
+      "assessment": "The optional fountain/bench example is explicitly imaginary and acceptable. A5, colour, identity and intended informal use are correct. The unconfirmed each-page assertion is the material defect; the rest has a personable, usable tone."
+    },
+    {
+      "type": "youtubeShorts",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 16
+      },
+      "materialFailures": [
+        {
+          "id": "F04",
+          "path": "sections.5.body",
+          "quote": "Fieldline by Margin Tide is an A5 notebook with a moss green cover and three printed section headings on each page.",
+          "relatedQuotes": [],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "explicit_every_page",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "A5 describes paper format; the three named headings are confirmed at notebook/section level. Neither fact establishes that all three headings are printed on every individual page.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.5.body",
+          "quote": "A quick look at how the headings create structure, and why leaving a page unfinished can still feel complete.",
+          "category": "media_dependency",
+          "materialFactualFailure": false,
+          "issue": "Suitable as a description if the accompanying video actually contains this discussion. No media was supplied or inspected. 'Can still feel complete' is a subjective stance, not a measured outcome."
+        }
+      ],
+      "assessment": "Main copy and all twelve keyword items inspected. Keywords are relevant and do not add weather resistance, material quality or other specifications. Stronger standalone brand identification than the short TikTok/X assets, but the central per-page claim must be removed."
+    },
+    {
+      "type": "xThread",
+      "scores": {
+        "relevance": 3,
+        "naturalness": 3,
+        "originality": 3,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 16
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.6.body",
+          "quote": "A short thread on why three small headings can make everyday observation easier to keep.",
+          "category": "subjective_benefit",
+          "materialFactualFailure": false,
+          "issue": "Qualified ease-of-use framing, not a measured productivity or observation improvement. Avoid treating it as an established benefit when revising."
+        },
+        {
+          "path": "sections.6.items.0",
+          "quote": "1/6 Notice. Sketch. Revisit. Three headings that quietly change what a notebook page expects from you.",
+          "category": "metaphor_and_brand",
+          "materialFactualFailure": false,
+          "issue": "Personification is acceptable; it does not specify a printing frequency. The entire thread omits Fieldline and Margin Tide, so its product-awareness value depends on surrounding context."
+        }
+      ],
+      "assessment": "All six posts inspected. Numbering is structural. 'Second doorway' and 'lowers the bar' are metaphors; the imaginary example is explicitly optional. There is no definite universal page-layout or measured-outcome claim. Good thread progression, but brand attribution and a less repetitive ending would help."
+    },
+    {
+      "type": "shortVideoScript",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 3,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 17
+      },
+      "materialFailures": [
+        {
+          "id": "F05",
+          "path": "sections.7.body",
+          "quote": "Every page gives you three headings: Notice, Sketch, Revisit.",
+          "relatedQuotes": [
+            "3 headings per page"
+          ],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "explicit_every_page",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "A5 describes paper format; the three named headings are confirmed at notebook/section level. Neither fact establishes that all three headings are printed on every individual page.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.7.body",
+          "quote": "If you never finish a page in your notebook, this layout is for you.",
+          "category": "interpretive_positioning",
+          "materialFactualFailure": false,
+          "issue": "Conversational targeting rather than a quantified promise, but 'this layout' inherits the unsupported per-page design that follows. Position it around the confirmed headings instead."
+        },
+        {
+          "path": "sections.7.body",
+          "quote": "Notice = one real detail",
+          "category": "example_context",
+          "materialFactualFailure": false,
+          "issue": "Within the explicitly imaginary example, 'real' is an awkward choice. It need not imply an actual customer experience, but 'one observed detail' or 'one imagined detail' would be clearer in context."
+        }
+      ],
+      "assessment": "Hook, all five beats, on-screen lines and close inspected. The unsupported claim appears both in speech and in on-screen text, so both require correction. The square's sounds, map and bench/tree details are an expressly hypothetical illustration, not additional announced event activities. Production labels are appropriate script structure, not a publisher-instruction defect."
+    },
+    {
+      "type": "carousel",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 3,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 16
+      },
+      "materialFailures": [
+        {
+          "id": "F06",
+          "path": "sections.8.items.1",
+          "quote": "Support: Fieldline pages are divided by these headings, designed for everyday observation and informal notes.",
+          "relatedQuotes": [],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "unconfirmed_page_divisions",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "The brief does not locate all three headings together on one page or say that pages are subdivided into three labelled areas. This might be the design, but it is not established.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.8.items.6",
+          "quote": "When the structure is gentle, it is easier to record ordinary places as they are.",
+          "category": "soft_generalization",
+          "materialFactualFailure": false,
+          "issue": "This is a broad, unmeasured ease-of-use opinion. It is not an event-duration promise, but the slide would be more useful with a concrete optional note example."
+        },
+        {
+          "path": "sections.8.items.0",
+          "quote": "A notebook page that lets you stop early",
+          "category": "repetition",
+          "materialFactualFailure": false,
+          "issue": "The permission-to-stop theme is relevant, but several slides repeat that permission instead of adding a distinct visual or practical contrast."
+        }
+      ],
+      "assessment": "All eight slides inspected. Slide 2 asserts an unconfirmed physical division of product pages, even though it does not use 'every'. Slide 6 is clearly labelled imaginary; slide 8 lists supported specifications. 'Slide' and 'Support' are appropriate outline labels."
+    },
+    {
+      "type": "emailNewsletter",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 4,
+        "originality": 3,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 18
+      },
+      "materialFailures": [
+        {
+          "id": "F07",
+          "path": "sections.9.body",
+          "quote": "It’s an A5 format notebook with a moss green cover, and each page prints three headings:",
+          "relatedQuotes": [],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "explicit_every_page",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "A5 describes paper format; the three named headings are confirmed at notebook/section level. Neither fact establishes that all three headings are printed on every individual page.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.9.body",
+          "quote": "What that layout offers is a calmer definition of “a finished page”.",
+          "category": "subjective_language",
+          "materialFactualFailure": false,
+          "issue": "An editorial/creative definition, not a clinical wellbeing claim. Its reference to 'that layout' should not rest on the unsupported physical arrangement."
+        },
+        {
+          "path": "sections.9.items.2",
+          "quote": "Subject: A notebook that allows unfinished pages",
+          "category": "generic_positioning",
+          "materialFactualFailure": false,
+          "issue": "Faithful to the theme but not distinctive as a product benefit: other notebooks also allow unfinished pages. A heading-led subject is more specific."
+        }
+      ],
+      "assessment": "Body and all three subject lines inspected. Readable, coherent and brand-specific. The imaginary example is clearly introduced. 'Subject:' is email structure, not a publisher-facing instruction such as 'choose a subject'. The per-page printing statement is the material error."
+    },
+    {
+      "type": "repurposePack",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 2,
+        "usefulness": 2,
+        "total": 13
+      },
+      "materialFailures": [
+        {
+          "id": "F08",
+          "path": "sections.10.items.0",
+          "quote": "Margin Tide’s new Fieldline notebook (A5, moss green cover) has three printed section headings on every page:",
+          "relatedQuotes": [],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "explicit_every_page",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "A5 describes paper format; the three named headings are confirmed at notebook/section level. Neither fact establishes that all three headings are printed on every individual page.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        },
+        {
+          "id": "F09",
+          "path": "sections.10.items.5",
+          "quote": "Beat: Three headings per page: Notice, Sketch, Revisit.",
+          "relatedQuotes": [],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "explicit_every_page",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "A5 describes paper format; the three named headings are confirmed at notebook/section level. Neither fact establishes that all three headings are printed on every individual page.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        },
+        {
+          "id": "F10",
+          "path": "sections.10.items.6",
+          "quote": "A5 format, moss green cover, and three headings on each page: Notice, Sketch, Revisit.",
+          "relatedQuotes": [],
+          "rootIssue": "unsupported_page_layout",
+          "claimType": "explicit_every_page",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuotes": [
+            "Its new notebook, Fieldline, has an A5 paper format and three printed section headings: Notice, Sketch, and Revisit.",
+            "These are the only confirmed product specifications."
+          ],
+          "sourceRationale": "A5 describes paper format; the three named headings are confirmed at notebook/section level. Neither fact establishes that all three headings are printed on every individual page.",
+          "evidenceRelationship": "Unsupported extension, not a demonstrated contradiction: the brief leaves the page-by-page arrangement unspecified.",
+          "remedy": "Describe Fieldline as an A5 notebook with the three printed section headings. Do not assert their repetition, co-location or division of individual pages without confirmation."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.10.items.5",
+          "quote": "Beat: Optional imaginary square example for each heading.",
+          "category": "unfinished_publisher_facing_placeholder",
+          "materialFactualFailure": false,
+          "issue": "This tells a writer what example to supply instead of supplying a spoken line or actual example. Ordinary beat labels are acceptable, but this beat is unfinished publisher-facing scaffolding."
+        },
+        {
+          "path": "sections.10.items.4",
+          "quote": "Slide 6: Optional imaginary example: a neighbourhood square",
+          "category": "underdeveloped_nested_asset",
+          "materialFactualFailure": false,
+          "issue": "Names the example but provides no example note or visual detail. An outline can be concise, but this is much less useful than the standalone carousel's concrete illustration."
+        },
+        {
+          "path": "sections.10.body",
+          "quote": "A compact set of platform-ready assets",
+          "category": "readiness_overstatement",
+          "materialFactualFailure": false,
+          "issue": "The nested video contains a placeholder, and several assets repeat the unsupported layout. 'Platform-ready' is not a validated delivery status."
+        }
+      ],
+      "assessment": "All seven nested assets inspected, including eight carousel slides and three video beats. The LinkedIn, video and email assets explicitly repeat the per-page claim. Much of the rest is compressed duplication of standalone copy; the video is not fully written.",
+      "nestedAssets": [
+        {
+          "label": "LinkedIn",
+          "path": "sections.10.items.0",
+          "materialFindingIds": [
+            "F08"
+          ],
+          "note": "Exact per-page claim; practical steps are notebook-use guidance rather than engagement solicitation."
+        },
+        {
+          "label": "Instagram",
+          "path": "sections.10.items.1",
+          "materialFindingIds": [],
+          "note": "Supported notebook-level heading description and a clearly optional imaginary example. No definite universal repetition claim."
+        },
+        {
+          "label": "TikTok",
+          "path": "sections.10.items.2",
+          "materialFindingIds": [],
+          "note": "'This page format' implies a layout but is less explicit than the standalone caption's three-prompts-on-a-page claim. Qualify as a possible use. No brand name."
+        },
+        {
+          "label": "X/Twitter",
+          "path": "sections.10.items.3",
+          "materialFindingIds": [],
+          "note": "Same built-in-space ambiguity as the standalone post; no definite printed frequency or measurable result. No brand name."
+        },
+        {
+          "label": "Carousel",
+          "path": "sections.10.items.4",
+          "materialFindingIds": [],
+          "note": "All eight slide headings inspected. 'The layout' suggests co-location but does not expressly say Fieldline pages are divided; clarify rather than count another definite specification assertion. Illustrative slide lacks actual example content."
+        },
+        {
+          "label": "Video",
+          "path": "sections.10.items.5",
+          "materialFindingIds": [
+            "F09"
+          ],
+          "note": "Per-page assertion plus a placeholder example beat. Neither should be treated as final audience-ready script."
+        },
+        {
+          "label": "Email",
+          "path": "sections.10.items.6",
+          "materialFindingIds": [
+            "F10"
+          ],
+          "note": "Explicit each-page assertion; the imaginary example itself is allowed."
+        }
+      ]
+    },
+    {
+      "type": "hooks",
+      "scores": {
+        "relevance": 3,
+        "naturalness": 3,
+        "originality": 3,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.11.items.2",
+          "quote": "If your notes are always unfinished, this page layout is still a win.",
+          "category": "layout_ambiguity",
+          "materialFactualFailure": false,
+          "issue": "A subjective 'win', not a guarantee. 'This page layout' presupposes an arrangement the brief does not describe; emphasize the headings without implying a verified physical configuration."
+        },
+        {
+          "path": "sections.11.items.6",
+          "quote": "Revisit is a heading that can stay blank without guilt.",
+          "category": "subjective_permission",
+          "materialFactualFailure": false,
+          "issue": "This is permission-oriented rhetoric, not proof that a product removes guilt or improves wellbeing. It should remain opinion, not be upgraded into an outcome claim."
+        },
+        {
+          "path": "sections.11.items.4",
+          "quote": "One detail, one mark, and done. That’s a complete page.",
+          "category": "limited_angle_variety",
+          "materialFactualFailure": false,
+          "issue": "A concise hook, but it repeats the same reinterpretation of a finished page used across the pack. The set needs more genuinely different angles; product/brand names are absent."
+        }
+      ],
+      "assessment": "All eight hooks inspected. The imaginary-square hook is an example, not a claim that every product page has three tiny physical sections. 'A sketch does not have to be art to be useful' and the page-as-exit metaphor are acceptable subjective copy."
+    },
+    {
+      "type": "ctas",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 4,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 4,
+        "total": 18
+      },
+      "materialFailures": [],
+      "editorialIssues": [],
+      "assessment": "Empty items and empty CTA field exactly satisfy the request. 'No CTA requested.' is the permitted short neutral explanation, not publisher leakage. Originality is not a useful differentiator for this deliberately standardized control section."
+    },
+    {
+      "type": "platformHashtags",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 16
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.13.items.1",
+          "quote": "Instagram: #fieldnotes #stationerystudio #a5notebook #urbansketching #everydayobservation #analognote #sketchbookpractice",
+          "category": "brand_specificity",
+          "materialFactualFailure": false,
+          "issue": "Relevant topical tags, but the set does not identify Fieldline or Margin Tide. A brand-specific tag could improve attribution without adding a CTA."
+        }
+      ],
+      "assessment": "All six platform sets inspected. Keywords and hashtags do not assert waterproofing, paper quality, awards, results or unannounced material specifications. Revisit as a product heading is not a forbidden 'visit' request. Topic tags are not evidence of additional capabilities."
+    }
+  ],
+  "priorityEdits": [
+    "Remove every-page/each-page/per-page language from all eight explicit findings, including the full video's on-screen overlay.",
+    "Replace TikTok's single-page three-prompt description and the carousel's page-division claim with notebook-level confirmed facts, or request product-layout confirmation.",
+    "Keep clearly optional imaginary examples, but separate the suggested arrangement of notes from assertions about the product's printing.",
+    "Write the nested video's missing example as actual copy; reduce duplication and add Fieldline/Margin Tide to standalone awareness assets that currently omit both.",
+    "Use hypothetical phrasing instead of 'Try' or Fill/Add/Leave if the desired No CTA policy is literally directive-free."
+  ],
+  "inputSha256": {
+    "brief.json": "aa6fb8d94f412f1ba171dbc20111ef22216fdf901f58c8640e84cf265f208633",
+    "raw-draft.json": "42e42926f9423d5eb5c3ae2d8cf74a72f242d6b4573d54e50feed69f1773a946"
+  },
+  "quotationValidation": "Every cited draft span and source quotation was checked as an exact substring of the relevant supplied input."
+}
