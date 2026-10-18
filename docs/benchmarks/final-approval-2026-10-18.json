@@ -1,0 +1,192 @@
+{
+  "mode": "READ_ONLY_PROPOSAL_NO_LIVE_AUTHORIZATION",
+  "candidate": "31ff29b8afa4aeccf76c737018372b6472f2ae55",
+  "paidCalls": 0,
+  "newSpendGbp": 0,
+  "historical": [
+    {
+      "fileHash": "a3facde6aa412bd8177518a331c8c0f2351c53f8b5a3ca0d15311e4a99f068ae",
+      "planHash": "77592c50e7689326b3579574df793b3f7b0e0324e088c3131a826f857e390d2a",
+      "stage": "1:draft:0:0",
+      "reservationMicroGbp": 419173,
+      "cumulativeReservationMicroGbp": 419173,
+      "costUsd": 0.07049525,
+      "closed": true,
+      "outcomeCertain": true
+    },
+    {
+      "fileHash": "a3ed54c5f7af21d3c2e10d396fb37780f2f55050ee5fb2de794d087a0d9c960d",
+      "planHash": "ffc85d49c9afe9e64e6e51d10dbefa2cab57c49ba4c44b0f1c0527134fcdd7e6",
+      "stage": "1:review:0:0",
+      "reservationMicroGbp": 186377,
+      "cumulativeReservationMicroGbp": 605550,
+      "costUsd": 0.03871,
+      "closed": true,
+      "outcomeCertain": true
+    },
+    {
+      "fileHash": "f14867d4b70a1e95dedb38d9c7dc78232b7a7d4f99772cb633f8b470e608c1dd",
+      "planHash": "33afdd63ad498bc9ff5f4fd1126d266028378d67bb5a622f8ec57537f34cd866",
+      "stage": "1:review:0:1",
+      "reservationMicroGbp": 186958,
+      "cumulativeReservationMicroGbp": 792508,
+      "costUsd": 0.02708265,
+      "closed": true,
+      "outcomeCertain": true
+    }
+  ],
+  "historicalReservationMicroGbp": 792508,
+  "historicalCalls": 3,
+  "historicalCostUsd": 0.13628790000000002,
+  "certificatesReused": 96,
+  "unsupportedRetained": 6,
+  "formats": 14,
+  "draftUnits": 307,
+  "initialPayloads": [
+    {
+      "batch": 2,
+      "key": "1:review:0:2",
+      "units": 48,
+      "first": "u96",
+      "last": "u143",
+      "bytes": 54421,
+      "payloadHash": "568629509c24ba7e16ee9bca9c22361fc42ebcf69f1bf615a2ba1d913e5dba6d",
+      "inputTokenBound": 58517,
+      "reservationMicroGbp": 186566
+    },
+    {
+      "batch": 3,
+      "key": "1:review:0:3",
+      "units": 48,
+      "first": "u144",
+      "last": "u191",
+      "bytes": 54611,
+      "payloadHash": "e0b62fb8df48178f9fe916a266164de17049005e4745a6150e2ccf2a8dd716db",
+      "inputTokenBound": 58707,
+      "reservationMicroGbp": 186931
+    },
+    {
+      "batch": 4,
+      "key": "1:review:0:4",
+      "units": 48,
+      "first": "u192",
+      "last": "u239",
+      "bytes": 54592,
+      "payloadHash": "af82114f5f994659da83b28fa92072859b4064bb69239eb294198cfeff818f01",
+      "inputTokenBound": 58688,
+      "reservationMicroGbp": 186895
+    },
+    {
+      "batch": 5,
+      "key": "1:review:0:5",
+      "units": 48,
+      "first": "u240",
+      "last": "u287",
+      "bytes": 55247,
+      "payloadHash": "e3b5e26a63fa294c356ff84d1fecb9847818ac2cef8dfca99b5144fbd2a834de",
+      "inputTokenBound": 59343,
+      "reservationMicroGbp": 188156
+    },
+    {
+      "batch": 6,
+      "key": "1:review:0:6",
+      "units": 19,
+      "first": "u288",
+      "last": "u306",
+      "bytes": 50061,
+      "payloadHash": "8a72d30cdb181ab41b4fb47044bc5bdb68237864f2e564d237472a9798895efd",
+      "inputTokenBound": 54157,
+      "reservationMicroGbp": 178173
+    }
+  ],
+  "pricing": {
+    "verifiedDate": "2026-10-18",
+    "model": "gpt-5.2",
+    "serviceTier": "default",
+    "inputUsdPerMillion": 1.75,
+    "outputUsdPerMillion": 14,
+    "cachedDiscountAssumed": false,
+    "gbpPerUsdBound": 1.1,
+    "ecbReferenceDate": "2026-10-16",
+    "referenceGbpPerUsd": 0.7498889185106195
+  },
+  "limits": {
+    "reviewBytes": 56000,
+    "inputTokens": 60096,
+    "outputTokens": 4800,
+    "maximumFinalUnits": 336,
+    "initialCalls": 5,
+    "freshCalls": 7,
+    "newCalls": 12,
+    "combinedCalls": 15
+  },
+  "exactInitialReservationMicroGbp": 926721,
+  "freshMaximumReservationMicroGbp": 1327235,
+  "hashBoundMaximumNewMicroGbp": 2253956,
+  "hashBoundMaximumCombinedMicroGbp": 3046464,
+  "uniformMaximumNewMicroGbp": 2275260,
+  "uniformMaximumCombinedMicroGbp": 3067768,
+  "proposedNewCeilingGbp": 2.28,
+  "proposedCombinedCeilingGbp": 3.08,
+  "offline": {
+    "initialCoverage": 307,
+    "freshCoverage": 307,
+    "freshPayloads": [
+      {
+        "batch": 0,
+        "units": 48,
+        "bytes": 54308,
+        "reservationMicroGbp": 186348
+      },
+      {
+        "batch": 1,
+        "units": 48,
+        "bytes": 54716,
+        "reservationMicroGbp": 187134
+      },
+      {
+        "batch": 2,
+        "units": 48,
+        "bytes": 54392,
+        "reservationMicroGbp": 186510
+      },
+      {
+        "batch": 3,
+        "units": 48,
+        "bytes": 54645,
+        "reservationMicroGbp": 186997
+      },
+      {
+        "batch": 4,
+        "units": 48,
+        "bytes": 54587,
+        "reservationMicroGbp": 186885
+      },
+      {
+        "batch": 5,
+        "units": 48,
+        "bytes": 55278,
+        "reservationMicroGbp": 188215
+      },
+      {
+        "batch": 6,
+        "units": 19,
+        "bytes": 50095,
+        "reservationMicroGbp": 178238
+      }
+    ],
+    "correctionPasses": 1,
+    "historyEntries": 1,
+    "usageEvents": 1,
+    "duplicateExtraCharges": 0,
+    "capturedResponses": 2,
+    "mockedResponses": 12,
+    "semanticReliabilityEstablished": false
+  },
+  "limitations": [
+    "Fresh payloads shown are the explicit mock-correction scenario, not future live reviewer results. Each actual payload must fit the enforced cap without truncation.",
+    "Reservation bound is list-price API usage at conservative FX, not a guaranteed invoice including unknown taxes/payment fees. Reconfirm effective billed conversion and any applicable surcharge fit 1.10 GBP/USD before dispatch.",
+    "Private audit files were verified read-only; no live database/credential/deployment inspection was performed. Reconcile all three immutable database records before any future authorized execution.",
+    "Existing operators are closed and bound to older campaigns. A separately approved execution requires a fresh manifest/ledger binding this candidate and both reusable certificates; never reopen the old campaign."
+  ]
+}
