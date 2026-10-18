@@ -63,12 +63,16 @@ test("compact references preserve complete source negation; invented sources and
   assert.throws(() => batches.parseBatchReview(JSON.stringify(bad), b));
   bad.decisions[0].sourceIds = Array(13).fill("s0"); assert.throws(() => batches.parseBatchReview(JSON.stringify(bad), b));
 });
-test("No CTA, invented price, guarantees and duration promises remain refused after batching", async () => {
+test("No CTA, invented price, guarantees and duration promises are removed and freshly revalidated, never approved", async () => {
   for (const text of ["Book now for GBP99.", "Our service guarantees 90% higher income.", "Finish your business plan in 45 minutes."]) {
     const h = harness(); h.provider = async p => p.text.format.name === "social_content_generation"
       ? receipt({ title: "Planning", summary: source, sections: [{ id: "a", type: "linkedin", title: "Planning", platform: "LinkedIn", body: text, items: [], cta: "" }] }) : reviewReceipt(p);
     const r = await h.finish(input({ ctaMode: "none" }));
-    assert.equal(r.body.code, "grounding_failed"); assert.equal(h.data.usage_events_json, undefined);
+    assert.equal(r.response.status, 200); assert.equal(r.body.sections[0].body, "A planning checklist is being tested with five designers.");
+    assert.ok(!JSON.stringify(r.body).includes(text)); assert.equal(h.calls.length, 3);
+    const metrics = h.data.generation_reservations_json[0].pipelineAudit.metrics;
+    assert.deepEqual(metrics.map(m => m.kind), ["draft", "review", "correction", "revalidation", "save"]);
+    assert.equal(h.data.usage_events_json.length, 1);
   }
 });
 test("whole-pack contradiction information is present even when conflicting unit is outside this batch", () => {

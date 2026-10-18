@@ -30,7 +30,7 @@ export async function POST(nextRequest: NextRequest) {
     return NextResponse.json({ error: "Your account session changed. Reload the page or sign in again before continuing.", code: "account_changed" }, { status: 409 });
   }
   let request: GenerationInput;
-  if (!isTextGenerationEnabled()) {
+  if (!isTextGenerationEnabled(user.id)) {
     return NextResponse.json({ error: TEXT_GENERATION_PAUSED_MESSAGE, code: "text_generation_paused" }, {
       status: 503, headers: { "Cache-Control": "no-store" }
     });

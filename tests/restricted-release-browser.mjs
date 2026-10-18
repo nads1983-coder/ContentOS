@@ -6,10 +6,12 @@ import {pathToFileURL} from "node:url";
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE?pathToFileURL(process.env.PLAYWRIGHT_MODULE).href:"playwright");
 for(const f of [".env",".env.local",".env.production",".env.production.local"])assert.equal(existsSync(f),false);
 const base="http://127.0.0.1:3226",artifact="/tmp/contentos-restricted-release-browser";
+const mode=process.env.CONTENTOS_TEXT_GENERATION_MODE||"paused";
+assert.ok(["paused","pilot"].includes(mode));
 mkdirSync(artifact,{recursive:true});
 const server=spawn(process.execPath,["node_modules/next/dist/bin/next","start","--hostname","127.0.0.1","--port","3226"],{
  env:{PATH:process.env.PATH,HOME:process.env.HOME,NODE_ENV:"production",BETTER_AUTH_URL:base,NEXT_PUBLIC_APP_URL:base,
-  NEXT_PUBLIC_SITE_URL:base,CONTENTOS_TEXT_GENERATION_MODE:"paused"},stdio:"ignore"});
+  NEXT_PUBLIC_SITE_URL:base,CONTENTOS_TEXT_GENERATION_MODE:mode},stdio:"ignore"});
 let browser;
 try{
  let ready=false;
@@ -23,7 +25,7 @@ try{
   await page.setViewportSize({width,height:900});await page.goto(`${base}/studio`);
   await page.getByLabel("What would you like to create?").fill("Synthetic manual content, no provider request.");
   assert.ok(await page.getByRole("button",{name:"Generate content pack",exact:true}).isDisabled());
-  assert.match(await page.getByRole("complementary",{name:"Service availability"}).innerText(),/AI text generation is temporarily unavailable/);
+  assert.match(await page.getByRole("complementary",{name:"Service availability"}).innerText(),mode==="pilot"?/AI text generation is available only to approved pilot accounts/:/AI text generation is temporarily unavailable/);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   await page.screenshot({path:`${artifact}/studio-${width}.png`,fullPage:true});
  }
@@ -47,6 +49,6 @@ try{
  assert.equal(await page.getByRole("link",{name:"Claim Founder Access",exact:true}).count(),2);
  const unauth=await context.request.post(`${base}/api/generate`,{headers:{Origin:base},data:{}});assert.equal(unauth.status(),401);
  assert.deepEqual(errors,[]);assert.equal(calls,0);
- const result={status:"PASS",widths:[1440,768,390],checks:["paused generation","no refinement/regeneration HTTP calls","manual editing and undo","text export","draft reload","public availability notices","Founder ACTIVE","direct anonymous auth retained"],pageErrors:0,providerCalls:0,productionChanges:0};
+ const result={status:"PASS",mode,widths:[1440,768,390],checks:["restricted generation","no refinement/regeneration HTTP calls","manual editing and undo","text export","draft reload","public availability notices","Founder ACTIVE","direct anonymous auth retained"],pageErrors:0,providerCalls:0,productionChanges:0};
  writeFileSync(`${artifact}/results.json`,JSON.stringify(result,null,2)+"\n");console.log(JSON.stringify(result));
 }finally{await browser?.close();if(server.exitCode===null){const exit=once(server,"exit");server.kill("SIGTERM");await exit;}}

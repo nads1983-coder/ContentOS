@@ -1,0 +1,108 @@
+{
+  "mode": "OFFLINE ONLY: 3 unchanged live responses + 11 explicit mock review responses",
+  "paidCalls": 0,
+  "newSpend": 0,
+  "capturedFiles": {
+    "docs/benchmarks/acceptance-continuation-rc717-2026-10-18/execution.json": "16c08b955865f0cb81befbea051993f1ceec246d82a9727db3197ff4e1ea8ef9",
+    "docs/benchmarks/acceptance-continuation-rc717-2026-10-18/raw-draft.json": "768d810e2079b0e7f0e56a8775772367fee2013e2354e35f9c12af4e6fef85b2",
+    "docs/benchmarks/acceptance-continuation-rc717-2026-10-18/brief.json": "5d714aa944a2c780856c970f4b58786476c3185d05d38b39caed968b72cf0ddc",
+    "docs/benchmarks/acceptance-final-a7cd-2026-10-18/execution.json": "033435a2212d6377d8d3e757e1396b1b177147a1b4de11d4557e48a10bcd8db5",
+    "docs/benchmarks/acceptance-final-a7cd-2026-10-18/raw-draft.json": "768d810e2079b0e7f0e56a8775772367fee2013e2354e35f9c12af4e6fef85b2",
+    "docs/benchmarks/acceptance-final-a7cd-2026-10-18/brief.json": "5d714aa944a2c780856c970f4b58786476c3185d05d38b39caed968b72cf0ddc",
+    "docs/benchmarks/acceptance-recovery-d423-2026-10-18/execution.json": "054ff3865981ccfac2da823c5081b5fd6f64db4bba3f3967de98fc99bd377f51",
+    "docs/benchmarks/acceptance-recovery-d423-2026-10-18/raw-draft.json": "768d810e2079b0e7f0e56a8775772367fee2013e2354e35f9c12af4e6fef85b2",
+    "docs/benchmarks/acceptance-recovery-d423-2026-10-18/brief.json": "5d714aa944a2c780856c970f4b58786476c3185d05d38b39caed968b72cf0ddc"
+  },
+  "preservedDraftHash": "9b4037c2e06bf366c29814dc602ef96de599f47c45ce0baa5bbfc22824f7da08",
+  "capturedDecisions": 144,
+  "serverDowngradedToCorrection": [
+    "u117",
+    "u128"
+  ],
+  "correctedNounClassification": "u124",
+  "unsafeTitleRepairReplacedWithFormatLabel": "u121",
+  "formats": 14,
+  "initialCoverage": 307,
+  "freshCoverage": 307,
+  "correctionPasses": 1,
+  "history": 1,
+  "successfulUsage": 1,
+  "duplicateCharge": 0,
+  "elapsedOfflineMs": 6693.877834000001,
+  "payloads": [
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "serializedBytes": 54275
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "serializedBytes": 54652
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "serializedBytes": 54421
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "serializedBytes": 54611
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "serializedBytes": 54592
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "serializedBytes": 55247
+    },
+    {
+      "pass": "initial_review",
+      "units": 19,
+      "serializedBytes": 50061
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "serializedBytes": 54367
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "serializedBytes": 54775
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "serializedBytes": 54510
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "serializedBytes": 54704
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "serializedBytes": 54646
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "serializedBytes": 55337
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 19,
+      "serializedBytes": 50154
+    }
+  ],
+  "limitations": [
+    "No new live provider execution or final independent live-content assessment.",
+    "Mechanical reviews establish orchestration, not semantic accuracy or live latency."
+  ]
+}

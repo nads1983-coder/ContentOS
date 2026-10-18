@@ -7,6 +7,7 @@ import { request as classificationRequest, draft as classificationDraft, classif
 import { request as scopeRequest, draft as scopeDraft, scopeResponse } from "./scope-capture-helpers.mjs";
 import { request as parentheticalRequest, draft as parentheticalDraft, seedCapturedDraft, parentheticalResponse } from "./parenthetical-capture-helpers.mjs";
 import { finalClassificationResponse } from "./final-classification-capture-helpers.mjs";
+import { disagreementResponse } from "./review-disagreement-capture-helpers.mjs";
 import { validateImageIsolatedEnvironment } from "./image-isolated.mjs";
 
 // Opt-in, existing isolated Neon only. No auth records, mail, Stripe or provider calls.
@@ -75,7 +76,8 @@ try {
   row = await read(crash); assert.equal(row.generation_reservations_json[0].pipeline.reservedMicroUsd, started.stage.reservedMicroUsd);
   checks.push("crash/lost result becomes terminal uncertainty with nonrefunded spending and no lease takeover");
   const capturedResults = [];
-  const finalClassification = process.argv.includes("--only-final-classification");
+  const disagreement = process.argv.includes("--only-disagreement");
+  const finalClassification = process.argv.includes("--only-final-classification") || disagreement;
   const packs = [...(process.argv.includes("--only-parenthetical") || finalClassification ? [] : captured), ...(process.argv.includes("--include-classification") ? [{ id: "ShelfNotes", request: classificationRequest, result: classificationDraft }] : []),
     ...(process.argv.includes("--include-scope") ? [{id:"Fieldline",request:scopeRequest,result:scopeDraft}] : []),
     ...(process.argv.includes("--only-parenthetical") || finalClassification ? [{id:"Orin",request:parentheticalRequest,result:parentheticalDraft}] : [])];
@@ -94,7 +96,7 @@ try {
         assert.notEqual(admitted.progress.status, "failed"); expected = admitted.progress.nextStage; continue;
       }
       calls++;
-      const providerStarted = performance.now(), response = pack.id === "Orin" ? (finalClassification ? finalClassificationResponse : parentheticalResponse)(admitted.stage.payload) : pack.id === "Fieldline" ? scopeResponse(admitted.stage.payload) : pack.id === "ShelfNotes" ? classificationResponse(admitted.stage.payload) : captureResponse(pack, admitted.stage.payload);
+      const providerStarted = performance.now(), response = pack.id === "Orin" ? (disagreement ? disagreementResponse : finalClassification ? finalClassificationResponse : parentheticalResponse)(admitted.stage.payload) : pack.id === "Fieldline" ? scopeResponse(admitted.stage.payload) : pack.id === "ShelfNotes" ? classificationResponse(admitted.stage.payload) : captureResponse(pack, admitted.stage.payload);
       const progress = await repository.checkpointTextGenerationStage(target, request.requestId, admitted.fingerprint,
         admitted.stage, request, response, performance.now() - providerStarted);
       assert.notEqual(progress.status, "failed"); expected = progress.nextStage;
@@ -112,7 +114,7 @@ try {
       correctionStages: saved.generation_reservations_json[0].pipelineAudit.metrics.filter(m => m.kind === "correction").length,
       fullRevalidationBatches: saved.generation_reservations_json[0].pipelineAudit.metrics.filter(m => m.kind === "revalidation").length,
       formats: 14, finalHistoryEntries: 1, successfulUsageEvents: 1, duplicateSaveAddedEntries: 0,
-      capturedReviewReceipts: pack.id === "Orin" ? (finalClassification ? 2 : 1) : 0, timings });
+      capturedReviewReceipts: pack.id === "Orin" ? (disagreement ? 3 : finalClassification ? 2 : 1) : 0, timings });
     checks.push(`${pack.id}: captured 14-format pack persisted once with real isolated row locks and mocked review certificates`);
   }
   writeFileSync(process.argv.find(a => a.startsWith("--report="))?.slice(9) ?? "/tmp/contentos-isolated-delivery.json", JSON.stringify({

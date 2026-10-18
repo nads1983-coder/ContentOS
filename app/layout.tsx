@@ -81,8 +81,10 @@ export default function RootLayout({
       <body>
         {!isTextGenerationEnabled() ? (
           <aside aria-label="Service availability" className="border-b border-amber-300/30 bg-black px-4 py-3 text-center text-sm text-amber-100">
-            <strong>Restricted release. </strong>{TEXT_GENERATION_PAUSED_MESSAGE}
-            {" "}Subscription text allowances cannot be used during this pause.
+            <strong>Restricted release. </strong>{process.env.CONTENTOS_TEXT_GENERATION_MODE === "pilot"
+              ? "AI text generation is available only to approved pilot accounts. Existing content and saved drafts remain available."
+              : TEXT_GENERATION_PAUSED_MESSAGE}
+            {" "}Public subscription text allowances cannot be used while access is restricted.
           </aside>
         ) : null}
         {children}

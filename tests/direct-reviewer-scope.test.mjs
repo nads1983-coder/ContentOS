@@ -128,8 +128,15 @@ for (const pair of fixture.pairs) {
     const request = requestFor(pair), result = packFor(request, pair.unsupported.text);
     const batch = b.groundingBatch(result, request, 0, 0);
     const decisions = certificates(batch.units, batch.context.sources, pair, "tampered");
-    assert.throws(() => b.parseBatchReview(encode(decisions), batch), g.GroundingError,
-      `Wrong supported certificate bypass: ${pair.boundary}: ${pair.unsupported.text}`);
+    let rejected = false;
+    try {
+      const parsed = b.parseBatchReview(encode(decisions), batch);
+      const body = batch.units.find(u => u.path === "sections.0.body");
+      const repair = parsed.decisions.find(d => d.id === body.id);
+      rejected = repair.kind === "unsupported" && repair.replacement !== body.text;
+    } catch (error) { assert.ok(error instanceof g.GroundingError); rejected = true; }
+    assert.ok(rejected, `Wrong supported certificate bypass: ${pair.boundary}: ${pair.unsupported.text}`);
+    assert.throws(() => b.parseBatchReview(encode(decisions), { ...batch, pass: 1 }), g.GroundingError);
   });
 }
 

@@ -59,6 +59,7 @@ export function harness(options = {}) {
   };
   const runtime = { process: { env: options.noKey ? {} : { OPENAI_API_KEY: "offline-synthetic-not-a-key", ...(options.model ? { OPENAI_MODEL: options.model } : {}) } } };
   if (options.textGenerationMode !== undefined) runtime.process.env.CONTENTOS_TEXT_GENERATION_MODE = options.textGenerationMode;
+  if (options.pilotAccounts !== undefined) runtime.process.env.CONTENTOS_TEXT_GENERATION_PILOT_ACCOUNTS = options.pilotAccounts;
   h.setTextGenerationMode = mode => { runtime.process.env.CONTENTOS_TEXT_GENERATION_MODE = mode; };
   h.load = file => loadTs(file, mocks, cache, runtime);
   h.repository = h.load("lib/postgres-repository.ts");

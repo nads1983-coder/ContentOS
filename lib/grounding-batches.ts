@@ -19,7 +19,7 @@ export function groundingBatch(result: GenerationResult, request: GenerationInpu
     units: units.map(u => ({ id: u.id, path: u.path, text: u.text,
       ...(u.annotations ? { annotations: u.annotations } : {}), ...reviewEligibility(u, context), findings: deterministicIssues(u, context) }))
   });
-  return { context, all, units, input, count: Math.ceil(all.length / REVIEW_BATCH_SIZE) };
+  return { context, all, units, input, pass, count: Math.ceil(all.length / REVIEW_BATCH_SIZE) };
 }
 
 export const batchReviewInstructions = groundingReviewInstructions
@@ -54,5 +54,5 @@ export function parseBatchReview(text: string, batch: ReturnType<typeof groundin
     });
     return { id: d.id, kind: d.kind, reason: d.reason, replacement: d.replacement, references };
   });
-  return parseGroundingReview(JSON.stringify({ decisions }), batch.units, batch.context);
+  return parseGroundingReview(JSON.stringify({ decisions }), batch.units, batch.context, batch.pass === 0);
 }

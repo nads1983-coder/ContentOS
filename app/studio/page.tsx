@@ -128,7 +128,7 @@ export default async function StudioPage() {
       accountId={initialState.accountId}
       authenticated={initialState.authenticated}
       initialUsage={initialState.usage}
-      textGenerationEnabled={isTextGenerationEnabled()}
+      textGenerationEnabled={isTextGenerationEnabled(initialState.accountId)}
     />
   );
 }

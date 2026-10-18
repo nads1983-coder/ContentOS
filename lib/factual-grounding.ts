@@ -3,6 +3,7 @@ import type { GenerationInput } from "@/lib/generation-contract";
 import type { GenerationResult } from "@/types/content";
 import { hasNoCtaInstruction } from "@/lib/cta-policy";
 import { scopeFindings } from "@/lib/claim-scope";
+import { contentTypes } from "@/lib/content-config";
 export { hasNoCtaInstruction } from "@/lib/cta-policy";
 
 export const GROUNDING_LIMITS = {
@@ -257,7 +258,7 @@ export function claimCategories(text: string): GroundingReason[] {
   // A product-noun phrase before a nominal modifier/predicate is not the teaching
   // verb "covers". Mask only that occurrence for curriculum classification;
   // other curriculum verbs, facts, prices and promises retain every check.
-  const curriculumText = text.replace(/\b(?:cushion|duvet|pillow|outer|inner|fabric) covers?\b(?=\s*(?:[,.!?;:]|$|\b(?:starts?|ends?|feels?|looks?|seems?|remains?|comes?|has|have|needs?|requires?|with|without|for|of|in|on|at)\b))/gi,
+  const curriculumText = text.replace(/\b(?:cushion|duvet|pillow|outer|inner|fabric) covers?\b(?=\s*(?:[,.!?;:]|$|\b(?:patterns?|ranges?|designs?|starts?|ends?|feels?|looks?|seems?|remains?|comes?|has|have|needs?|requires?|with|without|for|of|in|on|at)\b))/gi,
     (phrase, offset: number) => /\b(?:course|class|workshop|training|lesson|module|curriculum)s?\b/i.test(text.slice(0, offset).split(/[.!?;\n]/).at(-1) ?? "")
       ? phrase : phrase.replace(/covers?$/i, "item"));
   return (Object.entries(categoryPatterns) as Array<[GroundingReason, RegExp]>).filter(([category, pattern]) =>
@@ -434,7 +435,8 @@ export function reviewEligibility(unit: GroundingUnit, context: GroundingContext
   };
 }
 
-export function parseGroundingReview(text: string, units: GroundingUnit[], context: GroundingContext): GroundingReview {
+export function parseGroundingReview(text: string, units: GroundingUnit[], context: GroundingContext,
+  correctInitialDisagreements = false): GroundingReview {
   if (new TextEncoder().encode(text).byteLength > GROUNDING_LIMITS.reviewBytes) throw new GroundingError();
   let parsed: unknown;
   try { parsed = JSON.parse(text); } catch { throw new GroundingError(); }
@@ -463,6 +465,7 @@ export function parseGroundingReview(text: string, units: GroundingUnit[], conte
     if (reviewEligibility(unit, context).requiresSources && !references.length) throw new GroundingError();
     // Reject counterfeit certificates rather than trusting the reviewer's label.
     const assessed = assessmentText(unit);
+    try {
     if (deterministicIssues(unit, context).length) throw new GroundingError();
     if (decision.kind === "supported") {
       if (!references.length || numbers(assessed).some(n => !numbers(references.map(r => r.quote).join("\n"), true).includes(n))) throw new GroundingError();
@@ -502,6 +505,26 @@ export function parseGroundingReview(text: string, units: GroundingUnit[], conte
       // Optional illustrations may mention source facts but must not be a back door for measurable claims.
       throw new GroundingError();
     }
+    } catch (error) {
+      // An initial supported certificate can disagree with the local guards.
+      // Do not approve it: use the existing correction stage with an exact brief
+      // statement, then require a completely fresh review. Never repair malformed
+      // references, absent evidence, creative claims or final-review certificates.
+      if (!(error instanceof GroundingError) || !correctInitialDisagreements || decision.kind !== "supported") throw error;
+      for (const reference of references) {
+        const source = context.sources.find(s => s.id === reference.sourceId)!;
+        if (source.origin !== "brief" || source.text !== reference.quote) continue;
+        const replacement = source.text;
+        const candidate = { id: unit.id, path: unit.path, text: replacement, start: 0, end: replacement.length };
+        try {
+          parseGroundingReview(JSON.stringify({ decisions: [{ ...decision, references: [reference] }] }), [candidate], context);
+        } catch { continue; }
+        const prefix = certifiedAnnotations.get(unit)?.find(([start]) => start === 0);
+        return { id: unit.id, kind: "unsupported", reason: "missing_evidence", references: [reference],
+          replacement: (prefix ? unit.text.slice(0, prefix[1]) : "") + replacement };
+      }
+      throw error;
+    }
     return decision;
   });
   return { decisions };
@@ -525,6 +548,17 @@ export function repairGrounding(result: GenerationResult, units: GroundingUnit[]
   })) };
   const parsed = parseGenerationOutput(JSON.stringify(candidate), request);
   const context = buildGroundingContext(request);
+  // A reviewer's proposed title repair can still contain unsupported claims.
+  // A trusted format label is a bounded, fact-free fallback, not a certificate.
+  // Do not replace bodies, untouched titles or other business copy this way.
+  const repairedTitles = new Set(units.filter(u => replacements.has(u.id) && /^sections\.\d+\.title$/.test(u.path)).map(u => u.path));
+  for (const unit of groundingUnits(parsed)) {
+    if (!repairedTitles.has(unit.path) || !deterministicIssues(unit, context).length) continue;
+    const section = parsed.sections[Number(unit.path.split(".")[1])];
+    const format = contentTypes.find(type => type.id === section.type);
+    if (!format) throw new GroundingError("unresolved_claims");
+    section.title = format.label;
+  }
   // Validate in the rebuilt pack, not against stale annotations/offsets. This
   // catches unsafe replacement claims before buying a fresh model review.
   if (groundingUnits(parsed).some(unit => deterministicIssues(unit, context).length)) throw new GroundingError("unresolved_claims");
