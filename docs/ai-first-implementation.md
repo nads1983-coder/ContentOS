@@ -1,6 +1,6 @@
 # AI-first Studio implementation and release review
 
-Date: 2026-10-18. This branch is a reviewable preview, not a production rollout. Current launch verdict and executed evidence: [release gates](release-gates-2026-10-18.md). Live provider benchmarking remains blocked.
+Date: 2026-10-18. This branch is a reviewable preview, not a production rollout. Current launch verdict and executed evidence: [release gates](release-gates-2026-10-18.md). The authorized live benchmark and corrected-prompt recheck ran; persistent factual-grounding defects keep the verdict NO-GO.
 
 ## Verified baseline and boundaries
 
@@ -65,6 +65,10 @@ The suite executes generation/workspace/billing routes with mocked provider boun
 
 Authenticated browser checks use the local production build with isolated Neon and real login/cloud persistence. Text-provider output is mocked; the actual image route runs its credential-free template fallback. All 14 format selections, two-device hydration, stale-account rejection, responsive image rendering and download are exercised. These tests do not establish live AI quality or email delivery. Final command totals, accessibility follow-up and preview status are recorded in the release report rather than inferred from earlier 115-test checkpoints.
 
-The authorized paired live AI evaluation remains blocked. The guarded six-call runner is ready, but the existing OpenAI Secret is not accessible through the supported local runtime path; the owner declined making it available locally. No paid calls ran and no replacement key was created. Seven development-only dependency findings share an unpatched `braces` advisory; production dependency audit is clean. No unsafe major upgrade, incompatible downgrade, audit suppression or fake version override was applied. Image JSON mutation amplification, bounded identity capacity, text tombstone growth, email deliverability and production ingress behavior remain documented limitations.
+The authorized paired live AI evaluation completed six requests plus three separately approved corrected-candidate requests with the existing Vercel Secret in one-shot protected Preview builds, without local key export. All 14 formats were returned in every pack; all six original/corrected candidate outputs passed the strict structural contract. Usage-derived total cost was USD 0.50587425 (about GBP 0.38); the GBP 5 ceiling was not increased. The isolated ledger permanently retains GBP 4.804294 of conservative reservations. Both temporary deployments/staging were removed, runner access revoked, and all nine audit rows preserved. No production change or customer data access occurred.
+
+Blind editorial review found unsupported claims/offers and an engagement question in No CTA content despite successful generation and schema validation. Prompt mitigations strengthen numerical/offer/source grounding, audience-ready copy and No CTA precedence. Two instruction-delivery tests and the 249-test suite pass, but the live follow-up still invented class curriculum and converted class duration into a completion promise. No quality pass is claimed from schema or test success. Further grounding work and a newly authorized bounded evaluation are required; PR #3 remains draft. See the release and quality reports for measured performance and remaining blockers.
+
+Seven development-only dependency findings share an unpatched `braces` advisory; production dependency audit is clean. No unsafe major upgrade, incompatible downgrade, audit suppression or fake version override was applied. Image JSON mutation amplification, bounded identity capacity, text tombstone growth, email deliverability and production ingress behavior remain documented limitations.
 
 Keep PR #3 in draft. No production promotion is requested until these gates are resolved and the owner explicitly approves deployment.

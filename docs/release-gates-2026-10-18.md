@@ -4,9 +4,9 @@ Date: 2026-10-18. Repository `nads1983-coder/ContentOS`, existing branch `feat/a
 
 ## Verdict: NO-GO
 
-Keep PR #3 in draft. The feasible implementation and isolated correctness gates pass, but the requested live baseline/candidate AI evaluation cannot run through the currently available secure credential path. No claim of improved writing quality, originality, latency, reliability or measured generation cost is supported. Actual benchmark calls: **0**. Actual API spend: **GBP 0 of GBP 5 authorized**.
+Keep PR #3 in draft. Secure access is resolved, but **the corrected-prompt live recheck still failed factual grounding**. Six original paired requests plus three separately approved corrected-candidate requests completed with no provider failure, uncertainty or retry. Usage-derived total cost was **USD 0.50587425, approximately GBP 0.3817327 of GBP 5 authorized**. The conservative permanent spending reservation is GBP 4.804294; measured lower cost does not replenish it.
 
-The existing Vercel OpenAI Secret is configured. Connector access is denied and the supported CLI runtime-injection command fails locally. The owner declined making the key available in a local environment. No key was printed, committed, newly created or copied into source. The guarded runner can execute once a supported existing-secret runtime path is available, without changing production credentials. No further manual key-copy request is required for this release report.
+The owner approved one protected temporary Preview and then one follow-up. Both one-shot builds accessed the existing OpenAI Secret securely in Vercel, without exporting it. A restricted atomic ledger on the existing isolated Neon branch enforced cumulative admission. Both temporary deployments/staging were removed; the runner role is disabled/revoked and all nine audit rows remain. No new OpenAI key/account, service or Vercel project was created.
 
 ## Completed Corrections
 
@@ -19,12 +19,14 @@ The existing Vercel OpenAI Secret is configured. Connector access is denied and 
 - Stripe signatures require freshness and support rotated v1 signatures. A delayed subscription deletion cannot replace a newer subscription under the row lock. Verified Founder/manual lifetime guards remain intact. Billing logs no longer print customer/session/account identifiers or raw errors.
 - Passive device hydration no longer increments workspace revisions. Workspace uploads have a body deadline. Formatter navigation, filter selection semantics, zoom metadata, mobile menu Escape and native image-dialog keyboard behavior were corrected from observed usability failures.
 - All 14 text formats, AI refinements, manual editing, undo, exports, image controls and existing plan entitlements remain. No runtime dependency, paid service, database schema or migration was added.
+- Added isolated operator-only benchmark scripts and 18 additional unit tests, plus 18 real-Neon ledger checks. This creates only a dedicated benchmark schema on the existing temporary branch, not an application or production migration. Scripts expose no HTTP endpoint and are not part of the app build.
+- Added prompt mitigations for source-number meaning, unsupported personal experience/offers/curriculum, publisher-facing commentary and No CTA precedence, with two instruction-delivery tests. These improved some live defects but did not fully resolve factual grounding; no successful final quality gate is claimed.
 
 ## Executed Validation
 
 | Gate / command | Result and scope |
 | --- | --- |
-| `npm test` | PASS, 229/229, no skipped tests. Real route/helper logic with isolated mocks, including provider failures, replay, billing/lifetime, auth/reset faults, benchmark guard and read projection. |
+| `npm test` | PASS, 249/249, no skipped tests, rerun after the final prompt and follow-up ledger changes. Real route/helper logic with isolated mocks, including provider failures, replay, billing/lifetime, auth/reset faults, benchmark guard and read projection. |
 | `npm run typecheck` | PASS. |
 | `npm run lint` | PASS. |
 | `npm run build` | PASS, Next.js 16.3.8, 51 generated pages. |
@@ -32,6 +34,10 @@ The existing Vercel OpenAI Secret is configured. Connector access is denied and 
 | `npm audit --omit=dev --json` | PASS, zero findings. |
 | `npm audit --json` | Exit 1, seven high development-only findings; intentionally not reported as a pass. |
 | `node scripts/benchmark-content.mjs --dry-run` | PASS, no network/provider calls; fixed default-tier gpt-5.2, six-request maximum GBP 3.413760 conservative reservation. 19 guard tests pass. |
+| `node --test tests/benchmark-preview.test.mjs tests/benchmark-budget.test.mjs` | PASS, 37/37, including 18 signed-manifest/runtime/atomic-dispatch/follow-up/failure tests. |
+| Isolated benchmark ledger test | PASS, 18 real PostgreSQL checks: restricted access, null-safe binding, rollback, concurrent admission, uncertainty, durability, idempotency, expiry, exact/cumulative caps, prior-row preservation, old-job refusal and automatic close. |
+| Temporary benchmark dependencies | PASS, locked pg-only staging dependency audit, zero advisories; install scripts disabled. |
+| Live paired benchmark and follow-up | 9/9 completed, 126 sections across all 14 formats. Original/corrected candidate contract acceptance 6/6. Factual-quality gate FAIL; see below. |
 | `tests/auth-isolated.mjs --browser --reset-faults` | PASS against existing isolated Neon and local production build, real Better Auth and PostgreSQL. See below. |
 | `tests/image-isolated.mjs` | PASS, nine real-Neon checks; eight synthetic profiles cleaned up. |
 | `npm run test:browser` with localhost:3212 | PASS, four mocked responses; manual edits, undo, targeted refinement, source retention, TXT export, injected failure/new-attempt recovery and local draft reload; 1440/768/390 widths; zero unexpected errors. |
@@ -54,11 +60,35 @@ A synthetic one-million-character SVG produced a full serialized JSON document o
 
 Automated fixtures retain exact FOUNDING100 promotion enforcement, paid/already-Founder refusal, persistent claim coordination, permanent-versus-retryable webhook responses, repeated activation convergence and lifetime preservation after cancellation. New tests cover rotated/stale signatures and reordered recurring deletion. No live checkout, redemption, payment, cancellation, webhook replay or customer entitlement write was used as validation.
 
-## AI Benchmark Findings and Blocker
+## AI Benchmark Evidence
 
-Three paired synthetic briefs are prepared, each requesting all 14 formats from baseline and candidate. Maximum six attempts, including errors; no AI judge, image call or retry. Fixed model/default service tier, token/byte limits, conservative currency/pricing allowance, durable pre-call reservations and exclusive ledger locking bound spend below GBP 5. The live ledger has not been initialized and no paid calls ran.
+Three paired synthetic briefs requested all 14 formats from actual baseline/candidate prompt and schema modules. Fixed gpt-5.2/default tier, 24,000 output-token cap, 90-second deadline, no tools/images, no automatic retry and no API judge calls. Execution window: 2026-10-18 07:47:02-07:51:04 UTC. All six calls completed, returning 42 baseline and 42 candidate sections. All three candidate outputs passed the current strict contract; baseline outputs did not pass the new contract, which is not evidence that their old parser would fail.
 
-All formats have **not measured** live quality, originality, brand consistency, latency, failure rate and actual cost. Strict structural fixtures are not a substitute. Shared all-format-pack cost/time will be reported per pack rather than invented per-format allocations. See [quality evaluation](ai-quality-evaluation.md) for the rubric, source hashes and operational caveats. Minimum unblock: a functioning supported runtime path to the existing authorized project key, without pasting it in chat or creating a replacement secret.
+Candidate median pack latency was 43.474 seconds versus 37.797 baseline (15.0% slower in this small sample). Aggregate candidate cost USD 0.16436175 versus USD 0.16534175 baseline (0.59% lower). Total usage 14,386 input / 21,752 output tokens, zero cached input; estimated total GBP 0.2487943 at the documented reference rate. This is token-priced usage, not an invoice/tax reconciliation. No per-format latency/cost allocation is invented. Six successes do not certify a population reliability rate. See [quality evaluation](ai-quality-evaluation.md) for exact results, rubric and limitations.
+
+The original blind review scored 84/84 rows: baseline mean 12.31/20, original candidate 13.60/20. Higher averages did not override critical factual/CTA defects. After prompt mitigation, the separately approved recheck completed 42 corrected sections: contract 3/3, median 49.024 seconds, aggregate USD 0.17617075. Across both runs: 23,927 input and 33,143 output tokens; zero cached input, retries or uncertainty. The follow-up is an unblinded failure recheck on known briefs, not a new blind or held-out score.
+
+### Secure Execution and Cleanup
+
+Earlier read-only investigation resolved the CLI launch issue but found that Vercel Secret values are withheld from local `env run`. The owner declined local key sharing. No secret export or replacement was used. After explicit Preview authorization:
+
+- Reverified existing project and unchanged Vercel SSO protection. One seven-file, pg-only temporary build in `content-os` used the existing Preview OpenAI credential in memory, with no application imports or execution endpoint. Unauthenticated access returned 302 to `vercel.com/sso-api`.
+- Exact signed payloads, project/environment/endpoint checks, role privilege checks and immutable campaign/job hashes precede dispatch. Atomic PostgreSQL admission permanently reserves each worst-case attempt before networking; SQL transactions end before the API call. Unknown outcomes cannot be refunded or retried. SQL NULL comparison defects found during review were fixed and tested before any paid call.
+- The dedicated runner role cannot read auth/application schemas or directly manipulate ledger tables. Function access is limited to campaign inspection, admission, completion and disable; no reset/enable path is exposed. A three-hour expiry, automatic terminal disable and fail-closed state prevent restart/replay spend.
+- After six completions, campaign `enabled=false`, reason `complete`, reservation GBP 3.413760. Cleanup disabled login, revoked function/schema access and terminated runner sessions. Audit rows and private synthetic evidence remain on the existing temporary branch; no customer tables were queried.
+- Temporary deployment `dpl_2GMMCWAogi3bou5Mv5jCkqmnwcVC` reached READY, was removed, and returned 404 afterward. Local staging and revoked credential file were removed. No benchmark runtime endpoint or deployment remains. The existing application preview and production were untouched.
+- Separately approved follow-up `dpl_FppXMhbcY1DMRwB4m6GaF41ApMo5` also reached READY, was removed and returned 404. Its exact-byte reservations append to the original six; cumulative GBP 4.804294 remains recorded. The continuation authorization retains original completion metadata. Cleanup again revoked/disabled the role and terminated sessions; staging/credential files were removed. All nine rows remain and the campaign is disabled.
+
+The GBP 5 ceiling was not increased. Prompt corrections were made after the observed live defects, so full tests, typecheck, lint, build and production dependency audit were rerun. Earlier isolated auth/image/browser evidence remains scoped to those unchanged subsystems and is not represented as a new execution.
+
+### Remaining Quality Blocker
+
+Prompt mitigations explicitly preserve the meaning of source numbers; prohibit invented timings, personal success, extra offers and unlabeled curriculum; and make No CTA override platform engagement guidance. Mocked assertions verify instruction delivery, not model compliance. The live follow-up resolved earlier engagement questions, timing inventions and extra fulfillment promises in several places, but two reviewers independently confirmed remaining material failures:
+
+- The fictional class's 45-minute duration becomes a promise to organize the workspace in 45 minutes in an email subject and CTA option.
+- The model invents specific storage-zone assignments and presents them as curriculum, across thread, script, carousel and repurposed carousel.
+
+Publisher-facing CTA instructions and categorical population claims also remain editorial risks. Stronger prompts alone did not establish a pass. Keep the tested mitigation but do not promote this branch until a grounding/claim-validation correction is implemented and verified with a newly authorized controlled evaluation. No budget increase was made. Only GBP 0.195706 of conservative reservation headroom remains; the lower measured cost is not authorization to erase reservations or keep calling the provider. Neither a third benchmark Preview nor more provider calls were authorized or created.
 
 ## Residual Risks and Boundaries
 

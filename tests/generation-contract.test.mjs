@@ -200,3 +200,26 @@ test("prompt fixtures encode untrusted source and retain source-first refinement
   assert.match(buildInstructions(), /Do not invent statistics/);
   for (const { id } of contentTypes) assert.ok(buildInput(request([id])).includes(`- ${id}:`));
 });
+
+test("No CTA prompt overrides engagement guidance across all 14 formats", () => {
+  const prompt = buildInput(request(contentTypes.map(({ id }) => id), { ctaMode: "none" }));
+  assert.match(prompt, /Do not ask readers questions or solicit replies/);
+  assert.match(prompt, /platform conventions never override this rule/);
+  assert.match(prompt, /engagement prompts belong only in cta when the selected mode allows them/);
+  assert.match(buildInstructions(), /Questions addressed to the reader are engagement CTAs/);
+  for (const { id } of contentTypes) assert.ok(prompt.includes(`- ${id}:`));
+});
+
+test("live-benchmark grounding corrections constrain timings, experience and extra offers", () => {
+  const system = buildInstructions();
+  assert.match(system, /45-minute class is not a promise to finish a task in 45 minutes/);
+  assert.match(system, /Do not turn a proposed pilot into first-person success/);
+  assert.match(system, /An offer name alone does not establish public distribution/);
+  assert.match(system, /clearly labeled as optional examples/);
+  assert.match(system, /never assistant offers/);
+  for (const ctaMode of ["soft", "product", "website"]) {
+    const prompt = buildInput(request(["hooks", "repurposePack"], { ctaMode }));
+    assert.match(prompt, /Audit hooks, titles and subject lines as strictly as body copy/);
+    assert.match(prompt, /without inventing extra services, fulfillment promises/);
+  }
+});

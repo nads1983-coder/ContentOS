@@ -2,7 +2,7 @@
 
 ## Scope and baseline
 
-This is an offline structural and prompt-contract evaluation, not a live model benchmark. No provider calls, credentials, production changes, or customer content were used. No claim is made about improved live writing quality, factual accuracy, conversion, latency, or refusal rate.
+The original sections below describe offline structural/prompt-contract evaluation. The live evaluation adds six paired requests and three separately authorized corrected-candidate requests with synthetic briefs on 2026-10-18. Production and customer content were not used. The small sample does not certify conversion, originality, factual accuracy or population failure rates.
 
 The inspected baseline accepted any nonempty subset of requested sections. It could infer a missing type from array position, return duplicate types or empty copy, silently discard malformed items, truncate source/context, and replace deficient Instagram/TikTok captions with source text. Its schema did not constrain the requested type enum or exact count. The route did not set an explicit output token budget, timeout, or retry policy.
 
@@ -48,7 +48,7 @@ These fixtures demonstrate deterministic acceptance/rejection behavior only. The
 - Schema validity cannot prove factuality, usefulness, originality, platform fit, or prompt-injection resistance. Labeled assets can still be thin or repetitive. No CTA body/items semantics are prompt-enforced, while the dedicated CTA field is cleared deterministically.
 - A malformed provider response is rejected rather than repaired or retried automatically. This may increase visible failures, which should be measured before release.
 - A large all-format pack may hit the output/time budget. It must fail as incomplete, not return or count a partial pack as successful.
-- No live baseline or candidate samples were scored. A future authorized evaluation should use the same model/settings and blind paired review of source fidelity, unsupported claims, format completeness, channel adaptation, repetition, CTA fit, and refinement meaning preservation.
+- The live evaluation below covers three paired briefs. Refinement meaning preservation and broader multilingual/adversarial behavior still need a larger evaluation; do not generalize this smoke sample to those cases.
 - Include sparse notes, qualified results, multilingual sources, embedded hostile instructions, No CTA mode, and all-format packs in that evaluation. Track acceptance rate, token cost, and latency alongside human quality scores. Human review remains necessary before publication.
 
 ## Focused release audit
@@ -63,18 +63,90 @@ These fixtures demonstrate deterministic acceptance/rejection behavior only. The
 
 ## Authorized Live Benchmark Status
 
-**Not run. Actual calls: 0. Actual API spend: GBP 0.** The existing Vercel OpenAI Secret is configured but unavailable through the supported local execution path. The owner declined making it available locally; no new key, account or service was created. Offline fixture passes are not live quality, reliability, timing or cost results.
+**Original paired run: six of six completed; zero failed, uncertain or retried requests.** Run window: 2026-10-18 07:47:02-07:51:04 UTC. Usage-derived cost: USD 0.3297035, approximately GBP 0.2487943. Including the separately approved follow-up below, **nine of nine completed; total USD 0.50587425, approximately GBP 0.3817327**, excluding account-specific tax/FX adjustments. This is measured token usage priced at published rates, not an independently verified invoice. The GBP 5 authorization was not increased.
 
-`scripts/benchmark-content.mjs --dry-run` prepares three synthetic briefs (qualified pilot, fictional priced launch, sparse notes/No CTA), each once against production baseline `6c75fab8e995e94c53bec400aed01991e1ee0642` and once against this branch. Every request includes all 14 formats. Six total requests is a small smoke comparison, not a statistically reliable failure-rate or originality study. Prompt/schema source hashes and exact payload hashes accompany the plan.
+### Execution and safeguards
 
-The guard fixes `gpt-5.2`, `service_tier: default`, 24,000 maximum output tokens, at most 64,000 serialized UTF-8 input bytes plus a conservative 4,096-token framing allowance, no tools/images/retries, and six durable attempts. Unknown outcomes count at their worst-case price. Exclusive ledger initialization, process locking, fsynced reservations before transport, exact-body validation and fail-closed corrupt/stale state prevent accidental rerun overspend. The ledger is outside Git, never includes the key, and has not been initialized for live use.
+The owner approved one temporary protected Preview in the existing `content-os` project. A one-shot Vercel build used the existing OpenAI Secret in memory; it was never exported locally or committed. The deployment contained no execution endpoint or application/customer repository. Public access redirected to Vercel SSO; protection settings were unchanged.
 
-At the checked standard rates of USD 1.75/million input tokens and USD 14/million output tokens, reserving one input token per UTF-8 byte and applying GBP 1 per USD 1 plus 25% headroom gives a **GBP 0.568960 per-attempt bound, GBP 3.413760 for all six**, below the owner's GBP 5 ceiling. These are conservative reservations, not actual generation costs. See [official model pricing](https://developers.openai.com/api/docs/models/gpt-5.2) and [Bank of England exchange-rate reference](https://www.bankofengland.co.uk/boeapps/database/Rates.asp?into=USD&rateview=A), checked 2026-10-18. Rates and the guarded model must be rechecked before a later execution. A future key-enabled run must keep the same ledger, not initialize replacement budgets.
+An Ed25519-signed three-hour manifest fixed the six exact payloads. The dedicated isolated Neon ledger used atomic row-locked reservations, unique job IDs, null-safe payload/plan hashes and a restricted role with no access to auth/application schemas or direct ledger tables. Each call permanently reserved GBP 0.568960 before dispatch; total **GBP 3.413760** remains recorded, with no refunds. Unknown outcomes stop the campaign; no automatic retry/reset or network-spanning transaction exists. Twelve real isolated PostgreSQL checks and 31 combined benchmark unit tests passed before launch.
 
-| Formats covered by the prepared plan | Baseline/candidate live output | Quality, time, reliability, cost |
-| --- | --- | --- |
-| LinkedIn, Instagram, TikTok, X post, Facebook, YouTube Shorts | Not run | Not measured |
-| X thread, short-video script, carousel, email newsletter | Not run | Not measured |
-| Repurposing pack, hooks, CTAs, platform hashtags | Not run | Not measured |
+Completion automatically disabled the campaign. Operator cleanup revoked function/schema access, disabled login and terminated runner sessions. The sole temporary deployment was removed, confirmed by Vercel 404. Staging files and the revoked connection file were removed; disabled audit rows and private synthetic output/usage evidence remain. No production configuration, database, credential, customer record or billing setting changed.
 
-Compare blind paired outputs for factual/source fidelity, useful originality (not plagiarism certification), relevance, brand/tone consistency, channel adaptation, repetition, CTA fit and completeness. Report token usage, acceptance/errors and latency per pack; shared-pack latency/cost cannot honestly be attributed to individual formats without additional calls. Baseline uses the same explicit token/deadline/retry budget for a controlled comparison, not its former unbounded operational settings. No AI judge calls are budgeted. The launch verdict remains NO-GO while this requested gate is blocked.
+### Method and measured results
+
+Three synthetic briefs: a qualified pilot with no measured results, a fictional priced class with no signup URL, and sparse prelaunch notes in No CTA mode. Each requested all 14 formats once from baseline `6c75fab8e995e94c53bec400aed01991e1ee0642` and once from candidate `2cfceccf0b193c186d6c7c089479a85ab2c752d1`. Actual prompt/schema modules were extracted, not approximated. Plan SHA-256: `c55ee7e11312f964fa4c8fb430c7c0a88a2f94425cde91f9d49cb89ab1526508`.
+
+Both used `gpt-5.2`, explicit default service tier, 24,000 output-token maximum, 90-second timeout, zero retries, no tools/images and `store:false`. Baseline therefore uses matched operational bounds, not its former unbounded runtime settings. Total measured usage: 14,386 input and 21,752 output tokens; cached input was zero. There were no additional API judge calls.
+
+| Brief | Version | Seconds | Input / output tokens | USD cost | Current strict contract |
+| --- | --- | ---: | ---: | ---: | --- |
+| Pilot | Baseline | 39.692 | 1,987 / 3,893 | 0.05797925 | Fail |
+| Pilot | Candidate | 43.474 | 2,789 / 3,701 | 0.05669475 | Pass |
+| Launch | Baseline | 37.797 | 2,020 / 3,914 | 0.05833100 | Fail |
+| Launch | Candidate | 44.544 | 2,820 / 3,902 | 0.05956300 | Pass |
+| Sparse | Baseline | 35.506 | 1,986 / 3,254 | 0.04903150 | Fail |
+| Sparse | Candidate | 39.079 | 2,784 / 3,088 | 0.04810400 | Pass |
+
+Every response returned all 14 formats: 42 baseline and 42 candidate sections. Candidate strict acceptance was 3/3; baseline was 0/3 under the **new** contract, not a claim that its old production parser would reject these responses. Candidate median latency was 43.474 seconds versus 37.797 baseline, 15.0% slower in this sample. Aggregate candidate cost was USD 0.16436175 versus USD 0.16534175 baseline, 0.59% lower. Cost/time are per all-format pack; no individual-format cost or latency was independently measured.
+
+Prices checked 2026-10-18: [OpenAI model rates](https://developers.openai.com/api/docs/models/gpt-5.2), USD 1.75/million input, 0.175 cached input, 14 output. GBP estimates use [Bank of England](https://www.bankofengland.co.uk/boeapps/database/Rates.asp?into=USD&rateview=A) USD 1 = GBP 0.7546 (15 October). The much larger reservation uses GBP 1/USD plus 25% headroom; actual cost does not replenish it.
+
+### Blind editorial review
+
+Before outputs were reviewed, the rubric fixed five 0-4 dimensions per format: source fidelity, useful platform fit, useful originality, brand voice and CTA compliance, total /20. Randomized A/B files withheld variant identity, provenance, timing and cost. Review is model-assisted editorial assessment, not independent human research or plagiarism detection.
+
+Predefined material regressions: overall candidate mean at least 1/20 lower; any brief at least 2 lower; a format at least 3 lower in two briefs; or any new material fabrication, qualification reversal, missing format or No CTA violation. Shared critical defects also block release.
+
+The reviewer froze all 84 scores before unblinding; no rows were missing. [Full synthetic-only scores and excerpts](ai-benchmark-blind-scores-2026-10-18.json). Mapping: pilot A=candidate/B=baseline; launch and sparse A=baseline/B=candidate. A second blind reviewer independently confirmed the principal factual/CTA defects and reviewed all 14 formats qualitatively.
+
+| Format | Baseline mean /20 | Original candidate mean /20 |
+| --- | ---: | ---: |
+| LinkedIn | 12.33 | 13.67 |
+| Instagram | 12.33 | 13.33 |
+| TikTok | 11.33 | 12.67 |
+| X post | 14.33 | 15.33 |
+| Facebook | 13.00 | 13.00 |
+| YouTube Shorts | 15.00 | 15.00 |
+| X thread | 13.00 | 13.33 |
+| Short video script | 12.33 | 13.67 |
+| Carousel | 10.33 | 13.33 |
+| Email/newsletter | 11.67 | 15.33 |
+| Repurposing pack | 8.00 | 9.33 |
+| Hooks | 11.00 | 10.33 |
+| CTAs | 14.00 | 17.33 |
+| Platform hashtags | 13.67 | 14.67 |
+| Overall | 12.31 | 13.60 |
+
+The higher average did **not** pass the quality gate. The reviewer recorded 11 baseline and 10 original-candidate critical findings (not independent transaction/failure counts). Candidate examples included an invented five-minute versus fifty-minute planning claim, a ten-second reading setup, an unsupported two-hour comparison, personal-advice/tailoring promises, invented class zone assignments, and a reader-response question in No CTA Facebook copy. Both versions had defects. Candidate structure, email drafts and CTA suppression improved; hooks still tended toward unsupported punchy claims. Repurposed assets repeated earlier copy and lacked strong channel differentiation. Hashtags were relevant starting sets, not measured discovery-performance improvements. These are editorial judgments on synthetic drafts, not causal/statistical quality estimates.
+
+The subsequent prompt patch preserves numerical meaning and source qualifications, prohibits invented experience/offer fulfillment, labels optional illustrations, removes assistant-to-operator offers, and explicitly gives No CTA precedence over platform engagement guidance. Two new tests assert delivery of those instructions, not model compliance. The owner separately approved one follow-up protected Preview for three corrected candidate packs within the same GBP 5 ledger; results must be reported separately, never substituted for the original scores.
+
+This six-request smoke sample cannot estimate production failure rates, causal latency improvements or general originality. It exercises actual prompt/schema generation but not a live authenticated production API route. Refinements, multilingual/adversarial inputs, email delivery and live image generation remain outside this small text benchmark.
+
+### Authorized Follow-up: NO-GO
+
+The owner approved one additional protected Preview within the unchanged GBP 5 ceiling. It appended three exact corrected-candidate jobs to the same ledger, retaining all original evidence/reservations. New worst-case reservations were GBP 0.463359 / 0.463591 / 0.463584, using exact payload bytes plus the same framing/output/currency headroom. Total permanently recorded reservation: **GBP 4.804294**. Thirty-seven benchmark unit tests and eighteen real PostgreSQL checks passed, including old-job replay refusal, prior-audit preservation, concurrent admission and cumulative cap enforcement.
+
+Corrected plan SHA-256: `4df9fe78d5325b8a792585fac439958c84cf2022700e98a4c3ea2480f87cba12`. The same model, tier, timeout and token cap were used. All three returned all 14 formats and passed the strict contract, with no retry or uncertainty.
+
+| Corrected brief | Seconds | Input / output tokens | USD cost |
+| --- | ---: | ---: | ---: |
+| Pilot | 52.135 | 3,161 / 4,340 | 0.06629175 |
+| Launch | 49.024 | 3,191 / 3,958 | 0.06099625 |
+| Sparse | 40.635 | 3,189 / 3,093 | 0.04888275 |
+
+Follow-up cost USD 0.17617075, 6.55% above the original baseline sample. Median latency 49.024 seconds, 29.7% above baseline. These are sequential observations, not controlled speed claims. The follow-up repeats the same three briefs after inspecting failures; it is a regression recheck, not a held-out quality evaluation. Two reviewers inspected all 42 sections without numerical rescoring and with the corrected-version identity known.
+
+Observed improvements: the earlier template/personal-advice fulfillment promises, five-minute/ten-second inventions and No CTA Facebook engagement questions were absent. Repurposed emails contained actual drafts. All format types remained intact.
+
+**Material launch blockers remain despite the prompt correction:**
+
+- Email subject: "Organize your craft workspace in 45 minutes, live online". A CTA option similarly promises organizing the workspace in 45 minutes. The source only establishes class duration, not a completion time.
+- The X thread assigns zones to "active making" and "storage or overflow", then says the workshop teaches this. The script/carousel/repurposed carousel repeat those unprovided assignments without presenting them as optional examples.
+
+Additional editorial issues: pilot hooks/repurpose CTA fields still instruct the publisher to choose/post assets instead of addressing the audience. Sparse hooks/LinkedIn contain categorical population claims, such as "Most reading goals fail for one boring reason"; reviewers differed on whether these were blocking, so they are retained as a fidelity/voice risk rather than silently discarded.
+
+**Final quality verdict: NO-GO.** Stronger prompts alone did not establish sufficient grounding. The implementation contains the tested prompt mitigation, not a claimed complete fix. Further work needs a verified grounding/claim-validation approach and a fresh controlled evaluation; do not blindly repeat the same prompts or count schema success as factual success. Only GBP 0.195706 of conservative reservation capacity remains, even though measured cost is lower. No third Preview or additional provider call is authorized by these results.
+
+Both temporary deployments reached READY and were deleted, each confirmed 404 afterward. The runner role is NOLOGIN, function/schema access revoked and sessions terminated; staging and revoked credential files were removed. All nine audit rows plus the continuation authorization remain on the existing isolated branch. No production account/content/entitlement, credential, billing setting or deployment changed.
