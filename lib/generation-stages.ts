@@ -1,11 +1,12 @@
 import { reserveGenerationInProfile, matchingReservation, completeGenerationInProfile, GenerationReservationError } from "@/lib/generation-reservation";
 import type { Reservation } from "@/lib/generation-reservation";
 import { PIPELINE_LIMITS, newGenerationPipeline, pipelineKey, pipelineProgress, planProviderStage,
-  applyDraft, finishReviewBatch, correctPipeline } from "@/lib/generation-pipeline";
+  applyDraft, finishReviewBatch, correctPipeline, pipelineHash } from "@/lib/generation-pipeline";
 import type { ProviderStage, ProviderReceipt, GenerationPipeline } from "@/lib/generation-pipeline";
 import { groundingBatch, parseBatchReview } from "@/lib/grounding-batches";
 import { GroundingError } from "@/lib/factual-grounding";
 import type { GenerationInput } from "@/lib/generation-contract";
+import { GenerationOutputError } from "@/lib/generation-contract";
 import type { GenerationProgress } from "@/lib/generation-progress";
 import type { GenerationResult } from "@/types/content";
 import type { UserProfile } from "@/types/saas";
@@ -96,7 +97,14 @@ export function checkpointGenerationStage(data: Document, userId: string, id: st
         metric.status = "unknown"; p.failure = "generation_uncertain";
         return { data: journal(matched.data, matched.entries, matched.entry, p), result: pipelineProgress(p, id) };
       }
-      if (Buffer.byteLength(receipt.output_text, "utf8") > PIPELINE_LIMITS.responseBytes || receipt.status !== "completed") throw new GroundingError();
+      if (Buffer.byteLength(receipt.output_text, "utf8") > PIPELINE_LIMITS.responseBytes) {
+        metric.diagnostic = "provider_response_size";
+        throw new GroundingError();
+      }
+      if (receipt.status !== "completed") {
+        metric.diagnostic = "provider_incomplete";
+        throw new GroundingError();
+      }
       if (p.phase === "draft") applyDraft(p, receipt, request);
       else {
         if (!p.draft) throw new GroundingError();
@@ -104,8 +112,22 @@ export function checkpointGenerationStage(data: Document, userId: string, id: st
         const review = parseBatchReview(receipt.output_text, batch);
         finishReviewBatch(p, review.decisions, request);
       }
-    } catch {
+    } catch (error) {
       metric.status = "failed"; p.failure = p.phase === "draft" ? "generation_failed" : "grounding_failed";
+      metric.diagnostic ??= error instanceof GroundingError ? error.reason
+        : error instanceof GenerationOutputError ? error.diagnostic : "internal_validation_error";
+      // Retain exact failed output for offline diagnosis, not an automatic retry or
+      // a bypass into history. Bound serialized evidence so diagnostics cannot make
+      // the checkpoint itself too large. Existing reservation retention still applies.
+      p.failureEvidence = { responseHash: pipelineHash(receipt), captured: false };
+      const evidence = { ...p.failureEvidence, captured: true, request, receipt };
+      const candidate = { ...p, failureEvidence: evidence };
+      if (Buffer.byteLength(JSON.stringify(evidence), "utf8") <= 240_000 &&
+          Buffer.byteLength(JSON.stringify(candidate), "utf8") <= PIPELINE_LIMITS.journalBytes &&
+          Buffer.byteLength(JSON.stringify(matched.entries.map(entry => entry.requestId === id
+            ? { ...entry, pipeline: candidate } : entry).filter(entry => entry.pipeline)), "utf8") <= PIPELINE_LIMITS.accountJournalBytes) {
+        p.failureEvidence = evidence;
+      }
     }
   }
   return { data: journal(matched.data, matched.entries, matched.entry, p), result: pipelineProgress(p, id) };

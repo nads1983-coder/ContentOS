@@ -9,6 +9,7 @@ export type GenerationProgress = {
   totalUnits: number;
   error?: string;
   code?: string;
+  diagnostic?: string;
 };
 
 export function generationProgressMessage(progress: GenerationProgress) {

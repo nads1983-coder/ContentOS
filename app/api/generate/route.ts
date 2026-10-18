@@ -83,6 +83,7 @@ export async function POST(nextRequest: NextRequest) {
     const progress = await checkpointTextGenerationStage(user.id, requestId, admission.fingerprint, stage, request, receipt, durationMs);
     try { analyticsEvent("text_generation_stage", { stage: stage.kind, duration_ms: Math.round(durationMs),
       outcome: progress.status === "failed" ? "failure" : "checkpoint", input_bytes: stage.inputBytes,
+      failure_reason: progress.diagnostic ?? progress.code ?? "none",
       input_tokens: count(receipt?.usage?.input_tokens), output_tokens: count(receipt?.usage?.output_tokens),
       usage_known: [receipt?.usage?.input_tokens, receipt?.usage?.output_tokens].every(v => typeof v === "number" && Number.isSafeInteger(v) && v >= 0) }); } catch { /* Telemetry cannot affect delivery. */ }
     return NextResponse.json(progress, { status: progress.status === "failed" ? 502 : 202, headers });

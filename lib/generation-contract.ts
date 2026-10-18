@@ -36,7 +36,14 @@ export const GENERATION_LIMITS = {
 } as const;
 
 export class GenerationValidationError extends Error {}
-export class GenerationOutputError extends Error {}
+export type GenerationOutputFailure = "invalid_output" | "invalid_text" | "empty_text" | "invalid_section"
+  | "invalid_items" | "empty_section" | "missing_copy" | "item_count" | "platform_length"
+  | "asset_label" | "output_size" | "output_json" | "section_count" | "section_identity" | "saved_result_size";
+export class GenerationOutputError extends Error {
+  constructor(message = "Invalid generated output.", readonly diagnostic: GenerationOutputFailure = "invalid_output") {
+    super(message);
+  }
+}
 
 export function remainingGenerationTime(elapsedMs: number) {
   // Leave twenty seconds of the 120-second route window for cleanup and persistence.
@@ -159,21 +166,21 @@ export async function readGenerationRequest(request: Request): Promise<Generatio
 }
 
 function outputText(value: unknown, name: string, max: number, allowEmpty = false): string {
-  if (typeof value !== "string" || value.length > max || /data:[^\s,]*[;,]/i.test(value)) throw new GenerationOutputError(`Invalid ${name}.`);
+  if (typeof value !== "string" || value.length > max || /data:[^\s,]*[;,]/i.test(value)) throw new GenerationOutputError(`Invalid ${name}.`, "invalid_text");
   let cleaned: string;
   try {
     cleaned = cleanPlainText(value).replace(/[\u2014\u2013]/g, ", ").replace(/--+/g, ", ").trim();
   } catch {
-    throw new GenerationOutputError(`Invalid ${name}.`);
+    throw new GenerationOutputError(`Invalid ${name}.`, "invalid_text");
   }
-  if (cleaned.length > max || /data:[^\s,]*[;,]/i.test(cleaned)) throw new GenerationOutputError(`Invalid ${name}.`);
-  if (!allowEmpty && !/[\p{L}\p{N}]/u.test(cleaned)) throw new GenerationOutputError(`Empty ${name}.`);
+  if (cleaned.length > max || /data:[^\s,]*[;,]/i.test(cleaned)) throw new GenerationOutputError(`Invalid ${name}.`, "invalid_text");
+  if (!allowEmpty && !/[\p{L}\p{N}]/u.test(cleaned)) throw new GenerationOutputError(`Empty ${name}.`, "empty_text");
   return cleaned;
 }
 
 function validateSection(value: unknown): GeneratedSection {
-  if (!record(value) || !isType(value.type)) throw new GenerationOutputError("Invalid section type.");
-  if (!Array.isArray(value.items) || value.items.length > 30) throw new GenerationOutputError("Invalid section items.");
+  if (!record(value) || !isType(value.type)) throw new GenerationOutputError("Invalid section type.", "invalid_section");
+  if (!Array.isArray(value.items) || value.items.length > 30) throw new GenerationOutputError("Invalid section items.", "invalid_items");
   const section: GeneratedSection = {
     id: outputText(value.id, "section id", 100),
     type: value.type,
@@ -184,7 +191,7 @@ function validateSection(value: unknown): GeneratedSection {
     cta: outputText(value.cta ?? "", "section CTA", 1000, true)
   };
   if (!/[\p{L}\p{N}]/u.test(section.body) && section.items.length === 0) {
-    throw new GenerationOutputError("Empty section.");
+    throw new GenerationOutputError("Empty section.", "empty_section");
   }
   return section;
 }
@@ -196,7 +203,7 @@ function validateFormat(section: GeneratedSection, request: GenerationInput) {
   const { type, body, items } = section;
   const listFormats = ["hooks", "ctas", "carousel", "xThread", "platformHashtags", "repurposePack"];
   if (!listFormats.includes(type) && !/[\p{L}\p{N}]/u.test(body.replace(/#[\p{L}\p{N}_]+/gu, ""))) {
-    throw new GenerationOutputError(`Missing copy for ${type}.`);
+    throw new GenerationOutputError(`Missing copy for ${type}.`, "missing_copy");
   }
   const bounds: Partial<Record<ContentTypeId, [number, number]>> = {
     hooks: [8, 8], ctas: request.ctaMode === "none" ? [0, 0] : [5, 5],
@@ -204,34 +211,34 @@ function validateFormat(section: GeneratedSection, request: GenerationInput) {
   };
   const range = bounds[type];
   if (range && (items.length < range[0] || items.length > range[1])) {
-    throw new GenerationOutputError(`Incomplete ${type}.`);
+    throw new GenerationOutputError(`Incomplete ${type}.`, "item_count");
   }
-  if (type === "ctas" && request.ctaMode === "none" && !body) throw new GenerationOutputError("Missing no-CTA explanation.");
-  if (type === "twitter" && [...body].length > 280) throw new GenerationOutputError("X post is too long.");
-  if (type === "xThread" && items.some((item) => [...item].length > 280)) throw new GenerationOutputError("X thread post is too long.");
+  if (type === "ctas" && request.ctaMode === "none" && !body) throw new GenerationOutputError("Missing no-CTA explanation.", "missing_copy");
+  if (type === "twitter" && [...body].length > 280) throw new GenerationOutputError("X post is too long.", "platform_length");
+  if (type === "xThread" && items.some((item) => [...item].length > 280)) throw new GenerationOutputError("X thread post is too long.", "platform_length");
   if (type === "repurposePack" || type === "platformHashtags") {
     const labels = type === "repurposePack" ? REPURPOSE_LABELS : HASHTAG_LABELS;
     for (const label of labels) {
       const matches = items.filter((item) => item.startsWith(label));
       if (matches.length !== 1 || !/[\p{L}\p{N}]/u.test(matches[0].slice(label.length))) {
-        throw new GenerationOutputError(`Missing asset: ${label}`);
+        throw new GenerationOutputError(`Missing asset: ${label}`, "asset_label");
       }
     }
   }
 }
 
 export function parseGenerationOutput(text: string, request: GenerationInput): GenerationResult {
-  if (typeof text !== "string" || text.length > GENERATION_LIMITS.outputCharacters) throw new GenerationOutputError("Invalid output size.");
+  if (typeof text !== "string" || text.length > GENERATION_LIMITS.outputCharacters) throw new GenerationOutputError("Invalid output size.", "output_size");
   let parsed: unknown;
-  try { parsed = JSON.parse(text); } catch { throw new GenerationOutputError("Invalid output JSON."); }
+  try { parsed = JSON.parse(text); } catch { throw new GenerationOutputError("Invalid output JSON.", "output_json"); }
   if (!record(parsed) || !Array.isArray(parsed.sections) || parsed.sections.length !== request.selectedTypes.length) {
-    throw new GenerationOutputError("The generation is incomplete.");
+    throw new GenerationOutputError("The generation is incomplete.", "section_count");
   }
   const sections = parsed.sections.map(validateSection);
   if (new Set(sections.map(({ type }) => type)).size !== sections.length ||
       new Set(sections.map(({ id }) => id)).size !== sections.length ||
       sections.some(({ type }) => !request.selectedTypes.includes(type))) {
-    throw new GenerationOutputError("Duplicate or unexpected output sections.");
+    throw new GenerationOutputError("Duplicate or unexpected output sections.", "section_identity");
   }
   for (const section of sections) {
     validateFormat(section, request);
@@ -245,7 +252,7 @@ export function parseGenerationOutput(text: string, request: GenerationInput): G
     sections: request.selectedTypes.map((type) => sections.find((section) => section.type === type)!)
   };
   if (new TextEncoder().encode(JSON.stringify(result)).byteLength > GENERATION_LIMITS.resultBytes) {
-    throw new GenerationOutputError("The complete result is too large to save.");
+    throw new GenerationOutputError("The complete result is too large to save.", "saved_result_size");
   }
   return result;
 }

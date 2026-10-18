@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { buildInstructions, buildInput } from "@/lib/prompts";
 import { generationOutputSchema, parseGenerationOutput, GENERATION_LIMITS, GenerationOutputError } from "@/lib/generation-contract";
-import type { GenerationInput } from "@/lib/generation-contract";
+import type { GenerationInput, GenerationOutputFailure } from "@/lib/generation-contract";
 import { groundingUnits, GroundingError, repairGrounding } from "@/lib/factual-grounding";
 import type { GroundingDecision } from "@/lib/factual-grounding";
 import { groundingBatch, batchReviewInstructions, batchReviewSchema } from "@/lib/grounding-batches";
@@ -23,12 +23,16 @@ export type StageMetric = {
   status: "running" | "complete" | "failed" | "unknown"; payloadHash?: string;
   inputBytes: number; reservedMicroUsd: number; inputTokens?: number; outputTokens?: number;
   inputTokenLimit?: number; outputTokenLimit?: number;
+  diagnostic?: GenerationOutputFailure | "provider_incomplete" | "provider_response_size" | "review_unavailable"
+    | "unresolved_claims" | "internal_validation_error";
 };
 export type GenerationPipeline = {
   version: 1; pass: number; batch: number; phase: StageKind;
   reviewPolicy: number;
   draft?: GenerationResult; decisions: GroundingDecision[]; metrics: StageMetric[];
   reservedMicroUsd: number; failure?: "generation_failed" | "grounding_failed" | "generation_uncertain" | "generation_budget";
+  // Private reservation journal only, never the delivered draft/history or public telemetry.
+  failureEvidence?: { responseHash: string; captured: boolean; request?: GenerationInput; receipt?: ProviderReceipt };
 };
 export type ProviderStage = {
   key: string; kind: "draft" | "review" | "revalidation";
@@ -43,10 +47,13 @@ export function pipelineKey(p: GenerationPipeline) { return `${p.version}:${p.ph
 export function pipelineProgress(p: GenerationPipeline, requestId: string): GenerationProgress {
   const error = p.failure === "generation_uncertain"
     ? "A provider result could not be confirmed. Saved stages and your existing draft are preserved. This attempt will not repeat paid work automatically."
-    : p.failure ? "Validation could not finish. Unchecked content was not delivered. Your existing draft is unchanged." : undefined;
+    : p.failure === "generation_failed" ? "The AI draft did not pass the output checks, before factual review could begin. No content was delivered and your existing draft is unchanged. This attempt will not repeat paid work automatically."
+    : p.failure === "generation_budget" ? "This attempt reached its safe processing limit. No unchecked content was delivered and your existing draft is unchanged."
+    : p.failure ? "Factual validation could not finish. Unchecked content was not delivered. Your existing draft is unchanged." : undefined;
   return { status: p.failure ? "failed" : "pending", requestId, stage: p.phase, nextStage: pipelineKey(p),
     running: p.metrics.at(-1)?.status === "running", reviewedUnits: p.decisions.length,
-    totalUnits: p.draft ? groundingUnits(p.draft).length : 0, ...(error ? { error, code: p.failure } : {}) };
+    totalUnits: p.draft ? groundingUnits(p.draft).length : 0,
+    ...(error ? { error, code: p.failure, diagnostic: p.metrics.at(-1)?.diagnostic } : {}) };
 }
 export function pipelinePayload(p: GenerationPipeline, request: GenerationInput) {
   const draft = p.phase === "draft";
