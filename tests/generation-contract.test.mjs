@@ -200,4 +200,3 @@ test("prompt fixtures encode untrusted source and retain source-first refinement
   assert.match(buildInstructions(), /Do not invent statistics/);
   for (const { id } of contentTypes) assert.ok(buildInput(request([id])).includes(`- ${id}:`));
 });
-
