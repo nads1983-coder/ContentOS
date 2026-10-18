@@ -2,7 +2,7 @@
 
 ## Verdict: NO-GO for production
 
-Offline implementation following `b4e5adffab82b3598fe79c3e73c3124cb2981fe3`, on the existing `feat/ai-first-studio` branch / draft PR #3. **Zero paid API calls, zero deployments, zero production operations.** No new key, service, migration, billing change or Founder retirement. The public Founder offer remains unchanged and active. Launch and subsequent retirement require separate explicit authorization.
+Offline implementation following `b4e5adffab82b3598fe79c3e73c3124cb2981fe3`, on the existing `feat/ai-first-studio` branch / draft PR #3. **Zero paid API calls, zero benchmark deployments, zero production operations.** Pushing the requested PR update automatically triggered the existing ordinary Vercel Git Preview integration; no deployment command was run. No new key, service, migration, billing change or Founder retirement. The public Founder offer remains unchanged and active. Launch and subsequent retirement require separate explicit authorization.
 
 The captured structural disagreements and ten layout assertions now have executable regressions. All five captured packs complete the actual route and isolated database workflow with **scripted** review/correction decisions. This is not a successful live validated pack, a general entailment proof, or evidence that the model will choose the right classifications and replacements.
 
@@ -65,7 +65,8 @@ Existing application conservative reservations were USD2.206432 / 2.609406 / 2.2
 - `npm run typecheck`: PASS.
 - `npm run lint`: PASS.
 - `npm run build`: an earlier intermediate build passed; final-source reruns hit a local Turbopack CSS worker `binding to a port: Operation not permitted`, including the elevated retry. **Not reported as a final default-build pass.**
-- `npm run build -- --webpack`: PASS on final application source, TypeScript and all 51 generated pages. No build configuration or security check was disabled. Normal CI/Turbopack still needs confirmation before release.
+- `npm run build -- --webpack`: PASS on final application source, TypeScript and all 51 generated pages. No build configuration or security check was disabled.
+- Ordinary Git Preview at application commit `60c29dab7ea269df61760b14aa8112596f8c117a`: **READY**. Read-only Vercel build-log inspection confirms `next build`, Next.js 16.3.8 **Turbopack**, successful compilation, all 51 generated pages and completed output. This resolves the CI/default-builder confirmation gap; the local sandbox restriction remains accurately recorded. [Preview](https://content-ill6io76u-nads1983-9570s-projects.vercel.app). No authenticated generation, provider call or customer-data test was run there.
 - `git diff --check`: PASS.
 - `node tests/scope-offline-report.mjs`: all five actual-route deliveries complete; independently reported semantic limitations remain.
 - `tests/generation-stages-isolated.mjs --include-classification --include-scope`: **12 checks PASS**, real isolated transactions, zero provider calls.
@@ -78,7 +79,7 @@ Observed local warnings: Better Auth falls back to its shared per-path bucket on
 
 1. A successful live, exhaustive validation and persisted delivery has still not happened. Actual model classification/correction agreement, final factual/editorial quality, provider latency and cost remain unverified after these changes.
 2. The eight independent guard-only misses need correct semantic decisions; this release must not be described as deterministically fabrication-proof. Replacements can also introduce unrecognized unsupported claims, which is why fresh review remains mandatory.
-3. Validate the normal CI build. No Preview or benchmark deployment was created in this task.
+3. The ordinary Git Preview build is verified, not a live-provider application test. No benchmark environment was created and no production promotion occurred.
 4. Preserve explicit launch authorization, production safeguards and the active public Founder offer. Do not activate retirement before a separately approved launch succeeds and is verified.
 
 ### Minimum future live check, not executed or authorized
