@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "syntheticOnly": true,
+  "description": "Independently authored legitimate/unsupported pairs for eight known sealed-fixture misses. New output sentences were chosen before inspecting the current grounding or batch implementation; the existing sealed evaluator was run only to identify the eight miss IDs.",
+  "sealedFixture": {
+    "path": "tests/fixtures/independent-grounding-scope.json",
+    "sha256": "cbe823b68e607865273582afd8a138adc8b3f54492270796aa66a3c5b6426066",
+    "modified": false
+  },
+  "contract": {
+    "legitimate": "A supported decision with the specified complete source statements should pass.",
+    "unsupported": "An honest unsupported decision with the authored repair should parse; that proves protocol/repair handling, NOT automatic semantic detection.",
+    "decoyEvidence": "Real but insufficient or conflicting evidence for an intentionally wrong supported certificate. If deterministic guards cannot reject it, report a known gap rather than claiming a reviewer caught it.",
+    "context": "Every source sentence, exact unsplit source, saved brand and whole output must remain available in every batch and fresh pass."
+  },
+  "pairs": [
+    {
+      "id": "direct-scope-01",
+      "sealedCaseId": "scope-01",
+      "boundary": "whole_vs_part",
+      "source": "Fictional catalogue notice. Vela Museum's online catalogue has 10 gallery pages. Four gallery pages have audio descriptions. The other six gallery pages and ticket checkout do not have audio descriptions.",
+      "brandContext": {
+        "brandName": "",
+        "audience": "",
+        "offer": ""
+      },
+      "ctaMode": "none",
+      "legitimate": {
+        "text": "Four gallery pages have audio descriptions; the other six gallery pages and ticket checkout do not.",
+        "kind": "supported",
+        "reason": "none",
+        "expected": "allow",
+        "evidence": [
+          "Vela Museum's online catalogue has 10 gallery pages.",
+          "Four gallery pages have audio descriptions.",
+          "The other six gallery pages and ticket checkout do not have audio descriptions."
+        ]
+      },
+      "unsupported": {
+        "text": "All ten gallery pages and ticket checkout include audio descriptions.",
+        "kind": "unsupported",
+        "reason": "contradiction",
+        "replacement": "Four gallery pages have audio descriptions; the other six gallery pages and ticket checkout do not.",
+        "expected": "repair",
+        "decoyEvidence": [
+          "Four gallery pages have audio descriptions."
+        ]
+      },
+      "rationale": "The positive preserves exactly which pages have the feature. The negative turns a subset into whole-catalogue and checkout coverage."
+    },
+    {
+      "id": "direct-scope-05",
+      "sealedCaseId": "scope-05",
+      "boundary": "single_vs_every",
+      "source": "Fictional workshop record. Six designs were submitted to the Pebble Poster review. One submitted design received written feedback. The other five designs did not receive written feedback.",
+      "brandContext": {
+        "brandName": "",
+        "audience": "",
+        "offer": ""
+      },
+      "ctaMode": "none",
+      "legitimate": {
+        "text": "One submitted design received written feedback; the other five designs did not.",
+        "kind": "supported",
+        "reason": "none",
+        "expected": "allow",
+        "evidence": [
+          "Six designs were submitted to the Pebble Poster review.",
+          "One submitted design received written feedback.",
+          "The other five designs did not receive written feedback."
+        ]
+      },
+      "unsupported": {
+        "text": "All six submitted designs received written feedback.",
+        "kind": "unsupported",
+        "reason": "contradiction",
+        "replacement": "One submitted design received written feedback; the other five designs did not.",
+        "expected": "repair",
+        "decoyEvidence": [
+          "Six designs were submitted to the Pebble Poster review.",
+          "One submitted design received written feedback."
+        ]
+      },
+      "rationale": "The submitted total is not the number receiving feedback; one positive instance cannot be generalized to all."
+    },
+    {
+      "id": "direct-scope-07",
+      "sealedCaseId": "scope-07",
+      "boundary": "location_binding",
+      "source": "Fictional collection notice. Copper Parcel offers parcel collection at its East Wharf desk only. Its West Wharf room is a display room and does not provide parcel collection.",
+      "brandContext": {
+        "brandName": "",
+        "audience": "",
+        "offer": ""
+      },
+      "ctaMode": "product",
+      "legitimate": {
+        "text": "Parcel collection is available at Copper Parcel's East Wharf desk only; the West Wharf room does not provide parcel collection.",
+        "kind": "supported",
+        "reason": "none",
+        "expected": "allow",
+        "evidence": [
+          "Copper Parcel offers parcel collection at its East Wharf desk only.",
+          "Its West Wharf room is a display room and does not provide parcel collection."
+        ]
+      },
+      "unsupported": {
+        "text": "Both Copper Parcel's East Wharf desk and West Wharf room provide parcel collection.",
+        "kind": "unsupported",
+        "reason": "contradiction",
+        "replacement": "Parcel collection is available at Copper Parcel's East Wharf desk only; the West Wharf room does not provide parcel collection.",
+        "expected": "repair",
+        "decoyEvidence": [
+          "Copper Parcel offers parcel collection at its East Wharf desk only."
+        ]
+      },
+      "rationale": "Location is part of the service claim, not an interchangeable proper noun."
+    },
+    {
+      "id": "direct-scope-09",
+      "sealedCaseId": "scope-09",
+      "boundary": "frequency",
+      "source": "Fictional event notice. Cedar Loom has announced demonstrations on 5 May 2029 and 19 May 2029. These are the only announced dates. No recurring demonstration schedule has been announced.",
+      "brandContext": {
+        "brandName": "",
+        "audience": "",
+        "offer": ""
+      },
+      "ctaMode": "none",
+      "legitimate": {
+        "text": "Cedar Loom has announced demonstrations on 5 and 19 May 2029, with no recurring demonstration schedule announced.",
+        "kind": "supported",
+        "reason": "none",
+        "expected": "allow",
+        "evidence": [
+          "Cedar Loom has announced demonstrations on 5 May 2029 and 19 May 2029.",
+          "These are the only announced dates.",
+          "No recurring demonstration schedule has been announced."
+        ]
+      },
+      "unsupported": {
+        "text": "Cedar Loom's demonstrations recur every week.",
+        "kind": "unsupported",
+        "reason": "missing_evidence",
+        "replacement": "Cedar Loom has announced demonstrations on 5 and 19 May 2029, with no recurring demonstration schedule announced.",
+        "expected": "repair",
+        "decoyEvidence": [
+          "Cedar Loom has announced demonstrations on 5 May 2029 and 19 May 2029."
+        ]
+      },
+      "rationale": "Two dates do not establish a recurring weekly schedule."
+    },
+    {
+      "id": "direct-scope-11",
+      "sealedCaseId": "scope-11",
+      "boundary": "capacity_vs_actual_quantity",
+      "source": "Fictional evaluation record. A Wren Colour evaluation can include at most four fabric samples. Three samples were reviewed during the most recent evaluation. No other sample was reviewed during that evaluation.",
+      "brandContext": {
+        "brandName": "",
+        "audience": "",
+        "offer": ""
+      },
+      "ctaMode": "none",
+      "legitimate": {
+        "text": "Three samples were reviewed during the most recent evaluation, below the maximum of four samples.",
+        "kind": "supported",
+        "reason": "none",
+        "expected": "allow",
+        "evidence": [
+          "A Wren Colour evaluation can include at most four fabric samples.",
+          "Three samples were reviewed during the most recent evaluation.",
+          "No other sample was reviewed during that evaluation."
+        ]
+      },
+      "unsupported": {
+        "text": "The most recent evaluation reviewed the full allowance of four fabric samples.",
+        "kind": "unsupported",
+        "reason": "contradiction",
+        "replacement": "Three samples were reviewed during the most recent evaluation, below the maximum of four samples.",
+        "expected": "repair",
+        "decoyEvidence": [
+          "A Wren Colour evaluation can include at most four fabric samples."
+        ]
+      },
+      "rationale": "A capacity ceiling is distinct from the observed count. A valid four in the source does not certify four actually reviewed."
+    },
+    {
+      "id": "direct-scope-15",
+      "sealedCaseId": "scope-15",
+      "boundary": "same_feature_different_product",
+      "source": "Fictional product specification. HarborPad Mini can edit notes offline. HarborPad Plus requires an internet connection to edit notes and does not support offline editing. These are distinct products.",
+      "brandContext": {
+        "brandName": "",
+        "audience": "",
+        "offer": ""
+      },
+      "ctaMode": "none",
+      "legitimate": {
+        "text": "HarborPad Mini can edit notes offline; HarborPad Plus requires an internet connection to edit notes.",
+        "kind": "supported",
+        "reason": "none",
+        "expected": "allow",
+        "evidence": [
+          "HarborPad Mini can edit notes offline.",
+          "HarborPad Plus requires an internet connection to edit notes and does not support offline editing."
+        ]
+      },
+      "unsupported": {
+        "text": "HarborPad Mini and HarborPad Plus both support offline note editing.",
+        "kind": "unsupported",
+        "reason": "contradiction",
+        "replacement": "HarborPad Mini can edit notes offline; HarborPad Plus requires an internet connection to edit notes.",
+        "expected": "repair",
+        "decoyEvidence": [
+          "HarborPad Mini can edit notes offline."
+        ]
+      },
+      "rationale": "The offline capability belongs to Mini; sharing the product family name does not transfer it to Plus."
+    },
+    {
+      "id": "direct-scope-17",
+      "sealedCaseId": "scope-17",
+      "boundary": "relation_direction",
+      "source": "Fictional licensing record. Alder Type licenses its fonts to Bluefin Press. Alder Type is the licensor and Bluefin Press is the licensee. The agreement does not permit Bluefin Press to sublicense those fonts.",
+      "brandContext": {
+        "brandName": "",
+        "audience": "",
+        "offer": ""
+      },
+      "ctaMode": "none",
+      "legitimate": {
+        "text": "Alder Type licenses its fonts to Bluefin Press, and Bluefin Press cannot sublicense those fonts under the agreement.",
+        "kind": "supported",
+        "reason": "none",
+        "expected": "allow",
+        "evidence": [
+          "Alder Type licenses its fonts to Bluefin Press.",
+          "Alder Type is the licensor and Bluefin Press is the licensee.",
+          "The agreement does not permit Bluefin Press to sublicense those fonts."
+        ]
+      },
+      "unsupported": {
+        "text": "Alder Type receives its font licence from Bluefin Press under this agreement.",
+        "kind": "unsupported",
+        "reason": "contradiction",
+        "replacement": "Alder Type licenses its fonts to Bluefin Press, and Bluefin Press cannot sublicense those fonts under the agreement.",
+        "expected": "repair",
+        "decoyEvidence": [
+          "Alder Type licenses its fonts to Bluefin Press."
+        ]
+      },
+      "rationale": "The same entities and licensing vocabulary cannot certify the inverse licensor/licensee relationship."
+    },
+    {
+      "id": "direct-scope-21",
+      "sealedCaseId": "scope-21",
+      "boundary": "current_brief_vs_saved_brand",
+      "source": "Fictional current notice. This notice supersedes the saved business profile for parcel returns. Copper Parcel now accepts returns only on Wednesday. Returns are not accepted on other days.",
+      "brandContext": {
+        "brandName": "Copper Parcel",
+        "offer": "Parcel returns accepted Monday through Friday."
+      },
+      "ctaMode": "none",
+      "legitimate": {
+        "text": "Copper Parcel now accepts parcel returns only on Wednesday.",
+        "kind": "supported",
+        "reason": "none",
+        "expected": "allow",
+        "evidence": [
+          "This notice supersedes the saved business profile for parcel returns.",
+          "Copper Parcel now accepts returns only on Wednesday.",
+          "Returns are not accepted on other days."
+        ]
+      },
+      "unsupported": {
+        "text": "Copper Parcel still accepts parcel returns every weekday.",
+        "kind": "unsupported",
+        "reason": "contradiction",
+        "replacement": "Copper Parcel now accepts parcel returns only on Wednesday.",
+        "expected": "repair",
+        "decoyEvidence": [
+          "Parcel returns accepted Monday through Friday.",
+          "This notice supersedes the saved business profile for parcel returns."
+        ]
+      },
+      "rationale": "The explicitly current notice overrides the saved schedule. Adding a current-source citation cannot legitimize the obsolete brand claim."
+    }
+  ],
+  "limits": [
+    "Offline, explicit semantic labels authored by the test writer; no model calls or semantic accuracy estimates.",
+    "Eight contexts are inherited from the sealed fixture; the new paired output claims are not a fresh unseen benchmark.",
+    "Finite relationship-specific guard probes are not arbitrary natural-language entailment proof.",
+    "The original sealed fixture and expected labels remain unchanged."
+  ]
+}

@@ -1,5 +1,5 @@
 import { buildGroundingContext, deterministicIssues, groundingFields, groundingReviewInstructions,
-  groundingReviewSchema, groundingUnits, GroundingError, parseGroundingReview, reviewEligibility } from "@/lib/factual-grounding";
+  groundingReviewSchema, groundingUnits, GroundingError, parseGroundingReview, reviewEligibility, originalReviewSources } from "@/lib/factual-grounding";
 import type { GenerationInput } from "@/lib/generation-contract";
 import type { GenerationResult } from "@/types/content";
 
@@ -13,7 +13,7 @@ export function groundingBatch(result: GenerationResult, request: GenerationInpu
   const units = all.slice(batch * REVIEW_BATCH_SIZE, (batch + 1) * REVIEW_BATCH_SIZE);
   if (!Number.isSafeInteger(batch) || batch < 0 || !units.length) throw new GroundingError();
   const input = JSON.stringify({
-    sources: context.sources, constraints: { noCta: context.noCta, instructions: context.instructions },
+    originalSources: originalReviewSources(request), sources: context.sources, constraints: { noCta: context.noCta, instructions: context.instructions },
     pass: pass === 0 ? "initial_review" : "fresh_final_revalidation",
     wholePack: groundingFields(result).filter(([, text]) => text),
     units: units.map(u => ({ id: u.id, path: u.path, text: u.text,

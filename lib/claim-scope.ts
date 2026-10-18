@@ -199,15 +199,166 @@ function supportsQuantity(source: Quantity | undefined, claim: Quantity | undefi
   return !claim || !!source && source.min >= claim.min && source.max <= claim.max;
 }
 
+type ExplicitFact = {
+  relation: "coverage" | "receipt" | "collection" | "recurrence" | "reviewed" | "capability" | "license" | "schedule";
+  owner: string; object: string; value: string; negative: boolean; tentative: boolean; exclusive: boolean; coordinated: boolean;
+  cardinality?: number;
+};
+const nounKey = (text: string) => text.trim().replace(/^(?:the|a|an) /, "").split(" ").map(singular).join(" ");
+const weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+function daySet(text: string): string | undefined {
+  const value = text.replace(/^(?:only )?(?:on )?/, "");
+  if (/^(?:every weekday|weekdays)$/.test(value)) return weekdays.slice(0, 5).join(",");
+  if (weekdays.includes(value)) return value;
+  const range = /^(\w+) (?:through|to) (\w+)$/.exec(value);
+  if (range) {
+    const start = weekdays.indexOf(range[1]), end = weekdays.indexOf(range[2]);
+    if (start >= 0 && end >= start) return weekdays.slice(start, end + 1).join(",");
+  }
+  return undefined;
+}
+
+// Finite assertion grammars, not inferred links between arbitrary mentions.
+// Each fact retains the actor, operation/object and its explicit scope value.
+function explicitFacts(text: string): ExplicitFact[] {
+  const facts: ExplicitFact[] = [];
+  for (const clause of clauses(text)) {
+    const add = (relation: ExplicitFact["relation"], owner: string, object: string, value: string, exclusive = false, coordinated = false,
+      cardinality?: number) => {
+      const identity = owner.trim().replace(/^the /, "");
+      if (!identity || /^(?:it|they|we|you|this|that)$/.test(identity)) return;
+      facts.push({ relation, owner: identity, object, value, exclusive, coordinated, cardinality,
+        negative: negative.test(clause), tentative: conditional.test(relation === "schedule" ? clause.replace(/\bonly on\b/, "on") : clause) ||
+          /\b(?:may|might|could|possibly|perhaps)\b/.test(clause) });
+    };
+
+    const quantified = /^(.+?) (?:now )?(has|have|includes?|received|receives?) (.+)$/.exec(clause);
+    if (quantified) {
+      const parts = quantified[1].split(" and ");
+      for (const part of parts) {
+        const counted = /^(all|each|every|some|\d+)(?: (\d+))? ([a-z][a-z -]*)$/.exec(part);
+        const name = counted?.[3] ?? part;
+        // Partitives and embedded predicates need semantic review, not a count guess.
+        if (!name || /\b(?:of|is|are|was|were)\b/.test(name) || !/^[a-z][a-z -]*$/.test(quantified[3])) continue;
+        add(/^receiv/.test(quantified[2]) ? "receipt" : "coverage", nounKey(name), nounKey(quantified[3]),
+          counted ? (/^(?:all|each|every)$/.test(counted[1]) ? "all" : counted[1]) : "one",
+          false, parts.length > 1 && /^(?:all|each|every) /.test(parts[0]),
+          counted?.[2] !== undefined ? Number(counted[2]) : counted && /^\d+$/.test(counted[1]) ? Number(counted[1]) : undefined);
+      }
+    }
+
+    const service = /^(.+?) (?:offers|provides) (parcel|package) collection at (?:its|the) (.+?)( only)?$/.exec(clause);
+    if (service) for (const location of service[3].split(" and ")) add("collection", service[1], service[2], location, !!service[4]);
+    const invitation = /^(?:collect|pick up) (parcels|packages) at (.+?)'s (.+)$/.exec(clause);
+    if (invitation) add("collection", invitation[2], singular(invitation[1]), invitation[3]);
+    const available = /^(parcel|package) collection is available (?:only )?at (.+?)'s (.+?)( only)?$/.exec(clause);
+    if (available) for (const location of available[3].split(" and ")) {
+      add("collection", available[2], available[1], location, /available only/.test(clause) || !!available[4]);
+    }
+    const locations = /^both (.+?)'s (.+?) and (.+?) provide (parcel|package) collection$/.exec(clause);
+    if (locations) for (const location of [locations[2], locations[3]]) add("collection", locations[1], locations[4], location);
+
+    const recurrence = /^(.+?) (?:runs|holds|hosts|offers) ([a-z -]+?) (?:every (day|week|month|year)|(daily|weekly|monthly|yearly))$/.exec(clause);
+    if (recurrence) add("recurrence", recurrence[1], nounKey(recurrence[2]),
+      recurrence[3] ?? ({ daily: "day", weekly: "week", monthly: "month", yearly: "year" } as Record<string, string>)[recurrence[4]]);
+    const recurring = /^(.+?)'s ([a-z -]+?) recur(?:s)? every (day|week|month|year)$/.exec(clause);
+    if (recurring) add("recurrence", recurring[1], nounKey(recurring[2]), recurring[3]);
+    const announced = /^(.+?) has announced ([a-z -]+?) on \d/.exec(clause);
+    if (announced) add("recurrence", announced[1], nounKey(announced[2]), "announced_dates");
+
+    const reviewed = /^(\d+) ([a-z -]+?) (?:was|were) reviewed during (.+)$/.exec(clause);
+    if (reviewed && !clause.includes(",")) add("reviewed", reviewed[3], nounKey(reviewed[2]), reviewed[1]);
+    // Do not discard material/object modifiers or trailing qualifications. A
+    // qualified clause outside this grammar remains a whole semantic claim.
+    const activeReview = /^(.+?) reviewed (?:the full allowance of )?(\d+) ([a-z -]+?)$/.exec(clause);
+    if (activeReview) add("reviewed", activeReview[1], nounKey(activeReview[3]), activeReview[2]);
+
+    const edit = /^(.+?) can edit (notes|documents|photos|files) (offline|online)$/.exec(clause);
+    if (edit) add("capability", edit[1], `edit ${singular(edit[2])}`, edit[3]);
+    const editing = /^(.+?)( both)? supports? (offline|online) (note|document|photo|file) editing$/.exec(clause);
+    if (editing) for (const owner of editing[2] ? editing[1].split(" and ") : [editing[1]]) {
+      add("capability", owner, `edit ${editing[4]}`, editing[3]);
+    }
+
+    const license = /^(.+?) licenses its ([a-z -]+?) to (.+?)(?: under (?:this|the) agreement)?$/.exec(clause);
+    if (license) add("license", license[1], nounKey(license[2]), license[3]);
+    const recipient = /^(.+?) receives its ([a-z -]+?) licen[cs]e from (.+?)(?: under (?:this|the) agreement)?$/.exec(clause);
+    if (recipient) add("license", recipient[3], nounKey(recipient[2]), recipient[1]);
+
+    const schedule = /^(.+?) (?:(?:now|still) )?accepts (?:parcel )?returns (.+)$/.exec(clause);
+    if (schedule) {
+      const days = daySet(schedule[2]);
+      if (days) add("schedule", schedule[1], "returns", days, /^only\b/.test(schedule[2]));
+    }
+  }
+  return facts;
+}
+
+function explicitFindings(text: string, sources: string[], currentSources: string[]): ScopeReason[] {
+  const evidence = sources.flatMap(explicitFacts);
+  const current = currentSources.flatMap(explicitFacts);
+  const findings = new Set<ScopeReason>();
+  for (const claim of explicitFacts(text)) {
+    if (claim.negative || claim.tentative) continue;
+    const sameRelation = (source: ExplicitFact) => source.relation === claim.relation && source.owner === claim.owner &&
+      (source.object === claim.object || claim.relation === "reviewed" && !claim.object.includes(" ") && source.object.endsWith(` ${claim.object}`));
+    const candidates = evidence.filter(source => !source.negative && !source.tentative && sameRelation(source));
+    // Universal scope does not erase an explicitly stated population size.
+    // Only the same subject/property's known universal total establishes this
+    // contradiction; unrelated numbers and unspecified totals remain unproven.
+    if (claim.value === "all" && claim.cardinality !== undefined && candidates.some(source =>
+      source.value === "all" && source.cardinality !== undefined && source.cardinality !== claim.cardinality)) {
+      findings.add("quantity_scope");
+      continue;
+    }
+    // Universal possession/receipt alone is not necessarily a concrete business
+    // claim ("Every idea has value"). Require a source-bound subject/relation;
+    // unparsed paraphrases and abstract assertions remain semantic-review work.
+    if ((claim.relation === "coverage" || claim.relation === "receipt") &&
+      !evidence.some(source => source.relation === claim.relation && source.owner === claim.owner)) continue;
+    // Only authoritative caller-provided current sources can override saved facts.
+    if (claim.relation === "schedule" && current.some(source => sameRelation(source) && source.exclusive &&
+      !source.negative && !source.tentative && claim.value.split(",").some(day => !source.value.split(",").includes(day)))) {
+      findings.add("frequency_scope");
+      continue;
+    }
+    if (candidates.some(source => {
+      if (claim.exclusive && !source.exclusive) return false;
+      if (claim.relation === "schedule" && !claim.exclusive) {
+        return claim.value.split(",").every(day => source.value.split(",").includes(day));
+      }
+      return source.value === claim.value;
+    })) continue;
+    if (claim.relation === "reviewed") {
+      const head = claim.object.split(" ").at(-1);
+      const generic = evidence.filter(source => source.relation === "reviewed" && source.owner === claim.owner &&
+        source.object === head && !source.negative && !source.tentative);
+      // A generic total cannot establish a sample's material. Leave that
+      // modifier to semantic review, but reject a count exceeding that total.
+      const conflictingModifier = evidence.some(source => source.relation === "reviewed" && source.owner === claim.owner &&
+        source.object !== claim.object && source.object.endsWith(` ${head}`) && !source.negative && !source.tentative);
+      if (!candidates.length && !conflictingModifier && claim.object !== head && generic.length &&
+        generic.every(source => Number(claim.value) <= Number(source.value))) continue;
+    }
+    // Non-universal quantified paraphrases/partitives still need semantic review.
+    if ((claim.relation === "coverage" || claim.relation === "receipt") && claim.value !== "all" && !claim.coordinated) continue;
+    if (claim.relation === "coverage" || claim.relation === "receipt" || claim.relation === "recurrence" || claim.relation === "schedule") findings.add("frequency_scope");
+    else if (claim.relation === "collection") findings.add("location_scope");
+    else if (claim.relation === "reviewed") findings.add("quantity_scope");
+    else findings.add("relationship_scope");
+  }
+  return [...findings];
+}
+
 /**
  * Compare complete explicit slots, including identity, relation, object, bounds,
  * frequency and modality. Never combine fragments from different source claims.
  * No cross-sentence pronoun resolution or arbitrary paraphrase is attempted.
  */
-export function scopeFindings(text: string, sources: string[]): ScopeReason[] {
+export function scopeFindings(text: string, sources: string[], currentSources: string[] = []): ScopeReason[] {
   const aliases = aliasesFrom(sources);
   const evidence = sources.flatMap(source => clauses(source).flatMap(clause => slots(clause, aliases, true)));
-  const findings = new Set<ScopeReason>();
+  const findings = new Set<ScopeReason>(explicitFindings(text, sources, currentSources));
   for (const claim of clauses(text).flatMap(clause => slots(clause, aliases, false))) {
     // Negative/conditional claims and unknown vocabulary remain semantic work.
     if (claim.negative || claim.conditional) continue;

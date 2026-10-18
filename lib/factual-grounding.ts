@@ -73,6 +73,14 @@ export function buildGroundingContext(request: GenerationInput): GroundingContex
   };
 }
 
+// Evidence IDs remain statement-sized; preserve the original boundaries too so
+// reviewers can resolve pronouns, exclusions and current-over-saved instructions.
+export function originalReviewSources(request: GenerationInput) {
+  return { currentBrief: request.source, savedBrand: {
+    name: request.brandName ?? "", audience: request.audience ?? "", offer: request.offer ?? ""
+  } };
+}
+
 export function groundingFields(result: GenerationResult) {
   const values: Array<[string, string]> = [["title", result.title], ["summary", result.summary]];
   result.sections.forEach((section, i) => {
@@ -340,7 +348,7 @@ export function deterministicIssues(value: string | GroundingUnit, context: Grou
       (engagement.test(expandedTags(text)) || (readerQuestion(text) && !currentContext?.quotedCondition))) issues.add("cta");
   if (metaCopy.test(text)) issues.add("meta_copy");
   const scopedText = typeof value === "string" ? text : nonFactualAssessment(text, value, context);
-  if (scopeFindings(scopedText, context.sources.map(s => s.text)).length) issues.add("missing_evidence");
+  if (scopeFindings(scopedText, context.sources.map(s => s.text), context.sources.filter(s => s.origin === "brief").map(s => s.text)).length) issues.add("missing_evidence");
   if (!verbatim) {
     if (relationshipFindings(text, context.sources.map(s => s.text)).length) issues.add("missing_evidence");
     // Preserve the legacy string helper for callers without a pack. The server
@@ -367,6 +375,16 @@ Classifications:
 - structural: eligible platform/format labels only, never factual copy or hashtags. Hashtags require an explicit creative, subjective, supported or unsupported decision based on their meaning and source context, not just their syntax.
 - unsupported: unsupported, uncertain, contradictory, prohibited CTA, invented capability or fulfillment, or assistant/editorial directions instead of audience-ready copy.
 Current brief overrides conflicting saved/selected brand context. Writing style, content goals and previous drafts are instructions, NEVER factual evidence. Conflicts within the brief with no clear current correction are unresolved: use neutral wording, do not pick a fact arbitrarily. Explicit No CTA overrides every other instruction and platform convention. It forbids engagement questions and requests for replies, saves, shares, contact, signups or purchases in EVERY field, not only cta. Practical instructional steps and clearly hypothetical self-evaluation within an experiment are content, not engagement CTAs; do not remove them merely for being useful advice. A suggested experiment duration is not a claimed result or actual product duration. Still refuse any invented promise about what that experiment achieves.
+For each concrete assertion, compare its complete relationship with the originalSources and all source statements before selecting evidence. Identify the actor/product, action or property, recipient/object, quantity, location, date or recurrence, modality, negation and qualifications. A missing required dimension is unknown, not permission to infer it. Review these eight failure boundaries explicitly:
+1. Whole versus subset: a feature on some pages does not apply to checkout or to all pages; retain named exclusions.
+2. Quantification: one submission receiving feedback does not mean every submission did. Existence, exact count and universal distribution are distinct.
+3. Location: a collection desk and a display room are not interchangeable. Check the action at the named location, including explicit prohibitions.
+4. Time: announced dates do not establish weekly recurrence, future availability or an indefinite schedule. Match dates and any recurrence independently.
+5. Capacity versus occurrence: an upper limit or possible quantity does not establish the number actually supplied, reviewed or achieved.
+6. Product association: a feature of one variant is not a feature of another. Carry the product name and qualifications with each property.
+7. Direction: who licenses, supplies or grants what to whom matters. Swapping actor and recipient changes the claim even when all names match.
+8. Source precedence: check every relevant current-brief qualification before citing saved brand details. An outdated saved schedule cannot override an explicit current exception. Adding an irrelevant current source ID does not cure a contradiction.
+Apply this same relationship comparison to every proposed replacement and to the fresh final review. If the relationship cannot be established, classify unsupported with missing_evidence or contradiction; do not guess a supported certificate. This does not require evidence for a genuinely subjective aesthetic impression or an explicitly hypothetical educational suggestion that asserts no actual business fact. Keep useful persuasive language when it does not make a concrete claim.
 An event lasting 45 minutes does NOT promise attendees will complete a task in 45 minutes. A mention of two storage zones does NOT establish their names, prescribed contents or actual curriculum. No testimonials/discounts/results is NEGATIVE evidence, not permission to invent them. Proposed pilots are not successful outcomes. Never add prices, promotional offers, guarantees, qualifications, testimonials, statistics, measured outcomes, durations, product features, curriculum or fulfillment promises unless explicitly supported. Universal or comparative assertions about concrete outcomes or customer practices require evidence; distinguish those from aesthetic impressions as described below.
 Classify the proposition in context, not isolated keywords. Universal modifiers on aesthetic impressions (such as a layout feeling off) are not measured guarantees. An abstract distinction feeling less awkward is subjective; a product reducing errors, costs or time is an objective benefit requiring evidence. Neither "always" nor "reduces" is globally allowed. A labelled hypothetical list of record-field names may contain cost/price fields without asserting a real price; values, offers, promised curriculum and outcomes still require evidence. A server-certified caption count describes actual supplied alternatives, never business results. Topic-only comparison headings can be structural when both topics are supplied, not when they contain a claim.
 Claims about common customer practices, operational accuracy, data stability, error likelihood or what a system cannot hold are factual even without numbers. A distinction between two document purposes does not establish such benefits or limitations. Do not accept them as harmless marketing. In mixed sentences preserve the legitimate observation but remove the unsupported clause. Keep fictional/optional scope explicit and local, never use it to justify real business claims later in the asset.
@@ -435,7 +453,7 @@ export function parseGroundingReview(text: string, units: GroundingUnit[], conte
     if (decision.kind === "supported") {
       if (!references.length || numbers(assessed).some(n => !numbers(references.map(r => r.quote).join("\n"), true).includes(n))) throw new GroundingError();
       const quoted = references.map(r => r.quote).join("\n");
-      if (scopeFindings(nonFactualAssessment(assessed, unit, context), references.map(r => r.quote)).length) throw new GroundingError();
+      if (scopeFindings(nonFactualAssessment(assessed, unit, context), references.map(r => r.quote), context.sources.filter(s => s.origin === "brief").map(s => s.text)).length) throw new GroundingError();
       if (relationshipFindings(assessed, references.map(r => r.quote)).length) throw new GroundingError();
       if (prices(unit.text).some(p => !prices(quoted).includes(p))) throw new GroundingError();
       for (const ref of references) {
@@ -505,7 +523,7 @@ export async function groundGeneration(result: GenerationResult, request: Genera
   let current = result;
   for (let pass = 0; pass < GROUNDING_LIMITS.reviews; pass++) {
     const units = groundingUnits(current);
-    const input = JSON.stringify({ sources: context.sources, constraints: { noCta: context.noCta, instructions: context.instructions },
+    const input = JSON.stringify({ originalSources: originalReviewSources(request), sources: context.sources, constraints: { noCta: context.noCta, instructions: context.instructions },
       units: units.map(unit => ({ ...unit, ...reviewEligibility(unit, context), findings: deterministicIssues(unit, context) })) });
     if (new TextEncoder().encode(input).byteLength > GROUNDING_LIMITS.inputBytes) throw new GroundingError();
     const review = parseGroundingReview(await reviewCall(input), units, context);

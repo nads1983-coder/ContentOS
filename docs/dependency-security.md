@@ -2,6 +2,8 @@
 
 Reviewed 2026-10-18 against PR3 checkout `ec299f8`.
 
+Rechecked during final technical closure on `feat/ai-first-studio`: the dependency tree is unchanged. `npm audit --json` again reports seven high development-only affected nodes (exit 1); `npm audit --omit=dev --json` reports zero (exit 0). `npm view braces dist-tags --json` still returns latest `3.0.3`. No compatible patch, dependency change or audit suppression was introduced. This is an explicitly retained build-tool risk, not an unresolved production-runtime audit finding; the exposure boundaries below still apply.
+
 ## Outcome
 
 **No dependency was fixed or upgraded in this review. Seven high-severity npm audit findings remain.**

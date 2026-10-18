@@ -10,7 +10,7 @@ import type { GenerationResult } from "@/types/content";
 
 export const PIPELINE_LIMITS = {
   version: 1, model: "gpt-5.2", stageMs: 90_000, runningMs: 120_000,
-  reviewPolicy: 2,
+  reviewPolicy: 3,
   lifetimeMs: 45 * 60_000, inputBytes: 160_000, responseBytes: 180_000,
   reviewTokens: 4_800, calls: 23, journalBytes: 750_000, accountJournalBytes: 8_000_000,
   // Conservative, nonrefundable admission accounting, not a provider invoice.

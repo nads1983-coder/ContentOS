@@ -4,8 +4,8 @@ import {harness,input,receipt} from "./generation-test-helpers.mjs";
 test("in-flight certificates from an older review policy cannot complete or trigger a paid continuation",async()=>{
  const h=harness(),req=input(),first=await h.post(req);
  assert.equal(first.response.status,202);const stored=h.data.generation_reservations_json[0];
- assert.equal(stored.pipeline.reviewPolicy,2);assert.ok(stored.pipeline.draft);
- delete stored.pipeline.reviewPolicy;
+ assert.equal(stored.pipeline.reviewPolicy,3);assert.ok(stored.pipeline.draft);
+ stored.pipeline.reviewPolicy=2;
  const before=structuredClone(h.data),calls=h.calls.length;
  const resumed=await h.post(req,{stage:first.body.nextStage});
  assert.equal(resumed.response.status,409);assert.equal(resumed.body.code,"review_policy_changed");

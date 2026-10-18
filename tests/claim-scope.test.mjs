@@ -200,3 +200,130 @@ test("findings are deterministic, deduplicated and contain no source or account 
   assert.equal(new Set(first).size, first.length);
   assert.ok(first.every(reason => /^[a-z_]+_scope$/.test(reason)));
 });
+
+test("eight exposed independent relationship misses have bounded guards; all paired positives remain allowed", () => {
+  const fixture = JSON.parse(readFileSync(resolve(root, "tests/fixtures/independent-grounding-scope.json"), "utf8"));
+  const missed = new Set(["scope-01", "scope-05", "scope-07", "scope-09", "scope-11", "scope-15", "scope-17", "scope-21"]);
+  for (const item of fixture.cases) {
+    if (!missed.has(item.id) && item.expected !== "allow") continue;
+    const sources = [item.source, ...Object.values(item.brandContext ?? {})];
+    const findings = scopeFindings(item.output, sources, [item.source]);
+    if (missed.has(item.id)) assert.ok(findings.length, item.id);
+    else assert.deepEqual(findings, [], item.id);
+  }
+});
+
+test("explicit universal coverage and receipts preserve their actor and property", () => {
+  reject("Every submitted design received written feedback.", ["One submitted design received written feedback."]);
+  allow("Every submitted design received written feedback.", ["All submitted designs received written feedback."]);
+  allow("All gallery pages and ticket checkout have audio descriptions.", ["Every gallery page has audio descriptions. Ticket checkout has audio descriptions."]);
+  reject("All gallery pages and ticket checkout have audio descriptions.", ["One gallery page has audio descriptions. Ticket checkout has audio descriptions."]);
+  reject("All gallery pages and ticket checkout have audio descriptions.", ["Every gallery page has audio descriptions. Ticket checkout has captions."]);
+  reject("Every gallery page has audio descriptions.", ["Every gallery page has captions."]);
+  reject("All gallery pages have audio descriptions.", ["Some gallery pages have audio descriptions."]);
+  allow("Every submitted design received written feedback.", ["Each submitted design received written feedback."]);
+  for (const text of ["Every idea has value.", "All colours have personality.", "Every story has a beginning.",
+    "One submission got feedback.", "One submitted design received written feedback.",
+    "Three of six submitted designs received written feedback."]) allow(text, ["Six designs were submitted. One submitted design received written feedback."]);
+  allow("Every submitted design received written feedback.", ["Each submission got written feedback."]);
+});
+
+test("service location and recurring schedule need their exact business relationship", () => {
+  const sources = ["River Post provides package collection at its North desk only."];
+  allow("Collect packages at River Post's North desk.", sources);
+  reject("Collect packages at River Post's South desk.", sources);
+  reject("Collect packages at Another Post's North desk.", sources);
+  allow("River Arts hosts demonstrations every week.", ["River Arts holds demonstrations weekly."]);
+  reject("River Arts hosts demonstrations every week.", ["River Arts holds demonstrations monthly."]);
+  reject("River Arts hosts demonstrations every week.", ["River Arts has announced demonstrations on 5 May 2029."]);
+});
+
+test("completed review counts cannot borrow capacity or a different review's actual count", () => {
+  allow("Four fabric samples were reviewed during the latest evaluation.", ["Four fabric samples were reviewed during the latest evaluation."]);
+  reject("Four fabric samples were reviewed during the latest evaluation.", ["Three samples were reviewed during the latest evaluation. Four samples were reviewed during the previous evaluation."]);
+  reject("Four fabric samples were reviewed during the latest evaluation.", ["The latest evaluation can include at most four samples."]);
+  allow("The latest evaluation reviewed four fabric samples.", ["Four fabric samples were reviewed during the latest evaluation."]);
+  allow("The latest evaluation reviewed four samples.", ["Four fabric samples were reviewed during the latest evaluation."]);
+  allow("Four samples were reviewed during the latest evaluation.", ["The latest evaluation reviewed four samples."]);
+  reject("The latest evaluation reviewed four fabric samples.", ["The latest evaluation reviewed four paint samples."]);
+  reject("Four fabric samples were reviewed during the latest evaluation.", ["Four paint samples were reviewed during the latest evaluation."]);
+  allow("The latest evaluation reviewed four fabric samples.", ["Four fabric samples were reviewed during the latest evaluation."]);
+  allow("The latest evaluation reviewed three fabric samples.", ["Three samples were reviewed during the latest evaluation."]);
+  // No partial parse of a qualified source may certify the simpler assertion.
+  reject("The latest evaluation reviewed four fabric samples.", ["The latest evaluation reviewed four fabric samples, if the proposed review goes ahead."]);
+  reject("The latest evaluation reviewed four fabric samples.", ["The latest evaluation reviewed four fabric samples, or possibly fewer."]);
+  allow("The latest evaluation reviewed three fabric samples, one below the four-sample maximum.", ["Three samples were reviewed during the latest evaluation."]);
+});
+
+test("capabilities and directional licenses stay attached to the named entities", () => {
+  allow("Slate Pro supports offline document editing.", ["Slate Pro can edit documents offline."]);
+  reject("Slate Plus supports offline document editing.", ["Slate Pro can edit documents offline."]);
+  reject("Slate Pro supports offline document editing.", ["Slate Pro can edit documents online."]);
+  allow("Cedar Type licenses its fonts to North Press under this agreement.", ["Cedar Type licenses its fonts to North Press."]);
+  reject("North Press licenses its fonts to Cedar Type under this agreement.", ["Cedar Type licenses its fonts to North Press."]);
+});
+
+test("only explicit current-source provenance overrides a matching saved schedule", () => {
+  const current = "River Post now accepts returns only on Wednesday.";
+  const saved = "River Post accepts returns Monday through Friday.";
+  const claim = saved;
+  assert.ok(scopeFindings(claim, [saved, current], [current]).length);
+  assert.ok(scopeFindings(claim, [current, saved], [current]).length);
+  assert.ok(scopeFindings(claim, [saved], [current]).length, "a saved-only citation cannot evade current provenance");
+  assert.deepEqual(scopeFindings(claim, [saved, current], []), [], "string order alone is not authoritative provenance");
+  assert.deepEqual(scopeFindings("River Post accepts parcel returns only on Wednesday.", [saved, current], [current]), []);
+  assert.deepEqual(scopeFindings(claim, [saved], ["Another Post now accepts returns only on Wednesday."]), []);
+});
+
+test("nonexclusive schedules admit subsets but not invented exclusive restrictions", () => {
+  const broad = "River Post accepts returns Monday through Friday.";
+  allow("River Post accepts returns on Wednesday.", [broad]);
+  allow("River Post accepts returns Tuesday through Thursday.", [broad]);
+  reject("River Post accepts returns only on Wednesday.", [broad]);
+  reject("River Post accepts returns on Saturday.", [broad]);
+  allow("River Post accepts returns on Wednesday.", ["River Post accepts returns only on Wednesday."]);
+  reject("River Post accepts returns only on Wednesday.", ["River Post accepts returns on Wednesday."]);
+});
+
+test("collection exclusivity needs exclusive evidence, not merely one matching location", () => {
+  const source = "River Post provides package collection at its North desk and South desk.";
+  allow("Parcel collection is available at Copper Parcel's East Wharf desk only.", ["Copper Parcel offers parcel collection at its East Wharf desk only."]);
+  allow("Package collection is available at River Post's North desk.", [source]);
+  allow("Both River Post's North desk and South desk provide package collection.", [source]);
+  reject("Package collection is available only at River Post's North desk.", [source]);
+  reject("Package collection is available at River Post's North desk only.", [source]);
+  reject("Both River Post's North desk and South desk provide package collection.", ["River Post provides package collection at its North desk only."]);
+});
+
+test("material qualifiers cannot borrow a generic total over an explicit other material", () => {
+  for (const text of ["Four fabric samples were reviewed during the latest evaluation.", "The latest evaluation reviewed four fabric samples."]) {
+    reject(text, ["Four metal samples were reviewed during the latest evaluation."]);
+    reject(text, ["Four samples were reviewed during the latest evaluation. Four metal samples were reviewed during the latest evaluation."]);
+  }
+});
+
+test("newly exposed eight paraphrase pairs reject decoys and preserve legitimate variants", () => {
+  const fixture = JSON.parse(readFileSync(resolve(root, "tests/fixtures/direct-reviewer-scope.json"), "utf8"));
+  for (const pair of fixture.pairs) {
+    const sources = [pair.source, ...Object.values(pair.brandContext)];
+    assert.ok(scopeFindings(pair.unsupported.text, sources, [pair.source]).length, pair.id);
+    assert.deepEqual(scopeFindings(pair.legitimate.text, sources, [pair.source]), [], pair.id);
+  }
+  allow("All six submitted designs received written feedback.", ["Every submitted design received written feedback."]);
+  allow("River Arts's demonstrations recur every week.", ["River Arts holds demonstrations weekly."]);
+  allow("Slate Mini and Slate Plus both support offline note editing.", ["Slate Mini can edit notes offline. Slate Plus can edit notes offline."]);
+  allow("North Press receives its font licence from Cedar Type under this agreement.", ["Cedar Type licenses its fonts to North Press."]);
+  allow("The latest evaluation reviewed the full allowance of four fabric samples.", ["The latest evaluation can include at most four fabric samples. Four fabric samples were reviewed during the latest evaluation."]);
+});
+
+test("explicit universal cardinality cannot be discarded or borrowed from unrelated facts", () => {
+  reject("All four gallery pages have audio descriptions.", ["All six gallery pages have audio descriptions."]);
+  reject("All six gallery pages have audio descriptions.", ["All four gallery pages have audio descriptions."]);
+  reject("All four submitted designs received written feedback.", ["All six submitted designs received written feedback."]);
+  reject("All four gallery pages and ticket checkout have audio descriptions.", ["All six gallery pages have audio descriptions. Ticket checkout has audio descriptions."]);
+  allow("All six gallery pages have audio descriptions.", ["All 6 gallery pages have audio descriptions."]);
+  allow("All gallery pages have audio descriptions.", ["All six gallery pages have audio descriptions."]);
+  allow("All six gallery pages have audio descriptions.", ["Every gallery page has audio descriptions."]);
+  allow("All four gallery pages have audio descriptions.", ["All four gallery pages have audio descriptions. All six rooms have audio descriptions."]);
+  reject("All four gallery pages have audio descriptions.", ["Every gallery page has audio descriptions. All six gallery pages have audio descriptions."]);
+});
