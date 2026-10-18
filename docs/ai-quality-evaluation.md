@@ -2,6 +2,8 @@
 
 ## Current grounding implementation
 
+Latest runtime: [durable staged delivery](staged-grounding-delivery-2026-10-18.md). Offline replay covers all 719 captured units and completes all three packs through actual-route mocked reviews and isolated Neon persistence. This establishes protocol/coverage/recovery behavior, not new live semantic quality or model speed. There are no new live quality scores. Final HTTP 200 shape remains unchanged, but clients must drive HTTP 202 stage continuations; older one-shot clients need a reload.
+
 The [server-side grounding report](factual-grounding-2026-10-18.md) supersedes prompt-only mitigation as the implementation. Its extraction, structured semantic review, deterministic guards, one correction pass and fresh revalidation run before successful persistence/delivery. The newly authorized [held-out live campaign](controlled-grounding-benchmark-2026-10-18.md) captured 84 drafts but stopped after an uncertain first review at the shared deadline. No candidate pack completed grounding; the verdict is NO-GO. Seven calls were admitted against the fresh GBP9 ledger, then execution/access were disabled and the Preview deleted. The historical live results below belong to the separate closed GBP5 campaign, not this pipeline.
 
 ## Scope and baseline

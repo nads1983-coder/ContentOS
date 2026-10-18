@@ -1,0 +1,311 @@
+{
+  "recordedAt": "2026-10-18T10:08:39.211Z",
+  "kind": "offline-mocked-delivery-not-live-validation",
+  "paidCalls": 0,
+  "sourceHashes": {
+    "lib/generation-pipeline.ts": "55debbf8c02a3e8395c547c156be67adc58b947e4a5db7e49db2db157f4084df",
+    "lib/generation-stages.ts": "58b86f972afbb1d7f4414b6ac9192379f64511ae8ffbf7c72f33e025be320a60",
+    "lib/grounding-batches.ts": "8bb82bb8b9bcb9f6c0875658e0d8236675943eaae755ff00df6edc3db0c34f9f",
+    "lib/factual-grounding.ts": "8b9d9d6c3f69ffe4a2fe4493882e343d4632c5ec9b50e78dd735b0c9509d4dae",
+    "app/api/generate/route.ts": "0f13c403ec33442ac3e8c719e4f3237b9d21ee9cbb6c67e6d6b36b4462666321"
+  },
+  "limitations": [
+    "Review decisions are mechanical test certificates, not independent semantic judgments. They prove orchestration and coverage only.",
+    "Offline execution time excludes live provider and database latency; it is not an end-to-end customer latency estimate.",
+    "No successful prior live review exists to calibrate review throughput. Latency scenarios are assumptions, not measured speedups.",
+    "Illustrative costs use four UTF-8 bytes per token and mocked review output sizes. Actual tokenizer/reasoning output/caching may differ.",
+    "Reservations use one byte per input token plus framing, capped output and a 25% buffer. Unknown/failed admissions remain reserved.",
+    "Parallel-two is an analytical alternative only; the implemented journal intentionally admits one call at a time per account attempt."
+  ],
+  "results": [
+    {
+      "id": "H1",
+      "formats": 14,
+      "coveredUnits": 228,
+      "expectedUnits": 228,
+      "unchangedUnits": true,
+      "deterministicFlags": 0,
+      "offlineCompleted": true,
+      "offlineExecutionMs": 72.701708,
+      "mockCertificateCpuMs": 28.68437399999999,
+      "liveDraftLatencyMs": 45151,
+      "liveDraftCostUsd": 0.0590415,
+      "actualReviewLatencyMs": null,
+      "actualReviewCostUsd": null,
+      "callsIfInitialReviewPasses": 6,
+      "reviewBatches": 5,
+      "maximumCallsWithFullCorrectionRevalidation": 11,
+      "previousMonolithicInputBytesWithCurrentAnnotations": 36928,
+      "capturedOriginalMonolithicRequestBytes": 45618,
+      "maximumBatchRequestBytes": 33779,
+      "maximumBatchInputBytes": 26132,
+      "totalBatchRequestBytes": 164705,
+      "mockedReviewOutputBytes": 19502,
+      "illustrativeKnownDraftPlusReviewUsd": 0.1993569375,
+      "actualInitialPassReservationUsd": 1.290169,
+      "hypotheticalWallTimeSeconds": [
+        {
+          "assumedReviewSeconds": 10,
+          "sequential": 95.15100000000001,
+          "parallelTwo": 75.15100000000001
+        },
+        {
+          "assumedReviewSeconds": 20,
+          "sequential": 145.151,
+          "parallelTwo": 105.15100000000001
+        },
+        {
+          "assumedReviewSeconds": 40,
+          "sequential": 245.151,
+          "parallelTwo": 165.151
+        }
+      ],
+      "stages": [
+        {
+          "stage": "draft",
+          "requestBytes": 16509,
+          "inputBytes": 10522,
+          "outputBytes": 16739,
+          "mockCpuMs": 0.04783300000002555,
+          "outputTokenLimit": 24000
+        },
+        {
+          "stage": "review",
+          "requestBytes": 32667,
+          "inputBytes": 25028,
+          "outputBytes": 4068,
+          "mockCpuMs": 6.228665999999976,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 33421,
+          "inputBytes": 25768,
+          "outputBytes": 4124,
+          "mockCpuMs": 8.127166999999986,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 33276,
+          "inputBytes": 25615,
+          "outputBytes": 4118,
+          "mockCpuMs": 3.6795829999999796,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 33779,
+          "inputBytes": 26132,
+          "outputBytes": 4110,
+          "mockCpuMs": 4.257124999999974,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 31562,
+          "inputBytes": 24099,
+          "outputBytes": 3082,
+          "mockCpuMs": 6.344000000000051,
+          "outputTokenLimit": 4800
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "formats": 14,
+      "coveredUnits": 267,
+      "expectedUnits": 267,
+      "unchangedUnits": true,
+      "deterministicFlags": 0,
+      "offlineCompleted": true,
+      "offlineExecutionMs": 80.18670799999995,
+      "mockCertificateCpuMs": 26.323913999999945,
+      "liveDraftLatencyMs": 55449,
+      "liveDraftCostUsd": 0.0715225,
+      "actualReviewLatencyMs": null,
+      "actualReviewCostUsd": null,
+      "callsIfInitialReviewPasses": 7,
+      "reviewBatches": 6,
+      "maximumCallsWithFullCorrectionRevalidation": 13,
+      "previousMonolithicInputBytesWithCurrentAnnotations": 41798,
+      "capturedOriginalMonolithicRequestBytes": 51377,
+      "maximumBatchRequestBytes": 36153,
+      "maximumBatchInputBytes": 28342,
+      "totalBatchRequestBytes": 210178,
+      "mockedReviewOutputBytes": 23202,
+      "illustrativeKnownDraftPlusReviewUsd": 0.244682375,
+      "actualInitialPassReservationUsd": 1.48245,
+      "hypotheticalWallTimeSeconds": [
+        {
+          "assumedReviewSeconds": 10,
+          "sequential": 115.449,
+          "parallelTwo": 85.449
+        },
+        {
+          "assumedReviewSeconds": 20,
+          "sequential": 175.449,
+          "parallelTwo": 115.449
+        },
+        {
+          "assumedReviewSeconds": 40,
+          "sequential": 295.449,
+          "parallelTwo": 175.449
+        }
+      ],
+      "stages": [
+        {
+          "stage": "draft",
+          "requestBytes": 16440,
+          "inputBytes": 10453,
+          "outputBytes": 19582,
+          "mockCpuMs": 0.025415999999950145,
+          "outputTokenLimit": 24000
+        },
+        {
+          "stage": "review",
+          "requestBytes": 35205,
+          "inputBytes": 27414,
+          "outputBytes": 4119,
+          "mockCpuMs": 4.274124999999913,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 35063,
+          "inputBytes": 27272,
+          "outputBytes": 4320,
+          "mockCpuMs": 5.60029099999997,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 34982,
+          "inputBytes": 27177,
+          "outputBytes": 4044,
+          "mockCpuMs": 3.256917000000044,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 35733,
+          "inputBytes": 27934,
+          "outputBytes": 4226,
+          "mockCpuMs": 5.4274580000000014,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 36153,
+          "inputBytes": 28342,
+          "outputBytes": 4185,
+          "mockCpuMs": 5.12341600000002,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 33042,
+          "inputBytes": 25551,
+          "outputBytes": 2308,
+          "mockCpuMs": 2.6162910000000466,
+          "outputTokenLimit": 4800
+        }
+      ]
+    },
+    {
+      "id": "H3",
+      "formats": 14,
+      "coveredUnits": 224,
+      "expectedUnits": 224,
+      "unchangedUnits": true,
+      "deterministicFlags": 0,
+      "offlineCompleted": true,
+      "offlineExecutionMs": 70.26204100000007,
+      "mockCertificateCpuMs": 34.61829300000011,
+      "liveDraftLatencyMs": 52906,
+      "liveDraftCostUsd": 0.0652505,
+      "actualReviewLatencyMs": null,
+      "actualReviewCostUsd": null,
+      "callsIfInitialReviewPasses": 6,
+      "reviewBatches": 5,
+      "maximumCallsWithFullCorrectionRevalidation": 11,
+      "previousMonolithicInputBytesWithCurrentAnnotations": 37062,
+      "capturedOriginalMonolithicRequestBytes": 45895,
+      "maximumBatchRequestBytes": 35848,
+      "maximumBatchInputBytes": 28035,
+      "totalBatchRequestBytes": 172585,
+      "mockedReviewOutputBytes": 19727,
+      "illustrativeKnownDraftPlusReviewUsd": 0.2098009375,
+      "actualInitialPassReservationUsd": 1.307173,
+      "hypotheticalWallTimeSeconds": [
+        {
+          "assumedReviewSeconds": 10,
+          "sequential": 102.906,
+          "parallelTwo": 82.906
+        },
+        {
+          "assumedReviewSeconds": 20,
+          "sequential": 152.906,
+          "parallelTwo": 112.906
+        },
+        {
+          "assumedReviewSeconds": 40,
+          "sequential": 252.906,
+          "parallelTwo": 172.906
+        }
+      ],
+      "stages": [
+        {
+          "stage": "draft",
+          "requestBytes": 16403,
+          "inputBytes": 10419,
+          "outputBytes": 18504,
+          "mockCpuMs": 0.027874999999994543,
+          "outputTokenLimit": 24000
+        },
+        {
+          "stage": "review",
+          "requestBytes": 34772,
+          "inputBytes": 26959,
+          "outputBytes": 4253,
+          "mockCpuMs": 5.854417000000012,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 34099,
+          "inputBytes": 26296,
+          "outputBytes": 4122,
+          "mockCpuMs": 8.99350000000004,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 34704,
+          "inputBytes": 26875,
+          "outputBytes": 4114,
+          "mockCpuMs": 4.589124999999967,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 35848,
+          "inputBytes": 28035,
+          "outputBytes": 4382,
+          "mockCpuMs": 11.190459000000033,
+          "outputTokenLimit": 4800
+        },
+        {
+          "stage": "review",
+          "requestBytes": 33162,
+          "inputBytes": 25585,
+          "outputBytes": 2856,
+          "mockCpuMs": 3.9629170000000613,
+          "outputTokenLimit": 4800
+        }
+      ]
+    }
+  ],
+  "totalCoverage": 719,
+  "releaseVerdict": "NO-GO pending separately authorized end-to-end live validation"
+}

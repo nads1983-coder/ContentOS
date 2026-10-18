@@ -4,6 +4,10 @@ One user-authorized campaign on 18 October 2026, separate from the closed GBP5 c
 
 **CLOSED:** seven requests admitted: six completed drafts and one uncertain review. Full reservations retained at GBP4.262720. The review ended at the shared 90-second pipeline deadline; no review result was available. No retry or remaining review slot was dispatched. The Preview was deleted, temporary role revoked, and audit retained. `prepare` and `execute` now refuse before credential/database access. The release verdict remains NO-GO.
 
+## Later offline delivery replay
+
+`node scripts/grounding-benchmark/offline-delivery.mjs` exercises the revised staged route against these captured synthetic drafts, with mechanical mock review decisions and an in-memory transactional repository. It needs no credentials and has no provider transport. It writes `docs/benchmarks/grounding-2026-10-18/offline-delivery.json`, including exact coverage, payload bytes, source hashes and explicitly hypothetical cost/latency scenarios. This does not reopen the campaign or certify semantic accuracy/live performance. See [staged delivery evidence](../../docs/staged-grounding-delivery-2026-10-18.md) for the separate isolated-database results and unexecuted live proposal.
+
 ## Frozen comparison
 
 - Production baseline: `6c75fab8e995e94c53bec400aed01991e1ee0642`.

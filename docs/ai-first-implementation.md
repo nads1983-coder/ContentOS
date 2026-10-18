@@ -1,6 +1,6 @@
 # AI-first Studio implementation and release review
 
-Date: 2026-10-18. This branch is a reviewable preview, not a production rollout. Current launch verdict and executed evidence: [release gates](release-gates-2026-10-18.md). The [server-side validation and correction pipeline](factual-grounding-2026-10-18.md) is implemented and locally tested, but the newly authorized [held-out live evaluation](controlled-grounding-benchmark-2026-10-18.md) stopped at the first uncertain review and produced no validated candidate pack. The verdict remains NO-GO. Its fresh GBP9 campaign is closed; temporary access/deployment were removed. No further paid calls or budget increase are requested.
+Date: 2026-10-18. This branch is a reviewable preview, not a production rollout. Current launch verdict and executed evidence: [release gates](release-gates-2026-10-18.md). The [server-side validation and correction pipeline](factual-grounding-2026-10-18.md) now uses [durable bounded stages](staged-grounding-delivery-2026-10-18.md), replacing the shared deadline that blocked the [held-out live evaluation](controlled-grounding-benchmark-2026-10-18.md). Local checks pass, including all 719 captured units and isolated SQL/browser recovery. The verdict remains NO-GO because live end-to-end delivery is unverified. The GBP9 campaign is closed; its temporary access/deployment were removed. No new paid calls or benchmark deployments were made. A minimal GBP4 live check is proposed separately, not authorized.
 
 ## Verified baseline and boundaries
 

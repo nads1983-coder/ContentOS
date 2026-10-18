@@ -72,7 +72,7 @@ export function buildGroundingContext(request: GenerationInput): GroundingContex
   };
 }
 
-function fields(result: GenerationResult) {
+export function groundingFields(result: GenerationResult) {
   const values: Array<[string, string]> = [["title", result.title], ["summary", result.summary]];
   result.sections.forEach((section, i) => {
     for (const key of ["title", "platform", "body", "cta"] as const) values.push([`sections.${i}.${key}`, section[key] ?? ""]);
@@ -160,7 +160,7 @@ function assessmentText(unit: GroundingUnit) {
 
 export function groundingUnits(result: GenerationResult): GroundingUnit[] {
   const units: GroundingUnit[] = [];
-  for (const [path, text] of fields(result)) {
+  for (const [path, text] of groundingFields(result)) {
     const annotations = formatAnnotations(result, path, text);
     for (const part of spans(text)) {
       const unit: GroundingUnit = { ...part, path, id: `u${units.length}` };
@@ -344,10 +344,10 @@ export function parseGroundingReview(text: string, units: GroundingUnit[], conte
   return { decisions };
 }
 
-function repair(result: GenerationResult, units: GroundingUnit[], review: GroundingReview, request: GenerationInput) {
+export function repairGrounding(result: GenerationResult, units: GroundingUnit[], review: GroundingReview, request: GenerationInput) {
   const replacements = new Map(review.decisions.filter(d => d.kind === "unsupported").map(d => [d.id, d.replacement!]));
   const changed = new Map<string, string>();
-  for (const [path, original] of fields(result)) {
+  for (const [path, original] of groundingFields(result)) {
     let text = original;
     for (const unit of units.filter(u => u.path === path && replacements.has(u.id)).reverse()) {
       const replacement = replacements.get(unit.id)!;
@@ -377,7 +377,7 @@ export async function groundGeneration(result: GenerationResult, request: Genera
     const violations = review.decisions.filter(d => d.kind === "unsupported");
     if (!violations.length) return current;
     if (pass === GROUNDING_LIMITS.reviews - 1) throw new GroundingError("unresolved_claims");
-    current = repair(current, units, review, request);
+    current = repairGrounding(current, units, review, request);
   }
   throw new GroundingError();
 }

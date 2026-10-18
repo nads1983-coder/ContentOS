@@ -126,9 +126,9 @@ try {
   assert.equal((await request("sign-out", {}, cookieA)).status, 200); assert.equal(await session(cookieA), null);
   assert.equal((await session(cookieB)).user.id, bob.id);
   checks.push("logout revokes only the intended session/account");
-  if (process.argv.includes("--browser")) {
+  if (process.argv.includes("--browser") || process.argv.includes("--staged-browser")) {
     await getPool().query("UPDATE contentos_app.profiles SET data=data || $2::jsonb WHERE id=$1 AND email=$3", [alice.id, JSON.stringify({ plan: "pro_studio", subscription_status: "active" }), alice.email]);
-    const { runAuthenticatedBrowser } = await import("./auth-browser.mjs");
+    const { runAuthenticatedBrowser } = await import(process.argv.includes("--staged-browser") ? "./generation-stages-browser.mjs" : "./auth-browser.mjs");
     await runAuthenticatedBrowser({ alice, bob, passwordA: newPassword, passwordB });
   }
   console.log(JSON.stringify({ status: "PASS", checks, providerCalls: 0, mailSent: 0, productionWrites: 0 }, null, 2));

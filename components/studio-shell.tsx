@@ -43,6 +43,8 @@ import { StudioComposer } from "@/components/studio-composer";
 import { createWorkspaceWriter } from "@/lib/workspace-sync";
 import type { WorkspaceSnapshot, WorkspacePreferences } from "@/lib/workspace-contract";
 import type { GenerationInput } from "@/lib/generation-contract";
+import { continueGeneration, GenerationClientError, readGenerationAttempt, storeGenerationAttempt } from "@/lib/generation-client";
+import type { GenerationAttempt } from "@/lib/generation-client";
 import {
   buildGenerationCopyText,
   buildSectionCopyText,
@@ -94,6 +96,9 @@ const starterText =
   "We just launched a lightweight planning service for busy founders who need consistent content but do not have time to turn every idea into platform-ready posts.";
 
 const LAST_USED_TONE_KEY = "contentos:last-used-tone";
+function generationDeviceStorage() {
+  try { return window.localStorage; } catch { return undefined; }
+}
 
 const sampleCreatedAt = "";
 
@@ -490,7 +495,7 @@ export function StudioShell({
   const [saveStatus, setSaveStatus] = useState("");
   const [historyWarning, setHistoryWarning] = useState("");
   const [undoResults, setUndoResults] = useState<GenerationResult[]>([]);
-  const requestAttempt = useRef<{ fingerprint: string; id: string } | null>(null);
+  const requestAttempt = useRef<GenerationAttempt | null>(null);
   const imageRequestAttempt = useRef<{ fingerprint: string; id: string } | null>(null);
   const imageInFlight = useRef(false);
   const retryIntent = useRef<{ source: string; refinement?: { section: GeneratedSection; action: string } } | null>(null);
@@ -511,6 +516,8 @@ export function StudioShell({
   const [result, setResult] = useState<GenerationResult>(sampleResult);
   const [error, setError] = useState("");
   const [canStartNewAttempt, setCanStartNewAttempt] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState("");
+  const [canResumeGeneration, setCanResumeGeneration] = useState(false);
   const [copiedId, setCopiedId] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -537,7 +544,11 @@ export function StudioShell({
       setWorkspaceReady(false);
       lastWorkspaceState.current = "";
       needsWorkspaceBaseline.current = true;
-      requestAttempt.current = null;
+      requestAttempt.current = accountId ? readGenerationAttempt(generationDeviceStorage(), accountId) : null;
+      setCanResumeGeneration(!!requestAttempt.current);
+      setGenerationProgress(requestAttempt.current ? "An unfinished attempt is saved. Your existing draft is unchanged." : "");
+      setIsPending(false);
+      isGeneratingRef.current = false;
       imageRequestAttempt.current = null;
       setGeneratedImages({});
       setImageSection(null);
@@ -737,7 +748,7 @@ export function StudioShell({
     setSaveStatus(writeStore(nextStore, accountId) ? "Saved on this device" : "Not saved on this device. Download a copy.");
   }
 
-  async function generateContent(nextSource = source, refinement?: { section: GeneratedSection; action: string }) {
+  async function generateContent(nextSource = source, refinement?: { section: GeneratedSection; action: string }, resume = false) {
     if (!hasMounted || isGeneratingRef.current) return;
     if (document.querySelector('[data-content-editing="true"]')) {
       setError("Apply or cancel your manual edits before generating another version.");
@@ -747,12 +758,12 @@ export function StudioShell({
     setCanStartNewAttempt(false);
     const cleanedSource = cleanPlainText(nextSource);
 
-    if (!isPro && hasPaidSelection) {
+    if (!resume && !isPro && hasPaidSelection) {
       setError("Upgrade to Pro to unlock repurposing, formatter presets, CTAs, carousels, video scripts, email drafts, and saved history.");
       return;
     }
 
-    if (usage.remaining <= 0) {
+    if (!resume && usage.remaining <= 0) {
       setError(
         isPro
           ? "You have used this month's generation allowance."
@@ -764,8 +775,10 @@ export function StudioShell({
     isGeneratingRef.current = true;
     userInteractedDuringGenerationRef.current = false;
     setIsPending(true);
+    setGenerationProgress("Checking saved progress...");
+    setCanResumeGeneration(false);
 
-    const payload: GenerationInput = {
+    const payload: GenerationInput = resume && requestAttempt.current ? requestAttempt.current.payload : {
       source: refinement ? result.source : cleanedSource,
       brandName,
       audience,
@@ -782,39 +795,36 @@ export function StudioShell({
     };
     const fingerprint = JSON.stringify(payload);
     retryIntent.current = { source: nextSource, refinement };
-    if (requestAttempt.current?.fingerprint !== fingerprint) requestAttempt.current = { fingerprint, id: crypto.randomUUID() };
+    if (requestAttempt.current?.fingerprint !== fingerprint) requestAttempt.current = { fingerprint, id: crypto.randomUUID(), payload, createdAt: Date.now() };
+    const attempt = requestAttempt.current;
+    const effectiveRefinement = resume && payload.refinement ? payload.refinement : refinement;
+    if (accountId) storeGenerationAttempt(generationDeviceStorage(), accountId, attempt);
 
     try {
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-ContentOS-Account": accountId ?? ""
-        },
-        body: JSON.stringify({ ...payload, requestId: requestAttempt.current.id })
+      const data = await continueGeneration(attempt, accountId ?? "", {
+        isCurrent: () => activeAccount.current === accountId && requestAttempt.current === attempt,
+        progress: setGenerationProgress,
+        checkpoint: saved => { if (accountId) storeGenerationAttempt(generationDeviceStorage(), accountId, saved); }
       });
-
-      const data = (await response.json()) as GenerationResult | { error?: string; code?: string };
       if (activeAccount.current !== accountId) return;
 
-      if (!response.ok) {
-        if ("code" in data && ["generation_failed", "invalid_generation", "grounding_failed", "generation_timeout", "request_failed", "request_expired"].includes(data.code ?? "")) setCanStartNewAttempt(true);
-        const message = "error" in data ? data.error : undefined;
-        throw new Error(message ?? "Generation failed.");
-      }
-
-      if (!("sections" in data)) {
-        throw new Error("Generation returned an unexpected response.");
-      }
-
       const cleanedResult = cleanGenerationResult(data);
+      if (accountId) storeGenerationAttempt(generationDeviceStorage(), accountId, null);
       requestAttempt.current = null;
       retryIntent.current = null;
+      setGenerationProgress("");
       pendingAutoScrollIdRef.current = cleanedResult.id;
-      if (refinement) {
-        const replacement = cleanedResult.sections.find(s => s.type === refinement.section.type);
+      if (effectiveRefinement) {
+        const replacement = cleanedResult.sections.find(s => s.type === effectiveRefinement.section.type);
         if (!replacement) throw new Error("The refinement did not return the requested content.");
-        editSection({ ...replacement, id: refinement.section.id });
+        if (result.sections.some(s => s.id === effectiveRefinement.section.id)) {
+          editSection({ ...replacement, id: effectiveRefinement.section.id });
+        } else {
+          // After a reload the original pack may not be open. Keep the completed
+          // refinement in recent history without overwriting the current draft.
+          persistStore(addRecent(store, cleanedResult));
+          setGenerationProgress("Validated refinement saved in recent history. Your current draft is unchanged.");
+        }
       } else {
         setUndoResults([]);
         setResult(cleanedResult);
@@ -827,14 +837,20 @@ export function StudioShell({
       }
     } catch (generationError) {
       if (activeAccount.current !== accountId) return;
+      const terminal = generationError instanceof GenerationClientError && ["generation_failed", "grounding_failed", "generation_uncertain", "generation_budget", "request_failed", "request_expired"].includes(generationError.code);
+      setCanStartNewAttempt(terminal);
+      setCanResumeGeneration(!terminal && !!requestAttempt.current);
+      setGenerationProgress("Your existing draft is unchanged.");
       setError(
         generationError instanceof Error
           ? generationError.message
           : "Generation failed. Try again."
       );
     } finally {
-      isGeneratingRef.current = false;
-      setIsPending(false);
+      if (activeAccount.current === accountId) {
+        isGeneratingRef.current = false;
+        setIsPending(false);
+      }
     }
   }
 
@@ -1128,6 +1144,7 @@ export function StudioShell({
               containerRef={outputWorkspaceRef}
               result={result}
               sourceText={result.source}
+              progress={generationProgress}
               activeFilter={activeFilter}
               visibleSections={visibleSections}
               error={error}
@@ -1176,6 +1193,8 @@ export function StudioShell({
 
           {canStartNewAttempt ? <button type="button" disabled={isPending} onClick={() => { requestAttempt.current = null; const intent = retryIntent.current; void generateContent(intent?.source ?? source, intent?.refinement); }} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm"><RefreshCcw size={16} />Start a new attempt</button> : null}
 
+          <p className="min-h-5 text-sm text-muted" role="status" aria-live="polite">{generationProgress}</p>
+          {canResumeGeneration ? <button type="button" disabled={!hasMounted || isPending} onClick={() => void generateContent(source, undefined, true)} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm disabled:opacity-40"><RefreshCcw size={16} />Resume saved attempt</button> : null}
           <p className="min-h-5 text-xs text-muted" role="status">{saveStatus}</p>
           {historyWarning ? <p className="text-xs text-amber-200" role="status">{historyWarning}</p> : null}
           <button type="button" onClick={() => {
@@ -1432,6 +1451,7 @@ function OutputPanel({
   containerRef,
   result,
   sourceText,
+  progress,
   activeFilter,
   visibleSections,
   error,
@@ -1456,6 +1476,7 @@ function OutputPanel({
   containerRef: React.RefObject<HTMLElement | null>;
   result: GenerationResult;
   sourceText: string;
+  progress: string;
   activeFilter: FilterId;
   visibleSections: GeneratedSection[];
   error: string;
@@ -1538,7 +1559,7 @@ function OutputPanel({
 
       <div className="mt-4 grid w-full min-w-0 gap-4 sm:mt-3 sm:gap-3">
         {isPending ? (
-          <LoadingCard />
+          <LoadingCard progress={progress} />
         ) : visibleSections.length ? (
           visibleSections.map((section) => (
             <OutputCard
@@ -2429,15 +2450,15 @@ function ImageGenerationPanel({
   );
 }
 
-function LoadingCard() {
+function LoadingCard({ progress }: { progress: string }) {
   return (
     <div className="rounded border border-violet/30 bg-violet/10 p-5">
       <div className="flex items-center gap-3">
         <Loader2 className="animate-spin text-goldSoft" size={20} />
         <div>
-          <p className="font-semibold text-bone">Building the content set</p>
+          <p className="font-semibold text-bone">{progress || "Checking saved progress..."}</p>
           <p className="mt-1 text-sm text-muted">
-            Structuring it for clean platform-ready reuse.
+            Your previous content is unchanged.
           </p>
         </div>
       </div>

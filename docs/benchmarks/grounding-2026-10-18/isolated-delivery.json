@@ -1,0 +1,132 @@
+{
+  "recordedAt": "2026-10-18T10:05:45.244Z",
+  "paidCalls": 0,
+  "productionWrites": 0,
+  "limitations": [
+    "Real isolated Neon transactions, synthetic fixtures and mechanical mock review certificates; not live AI validation.",
+    "Timings include local processing and warm isolated database network latency, but no model latency. Not production performance."
+  ],
+  "checks": [
+    "separate pooled transactions admit exactly one provider stage",
+    "repeated/lost-ack checkpoint is idempotent, preserves original admission",
+    "draft plus review can exceed the former shared deadline using separate durable stages",
+    "real PostgreSQL final-save rollback retains validated checkpoint without charging",
+    "concurrent final saves converge, with one charge and unchanged lifetime entitlement/history",
+    "account isolation refuses another account's stage checkpoint",
+    "crash/lost result becomes terminal uncertainty with nonrefunded spending and no lease takeover",
+    "H1: captured 14-format pack persisted once with real isolated row locks and mocked review certificates",
+    "H2: captured 14-format pack persisted once with real isolated row locks and mocked review certificates",
+    "H3: captured 14-format pack persisted once with real isolated row locks and mocked review certificates"
+  ],
+  "results": [
+    {
+      "id": "H1",
+      "isolatedDatabaseAndMockExecutionMs": 1553.4374169999996,
+      "mockProviderCalls": 6,
+      "reviewedUnits": 228,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "draft",
+          "databaseAndMockMs": 180.76000000000022
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 225.877833
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 205.47758299999987
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 274.461542
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 265.08629199999996
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 304.8490419999998
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "isolatedDatabaseAndMockExecutionMs": 1651.695791,
+      "mockProviderCalls": 7,
+      "reviewedUnits": 267,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "draft",
+          "databaseAndMockMs": 236.32170900000074
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 190.34229200000027
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 208.530667
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 228.41566599999987
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 241.82850000000053
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 217.26474999999937
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 232.73941699999978
+        }
+      ]
+    },
+    {
+      "id": "H3",
+      "isolatedDatabaseAndMockExecutionMs": 1413.3838750000004,
+      "mockProviderCalls": 6,
+      "reviewedUnits": 224,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "draft",
+          "databaseAndMockMs": 241.60079200000018
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 213.73062500000015
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 208.42483299999913
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 224.51704100000006
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 208.37312500000007
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 220.2430000000004
+        }
+      ]
+    }
+  ]
+}

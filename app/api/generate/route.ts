@@ -1,194 +1,87 @@
 import { rejectUnsafeWrite } from "@/lib/request-security";
 import OpenAI from "openai";
-import { APIConnectionTimeoutError, APIUserAbortError } from "openai/error";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isDatabaseConfigured } from "@/lib/backend";
 import { analyticsEvent, captureServerError } from "@/lib/monitoring";
-import { buildInput, buildInstructions } from "@/lib/prompts";
-import {
-  GENERATION_LIMITS,
-  GenerationOutputError,
-  generationOutputSchema,
-  parseGenerationOutput,
-  remainingGenerationTime,
-  readGenerationRequest
-} from "@/lib/generation-contract";
+import { readGenerationRequest, remainingGenerationTime } from "@/lib/generation-contract";
 import type { GenerationInput } from "@/lib/generation-contract";
 import { GenerationReservationError } from "@/lib/generation-reservation";
-import type { GenerationAdmission } from "@/lib/generation-reservation";
-import { completeTextGeneration, failTextGeneration, reserveTextGeneration } from "@/lib/repository";
-import { GROUNDING_LIMITS, GroundingError, groundGeneration, groundingReviewInstructions, groundingReviewSchema } from "@/lib/factual-grounding";
+import { beginTextGenerationStage, checkpointTextGenerationStage } from "@/lib/repository";
+import { PIPELINE_LIMITS } from "@/lib/generation-pipeline";
+import type { ProviderReceipt } from "@/lib/generation-pipeline";
+import type { StageAdmission } from "@/lib/generation-stages";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-function logGenerationFailure(error: unknown, event: "reservation" | "reservation_failure" | "provider" | "completion") {
-  const errorClass = error instanceof GenerationOutputError ? "invalid_output"
-    : error instanceof APIConnectionTimeoutError ? "provider_timeout"
-      : error instanceof APIUserAbortError ? "provider_abort" : "operation_failure";
-  captureServerError(new Error("Generation operation failed."), {
-    route: "/api/generate", event, error_class: errorClass
-  });
+function logFailure(event: string) {
+  try { captureServerError(new Error("Generation stage failed."), { route: "/api/generate", event }); } catch { /* Best effort. */ }
 }
 
 export async function POST(nextRequest: NextRequest) {
   const startedAt = performance.now();
-  const providerTokens: Record<string, number> = {};
-  const report = (outcome: "success" | "failure" | "replay", outputCount = 0) => {
-    // Telemetry must never change a generation's outcome or include user input.
-    try {
-      analyticsEvent(`text_generation_${outcome}`, {
-        duration_ms: Math.max(0, Math.round(performance.now() - startedAt)),
-        output_count: outputCount,
-        ...providerTokens
-      });
-    } catch {
-      // Observability is best-effort; generation state is authoritative.
-    }
-  };
   const rejected = rejectUnsafeWrite(nextRequest);
   if (rejected) return rejected;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Login required." }, { status: 401 });
   if (nextRequest.headers.get("X-ContentOS-Account") !== user.id) {
-    return NextResponse.json({
-      error: "Your account session changed. Reload the page or sign in again before continuing.",
-      code: "account_changed"
-    }, { status: 409 });
+    return NextResponse.json({ error: "Your account session changed. Reload the page or sign in again before continuing.", code: "account_changed" }, { status: 409 });
   }
   let request: GenerationInput;
-  try {
-    request = await readGenerationRequest(nextRequest);
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Invalid request." },
-      { status: 400 }
-    );
+  const expected = nextRequest.headers.get("X-ContentOS-Stage");
+  if (expected !== null && !/^1:(?:draft|review|correction|revalidation|save):[01]:\d{1,2}$/.test(expected)) {
+    return NextResponse.json({ error: "Invalid generation stage." }, { status: 400 });
   }
-
-  if (!isDatabaseConfigured()) {
-    return NextResponse.json({ error: "Generation storage is unavailable. No generation was started." }, { status: 503 });
+  try { request = await readGenerationRequest(nextRequest); } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid request." }, { status: 400 });
   }
-  if (!process.env.OPENAI_API_KEY) {
-    return NextResponse.json({ error: "AI generation is not configured." }, { status: 503 });
+  if (!isDatabaseConfigured()) return NextResponse.json({ error: "Generation storage is unavailable. No generation was started." }, { status: 503 });
+  if (!process.env.OPENAI_API_KEY || (process.env.OPENAI_MODEL && process.env.OPENAI_MODEL !== PIPELINE_LIMITS.model)) {
+    return NextResponse.json({ error: "AI generation is not configured with the bounded pipeline model." }, { status: 503 });
   }
-
-  // Older clients can omit requestId; new clients retain it across a logical retry.
   const requestId = request.requestId ?? crypto.randomUUID();
-  const headers = { "X-Request-Id": requestId };
-  let admission: GenerationAdmission;
-  try {
-    admission = await reserveTextGeneration(user.id, requestId, request);
-  } catch (error) {
-    report("failure");
-    if (error instanceof GenerationReservationError) {
-      return NextResponse.json({ error: error.message, code: error.code, requestId }, {
-        status: error.status,
-        headers: { ...headers, ...(error.retryAfterSeconds !== undefined ? { "Retry-After": String(error.retryAfterSeconds) } : {}) }
-      });
-    }
-    logGenerationFailure(error, "reservation");
-    return NextResponse.json({ error: "Could not reserve this generation. No generation was started.", requestId }, { status: 503, headers });
+  const headers = { "X-Request-Id": requestId, "Cache-Control": "no-store" };
+  if (nextRequest.signal.aborted || remainingGenerationTime(performance.now() - startedAt) < 1000) {
+    return NextResponse.json({ error: "Request ended before a generation stage started.", requestId }, { status: 408, headers });
   }
-  if (admission.status === "replay") {
-    report("replay", admission.result.sections.length);
-    return NextResponse.json(admission.result, { headers });
+  let admission: StageAdmission;
+  try { admission = await beginTextGenerationStage(user.id, requestId, request, expected); } catch (error) {
+    if (error instanceof GenerationReservationError) return NextResponse.json({ error: error.message, code: error.code, requestId }, {
+      status: error.status, headers: { ...headers, ...(error.retryAfterSeconds ? { "Retry-After": String(error.retryAfterSeconds) } : {}) }
+    });
+    logFailure("stage_admission");
+    return NextResponse.json({ error: "Could not confirm saved progress. Resume with the same request ID; no provider call was started by this request.", code: "generation_save_uncertain", requestId }, { status: 503, headers });
   }
+  if (admission.status === "replay") return NextResponse.json(admission.result, { headers });
+  if (admission.status === "progress") return NextResponse.json(admission.progress, {
+    status: admission.progress.status === "failed" ? 409 : 202, headers: { ...headers, "Retry-After": "2" }
+  });
 
-  let result;
+  // One committed stage reservation, one bounded provider call. Disconnecting the
+  // browser does not cancel accepted work; the bounded call can still checkpoint.
+  const stage = admission.stage;
+  const callStarted = performance.now();
+  let receipt: ProviderReceipt | null = null;
   try {
-    // All provider stages share one deadline and the original durable admission.
     const remaining = Math.floor(remainingGenerationTime(performance.now() - startedAt));
-    if (!remaining) throw new DOMException("Generation deadline exceeded.", "TimeoutError");
-    const signal = AbortSignal.any([nextRequest.signal, AbortSignal.timeout(remaining)]);
-    signal.throwIfAborted();
-    const addUsage = (usage: { input_tokens?: number; output_tokens?: number; total_tokens?: number } | undefined) => {
-      for (const key of ["input_tokens", "output_tokens", "total_tokens"] as const) {
-        const count = usage?.[key];
-        if (typeof count === "number" && Number.isSafeInteger(count) && count >= 0) providerTokens[key] = (providerTokens[key] ?? 0) + count;
-      }
-    };
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      timeout: GENERATION_LIMITS.timeoutMs,
-      maxRetries: GENERATION_LIMITS.maxRetries,
-      logLevel: "off"
-    });
-    const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL ?? "gpt-5.2",
-      store: false,
-      service_tier: "default",
-      instructions: buildInstructions(),
-      input: buildInput(request),
-      max_output_tokens: GENERATION_LIMITS.maxOutputTokens,
-      text: {
-        format: {
-          type: "json_schema",
-          name: "social_content_generation",
-          strict: true,
-          schema: generationOutputSchema(request.selectedTypes)
-        }
-      }
-    }, {
-      signal
-    });
-    addUsage(response.usage);
-    if (response.status !== "completed") throw new GenerationOutputError("The provider did not complete the generation.");
-    result = parseGenerationOutput(response.output_text, request);
-    result = await groundGeneration(result, request, async input => {
-      signal.throwIfAborted();
-      const review = await client.responses.create({
-        model: process.env.OPENAI_MODEL ?? "gpt-5.2", store: false, service_tier: "default",
-        instructions: groundingReviewInstructions, input,
-        max_output_tokens: GROUNDING_LIMITS.reviewOutputTokens,
-        text: { format: { type: "json_schema", name: "content_grounding_review", strict: true, schema: groundingReviewSchema() } }
-      }, { signal });
-      addUsage(review.usage);
-      if (review.status !== "completed") throw new GroundingError();
-      return review.output_text;
-    });
-  } catch (error) {
-    // Only complete, validated packs may enter history or successful usage accounting.
-    try {
-      await failTextGeneration(user.id, requestId, admission.fingerprint);
-    } catch (reservationError) {
-      logGenerationFailure(reservationError, "reservation_failure");
-    }
-    logGenerationFailure(error, "provider");
-    report("failure");
-    const invalidOutput = error instanceof GenerationOutputError;
-    const ungrounded = error instanceof GroundingError;
-    const timedOut = error instanceof APIConnectionTimeoutError || error instanceof APIUserAbortError ||
-      (error instanceof Error && ["AbortError", "TimeoutError", "APIConnectionTimeoutError", "APIUserAbortError"].includes(error.name));
-    return NextResponse.json({
-      error: ungrounded
-        ? error.reason === "unresolved_claims"
-          ? "The pack still contains claims that could not be supported. Clarify the facts in your brief before trying again. No successful generation was recorded."
-          : "The factual check could not be completed. The unchecked pack was not saved or delivered. No successful generation was recorded."
-        : invalidOutput
-        ? "The AI returned an incomplete or invalid pack. No successful generation was recorded."
-        : timedOut
-          ? "Generation timed out or was cancelled. No successful generation was recorded."
-          : "Generation failed. No successful generation was recorded.",
-      code: ungrounded ? "grounding_failed" : invalidOutput ? "invalid_generation" : timedOut ? "generation_timeout" : "generation_failed",
-      requestId
-    }, { status: invalidOutput ? 502 : timedOut ? 504 : 500, headers });
-  }
-
+    if (remaining < 1000) throw new Error("stage_deadline");
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY,
+      timeout: PIPELINE_LIMITS.stageMs, maxRetries: 0, logLevel: "off" });
+    const response = await client.responses.create(stage.payload, { signal: AbortSignal.timeout(remaining) });
+    receipt = { status: response.status, output_text: response.output_text, usage: response.usage };
+  } catch { logFailure("provider_stage_uncertain"); }
+  const durationMs = performance.now() - callStarted;
+  const count = (value: unknown) => typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : 0;
   try {
-    const completed = await completeTextGeneration(user.id, requestId, admission.fingerprint, result);
-    report("success", completed.sections.length);
-    return NextResponse.json(completed, { headers });
-  } catch (error) {
-    // A commit may have succeeded despite an uncertain acknowledgement. Keep the
-    // reservation intact so retrying this ID can replay, never start another call.
-    logGenerationFailure(error, "completion");
-    report("failure");
-    return NextResponse.json({
-      error: "The generation finished but its save could not be confirmed. Retry with the same request ID to check its status.",
-      code: "generation_save_uncertain",
-      requestId
-    }, { status: 503, headers });
+    const progress = await checkpointTextGenerationStage(user.id, requestId, admission.fingerprint, stage, request, receipt, durationMs);
+    try { analyticsEvent("text_generation_stage", { stage: stage.kind, duration_ms: Math.round(durationMs),
+      outcome: progress.status === "failed" ? "failure" : "checkpoint", input_bytes: stage.inputBytes,
+      input_tokens: count(receipt?.usage?.input_tokens), output_tokens: count(receipt?.usage?.output_tokens),
+      usage_known: [receipt?.usage?.input_tokens, receipt?.usage?.output_tokens].every(v => typeof v === "number" && Number.isSafeInteger(v) && v >= 0) }); } catch { /* Telemetry cannot affect delivery. */ }
+    return NextResponse.json(progress, { status: progress.status === "failed" ? 502 : 202, headers });
+  } catch {
+    logFailure("stage_checkpoint_uncertain");
+    return NextResponse.json({ error: "This stage finished but its checkpoint could not be confirmed. Resume the same attempt to check saved progress. Paid work will not be repeated automatically.", code: "generation_save_uncertain", requestId }, { status: 503, headers });
   }
 }

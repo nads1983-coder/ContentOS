@@ -8,6 +8,7 @@ import { currentUsageWindow } from "@/lib/usage";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
 import { workspaceFromProfile, updateWorkspaceProfile } from "@/lib/workspace-contract";
 import { reserveGenerationInProfile, completeGenerationInProfile, failGenerationInProfile } from "@/lib/generation-reservation";
+import { beginGenerationStage, checkpointGenerationStage } from "@/lib/generation-stages";
 import type { GenerateRequest, GenerationResult } from "@/types/content";
 import type { BrandProfile, OnboardingData, UserProfile, PlanId, SubscriptionStatus } from "@/types/saas";
 
@@ -62,6 +63,12 @@ export async function completeTextGeneration(userId: string, requestId: string, 
 }
 export async function failTextGeneration(userId: string, requestId: string, fingerprint: string) {
   return mutate(userId, data => failGenerationInProfile(data, userId, requestId, fingerprint));
+}
+export async function beginTextGenerationStage(userId: string, ...args: Parameters<typeof beginGenerationStage> extends [unknown, string, ...infer Rest] ? Rest : never) {
+  return mutate(userId, data => beginGenerationStage(data, userId, ...args));
+}
+export async function checkpointTextGenerationStage(userId: string, ...args: Parameters<typeof checkpointGenerationStage> extends [unknown, string, ...infer Rest] ? Rest : never) {
+  return mutate(userId, data => checkpointGenerationStage(data, userId, ...args));
 }
 // Only trusted server billing code may look up an email. User access always uses the session ID.
 export async function getUserProfileByEmail(email: string) {

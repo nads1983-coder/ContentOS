@@ -7,6 +7,8 @@ import { assertWorkspaceAccount, parseWorkspaceGeneration, profileArray } from "
 import type { GenerateRequest, GenerationResult } from "@/types/content";
 import type { GenerationInput } from "@/lib/generation-contract";
 import type { PlanId, UserProfile } from "@/types/saas";
+import { PIPELINE_LIMITS, pipelineHash } from "@/lib/generation-pipeline";
+import type { GenerationPipeline } from "@/lib/generation-pipeline";
 
 export class GenerationReservationError extends Error {
   status: number;
@@ -23,7 +25,7 @@ export class GenerationReservationError extends Error {
 export type GenerationAdmission =
   | { status: "reserved"; requestId: string; fingerprint: string; plan: PlanId }
   | { status: "replay"; requestId: string; result: GenerationResult };
-type Reservation = {
+export type Reservation = {
   requestId: string;
   fingerprint: string;
   status: "reserved" | "completed" | "failed";
@@ -34,6 +36,8 @@ type Reservation = {
   completedAt?: string;
   failedAt?: string;
   result?: GenerationResult;
+  pipeline?: GenerationPipeline;
+  pipelineAudit?: { metrics: GenerationPipeline["metrics"]; reservedMicroUsd: number; reviewedUnits: number };
 };
 type UsageEvent = { id: string; user_id?: string; event_type: string; created_at: string };
 type HistoryItem = { id: string; user_id?: string; created_at: string; payload: unknown };
@@ -158,7 +162,7 @@ function retainedLedger(data: Document, now: Date) {
     if (entry.status === "failed") tombstones[hash] = "failed";
     else if (entry.status === "reserved") {
       // The provider may have succeeded before a process crash. Expiry is terminal, not a retry lease.
-      if (now.getTime() - Date.parse(entry.createdAt) >= GENERATION_RETENTION.reservationMs) tombstones[hash] = "expired";
+      if (now.getTime() - Date.parse(entry.createdAt) >= (entry.pipeline ? PIPELINE_LIMITS.lifetimeMs : GENERATION_RETENTION.reservationMs)) tombstones[hash] = "expired";
       else keep.add(entry);
     } else if (!entry.result || now.getTime() - Date.parse(entry.completedAt ?? entry.createdAt) >= GENERATION_RETENTION.replayMs) tombstones[hash] = "completed";
     else completed.push(entry);
@@ -179,7 +183,7 @@ function retainedLedger(data: Document, now: Date) {
   const updated = retained.length === entries.length ? data : { ...data, generation_reservations_json: retained, generation_tombstones_json: tombstones };
   return { data: updated, entries: retained, tombstones };
 }
-export function reserveGenerationInProfile(data: Document, userId: string, requestId: string, request: GenerateRequest, now = new Date()): { data: Document; result: GenerationAdmission } {
+export function reserveGenerationInProfile(data: Document, userId: string, requestId: string, request: GenerateRequest, now = new Date(), resumePipeline = false): { data: Document; result: GenerationAdmission } {
   assertWorkspaceAccount(data, userId);
   requestIdentity(requestId);
   const fingerprint = generationFingerprint(request), ledger = retainedLedger(data, now);
@@ -190,22 +194,23 @@ export function reserveGenerationInProfile(data: Document, userId: string, reque
   if (existing) {
     if (existing.fingerprint !== fingerprint) throw new GenerationReservationError("requestId was already used for different inputs.", 409, "request_mismatch");
     if (existing.status === "completed" && existing.result) return { data, result: { status: "replay", requestId, result: existing.result } };
+    if (resumePipeline && existing.status === "reserved" && existing.pipeline) return { data, result: { status: "reserved", requestId, fingerprint, plan: existing.plan } };
     throw new GenerationReservationError(existing.status === "failed" ? "This attempt failed or has an uncertain outcome. It will not be regenerated automatically." : "This generation is already in progress or awaiting reconciliation.", 409, existing.status === "failed" ? "request_failed" : "request_in_progress");
   }
-  if (entries.some(r => r.fingerprint === fingerprint && r.status === "reserved")) throw new GenerationReservationError("An identical generation is already in progress.", 409, "duplicate_in_progress");
-  if (entries.filter(r => r.status === "reserved").length >= GENERATION_RETENTION.concurrentRequests) throw new GenerationReservationError("Too many generations are in progress. Wait for them to finish before starting another.", 429, "generation_concurrency_limit");
+  if (entries.some(r => r.fingerprint === fingerprint && r.status === "reserved" && !r.pipeline?.failure)) throw new GenerationReservationError("An identical generation is already in progress.", 409, "duplicate_in_progress");
+  if (entries.filter(r => r.status === "reserved" && !r.pipeline?.failure).length >= GENERATION_RETENTION.concurrentRequests) throw new GenerationReservationError("Too many generations are in progress. Wait for them to finish before starting another.", 429, "generation_concurrency_limit");
   const plan = effectiveGenerationPlan(data, now);
   if (plan === "free" && request.selectedTypes.some(id => contentTypes.find(type => type.id === id)?.paidOnly)) throw new GenerationReservationError("These outputs require a paid plan.", 403, "paid_output_required");
   const { periodStart, periodEnd } = currentUsageWindow(now, hasLifetimeEntitlement(data) ? null : data.subscription_current_period_end);
   const used = usageInWindow(data, userId, periodStart, periodEnd);
-  const pending = entries.filter(r => r.status === "reserved" && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
+  const pending = entries.filter(r => r.status === "reserved" && !r.pipeline?.failure && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
   if (used.text + used.other + pending >= monthlyLimitForPlan(plan)) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
   const attempts = admitTextAttempt(data, now);
   const reservation: Reservation = { requestId, fingerprint, plan, status: "reserved", createdAt: now.toISOString(), periodStart, periodEnd };
   const updated = { ...data, text_generation_attempts_json: attempts.recent, text_generation_daily_attempts_json: attempts.daily, generation_reservations_json: [...entries, reservation], generation_usage_json: { ...counters(data), [periodStart]: used.text } };
   return { data: updated, result: { status: "reserved", requestId, fingerprint, plan } };
 }
-function matchingReservation(data: Document, userId: string, requestId: string, fingerprint: string, now: Date) {
+export function matchingReservation(data: Document, userId: string, requestId: string, fingerprint: string, now: Date) {
   assertWorkspaceAccount(data, userId);
   requestIdentity(requestId);
   const ledger = retainedLedger(data, now), { entries } = ledger;
@@ -220,9 +225,17 @@ export function completeGenerationInProfile(data: Document, userId: string, requ
   data = matched.data;
   if (entry.status === "completed" && entry.result) return { data, result: entry.result };
   if (entry.status !== "reserved") throw new GenerationReservationError("This generation attempt is terminal.", 409, "request_failed");
+  if (entry.pipeline && (entry.pipeline.failure || entry.pipeline.phase !== "save" || entry.pipeline.metrics.at(-1)?.status === "running")) {
+    throw new GenerationReservationError("Factual validation is incomplete.", 409, "grounding_incomplete");
+  }
+  if (entry.pipeline && pipelineHash(result) !== pipelineHash(entry.pipeline.draft)) {
+    throw new GenerationReservationError("Only the validated checkpoint may be saved.", 409, "grounding_mismatch");
+  }
   const clean = parseWorkspaceGeneration(result);
   if (!clean.sections.length || !clean.id || Buffer.byteLength(JSON.stringify(clean), "utf8") > 128_000) throw new GenerationReservationError("Generated output is invalid or too large.", 502, "invalid_result");
-  const completed: Reservation = { ...entry, status: "completed", completedAt: now.toISOString(), result: clean };
+  const completed: Reservation = { ...entry, status: "completed", completedAt: now.toISOString(), result: clean,
+    ...(entry.pipeline ? { pipeline: undefined, pipelineAudit: { metrics: entry.pipeline.metrics,
+      reservedMicroUsd: entry.pipeline.reservedMicroUsd, reviewedUnits: entry.pipeline.decisions.length } } : {}) };
   // Charge the admission window even if the provider returns after the month boundary.
   const used = usageInWindow(data, userId, entry.periodStart, entry.periodEnd);
   const event = { id: requestId, user_id: userId, event_type: "text_generation", created_at: entry.createdAt, metadata: { generationId: clean.id, requestId } };
