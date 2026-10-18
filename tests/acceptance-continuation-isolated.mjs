@@ -1,0 +1,53 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {randomBytes,randomUUID} from "node:crypto";
+import pg from "pg";
+import {validateImageIsolatedEnvironment} from "./image-isolated.mjs";
+import {buildPlan,recoverOrigin,ORIGINAL_SCHEMA} from "../scripts/acceptance-continuation/plan.mjs";
+import {SCHEMA,canonicalHash,loadModules,validatePayload} from "../scripts/acceptance-continuation/runtime.mjs";
+import {database} from "../scripts/acceptance-continuation/database.mjs";
+validateImageIsolatedEnvironment(process.env);
+const plan=buildPlan(Date.now()+3600000),origin=recoverOrigin(),suffix=randomBytes(6).toString("hex"),schema=`cont_test_${suffix}`,role=`cont_test_role_${suffix}`;
+plan.account=`staged-validation-test-${randomUUID()}`;
+const url=new URL(process.env.DATABASE_URL);url.search="?sslmode=verify-full";
+const owner=new pg.Client({connectionString:url.href,statement_timeout:15000}),checks=[];let a,b,created=false;
+owner.on("error",()=>{});
+try{
+ await owner.connect();
+ const {rows:c}=await owner.query(`SELECT * FROM ${ORIGINAL_SCHEMA}.campaign`),{rows:j}=await owner.query(`SELECT * FROM ${ORIGINAL_SCHEMA}.jobs`);
+ const {rows:p}=await owner.query("SELECT data FROM contentos_app.profiles WHERE id=$1",[origin.old.account]);
+ assert.equal(canonicalHash(c[0]),plan.origin.campaignHash);assert.equal(canonicalHash(j[0]),plan.origin.jobHash);assert.equal(canonicalHash(p[0].data),plan.origin.profileHash);
+ checks.push("live original immutable audit, completed provider record and exact checkpoint match private and published evidence");
+ await owner.query("BEGIN");await owner.query(readFileSync(new URL("../scripts/acceptance-continuation/ledger.sql",import.meta.url),"utf8").replaceAll(SCHEMA,schema));
+ const password=randomBytes(24).toString("hex");await owner.query(`CREATE ROLE ${role} LOGIN NOINHERIT PASSWORD '${password}' VALID UNTIL '${new Date(Date.now()+3600000).toISOString()}'`);
+ await owner.query(`GRANT USAGE ON SCHEMA ${schema} TO ${role}`);await owner.query(`GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema} TO ${role}`);
+ await owner.query(`INSERT INTO ${schema}.campaign(id,plan_hash,account_id,expires_at,enabled,origin_plan_hash,origin_checkpoint_hash,origin_snapshot) VALUES(true,$1,$2,$3,true,$4,$5,$6::jsonb)`,[plan.planHash,plan.account,new Date(plan.expires),plan.origin.planHash,plan.origin.checkpointHash,JSON.stringify(plan.origin)]);
+ const data={...p[0].data,id:plan.account,email:`${plan.account}@example.invalid`,staged_validation_plan:plan.planHash};
+ await owner.query("INSERT INTO contentos_app.profiles(id,email,data) VALUES($1,$2,$3::jsonb)",[plan.account,data.email,JSON.stringify(data)]);await owner.query("COMMIT");created=true;
+ url.username=role;url.password=password;a=new pg.Client({connectionString:url.href});b=new pg.Client({connectionString:url.href});a.on("error",()=>{});b.on("error",()=>{});await a.connect();await b.connect();
+ for(const q of [`SELECT * FROM ${schema}.campaign`,`SELECT * FROM ${ORIGINAL_SCHEMA}.campaign`,`SELECT * FROM contentos_auth."user"`,`SELECT * FROM contentos_app.profiles`])await assert.rejects(a.query(q));
+ checks.push("runner cannot read original ledger, customer/auth tables or mutate ledger directly");
+ const da=database(a,plan,schema),db=database(b,plan,schema),stages=loadModules(plan.modules)("lib/generation-stages.ts");
+ assert.equal((await da.inspect()).reserved,419173);assert.equal(canonicalHash((await da.snapshot()).generation_reservations_json[0]),plan.origin.checkpointHash);
+ const recovery=await da.mutate(d=>stages.beginGenerationStage(d,plan.account,plan.request.requestId,plan.request,null));assert.equal(recovery.status,"progress");assert.equal(recovery.progress.nextStage,"1:review:0:0");
+ const admitted=await da.mutate(d=>stages.beginGenerationStage(d,plan.account,plan.request.requestId,plan.request,recovery.progress.nextStage));assert.equal(admitted.stage.kind,"review");
+ const body=JSON.stringify(admitted.stage.payload),cost=validatePayload(body).reserve;
+ const results=await Promise.all([da.reserve(admitted.stage.key,body),db.reserve(admitted.stage.key,body)]);assert.equal(results.filter(Boolean).length,1);assert.equal((await da.inspect()).reserved,419173+cost);
+ checks.push("exact checkpoint resumes review; concurrent connections charge one new reservation plus original spend");
+ await assert.rejects(da.reserve("1:draft:0:0",body),/invalid_body/);await assert.rejects(da.mutate(d=>({data:{...d,id:"wrong-account"},result:null})));
+ checks.push("new draft and cross-account writes are prohibited");
+ await owner.query("BEGIN");await owner.query(`DELETE FROM ${schema}.jobs`);await owner.query(`UPDATE ${schema}.campaign SET reserved=3079999`);
+ await owner.query("SAVEPOINT budget");await assert.rejects(database(owner,plan,schema).reserve(admitted.stage.key,body),/budget/);await owner.query("ROLLBACK");
+ checks.push("combined GBP3.08 boundary rejects before transport");
+ await owner.query("BEGIN");await owner.query(`DELETE FROM ${schema}.jobs`);
+ const keys=[];for(const kind of ["review","revalidation"])for(const pass of [0,1])for(let i=0;i<7;i++){const k=`1:${kind}:${pass}:${i}`;if(k!==admitted.stage.key)keys.push(k);}
+ for(const k of keys.slice(0,14))await owner.query(`INSERT INTO ${schema}.jobs(id,body,payload_hash,reserved,state) VALUES($1,$2,'synthetic',1,'succeeded')`,[k,body]);
+ await owner.query("SAVEPOINT calls");await assert.rejects(database(owner,plan,schema).reserve(admitted.stage.key,body),/budget/);await owner.query("ROLLBACK");
+ checks.push("14-new-call ceiling counts original call separately and denies total call 16");
+ await da.finish(admitted.stage.key,"unknown",{failure:"synthetic"});assert.equal((await da.inspect()).enabled,false);assert.equal((await da.inspect()).reserved,419173+cost);await assert.rejects(db.reserve("1:review:0:1",body),/closed/);
+ checks.push("uncertain new call retains both reservations and cannot retry");
+ const {rows:after}=await owner.query(`SELECT * FROM ${ORIGINAL_SCHEMA}.campaign`);assert.equal(canonicalHash(after[0]),plan.origin.campaignHash);
+ checks.push("original closed campaign is unchanged");
+ console.log(JSON.stringify({status:"PASS",checks,paidCalls:0}));
+}catch(e){console.error(JSON.stringify({status:"FAIL",checks,reason:e instanceof assert.AssertionError?e.message.split("\n")[0]:"isolated continuation validation failed",code:e.code}));process.exitCode=1;}
+finally{for(const c of [a,b]){await c?.query("ROLLBACK").catch(()=>{});await c?.end().catch(()=>{});}await owner.query("ROLLBACK").catch(()=>{});if(created){await owner.query("DELETE FROM contentos_app.profiles WHERE id=$1 AND data->>'staged_validation_plan'=$2",[plan.account,plan.planHash]);await owner.query(`DROP SCHEMA ${schema} CASCADE`);await owner.query(`DROP ROLE ${role}`);}await owner.end().catch(()=>{});}
