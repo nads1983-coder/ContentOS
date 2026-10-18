@@ -48,11 +48,11 @@ async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promi
   }
 }
 
-async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: boolean; usage: UsageSummary }> {
+async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: boolean; accountId?: string; usage: UsageSummary }> {
   const user = await getCurrentUser();
 
   if (!user || !isDatabaseConfigured()) {
-    return { plan: "free", authenticated: Boolean(user), usage: buildUsageSummary("free", 0) };
+    return { plan: "free", authenticated: Boolean(user), accountId: user?.id, usage: buildUsageSummary("free", 0) };
   }
 
   let profile: UserProfile | null = null;
@@ -64,12 +64,13 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
   }
 
   if (!profile) {
-    return { plan: "free", authenticated: true, usage: buildUsageSummary("free", 0) };
+    return { plan: "free", authenticated: true, accountId: user.id, usage: buildUsageSummary("free", 0) };
   }
 
   if (hasLifetimeEntitlement(profile)) {
     return {
       plan: profile.plan,
+      accountId: user.id,
       authenticated: true,
       usage: await usageForProfile(profile, profile.plan)
     };
@@ -96,6 +97,7 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
       if (planHasActiveEntitlement(syncedPlan, syncedStatus)) {
         return {
           plan: syncedPlan,
+          accountId: user.id,
           authenticated: true,
           usage: await usageForProfile(synced ?? profile, syncedPlan)
         };
@@ -109,6 +111,7 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
   const status = normalizeSubscriptionStatus(profile.subscription_status);
   return {
     plan: planHasActiveEntitlement(plan, status) ? plan : "free",
+    accountId: user.id,
     authenticated: true,
     usage: await usageForProfile(profile, planHasActiveEntitlement(plan, status) ? plan : "free")
   };
@@ -120,6 +123,7 @@ export default async function StudioPage() {
   return (
     <StudioShell
       initialPlan={initialState.plan}
+      accountId={initialState.accountId}
       authenticated={initialState.authenticated}
       initialUsage={initialState.usage}
     />

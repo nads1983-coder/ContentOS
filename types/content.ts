@@ -88,6 +88,11 @@ export type Draft = {
   updatedAt: string;
   title: string;
   source: string;
+  brandName?: string;
+  audience?: string;
+  offer?: string;
+  writingStyle?: string;
+  contentGoal?: string;
   tone: ToneId;
   sharpness?: SharpnessId;
   ctaMode?: CtaModeId;
