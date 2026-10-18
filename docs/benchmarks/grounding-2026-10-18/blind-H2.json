@@ -1,0 +1,424 @@
+{
+  "id": "H2",
+  "request": {
+    "source": "Fictional example. CURRENT APPROVED SERVICE NOTICE, revision 3: North Quay Scan Desk offers a 25-minute remote assessment of a household photograph collection on 19 February 2028 at 16:30 UTC. The assessment costs EUR 18. The session covers inspecting up to six sample photographs on camera, identifying questions about their condition, and discussing a possible digitisation order. No scanning, restoration, valuation or file delivery is included. No turnaround time for later digitisation has been set. There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel.\n\nSUPERSEDED DRAFT, retained only for audit and not an available offer: \"Free 40-minute session on 18 February 2028 at 15:00 UTC. Your whole collection digitised the same day.\" Revision 3 above replaces this draft in full.",
+    "brandName": "North Quay Scan Desk",
+    "audience": "Households considering digitising old photographs",
+    "offer": "25-minute remote collection assessment for EUR 18",
+    "writingStyle": "Reassuring, precise, plain language without guarantees",
+    "contentGoal": "Describe and invite interest in the current paid assessment, distinguishing consultation from digitisation work",
+    "tone": "professional",
+    "sharpness": "balanced",
+    "ctaMode": "product",
+    "presetTopic": "none",
+    "selectedTypes": [
+      "linkedin",
+      "instagram",
+      "tiktok",
+      "twitter",
+      "facebook",
+      "youtubeShorts",
+      "xThread",
+      "shortVideoScript",
+      "carousel",
+      "emailNewsletter",
+      "repurposePack",
+      "hooks",
+      "ctas",
+      "platformHashtags"
+    ],
+    "length": "standard"
+  },
+  "packs": {
+    "A": {
+      "title": "North Quay Scan Desk, remote photo collection assessment (rev 3)",
+      "summary": "Promote a paid 25-minute remote photo collection assessment on 19 Feb 2028, clearly separating consultation from digitisation work.",
+      "sections": [
+        {
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "Most photo digitisation problems start before the scanner.\n\nThey start with not knowing what you have.\n\nIf you are sitting on a box of old prints and feeling stuck, North Quay Scan Desk is offering a 25 minute remote assessment of a household photograph collection.\n\nDate and time: 19 February 2028 at 16:30 UTC\nCost: EUR 18\nFormat: remote, on camera\n\nWhat we will do in the session:\n• Look at up to six sample photographs on camera\n• Identify key questions about their condition\n• Talk through what a digitisation order could look like\n\nWhat this is not:\n• Not scanning\n• Not restoration\n• Not valuation\n• No file delivery\n• No promised turnaround time for any later digitisation\n\nPoint of view: a short, focused assessment can save you from guessing, and help you decide what to do next with confidence.\n\nIf a calm second set of eyes would help, this session is designed for that.",
+          "items": [
+            "#Digitisation",
+            "#PhotoPreservation",
+            "#FamilyPhotos",
+            "#Archives"
+          ],
+          "cta": "Interested in the 25 minute remote assessment on 19 February 2028 at 16:30 UTC? Reply here and I will share the session details."
+        },
+        {
+          "type": "instagram",
+          "title": "Instagram captions (3)",
+          "platform": "Instagram",
+          "body": "Caption 1:\nYour photo box deserves a plan, not a panic scan.\n\nNorth Quay Scan Desk is running a 25 minute remote assessment for households considering digitising old photographs.\n\nOn 19 February 2028 at 16:30 UTC, we will look at up to six sample photos on camera, flag questions about condition, and talk through what a digitisation order could look like.\n\nClear note: this is a consultation only. No scanning, no restoration, no valuation, and no file delivery.\n\nCaption 2:\nNot ready to digitise everything? Start with six.\n\nIn this 25 minute remote session (EUR 18), we inspect up to six sample photographs on camera and map the next step for your collection.\n\nIt is meant to help you decide, not to rush you. No scanning or files are included, and there is no promised turnaround time for any later digitisation.\n\nCaption 3:\nBefore you pay for digitising, check what shape your photos are in.\n\nNorth Quay Scan Desk offers a 25 minute remote collection assessment on 19 February 2028 at 16:30 UTC.\n\nWe will review up to six sample photographs on camera, note condition questions, and discuss a possible digitisation order.\n\nNo scanning, restoration, valuation, or file delivery is included. This is simply a practical, reassuring starting point.",
+          "items": [
+            "Hashtags for Caption 1: #PhotoPreservation #FamilyPhotos #DigitisingPhotos #PhotoArchive #HomeArchives #MemoryKeeping #Organising",
+            "Hashtags for Caption 2: #OldPhotos #PhotoDigitisation #PhotoCare #FamilyArchive #PreserveMemories #HomeOrganisation #PrintPhotos",
+            "Hashtags for Caption 3: #PhotoCollection #PhotoPreservationTips #DigitiseYourPhotos #FamilyHistory #ArchiveAtHome #PrintPhotoLovers #PhotoOrganisation"
+          ],
+          "cta": "Want the details for the 25 minute remote assessment (EUR 18)? Comment “assessment” and I will reply with what is included."
+        },
+        {
+          "type": "tiktok",
+          "title": "TikTok captions (3)",
+          "platform": "TikTok",
+          "body": "Caption 1:\nBefore you digitise old photos, check the condition first. Remote assessment, 25 minutes.\n\nCaption 2:\nGot a box of prints and no plan? We look at up to 6 photos on camera and map next steps.\n\nCaption 3:\nThis is not scanning. It is a quick consult to help you decide what to digitise and how.",
+          "items": [
+            "Caption 1 tags: #photopreservation #digitisingphotos #familyphotos #homearchive",
+            "#Caption 2 tags: #oldphotos #photoorganisation #familyarchive #photodigitisation",
+            "#Caption 3 tags: #photocare #photopreservation #printphotos"
+          ],
+          "cta": "Interested in the 19 Feb 2028 remote assessment (EUR 18)? Ask for the session details in the comments."
+        },
+        {
+          "type": "twitter",
+          "title": "X/Twitter post",
+          "platform": "X/Twitter",
+          "body": "Digitising old photos goes smoother when you start with a quick condition check.\n\nNorth Quay Scan Desk is offering a 25 minute remote assessment (EUR 18) on 19 Feb 2028, 16:30 UTC. Up to 6 sample photos on camera. Consultation only, no scanning or files.",
+          "items": [],
+          "cta": "Reply if you want the session details and what is included."
+        },
+        {
+          "type": "facebook",
+          "title": "Facebook post",
+          "platform": "Facebook",
+          "body": "If you have a box of old family photos and you are not sure where to start, a short assessment can help.\n\nNorth Quay Scan Desk is offering a 25 minute remote photo collection assessment on 19 February 2028 at 16:30 UTC. The cost is EUR 18.\n\nIn the session we can look at up to six sample photographs on camera, talk through questions about their condition, and discuss what a digitisation order might look like.\n\nJust to be clear, this is a consultation only. No scanning, restoration, valuation, or file delivery is included, and there is no promised turnaround time for any later digitisation.\n\nIf you are considering digitising, what is your biggest question right now, condition, organisation, or deciding what to prioritise?",
+          "items": [],
+          "cta": "If you would like the details for the 25 minute remote assessment, comment below and I will reply with what is included."
+        },
+        {
+          "type": "youtubeShorts",
+          "title": "YouTube Shorts caption",
+          "platform": "YouTube Shorts",
+          "body": "Title idea: Before You Digitise Old Photos, Do This 25 Minute Check\n\nDescription: Thinking about digitising a household photo collection? North Quay Scan Desk offers a 25 minute remote assessment on 19 February 2028 at 16:30 UTC (EUR 18). We review up to six sample photographs on camera, note condition questions, and discuss a possible digitisation order. Consultation only, no scanning, restoration, valuation, or file delivery.\n\nTags and keywords:",
+          "items": [
+            "photo digitisation",
+            "digitising old photos",
+            "photo preservation",
+            "family photos",
+            "print photo care",
+            "home archive",
+            "organising old photos",
+            "photo condition check",
+            "archive tips",
+            "North Quay Scan Desk"
+          ],
+          "cta": "Want the session details for the remote assessment? Leave a comment asking what is included."
+        },
+        {
+          "type": "xThread",
+          "title": "X thread (5 to 7 posts)",
+          "platform": "X/Twitter",
+          "body": "Thread goal: Explain the value of a paid remote assessment and clearly separate it from digitisation work.",
+          "items": [
+            "1) Most photo digitisation frustration comes from skipping the first step, figuring out what you have and what shape it is in.",
+            "2) North Quay Scan Desk is offering a 25 minute remote assessment for household photograph collections on 19 Feb 2028 at 16:30 UTC. Cost: EUR 18.",
+            "3) In the session we look at up to six sample photos on camera. That is enough to surface common condition questions and priorities.",
+            "4) We also discuss what a possible digitisation order could look like, so you can make decisions without guessing.",
+            "5) Clear boundary: this session is consultation only. No scanning, no restoration, no valuation, no file delivery.",
+            "6) Also, no turnaround time is promised for any later digitisation. The point is clarity first, then decisions."
+          ],
+          "cta": "If you want the session details for the 25 minute remote assessment, reply and I will share what is included."
+        },
+        {
+          "type": "shortVideoScript",
+          "title": "Short form video script",
+          "platform": "Video",
+          "body": "Hook (spoken):\nIf you are about to digitise a box of old photos, do this first.\n\nOn screen text: Before you digitise, check condition.\n\nBeat 1 (spoken):\nA lot of people jump straight to scanning, then realise half the prints need different handling, or they are not sure what to prioritise.\n\nOn screen text: Clarity before scanning.\n\nBeat 2 (spoken):\nNorth Quay Scan Desk is offering a 25 minute remote assessment on 19 February 2028 at 16:30 UTC. It is EUR 18.\n\nOn screen text: 19 Feb 2028, 16:30 UTC. EUR 18.\n\nBeat 3 (spoken):\nWe will look at up to six sample photographs on camera, identify questions about condition, and talk through what a digitisation order could look like.\n\nOn screen text: Up to 6 photos, on camera.\n\nBeat 4 (spoken):\nImportant: this is a consultation only. No scanning, no restoration, no valuation, and no files delivered in the session.\n\nOn screen text: Consultation only. No files.\n\nClose (spoken):\nIf you want a calm starting point before you commit to digitising, ask for the assessment details.\n\nOn screen text: Ask for assessment details.",
+          "items": [
+            "Retention beat: Open with the contrast, “not scanning yet” in the first 2 seconds.",
+            "Cut suggestion: Add a quick visual of 6 photos laid out, then back to face to camera.",
+            "Delivery note: Keep the boundaries crisp so viewers understand what they are paying for."
+          ],
+          "cta": "Comment “assessment” if you want the session details and what is included."
+        },
+        {
+          "type": "carousel",
+          "title": "Carousel outline",
+          "platform": "Carousel",
+          "body": "Carousel objective: Help households understand why a short assessment comes before digitisation, and what the paid session includes.",
+          "items": [
+            "Slide 1 headline: Before you digitise old photos, start here",
+            "Slide 1 support: A 25 minute assessment can prevent expensive guessing.",
+            "Slide 2 headline: The common problem",
+            "Slide 2 support: You have a box of prints, but no clear plan or priorities.",
+            "Slide 3 headline: What the assessment is",
+            "Slide 3 support: A remote, on camera review of up to six sample photos.",
+            "Slide 4 headline: What we cover",
+            "Slide 4 support: Condition questions, what to prioritise, and what a digitisation order could look like.",
+            "Slide 5 headline: What it is not",
+            "Slide 5 support: Not scanning. Not restoration. Not valuation. No file delivery.",
+            "Slide 6 headline: Session details",
+            "Slide 6 support: North Quay Scan Desk, 19 Feb 2028, 16:30 UTC. EUR 18. 25 minutes.",
+            "Slide 7 headline: The takeaway",
+            "Slide 7 support: Clarity first, then you decide the next step with confidence.",
+            "Slide 8 headline: Want the assessment details?",
+            "Slide 8 support: Ask what is included in the 25 minute remote session."
+          ],
+          "cta": "Ask for the details of the 25 minute remote assessment (EUR 18) on 19 February 2028 at 16:30 UTC."
+        },
+        {
+          "type": "emailNewsletter",
+          "title": "Email newsletter draft",
+          "platform": "Email",
+          "body": "Subject options:\n1) A calm first step before digitising old photos\n2) Remote photo collection assessment, 19 Feb 2028 (EUR 18)\n3) Not ready to scan yet? Start with a 25 minute check\n\nHi\n\nIf you are considering digitising a household photograph collection, a short assessment can help you avoid guesswork.\n\nNorth Quay Scan Desk is offering a 25 minute remote assessment on 19 February 2028 at 16:30 UTC. The cost is EUR 18.\n\nIn the session, we will:\n- Inspect up to six sample photographs on camera\n- Identify questions about their condition\n- Discuss what a possible digitisation order could look like\n\nTo set expectations clearly, the assessment does not include scanning, restoration, valuation, or file delivery. No turnaround time is set for any later digitisation.\n\nIf you would like the session details, reply to this email.\n\nRegards\nNorth Quay Scan Desk",
+          "items": [],
+          "cta": "Reply to request the session details for the 25 minute remote assessment (EUR 18) on 19 February 2028 at 16:30 UTC."
+        },
+        {
+          "type": "repurposePack",
+          "title": "Repurpose pack (full set)",
+          "platform": "General",
+          "body": "LinkedIn:\nMost photo digitisation problems start before the scanner.\n\nThey start with not knowing what you have.\n\nNorth Quay Scan Desk is offering a 25 minute remote assessment of a household photograph collection on 19 February 2028 at 16:30 UTC (EUR 18).\n\nWe will inspect up to six sample photographs on camera, identify questions about their condition, and discuss a possible digitisation order.\n\nThis is consultation only. No scanning, restoration, valuation, or file delivery is included. No turnaround time is set for any later digitisation.\n\nIf a calm starting point would help, this session is designed for that.\n\nInstagram:\nYour photo box deserves a plan, not a panic scan.\n\n25 minute remote photo collection assessment with North Quay Scan Desk on 19 February 2028 at 16:30 UTC, EUR 18.\n\nWe look at up to six sample photos on camera, flag condition questions, and talk through what a digitisation order could look like.\n\nConsultation only, no scanning, restoration, valuation, or file delivery.\n\nTikTok:\nBefore you digitise old photos, do a quick condition check. 25 minute remote assessment, up to 6 photos on camera.\n\nX/Twitter:\nDigitising old photos goes smoother when you start with a quick condition check.\n25 min remote assessment (EUR 18) on 19 Feb 2028, 16:30 UTC. Up to 6 sample photos. Consultation only.\n\nCarousel:\n1) Before you digitise old photos, start here\n2) The common problem: no plan, no priorities\n3) What the assessment is: remote, on camera, up to six photos\n4) What we cover: condition questions and next steps\n5) What it is not: no scanning, restoration, valuation, or files\n6) Session details: 19 Feb 2028, 16:30 UTC, EUR 18\n7) Takeaway: clarity first, then decide\n8) Ask for the details\n\nShort video script:\nHook: If you are about to digitise a box of old photos, do this first.\nBeats: why condition check matters, what the assessment includes, what it does not include, how to ask for details.\nClose: Ask for the session details.\n\nEmail:\nSubject: Remote photo collection assessment, 19 Feb 2028 (EUR 18)\nBody: Invite households to a 25 minute remote assessment, explain up to six sample photos on camera, consultation only, and no promised turnaround for later digitisation.",
+          "items": [
+            "Note: All assets keep the offer boundaries clear, consultation only, no scanning or files.",
+            "Editing suggestion: If you later add a booking page, replace “ask for details” with the URL across all platforms."
+          ],
+          "cta": "Ask for the session details for the 25 minute remote assessment (EUR 18) on 19 February 2028 at 16:30 UTC."
+        },
+        {
+          "type": "hooks",
+          "title": "8 platform flexible hooks",
+          "platform": "General",
+          "body": "Use these as first lines for posts or videos.",
+          "items": [
+            "Before you digitise old photos, check this one thing first: condition.",
+            "A scanner cannot fix confusion. Start with a quick assessment.",
+            "If you have a box of prints and no plan, you are not alone.",
+            "Not ready to digitise everything? Start with six sample photos.",
+            "Digitising is a project. An assessment helps you choose the right next step.",
+            "Stop guessing what needs special handling, look at a few samples first.",
+            "This session is not scanning. It is the step that makes scanning smoother later.",
+            "Old photos are emotional. A calm plan makes the process easier."
+          ],
+          "cta": "If you want the details of the remote assessment session, ask what is included."
+        },
+        {
+          "type": "ctas",
+          "title": "5 product CTA options",
+          "platform": "General",
+          "body": "CTAs aligned to a paid assessment offer, low pressure and concrete.",
+          "items": [
+            "Ask for the details of the 25 minute remote assessment (EUR 18) on 19 February 2028 at 16:30 UTC.",
+            "Reply with “assessment” and I will share what is included in the session.",
+            "Comment with your biggest question about your photos and I will tell you if the assessment fits.",
+            "If you want a second set of eyes on your collection, request the remote assessment details.",
+            "Interested in the assessment? Reply and I will outline what we can cover in 25 minutes."
+          ],
+          "cta": "Ask for the session details to see if the 25 minute remote assessment is right for your collection."
+        },
+        {
+          "type": "platformHashtags",
+          "title": "Platform hashtag and keyword sets",
+          "platform": "General",
+          "body": "Use these sets as needed, keeping each platform’s norms in mind.",
+          "items": [
+            "LinkedIn (3 to 5): #PhotoPreservation #Digitisation #FamilyPhotos #Archives",
+            "Instagram (5 to 7): #PhotoPreservation #FamilyPhotos #DigitisingPhotos #HomeArchives #OldPhotos #PhotoOrganisation #PrintPhotos",
+            "TikTok (3 to 5): #photopreservation #digitisingphotos #oldphotos #familyarchive #printphotos",
+            "X/Twitter (0 to 2): #PhotoPreservation",
+            "Facebook (0 to 3): #PhotoPreservation #FamilyPhotos",
+            "YouTube Shorts (8 to 12): photo digitisation, digitising old photos, photo preservation, family photos, print photo care, home archive, organising old photos, photo condition check, archive tips, preserve old photos, household photo collection, North Quay Scan Desk"
+          ],
+          "cta": ""
+        }
+      ]
+    },
+    "B": {
+      "title": "North Quay Scan Desk, remote photo collection assessment (Revision 3) multi-platform pack",
+      "summary": "Promote a paid, time-boxed remote assessment that clarifies photo condition and digitisation questions, without implying scanning or delivery.",
+      "sections": [
+        {
+          "type": "linkedin",
+          "title": "LinkedIn post: Consultation is not digitisation, and that is the point",
+          "platform": "LinkedIn",
+          "body": "If you are not ready to digitise your whole photo collection, that is a sensible place to start.\n\nMost households do not need a sales pitch. They need clarity.\n\nThat is why North Quay Scan Desk offers a 25-minute remote assessment of a household photograph collection.\n\nOn 19 February 2028 at 16:30 UTC, we will look at up to six sample photographs together on camera and:\n- inspect what you are working with\n- identify questions about condition\n- talk through what a possible digitisation order could look like\n\nWhat this session is not:\n- scanning\n- restoration\n- valuation\n- file delivery\n\nIt is a short, paid consultation designed to help you decide what to do next, and what to ask before you commit.\n\nPrice: EUR 18.",
+          "items": [],
+          "cta": "If you want to book the 25-minute remote assessment on 19 February 2028 at 16:30 UTC for EUR 18, request the North Quay Scan Desk remote collection assessment."
+        },
+        {
+          "type": "instagram",
+          "title": "Instagram: 3 caption options for the paid remote assessment",
+          "platform": "Instagram",
+          "body": "Caption 1\nNot ready to digitise everything yet? Start with six photos.\n\nNorth Quay Scan Desk offers a 25-minute remote assessment where we look at up to six sample photographs on camera.\n\nWe will talk through what you are seeing, what to watch for in condition, and what a possible digitisation order could look like. This is consultation only, no scanning, restoration, valuation, or file delivery included.\n\n19 February 2028, 16:30 UTC. EUR 18.\n\nCaption 2\nBefore you spend money digitising a whole box, get clarity on the first handful.\n\nIn our 25-minute remote assessment, we inspect up to six sample photographs on camera and map out the questions that matter: condition, priorities, and what a digitisation order might involve.\n\nNo scanning or files delivered in this session, it is purely an assessment.\n\n19 February 2028 at 16:30 UTC, EUR 18.\n\nCaption 3\nA small, calm first step for a big photo collection.\n\nThis 25-minute remote assessment is for households who want to digitise old photographs but are not sure where to start.\n\nWe will review up to six sample photos on camera, surface any condition concerns, and discuss what a possible digitisation order could look like. No scanning, restoration, valuation, or file delivery is included.\n\nSession time: 19 February 2028, 16:30 UTC. Cost: EUR 18.",
+          "items": [
+            "#photodigitization",
+            "#familyphotos",
+            "#photoarchive",
+            "#memorabilia",
+            "#photoorganization",
+            "#archiving",
+            "#digitizephotos"
+          ],
+          "cta": "To book the 25-minute remote assessment on 19 February 2028 at 16:30 UTC for EUR 18, request the North Quay Scan Desk remote collection assessment."
+        },
+        {
+          "type": "tiktok",
+          "title": "TikTok: 3 short caption options",
+          "platform": "TikTok",
+          "body": "Caption 1\nNot ready to digitise the whole box? Start with 6 photos on camera. 25-minute remote assessment, EUR 18. 19 Feb 2028, 16:30 UTC.\n\nCaption 2\nConsultation first, scanning later. We will review up to six photos, flag condition questions, and talk through what a digitisation order could look like.\n\nCaption 3\nIf you have old photos and a lot of uncertainty, this is the calm first step. Remote assessment only, no scanning or files delivered.",
+          "items": [
+            "#digitizephotos",
+            "#familyphotos",
+            "#photoarchive",
+            "#homememories",
+            "#photoorganizing"
+          ],
+          "cta": "Request the North Quay Scan Desk 25-minute remote photo collection assessment on 19 February 2028 at 16:30 UTC (EUR 18)."
+        },
+        {
+          "type": "twitter",
+          "title": "X/Twitter: One sharp post",
+          "platform": "X/Twitter",
+          "body": "Digitising a photo collection is easier when you separate “assessment” from “scanning.” North Quay Scan Desk offers a 25-minute remote assessment (up to 6 photos on camera) on 19 Feb 2028, 16:30 UTC. EUR 18. No scanning or files.",
+          "items": [],
+          "cta": "To book, request the North Quay Scan Desk 25-minute remote assessment on 19 February 2028 at 16:30 UTC (EUR 18)."
+        },
+        {
+          "type": "facebook",
+          "title": "Facebook: Community-friendly explanation of what the session is",
+          "platform": "Facebook",
+          "body": "If you are thinking about digitising old family photos, it can be hard to know where to start, especially if you are not sure what condition everything is in.\n\nNorth Quay Scan Desk is running a 25-minute remote assessment on 19 February 2028 at 16:30 UTC.\n\nIn the session, we inspect up to six sample photographs on camera, identify questions about their condition, and discuss what a possible digitisation order could look like.\n\nJust to be clear: this is an assessment only. No scanning, restoration, valuation, or file delivery is included.\n\nCost is EUR 18.",
+          "items": [],
+          "cta": "If you would like the 25-minute remote assessment on 19 February 2028 at 16:30 UTC (EUR 18), request the North Quay Scan Desk remote collection assessment."
+        },
+        {
+          "type": "youtubeShorts",
+          "title": "YouTube Shorts: Caption, description, tags",
+          "platform": "YouTube Shorts",
+          "body": "Title idea: Photo digitisation starts with an assessment (not scanning)\n\nDescription: North Quay Scan Desk offers a 25-minute remote assessment for households considering digitising old photographs. We inspect up to six sample photos on camera, identify condition questions, and discuss a possible digitisation order. No scanning, restoration, valuation, or file delivery included. Session: 19 February 2028, 16:30 UTC. Cost: EUR 18.",
+          "items": [
+            "digitise photos",
+            "digitize photos",
+            "photo digitisation assessment",
+            "remote photo consultation",
+            "family photo archive",
+            "old photos condition",
+            "photo collection planning",
+            "how to digitise old photos",
+            "digitisation order planning",
+            "photo archiving tips",
+            "household photo collection",
+            "scan photos consultation"
+          ],
+          "cta": "To book the 25-minute remote assessment on 19 February 2028 at 16:30 UTC for EUR 18, request the North Quay Scan Desk remote collection assessment."
+        },
+        {
+          "type": "xThread",
+          "title": "X thread: Why an assessment comes before scanning",
+          "platform": "X/Twitter",
+          "body": "A short thread explaining why a paid assessment can be the cleanest first step before digitising a whole household photo collection.",
+          "items": [
+            "1/ Digitising old photos feels like one job. It is usually two: assessment, then scanning.",
+            "2/ Assessment is where you look closely at a small sample and figure out what you are dealing with, condition, priorities, and questions you need answered.",
+            "3/ North Quay Scan Desk offers a 25-minute remote assessment: we inspect up to six sample photographs on camera and talk through a possible digitisation order.",
+            "4/ What it is not: scanning, restoration, valuation, or file delivery. It is a consultation, not production work.",
+            "5/ Details: 19 February 2028 at 16:30 UTC. Cost: EUR 18.",
+            "6/ Takeaway: start small, get clear, then decide what a sensible digitisation order looks like for your collection."
+          ],
+          "cta": "If you want the 25-minute remote assessment on 19 February 2028 at 16:30 UTC (EUR 18), request the North Quay Scan Desk remote collection assessment."
+        },
+        {
+          "type": "shortVideoScript",
+          "title": "Short-form video script: Assessment first, scanning later",
+          "platform": "Video",
+          "body": "Hook (spoken)\n“Got a box of old photos, but you are not ready to digitise everything yet?”\n\nOn-screen text\n“Start with an assessment, not a full scan.”\n\nBeat 1 (spoken)\n“North Quay Scan Desk offers a 25-minute remote assessment for household photograph collections.”\n\nOn-screen text\n“25 minutes, remote, EUR 18”\n\nBeat 2 (spoken)\n“In the session, we look at up to six sample photographs together on camera.”\n\nOn-screen text\n“Up to 6 photos on camera”\n\nBeat 3 (spoken)\n“We will identify questions about their condition, and talk through what a possible digitisation order could look like.”\n\nOn-screen text\n“Condition questions + possible order”\n\nBeat 4 (spoken, clarity line)\n“Just to be clear, this does not include scanning, restoration, valuation, or file delivery. It is assessment only.”\n\nOn-screen text\n“No scanning. No files delivered.”\n\nBeat 5 (spoken, details)\n“Next session is on 19 February 2028 at 16:30 UTC. The assessment costs EUR 18.”\n\nOn-screen text\n“19 Feb 2028, 16:30 UTC”\n\nClose (spoken)\n“If you want to start small and get clear on next steps, request the remote assessment.”",
+          "items": [],
+          "cta": "Request the North Quay Scan Desk 25-minute remote assessment on 19 February 2028 at 16:30 UTC (EUR 18)."
+        },
+        {
+          "type": "carousel",
+          "title": "Carousel: A calm first step before digitising old photos",
+          "platform": "Carousel",
+          "body": "Carousel outline focused on separating “assessment” from “digitisation work,” with clear session details and boundaries.",
+          "items": [
+            "Slide 1: Not ready to digitise your whole photo collection? Start smaller. | A short remote assessment can give you clarity before you commit.",
+            "Slide 2: What this is | A 25-minute remote assessment of a household photograph collection with North Quay Scan Desk.",
+            "Slide 3: What we do in the session | Inspect up to six sample photographs on camera, identify questions about their condition, discuss a possible digitisation order.",
+            "Slide 4: What this is not | No scanning. No restoration. No valuation. No file delivery.",
+            "Slide 5: Why this helps | You leave with clearer questions, priorities, and a sense of what a sensible digitisation order could involve.",
+            "Slide 6: Session details | 19 February 2028 at 16:30 UTC. Cost: EUR 18.",
+            "Slide 7: The simple first step | Choose up to six representative photos and bring them to the call on camera.",
+            "Slide 8: Ready to start with an assessment? | Request the 25-minute remote assessment with North Quay Scan Desk."
+          ],
+          "cta": "Request the North Quay Scan Desk 25-minute remote photo collection assessment (19 February 2028, 16:30 UTC, EUR 18)."
+        },
+        {
+          "type": "emailNewsletter",
+          "title": "Email: Announce the paid remote assessment with clear boundaries",
+          "platform": "Email",
+          "body": "Subject: (see options below)\n\nIf you are considering digitising old photographs, the hardest part is often the start.\n\nNot scanning, not file formats, not even deciding where to store them.\n\nIt is figuring out what you have, what condition it is in, and what questions you need answered before you place a digitisation order.\n\nNorth Quay Scan Desk is offering a 25-minute remote assessment of a household photograph collection on 19 February 2028 at 16:30 UTC.\n\nIn the session we will:\n- inspect up to six sample photographs on camera\n- identify questions about their condition\n- discuss what a possible digitisation order could look like\n\nImportant: this session is an assessment only. No scanning, restoration, valuation, or file delivery is included.\n\nCost: EUR 18.\n\nIf a small, clear first step would help you move forward, this assessment is designed for that.",
+          "items": [
+            "A simple first step before digitising old photos",
+            "Remote photo collection assessment: 25 minutes, EUR 18",
+            "Assessment first, scanning later (19 Feb 2028, 16:30 UTC)"
+          ],
+          "cta": "To book the 25-minute remote assessment on 19 February 2028 at 16:30 UTC for EUR 18, request the North Quay Scan Desk remote collection assessment."
+        },
+        {
+          "type": "repurposePack",
+          "title": "Repurpose Pack: One message, seven ready-to-post assets",
+          "platform": "General",
+          "body": "A repurpose-ready set built from the approved service notice, keeping the consultation boundaries clear and consistent across platforms.",
+          "items": [
+            "LinkedIn: If you are not ready to digitise your whole photo collection, that is a sensible place to start.\n\nMost households do not need a sales pitch. They need clarity.\n\nNorth Quay Scan Desk offers a 25-minute remote assessment of a household photograph collection on 19 February 2028 at 16:30 UTC.\n\nWe will inspect up to six sample photographs on camera, identify questions about their condition, and discuss what a possible digitisation order could look like.\n\nThis is an assessment only. No scanning, restoration, valuation, or file delivery is included.\n\nCost: EUR 18.",
+            "Instagram: Not ready to digitise everything yet? Start with six photos.\n\nNorth Quay Scan Desk offers a 25-minute remote assessment where we look at up to six sample photographs on camera.\n\nWe will talk through condition questions and what a possible digitisation order could look like. This session does not include scanning, restoration, valuation, or file delivery.\n\n19 February 2028, 16:30 UTC. EUR 18.",
+            "TikTok: Not ready to digitise the whole box? Start with 6 photos on camera.\n25-minute remote assessment, EUR 18.\n19 Feb 2028, 16:30 UTC.\nAssessment only, no scanning or files delivered.",
+            "X/Twitter: Digitising a photo collection is easier when you separate “assessment” from “scanning.” 25-minute remote assessment with North Quay Scan Desk (up to 6 photos on camera) on 19 Feb 2028, 16:30 UTC. EUR 18. No scanning or files included.",
+            "Carousel: Slide 1: Not ready to digitise your whole photo collection? Start smaller. | Slide 2: What this is: a 25-minute remote assessment (North Quay Scan Desk). | Slide 3: What we do: inspect up to six photos on camera, identify condition questions, discuss a possible digitisation order. | Slide 4: What this is not: no scanning, restoration, valuation, or file delivery. | Slide 5: Session details: 19 Feb 2028, 16:30 UTC, EUR 18. | Slide 6: Simple prep: choose six representative photos. | Slide 7: First step: request the remote assessment.",
+            "Video: Hook: “Got a box of old photos, but not ready to digitise everything?” | Beat 1: “We offer a 25-minute remote assessment.” | Beat 2: “We look at up to six sample photos on camera.” | Beat 3: “We identify condition questions and discuss what a possible digitisation order could look like.” | Beat 4: “No scanning, restoration, valuation, or file delivery included.” | Beat 5: “19 Feb 2028, 16:30 UTC. EUR 18.” | Close: “Request the remote assessment.”",
+            "Email: If you are considering digitising old photographs, the hardest part is often figuring out what you have and what condition it is in.\n\nNorth Quay Scan Desk is offering a 25-minute remote assessment on 19 February 2028 at 16:30 UTC.\n\nWe will inspect up to six sample photographs on camera, identify questions about their condition, and discuss what a possible digitisation order could look like.\n\nAssessment only: no scanning, restoration, valuation, or file delivery.\n\nCost: EUR 18."
+          ],
+          "cta": "Request the North Quay Scan Desk 25-minute remote assessment on 19 February 2028 at 16:30 UTC (EUR 18)."
+        },
+        {
+          "type": "hooks",
+          "title": "Hooks: 8 angles that stay within the facts",
+          "platform": "General",
+          "body": "Eight platform-flexible openers grounded in the approved notice, focused on clarity and boundaries.",
+          "items": [
+            "If you are not ready to digitise your whole photo collection, start with an assessment.",
+            "A photo scan is production work. An assessment is decision-making. Do not skip the second part.",
+            "Before you spend money digitising a whole box, look closely at six representative photos.",
+            "You can plan a digitisation order without scanning a single photo today.",
+            "The fastest way to reduce uncertainty about old photos is to inspect a small sample, on purpose.",
+            "What you want at the start of digitising is clarity, not files.",
+            "Not every “photo digitisation” conversation should begin with scanning.",
+            "A 25-minute remote assessment can help you define the questions you actually need answered first."
+          ],
+          "cta": "If the 25-minute remote assessment on 19 February 2028 at 16:30 UTC (EUR 18) fits your next step, request it from North Quay Scan Desk."
+        },
+        {
+          "type": "ctas",
+          "title": "CTAs: 5 Product CTA options",
+          "platform": "General",
+          "body": "Product CTA options that reference only the documented assessment session.",
+          "items": [
+            "Request the North Quay Scan Desk 25-minute remote photo collection assessment (19 February 2028, 16:30 UTC, EUR 18).",
+            "To get clarity before you digitise, request the 25-minute remote assessment with North Quay Scan Desk.",
+            "If you want an assessment only (no scanning or files), request the North Quay Scan Desk remote session on 19 February 2028 at 16:30 UTC.",
+            "Request a 25-minute remote assessment to review up to six sample photos on camera and discuss a possible digitisation order (EUR 18).",
+            "Start with a small first step: request the North Quay Scan Desk remote collection assessment on 19 February 2028 at 16:30 UTC."
+          ],
+          "cta": ""
+        },
+        {
+          "type": "platformHashtags",
+          "title": "Platform hashtag and keyword sets",
+          "platform": "General",
+          "body": "Platform-appropriate tags and keywords, kept specific and restrained.",
+          "items": [
+            "LinkedIn: #DigitalPreservation #RecordsManagement #Archiving #CustomerExperience",
+            "Instagram: #photodigitization #digitizephotos #familyphotos #photoarchive #photoorganization #archiving #memorabilia",
+            "TikTok: #digitizephotos #familyphotos #photoarchive #photoorganizing #homememories",
+            "X/Twitter: No tags recommended",
+            "Facebook: #familyphotos #photoarchive",
+            "YouTube Shorts: digitise photos, digitize photos, photo digitisation, photo digitization, remote photo consultation, photo collection assessment, old photos condition, family photo archive, photo archiving, photo organisation, plan a digitisation order, scan photos"
+          ],
+          "cta": ""
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 1,
+  "scope": "UNBLINDED_AGGREGATION_OF_FROZEN_COPY_ONLY_SCORES",
+  "frozenInput": {
+    "path": "/tmp/contentos-grounding-blind-scores.json",
+    "sha256": "1988ba1c14d6c071d6e3af1297852206ed68cbbdef52e768f5e7bd1dfce20c59",
+    "modified": false
+  },
+  "mapping": {
+    "source": "Explicit user-provided mapping after score hash verification",
+    "byBrief": {
+      "H1": {
+        "A": "candidate",
+        "B": "baseline"
+      },
+      "H2": {
+        "A": "baseline",
+        "B": "candidate"
+      },
+      "H3": {
+        "A": "baseline",
+        "B": "candidate"
+      }
+    }
+  },
+  "scoring": {
+    "dimensions": [
+      "fidelity",
+      "usefulness",
+      "originality",
+      "brandVoice",
+      "ctaCompliance"
+    ],
+    "dimensionMaximum": 4,
+    "totalMaximum": 20,
+    "weighting": "Equal dimensions and equal format weights. Each brief has fourteen assets per variant, so pooled means also weight briefs equally.",
+    "rounding": "Means and deltas rounded to six decimal places; integer sums retained for exact recomputation."
+  },
+  "variants": {
+    "baseline": {
+      "assetRows": 42,
+      "dimensionSums": {
+        "fidelity": 134,
+        "usefulness": 132,
+        "originality": 123,
+        "brandVoice": 149,
+        "ctaCompliance": 118
+      },
+      "dimensionMeansOutOf4": {
+        "fidelity": 3.190476,
+        "usefulness": 3.142857,
+        "originality": 2.928571,
+        "brandVoice": 3.547619,
+        "ctaCompliance": 2.809524
+      },
+      "totalScoreSum": 656,
+      "meanTotalOutOf20": 15.619048,
+      "criticalAssetRows": 13,
+      "criticalAssetFraction": {
+        "numerator": 13,
+        "denominator": 42
+      },
+      "materialIssueOccurrences": 18,
+      "materialIssueOccurrencesByClassification": {
+        "MATERIAL_FAILURE": 16,
+        "USABILITY_FAILURE": 2
+      }
+    },
+    "candidate": {
+      "assetRows": 42,
+      "dimensionSums": {
+        "fidelity": 167,
+        "usefulness": 155,
+        "originality": 119,
+        "brandVoice": 166,
+        "ctaCompliance": 161
+      },
+      "dimensionMeansOutOf4": {
+        "fidelity": 3.97619,
+        "usefulness": 3.690476,
+        "originality": 2.833333,
+        "brandVoice": 3.952381,
+        "ctaCompliance": 3.833333
+      },
+      "totalScoreSum": 768,
+      "meanTotalOutOf20": 18.285714,
+      "criticalAssetRows": 0,
+      "criticalAssetFraction": {
+        "numerator": 0,
+        "denominator": 42
+      },
+      "materialIssueOccurrences": 0,
+      "materialIssueOccurrencesByClassification": {}
+    }
+  },
+  "byBrief": [
+    {
+      "brief": "H1",
+      "baseline": {
+        "assetRows": 14,
+        "dimensionSums": {
+          "fidelity": 49,
+          "usefulness": 46,
+          "originality": 42,
+          "brandVoice": 50,
+          "ctaCompliance": 56
+        },
+        "dimensionMeansOutOf4": {
+          "fidelity": 3.5,
+          "usefulness": 3.285714,
+          "originality": 3,
+          "brandVoice": 3.571429,
+          "ctaCompliance": 4
+        },
+        "totalScoreSum": 243,
+        "meanTotalOutOf20": 17.357143,
+        "criticalAssetRows": 2,
+        "criticalAssetFraction": {
+          "numerator": 2,
+          "denominator": 14
+        },
+        "materialIssueOccurrences": 2,
+        "materialIssueOccurrencesByClassification": {
+          "MATERIAL_FAILURE": 2
+        }
+      },
+      "candidate": {
+        "assetRows": 14,
+        "dimensionSums": {
+          "fidelity": 56,
+          "usefulness": 53,
+          "originality": 40,
+          "brandVoice": 56,
+          "ctaCompliance": 56
+        },
+        "dimensionMeansOutOf4": {
+          "fidelity": 4,
+          "usefulness": 3.785714,
+          "originality": 2.857143,
+          "brandVoice": 4,
+          "ctaCompliance": 4
+        },
+        "totalScoreSum": 261,
+        "meanTotalOutOf20": 18.642857,
+        "criticalAssetRows": 0,
+        "criticalAssetFraction": {
+          "numerator": 0,
+          "denominator": 14
+        },
+        "materialIssueOccurrences": 0,
+        "materialIssueOccurrencesByClassification": {}
+      },
+      "candidateMinusBaselineMeanTotalOutOf20": 1.285714,
+      "copyOnlyVerdicts": {
+        "baseline": "NO-GO",
+        "candidate": "GO"
+      }
+    },
+    {
+      "brief": "H2",
+      "baseline": {
+        "assetRows": 14,
+        "dimensionSums": {
+          "fidelity": 29,
+          "usefulness": 39,
+          "originality": 40,
+          "brandVoice": 43,
+          "ctaCompliance": 21
+        },
+        "dimensionMeansOutOf4": {
+          "fidelity": 2.071429,
+          "usefulness": 2.785714,
+          "originality": 2.857143,
+          "brandVoice": 3.071429,
+          "ctaCompliance": 1.5
+        },
+        "totalScoreSum": 172,
+        "meanTotalOutOf20": 12.285714,
+        "criticalAssetRows": 11,
+        "criticalAssetFraction": {
+          "numerator": 11,
+          "denominator": 14
+        },
+        "materialIssueOccurrences": 16,
+        "materialIssueOccurrencesByClassification": {
+          "MATERIAL_FAILURE": 14,
+          "USABILITY_FAILURE": 2
+        }
+      },
+      "candidate": {
+        "assetRows": 14,
+        "dimensionSums": {
+          "fidelity": 55,
+          "usefulness": 50,
+          "originality": 39,
+          "brandVoice": 54,
+          "ctaCompliance": 54
+        },
+        "dimensionMeansOutOf4": {
+          "fidelity": 3.928571,
+          "usefulness": 3.571429,
+          "originality": 2.785714,
+          "brandVoice": 3.857143,
+          "ctaCompliance": 3.857143
+        },
+        "totalScoreSum": 252,
+        "meanTotalOutOf20": 18,
+        "criticalAssetRows": 0,
+        "criticalAssetFraction": {
+          "numerator": 0,
+          "denominator": 14
+        },
+        "materialIssueOccurrences": 0,
+        "materialIssueOccurrencesByClassification": {}
+      },
+      "candidateMinusBaselineMeanTotalOutOf20": 5.714286,
+      "copyOnlyVerdicts": {
+        "baseline": "NO-GO",
+        "candidate": "GO"
+      }
+    },
+    {
+      "brief": "H3",
+      "baseline": {
+        "assetRows": 14,
+        "dimensionSums": {
+          "fidelity": 56,
+          "usefulness": 47,
+          "originality": 41,
+          "brandVoice": 56,
+          "ctaCompliance": 41
+        },
+        "dimensionMeansOutOf4": {
+          "fidelity": 4,
+          "usefulness": 3.357143,
+          "originality": 2.928571,
+          "brandVoice": 4,
+          "ctaCompliance": 2.928571
+        },
+        "totalScoreSum": 241,
+        "meanTotalOutOf20": 17.214286,
+        "criticalAssetRows": 0,
+        "criticalAssetFraction": {
+          "numerator": 0,
+          "denominator": 14
+        },
+        "materialIssueOccurrences": 0,
+        "materialIssueOccurrencesByClassification": {}
+      },
+      "candidate": {
+        "assetRows": 14,
+        "dimensionSums": {
+          "fidelity": 56,
+          "usefulness": 52,
+          "originality": 40,
+          "brandVoice": 56,
+          "ctaCompliance": 51
+        },
+        "dimensionMeansOutOf4": {
+          "fidelity": 4,
+          "usefulness": 3.714286,
+          "originality": 2.857143,
+          "brandVoice": 4,
+          "ctaCompliance": 3.642857
+        },
+        "totalScoreSum": 255,
+        "meanTotalOutOf20": 18.214286,
+        "criticalAssetRows": 0,
+        "criticalAssetFraction": {
+          "numerator": 0,
+          "denominator": 14
+        },
+        "materialIssueOccurrences": 0,
+        "materialIssueOccurrencesByClassification": {}
+      },
+      "candidateMinusBaselineMeanTotalOutOf20": 1,
+      "copyOnlyVerdicts": {
+        "baseline": "GO",
+        "candidate": "GO"
+      }
+    }
+  ],
+  "candidateMinusBaseline": {
+    "dimensionMeanDeltasOutOf4": {
+      "fidelity": 0.785714,
+      "usefulness": 0.547619,
+      "originality": -0.095238,
+      "brandVoice": 0.404762,
+      "ctaCompliance": 1.02381
+    },
+    "meanTotalDeltaOutOf20": 2.666667,
+    "criticalAssetRowDelta": -13,
+    "pairedAssets": 42,
+    "higherTotalPairs": 28,
+    "equalTotalPairs": 10,
+    "lowerTotalPairs": 4
+  },
+  "criticalFindings": [
+    {
+      "variant": "baseline",
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "tiktok",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "hooks",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "linkedin",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "instagram",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "tiktok",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "twitter",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "facebook",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "youtubeShorts",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "xThread",
+      "materialIssueCount": 1
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "shortVideoScript",
+      "materialIssueCount": 2
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "emailNewsletter",
+      "materialIssueCount": 2
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "repurposePack",
+      "materialIssueCount": 2
+    },
+    {
+      "variant": "baseline",
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "ctas",
+      "materialIssueCount": 3
+    }
+  ],
+  "delivery": {
+    "source": "User-reported execution outcome after unblinding; no sibling logs, evidence, metrics or mapping files inspected.",
+    "draftCallsSucceeded": 6,
+    "candidatePacksAssessedAsRawDrafts": 3,
+    "candidateAssetRowsAssessedAsRawDrafts": 42,
+    "candidatePacksDelivered": 0,
+    "candidateAssetRowsDelivered": 0,
+    "candidateRawDraftsWithheld": true,
+    "firstCandidateFactualReview": {
+      "status": "UNCERTAIN_TIMEOUT",
+      "remainingDeadlineSecondsAtReview": 44.849,
+      "totalElapsedSeconds": 90.003
+    },
+    "campaignStatus": "Stopped; subsequent reviews not run",
+    "baselineDeliveryStatus": "Not separately established by the supplied update",
+    "interpretation": "All candidate scores concern withheld raw drafts. Copy-only GO verdicts do not certify factual-review completion, product delivery or release readiness."
+  },
+  "languageClarification": {
+    "frozenFilePreserved": true,
+    "meaningOfFinalPackInFrozenReport": "Copy provided to the blinded evaluator, not proof of delivery. The candidate copies were withheld raw drafts.",
+    "copyOnlyCandidateCriticalAssets": "Zero material-critical rows identified by this reviewer among the 42 provided candidate raw-draft assets; not proof of zero factual defects in general."
+  },
+  "limits": [
+    "Observational comparison of three synthetic briefs and 42 matched asset pairs, scored by one independent blind evaluator before mapping disclosure.",
+    "No statistical significance, reliability rate, causal improvement or general model superiority is established.",
+    "Formats and repeated claims within each pack are correlated; 42 assets are not 42 independent experimental runs.",
+    "Material issue occurrences and critical asset rows use different denominators; repeated assertions may appear in multiple fields or formats.",
+    "The candidate factual-review stage did not complete successfully; there were zero candidate pack deliveries. Raw-draft score gains cannot be reported as end-to-end delivered-quality gains.",
+    "The provided copy cannot reveal false-positive gate behavior or which claims a completed reviewer would have repaired or refused.",
+    "No further paid calls, production actions or repository code edits were performed for this aggregation."
+  ]
+}

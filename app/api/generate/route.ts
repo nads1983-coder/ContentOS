@@ -2,356 +2,93 @@ import { rejectUnsafeWrite } from "@/lib/request-security";
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { contentTypes, defaultSelectedTypes } from "@/lib/content-config";
-import { isDatabaseConfigured, usesPostgres } from "@/lib/backend";
-import { captureServerError } from "@/lib/monitoring";
-import { buildInput, buildInstructions, requestedTypeSet } from "@/lib/prompts";
-import { recordGeneration, recordUsageEvent } from "@/lib/repository";
-import { cleanPlainText } from "@/lib/text-normalize";
-import {
-  CtaModeId,
-  ContentTypeId,
-  GenerateRequest,
-  GeneratedSection,
-  GenerationResult,
-  PresetTopicId,
-  SharpnessId,
-  ToneId
-} from "@/types/content";
+import { isDatabaseConfigured } from "@/lib/backend";
+import { analyticsEvent, captureServerError } from "@/lib/monitoring";
+import { readGenerationRequest, remainingGenerationTime } from "@/lib/generation-contract";
+import type { GenerationInput } from "@/lib/generation-contract";
+import { GenerationReservationError } from "@/lib/generation-reservation";
+import { beginTextGenerationStage, checkpointTextGenerationStage } from "@/lib/repository";
+import { PIPELINE_LIMITS } from "@/lib/generation-pipeline";
+import type { ProviderReceipt } from "@/lib/generation-pipeline";
+import type { StageAdmission } from "@/lib/generation-stages";
+import { isTextGenerationEnabled, TEXT_GENERATION_PAUSED_MESSAGE } from "@/lib/text-generation-availability";
 
 export const runtime = "nodejs";
+export const maxDuration = 120;
 
-const contentTypeIds = new Set(contentTypes.map((type) => type.id));
-const toneIds = new Set<ToneId>([
-  "professional",
-  "bold",
-  "friendly",
-  "inspirational",
-  "direct",
-  "story-led",
-  "sales-focused",
-  "educational",
-  "premium",
-  "conversational"
-]);
-const sharpnessIds = new Set<SharpnessId>([
-  "soft",
-  "balanced",
-  "direct",
-  "very-direct"
-]);
-const ctaModeIds = new Set<CtaModeId>(["none", "soft", "website", "product"]);
-const presetTopicIds = new Set<PresetTopicId>([
-  "none",
-  "business",
-  "personal-brand",
-  "motivation",
-  "education",
-  "sales",
-  "product-promotion",
-  "storytelling",
-  "thought-leadership",
-  "community-building",
-  "announcements"
-]);
-
-function isContentTypeId(value: unknown): value is ContentTypeId {
-  return typeof value === "string" && contentTypeIds.has(value as ContentTypeId);
-}
-
-function normalizeRequest(body: unknown): GenerateRequest {
-  if (!body || typeof body !== "object") {
-    throw new Error("Invalid request.");
-  }
-
-  const candidate = body as Partial<GenerateRequest>;
-  const source = typeof candidate.source === "string" ? candidate.source.trim() : "";
-  const brandName = typeof candidate.brandName === "string" ? candidate.brandName.trim() : "";
-  const audience = typeof candidate.audience === "string" ? candidate.audience.trim() : "";
-  const offer = typeof candidate.offer === "string" ? candidate.offer.trim() : "";
-  const writingStyle = typeof candidate.writingStyle === "string" ? candidate.writingStyle.trim() : "";
-  const contentGoal = typeof candidate.contentGoal === "string" ? candidate.contentGoal.trim() : "";
-  const tone = toneIds.has(candidate.tone as ToneId)
-    ? (candidate.tone as ToneId)
-    : "professional";
-  const sharpness = sharpnessIds.has(candidate.sharpness as SharpnessId)
-    ? (candidate.sharpness as SharpnessId)
-    : "balanced";
-  const ctaMode = ctaModeIds.has(candidate.ctaMode as CtaModeId)
-    ? (candidate.ctaMode as CtaModeId)
-    : "soft";
-  const presetTopic = presetTopicIds.has(candidate.presetTopic as PresetTopicId)
-    ? (candidate.presetTopic as PresetTopicId)
-    : "none";
-  const selectedTypes = Array.isArray(candidate.selectedTypes)
-    ? candidate.selectedTypes.filter(isContentTypeId)
-    : defaultSelectedTypes;
-
-  if (source.length < 8) {
-    throw new Error("Add a little more source material before generating.");
-  }
-
-  return {
-    source: source.slice(0, 8000),
-    brandName: brandName.slice(0, 180),
-    audience: audience.slice(0, 240),
-    offer: offer.slice(0, 240),
-    writingStyle: writingStyle.slice(0, 320),
-    contentGoal: contentGoal.slice(0, 180),
-    tone,
-    sharpness,
-    ctaMode,
-    presetTopic,
-    selectedTypes: selectedTypes.length ? selectedTypes : defaultSelectedTypes
-  };
-}
-
-function sanitizeGeneratedText(value: string) {
-  return cleanPlainText(value)
-    .replace(/[—–]/g, ", ")
-    .replace(/--+/g, ", ")
-    .replace(/[ \t]{2,}/g, " ")
-    .replace(/ ?, ?\n/g, "\n");
-}
-
-function asStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value
-    .filter((item): item is string => typeof item === "string")
-    .map((item) => sanitizeGeneratedText(item))
-    .filter(Boolean);
-}
-
-function withoutHashtags(value: string) {
-  return value
-    .replace(/#[\p{L}\p{N}_]+/gu, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function hasMeaningfulCaption(value: string) {
-  const withoutTags = withoutHashtags(value);
-  return withoutTags.split(/\s+/).filter(Boolean).length >= 7;
-}
-
-function fallbackCaptionFromSource(source: string, type: ContentTypeId) {
-  const cleaned = withoutHashtags(sanitizeGeneratedText(source))
-    .split(/\n{2,}|\.\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .slice(0, type === "tiktok" ? 1 : 2)
-    .join(". ");
-
-  if (!cleaned) {
-    return type === "tiktok"
-      ? "A quick look at the idea behind this update."
-      : "A practical look at the idea behind this update.\n\nUse this as a starting point for a clearer, more useful caption.";
-  }
-
-  const ending = cleaned.endsWith(".") || cleaned.endsWith("!") || cleaned.endsWith("?") ? "" : ".";
-  return type === "tiktok"
-    ? `${cleaned}${ending}`.slice(0, 180)
-    : `${cleaned}${ending}`;
-}
-
-function normalizeSections(value: unknown, selectedTypes: ContentTypeId[]): GeneratedSection[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  const requested = requestedTypeSet(selectedTypes);
-
-  const normalized = value.map((section, index): GeneratedSection | null => {
-      const candidate = section as Partial<GeneratedSection>;
-      const type = isContentTypeId(candidate.type) ? candidate.type : selectedTypes[index];
-
-      if (!type || !requested.has(type)) {
-        return null;
-      }
-
-      return {
-        id:
-          typeof candidate.id === "string" && candidate.id
-            ? candidate.id
-            : `${type}-${index + 1}`,
-        type,
-        title:
-          typeof candidate.title === "string" && candidate.title
-            ? sanitizeGeneratedText(candidate.title)
-            : contentTypes.find((item) => item.id === type)?.label ?? "Output",
-        platform:
-          typeof candidate.platform === "string" && candidate.platform
-            ? sanitizeGeneratedText(candidate.platform)
-            : "General",
-        body: typeof candidate.body === "string" ? sanitizeGeneratedText(candidate.body) : "",
-        items: asStringArray(candidate.items),
-        cta:
-          typeof candidate.cta === "string"
-            ? sanitizeGeneratedText(candidate.cta)
-            : undefined
-      };
-    });
-
-  return normalized.filter((section): section is GeneratedSection => section !== null);
-}
-
-function parseOpenAIJson(text: string, request: GenerateRequest): GenerationResult {
-  const parsed = JSON.parse(text) as {
-    title?: unknown;
-    summary?: unknown;
-    sections?: unknown;
-  };
-
-  const sections = normalizeSections(parsed.sections, request.selectedTypes).map((section) => {
-    if ((section.type === "instagram" || section.type === "tiktok") && !hasMeaningfulCaption(section.body)) {
-      return {
-        ...section,
-        body: fallbackCaptionFromSource(request.source, section.type)
-      };
-    }
-
-    return section;
-  });
-
-  if (!sections.length) {
-    throw new Error("The model returned an empty generation.");
-  }
-
-  return {
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-    source: request.source,
-    tone: request.tone,
-    sharpness: request.sharpness,
-    ctaMode: request.ctaMode,
-    presetTopic: request.presetTopic,
-    selectedTypes: request.selectedTypes,
-    title:
-      typeof parsed.title === "string" && parsed.title
-        ? sanitizeGeneratedText(parsed.title)
-        : "Social Content Set",
-    summary:
-      typeof parsed.summary === "string" && parsed.summary
-        ? sanitizeGeneratedText(parsed.summary)
-        : "Generated social content from your source material.",
-    sections: sections.map((section) => ({
-      ...section,
-      cta: request.ctaMode === "none" ? "" : section.cta
-    }))
-  };
+function logFailure(event: string) {
+  try { captureServerError(new Error("Generation stage failed."), { route: "/api/generate", event }); } catch { /* Best effort. */ }
 }
 
 export async function POST(nextRequest: NextRequest) {
+  const startedAt = performance.now();
   const rejected = rejectUnsafeWrite(nextRequest);
   if (rejected) return rejected;
   const user = await getCurrentUser();
-  if (usesPostgres() && !user) return NextResponse.json({ error: "Login required." }, { status: 401 });
-  let request: GenerateRequest;
-
-  try {
-    request = normalizeRequest(await nextRequest.json());
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Invalid request." },
-      { status: 400 }
-    );
+  if (!user) return NextResponse.json({ error: "Login required." }, { status: 401 });
+  if (nextRequest.headers.get("X-ContentOS-Account") !== user.id) {
+    return NextResponse.json({ error: "Your account session changed. Reload the page or sign in again before continuing.", code: "account_changed" }, { status: 409 });
   }
-
-  if (!process.env.OPENAI_API_KEY) {
-    return NextResponse.json(
-      {
-        error:
-          "OPENAI_API_KEY is not configured. Add your OpenAI key to .env.local or your deployment environment."
-      },
-      { status: 500 }
-    );
+  let request: GenerationInput;
+  if (!isTextGenerationEnabled(user.id)) {
+    return NextResponse.json({ error: TEXT_GENERATION_PAUSED_MESSAGE, code: "text_generation_paused" }, {
+      status: 503, headers: { "Cache-Control": "no-store" }
+    });
   }
-
-  const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+  const expected = nextRequest.headers.get("X-ContentOS-Stage");
+  if (expected !== null && !/^1:(?:draft|review|correction|revalidation|save):[01]:\d{1,2}$/.test(expected)) {
+    return NextResponse.json({ error: "Invalid generation stage." }, { status: 400 });
+  }
+  try { request = await readGenerationRequest(nextRequest); } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid request." }, { status: 400 });
+  }
+  if (!isDatabaseConfigured()) return NextResponse.json({ error: "Generation storage is unavailable. No generation was started." }, { status: 503 });
+  if (!process.env.OPENAI_API_KEY || (process.env.OPENAI_MODEL && process.env.OPENAI_MODEL !== PIPELINE_LIMITS.model)) {
+    return NextResponse.json({ error: "AI generation is not configured with the bounded pipeline model." }, { status: 503 });
+  }
+  const requestId = request.requestId ?? crypto.randomUUID();
+  const headers = { "X-Request-Id": requestId, "Cache-Control": "no-store" };
+  if (nextRequest.signal.aborted || remainingGenerationTime(performance.now() - startedAt) < 1000) {
+    return NextResponse.json({ error: "Request ended before a generation stage started.", requestId }, { status: 408, headers });
+  }
+  let admission: StageAdmission;
+  try { admission = await beginTextGenerationStage(user.id, requestId, request, expected); } catch (error) {
+    if (error instanceof GenerationReservationError) return NextResponse.json({ error: error.message, code: error.code, requestId }, {
+      status: error.status, headers: { ...headers, ...(error.retryAfterSeconds ? { "Retry-After": String(error.retryAfterSeconds) } : {}) }
+    });
+    logFailure("stage_admission");
+    return NextResponse.json({ error: "Could not confirm saved progress. Resume with the same request ID; no provider call was started by this request.", code: "generation_save_uncertain", requestId }, { status: 503, headers });
+  }
+  if (admission.status === "replay") return NextResponse.json(admission.result, { headers });
+  if (admission.status === "progress") return NextResponse.json(admission.progress, {
+    status: admission.progress.status === "failed" ? 409 : 202, headers: { ...headers, "Retry-After": "2" }
   });
 
+  // One committed stage reservation, one bounded provider call. Disconnecting the
+  // browser does not cancel accepted work; the bounded call can still checkpoint.
+  const stage = admission.stage;
+  const callStarted = performance.now();
+  let receipt: ProviderReceipt | null = null;
   try {
-    const response = await client.responses.create({
-      model: process.env.OPENAI_MODEL ?? "gpt-5.2",
-      instructions: buildInstructions(),
-      input: buildInput(request),
-      text: {
-        format: {
-          type: "json_schema",
-          name: "social_content_generation",
-          strict: true,
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            required: ["title", "summary", "sections"],
-            properties: {
-              title: { type: "string" },
-              summary: { type: "string" },
-              sections: {
-                type: "array",
-                minItems: 1,
-                items: {
-                  type: "object",
-                  additionalProperties: false,
-                  required: ["id", "type", "title", "platform", "body", "items", "cta"],
-                  properties: {
-                    id: { type: "string" },
-                    type: { type: "string" },
-                    title: { type: "string" },
-                    platform: { type: "string" },
-                    body: { type: "string" },
-                    items: {
-                      type: "array",
-                      items: { type: "string" }
-                    },
-                    cta: { type: "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    });
-
-    const result = parseOpenAIJson(response.output_text, request);
-
-    if (user && isDatabaseConfigured()) {
-      try {
-        await recordGeneration(user.id, result);
-      } catch (error) {
-        captureServerError(error, { route: "/api/generate", userId: user.id });
-      }
-
-      try {
-        await recordUsageEvent({
-          userId: user.id,
-          email: user.email,
-          eventType: "text_generation",
-          metadata: {
-            generationId: result.id,
-            selectedTypes: request.selectedTypes,
-            outputCount: result.sections.length
-          }
-        });
-      } catch (error) {
-        captureServerError(error, { route: "/api/generate", userId: user.id, event: "usage" });
-      }
-    }
-
-    return NextResponse.json(result);
-  } catch (error) {
-    captureServerError(error, { route: "/api/generate" });
-    return NextResponse.json(
-      {
-        error:
-          "Generation failed. Check the API key, model access, and source material, then try again."
-      },
-      { status: 500 }
-    );
+    const remaining = Math.floor(remainingGenerationTime(performance.now() - startedAt));
+    if (remaining < 1000) throw new Error("stage_deadline");
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY,
+      timeout: PIPELINE_LIMITS.stageMs, maxRetries: 0, logLevel: "off" });
+    const response = await client.responses.create(stage.payload, { signal: AbortSignal.timeout(remaining) });
+    receipt = { status: response.status, output_text: response.output_text, usage: response.usage };
+  } catch { logFailure("provider_stage_uncertain"); }
+  const durationMs = performance.now() - callStarted;
+  const count = (value: unknown) => typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : 0;
+  try {
+    const progress = await checkpointTextGenerationStage(user.id, requestId, admission.fingerprint, stage, request, receipt, durationMs);
+    try { analyticsEvent("text_generation_stage", { stage: stage.kind, duration_ms: Math.round(durationMs),
+      outcome: progress.status === "failed" ? "failure" : "checkpoint", input_bytes: stage.inputBytes,
+      failure_reason: progress.diagnostic ?? progress.code ?? "none",
+      input_tokens: count(receipt?.usage?.input_tokens), output_tokens: count(receipt?.usage?.output_tokens),
+      usage_known: [receipt?.usage?.input_tokens, receipt?.usage?.output_tokens].every(v => typeof v === "number" && Number.isSafeInteger(v) && v >= 0) }); } catch { /* Telemetry cannot affect delivery. */ }
+    return NextResponse.json(progress, { status: progress.status === "failed" ? 502 : 202, headers });
+  } catch {
+    logFailure("stage_checkpoint_uncertain");
+    return NextResponse.json({ error: "This stage finished but its checkpoint could not be confirmed. Resume the same attempt to check saved progress. Paid work will not be repeated automatically.", code: "generation_save_uncertain", requestId }, { status: 503, headers });
   }
 }

@@ -1,0 +1,368 @@
+{
+  "candidate": "eef2f526eb69b0f05b592fe9ac4c61476c449b74",
+  "planHash": "257d785d3f95e8fc744e08a569b036ae28dc14ab0aca3c70f6244a0f6f00b7b9",
+  "briefHash": "5bc55a8b1a875a877d75375cb04d4b0e96f7cec053b6fa95d1c031e27e20723b",
+  "sourceHashes": {
+    "lib/prompts.ts": "078a8fa58c190e1e6eb4b26ff3915873dadbaf68cb274b5102bc60027ec0a57e",
+    "lib/content-config.ts": "0810308c2b54d412bffd9b1150b3bbc5cd6cc7cb89b7b63bdf4f8cdfccf0572a",
+    "lib/text-normalize.ts": "d846543c98de084acf37599daaa02ea0486f0ba1aeacf5abb6f1fce46ccc4a3a",
+    "lib/generation-contract.ts": "5c6f177fa19bfa2b8e20863c24109b7ddf4e052388f153178c0217bcd2869d57",
+    "lib/cta-policy.ts": "7379a2f32a8a96988dae8edc95fa9ab7191018854441ec9bc94019198f7f06e3",
+    "lib/claim-scope.ts": "36341b1754662a9a7328f85170a118cdff566d21b76260892e0d8aac38eb3e68",
+    "lib/factual-grounding.ts": "a1abc4a9144b5c188595dcdd5c9283c2a99ffce87e204cda62a41be2f631b410",
+    "lib/grounding-batches.ts": "8392a678060e34ae8dd37486019a4d38a9bed96662e32088f3111d987841d506",
+    "lib/generation-pipeline.ts": "d17c5c8c27a8dab82cc470d2b4450ee75cd2f0d15043a9aa3b2e12400d064250",
+    "lib/generation-stages.ts": "ca3de3b690779bf0948a897b49ac401a1342445f95d1ba3b657fbaa281f71e8a",
+    "lib/generation-reservation.ts": "bf72035f140db6281e2b5d04405e610db5d64772cbc302b031c4db7bb4f4b5e2",
+    "lib/workspace-contract.ts": "2755e3dce126d04c9b79dafecf9db67056fdaad19b747a34b13146459599ae12",
+    "lib/entitlements.ts": "901bbb5ca4274530512a00552b14c6bd0a86dbe2cc4112f89c638f60829b7762",
+    "lib/usage.ts": "501d480d9ccab169659f4d428001b37a063ba2eb7a5c2a9b1ed885e3e025207a",
+    "lib/stripe-rest.ts": "80a5caf34bfe3ca77d9b4d0af0de46d0dae2ffa9ded85038d605f9976e46f3be"
+  },
+  "outcome": null,
+  "origin": {
+    "schema": "contentos_acceptance_rc717_20261018",
+    "planHash": "77592c50e7689326b3579574df793b3f7b0e0324e088c3131a826f857e390d2a",
+    "reserved": 792508,
+    "calls": 3,
+    "checkpointHash": "00b712576ac6022c95670550871b2fdbed5c52803b46aae8975e3805d2ad4130",
+    "profileHash": "663fe2daeda1b7236b9753a3b66c8c84270fd9f4957a214045d17f9ed097f31b",
+    "jobHash": "84e7b8868e85fef6c21480e1cdb4c90723798848ac6154609050814c664677b2",
+    "campaignHash": "4b234e8727074e2c5ec5598f5c5f6344dccb750ecf5495cce681646578752d97",
+    "responseHash": "ed5a27c24f1f1ac404707b438aab6ac615b000358561090c7a58fdfd7f8d6a85",
+    "payloadHash": "c0aa21b0d4bf27e3e475ce7f168eacd82ca94ac1dae0bc780e4b12a7b24e2f9c",
+    "costUsd": 0.13628790000000002,
+    "originalReserved": 419173,
+    "previous": {
+      "schema": "contentos_continuation_rc717_20261018",
+      "planHash": "ffc85d49c9afe9e64e6e51d10dbefa2cab57c49ba4c44b0f1c0527134fcdd7e6",
+      "account": "staged-validation-cont-e9d38a2c-e65d-4891-a92c-51ef9ac06e16",
+      "campaignHash": "5151b165077b352b36d7125ca895fd9b8fe743efb61ac1554e892b1169cd95cc",
+      "jobHash": "98e69ec20762d7b73a727ad6bc065d3c4f3ce80671503415a6dcde8fdc0aeb08",
+      "profileHash": "b3c28a9799f7213995bd4cca81fe54550b44a5fbed4a01d7965652dcf340c7c7",
+      "responseHash": "baf8cce1dfec4d1f1f0819d3e5e78128231d35a63a69e23498d467948e73fd95"
+    },
+    "last": {
+      "schema": "contentos_final_a7cd_20261018",
+      "planHash": "33afdd63ad498bc9ff5f4fd1126d266028378d67bb5a622f8ec57537f34cd866",
+      "account": "staged-validation-final-5e54ba1a-08c2-4e25-a3a8-a7b6dce88700",
+      "campaignHash": "47fa85459605ecff7d81f46fa6c2bfbdef79f819001e6d123ac1a0b3ebe03aae",
+      "jobHash": "8109774dc30669c2f2d37a342a32833e84d58ef6ab5dc60a89a739ea9ace87b2",
+      "profileHash": "38ed36a426c0ecb3b1d6c62f01d43cda305025c0d3bfa169f0a3a9b07074de6b",
+      "responseHash": "87faba0e5687fcd41eedc890380814f5a63d0a86fb33192a53254af23659cc20"
+    }
+  },
+  "providerCalls": 3,
+  "continuationCalls": 0,
+  "reservedGbp": 0.792508,
+  "newReservedGbp": 0,
+  "knownCostUsd": 0.13628790000000002,
+  "knownCostGbpReference": 0.10220078593708347,
+  "actualCostComplete": true,
+  "maximumGbp": 3.08,
+  "maximumNewGbp": 2.28,
+  "maximumCalls": 15,
+  "maximumNewCalls": 12,
+  "parseFailure": false,
+  "totalDraftUnits": 307,
+  "acceptedInitialUnits": 96,
+  "finalUnits": 0,
+  "acceptedFinalUnits": 0,
+  "coverage": [
+    {
+      "stage": "1:review:0:0",
+      "pass": 0,
+      "reused": true,
+      "assignedUnits": 48,
+      "returnedDecisions": 48,
+      "acceptedDecisions": 48,
+      "valid": true,
+      "unitIds": [
+        "u0",
+        "u1",
+        "u2",
+        "u3",
+        "u4",
+        "u5",
+        "u6",
+        "u7",
+        "u8",
+        "u9",
+        "u10",
+        "u11",
+        "u12",
+        "u13",
+        "u14",
+        "u15",
+        "u16",
+        "u17",
+        "u18",
+        "u19",
+        "u20",
+        "u21",
+        "u22",
+        "u23",
+        "u24",
+        "u25",
+        "u26",
+        "u27",
+        "u28",
+        "u29",
+        "u30",
+        "u31",
+        "u32",
+        "u33",
+        "u34",
+        "u35",
+        "u36",
+        "u37",
+        "u38",
+        "u39",
+        "u40",
+        "u41",
+        "u42",
+        "u43",
+        "u44",
+        "u45",
+        "u46",
+        "u47"
+      ],
+      "individualRejections": [],
+      "unsupported": [
+        {
+          "id": "u32",
+          "kind": "unsupported",
+          "reason": "missing_evidence",
+          "replacement": "Orin Textile’s new cushion covers are designed as a small change of texture around an existing cushion.",
+          "references": [
+            {
+              "sourceId": "s16",
+              "quote": "The visual idea behind the range is a small change of texture around an existing cushion, not a promise to improve wellbeing, make a room quieter or extend the life of furniture."
+            }
+          ]
+        },
+        {
+          "id": "u44",
+          "kind": "unsupported",
+          "reason": "missing_evidence",
+          "replacement": "Orin Textile’s range focuses on a practical care distinction: removable outer cover vs fixed outer cover.",
+          "references": [
+            {
+              "sourceId": "s43",
+              "quote": "A calm, practical distinction between a removable cover and a fixed cover is more useful than grand claims about transformation."
+            },
+            {
+              "sourceId": "s9",
+              "quote": "The Arc outer cover can be removed using its zip and machine washed at 30 degrees Celsius."
+            },
+            {
+              "sourceId": "s10",
+              "quote": "The Bond outer cover is fixed in place and is spot-clean only"
+            },
+            {
+              "sourceId": "s11",
+              "quote": "it must not be machine washed."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "stage": "1:review:0:1",
+      "pass": 0,
+      "reused": true,
+      "assignedUnits": 48,
+      "returnedDecisions": 48,
+      "acceptedDecisions": 48,
+      "valid": true,
+      "unitIds": [
+        "u48",
+        "u49",
+        "u50",
+        "u51",
+        "u52",
+        "u53",
+        "u54",
+        "u55",
+        "u56",
+        "u57",
+        "u58",
+        "u59",
+        "u60",
+        "u61",
+        "u62",
+        "u63",
+        "u64",
+        "u65",
+        "u66",
+        "u67",
+        "u68",
+        "u69",
+        "u70",
+        "u71",
+        "u72",
+        "u73",
+        "u74",
+        "u75",
+        "u76",
+        "u77",
+        "u78",
+        "u79",
+        "u80",
+        "u81",
+        "u82",
+        "u83",
+        "u84",
+        "u85",
+        "u86",
+        "u87",
+        "u88",
+        "u89",
+        "u90",
+        "u91",
+        "u92",
+        "u93",
+        "u94",
+        "u95"
+      ],
+      "individualRejections": [],
+      "unsupported": [
+        {
+          "id": "u50",
+          "kind": "unsupported",
+          "reason": "missing_evidence",
+          "replacement": "Hashtags set 2: #cushioncovers #textiledesign #softfurnishings #interiordetails #stitching #texturedesign #fabric",
+          "references": [
+            {
+              "sourceId": "s6",
+              "quote": "Orin Textile makes fabric cushion covers."
+            },
+            {
+              "sourceId": "s15",
+              "quote": "Both ranges use a visible stitched border."
+            },
+            {
+              "sourceId": "s42",
+              "quote": "The audience is people refreshing a cushion they already own, especially those who care about handling and texture more than a complete room makeover."
+            },
+            {
+              "sourceId": "s44",
+              "quote": "Original imagery about texture, seams or a familiar chair is welcome as creative language, provided it does not become a claim about technical performance or a fabricated customer story."
+            }
+          ]
+        },
+        {
+          "id": "u51",
+          "kind": "unsupported",
+          "reason": "missing_evidence",
+          "replacement": "Hashtags set 3: #softfurnishings #homerefresh #designdetails #texturedesign #homeinteriors #stitching #cushioncover",
+          "references": [
+            {
+              "sourceId": "s6",
+              "quote": "Orin Textile makes fabric cushion covers."
+            },
+            {
+              "sourceId": "s15",
+              "quote": "Both ranges use a visible stitched border."
+            },
+            {
+              "sourceId": "s42",
+              "quote": "The audience is people refreshing a cushion they already own, especially those who care about handling and texture more than a complete room makeover."
+            },
+            {
+              "sourceId": "s44",
+              "quote": "Original imagery about texture, seams or a familiar chair is welcome as creative language, provided it does not become a claim about technical performance or a fabricated customer story."
+            }
+          ]
+        },
+        {
+          "id": "u58",
+          "kind": "unsupported",
+          "reason": "missing_evidence",
+          "replacement": "Arc: removable outer cover with a zip, machine wash at 30°C.",
+          "references": [
+            {
+              "sourceId": "s9",
+              "quote": "The Arc outer cover can be removed using its zip and machine washed at 30 degrees Celsius."
+            }
+          ]
+        },
+        {
+          "id": "u87",
+          "kind": "unsupported",
+          "reason": "missing_evidence",
+          "replacement": "It is a range designed to keep the decision practical, with a clear distinction between a removable outer cover and a fixed outer cover.",
+          "references": [
+            {
+              "sourceId": "s43",
+              "quote": "A calm, practical distinction between a removable cover and a fixed cover is more useful than grand claims about transformation."
+            },
+            {
+              "sourceId": "s9",
+              "quote": "The Arc outer cover can be removed using its zip and machine washed at 30 degrees Celsius."
+            },
+            {
+              "sourceId": "s10",
+              "quote": "The Bond outer cover is fixed in place and is spot-clean only"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "corrections": [],
+  "historyEntries": 0,
+  "usageEvents": 0,
+  "journalFailure": null,
+  "draftPreserved": true,
+  "pipelineAudit": null,
+  "cleanup": {
+    "at": "2026-10-18T14:46:37.897Z",
+    "database": {
+      "disable": true,
+      "noLogin": true,
+      "revokeFunctions": true,
+      "revokeSchema": true,
+      "terminateSessions": true,
+      "verifyRevocation": true
+    },
+    "auditExported": true,
+    "discoveryComplete": true,
+    "verifiedDeployments": [
+      {
+        "id": "dpl_F28dmXm3yHNHvyJ3nyoGFNoBvyJN",
+        "projectId": "prj_aO6mDTNkCKe5jzepGPCvzOWy1eBS",
+        "target": null,
+        "meta": {
+          "benchmarkPlanHash": "257d785d3f95e8fc744e08a569b036ae28dc14ab0aca3c70f6244a0f6f00b7b9"
+        }
+      }
+    ],
+    "deletedDeploymentIds": [
+      "dpl_F28dmXm3yHNHvyJ3nyoGFNoBvyJN"
+    ],
+    "errors": [],
+    "safeToEraseRecovery": true
+  },
+  "deployment": {
+    "id": "dpl_F28dmXm3yHNHvyJ3nyoGFNoBvyJN",
+    "state": "ERROR",
+    "errorCode": "BUILD_UTILS_SPAWN_1"
+  },
+  "protection": null,
+  "pricing": {
+    "inputUsdPerMillion": 1.75,
+    "cachedUsdPerMillion": 0.175,
+    "outputUsdPerMillion": 14,
+    "gbpPerUsdReservation": 1.1,
+    "checkedAt": "2026-10-18T14:45:47.257Z",
+    "source": "https://developers.openai.com/api/docs/models/gpt-5.2",
+    "gbpPerUsdReference": 0.7498889185106195
+  },
+  "jobs": [],
+  "limits": [
+    "One synthetic brief, not a population quality or reliability estimate.",
+    "Exact candidate transitions and real isolated SQL persistence; not a live-provider browser/authenticated HTTP test.",
+    "Model certificates require separate independent final-content assessment."
+  ]
+}

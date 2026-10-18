@@ -2,6 +2,7 @@ import { CheckoutButton } from "@/components/billing-buttons";
 import { planCoversPlan } from "@/lib/plan-utils";
 import type { BillingPlan } from "@/lib/pricing";
 import type { PlanId } from "@/types/saas";
+import { founderOfferRetired } from "@/lib/founder-retirement";
 
 export function FoundingOffer({
   isLoggedIn,
@@ -10,6 +11,7 @@ export function FoundingOffer({
   isLoggedIn: boolean;
   currentPlan: PlanId;
 }) {
+  if (founderOfferRetired()) return null;
   const creatorPlan: BillingPlan = "pro_creator";
   const covered = planCoversPlan(currentPlan, creatorPlan);
 

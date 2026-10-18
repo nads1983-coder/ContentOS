@@ -4,6 +4,8 @@ import { pageMetadata } from "@/lib/metadata";
 import { pricingPlans } from "@/lib/pricing";
 import { PublicPage } from "@/components/public-page";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = pageMetadata({
   title: "ContentOS Pricing | Simple Pricing for Creators and Teams",
   path: "/pricing"

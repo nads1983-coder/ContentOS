@@ -1,0 +1,280 @@
+import { contentTypes, ctaModes, defaultSelectedTypes, presetTopics, sharpnessModes, tones } from "@/lib/content-config";
+import { cleanPlainText } from "@/lib/text-normalize";
+import { hasNoCtaInstruction } from "@/lib/cta-policy";
+import type { ContentTypeId, GenerateRequest, GeneratedSection, GenerationResult } from "@/types/content";
+
+export const REFINEMENT_ACTIONS = {
+  shorten: "Remove redundancy and secondary explanation while preserving the core point, factual qualifications, and required asset counts.",
+  expand: "Add useful explanation using only source-supported detail. Do not invent examples, proof, results, or credentials.",
+  simplify: "Use plain language and shorter sentences. Explain necessary jargon without losing precision or qualifications.",
+  professional: "Use a measured, clear professional tone for this replacement, overriding the selected tone. Avoid corporate jargon or inflated claims.",
+  conversational: "Use natural, approachable conversational language for this replacement, overriding the selected tone. Do not invent personal anecdotes or familiarity.",
+  hook: "Improve the opening with a specific source-grounded tension or useful contrast. Keep the rest of the message and its meaning stable; no clickbait.",
+  cta: "Improve the call to action for the selected CTA mode and audience intent. Preserve the main copy. If CTA mode is none, remove calls to action rather than adding one. Never invent links, offers, or scarcity.",
+  alternative: "Write a genuinely different angle or structure for the same format and facts. Preserve the original purpose and qualifications; do not merely swap synonyms.",
+  sharpen: "Strengthen the opening, verbs, and specificity without exaggerating the source claims or changing their meaning.",
+  "change-tone": "Apply the selected tone while preserving the original facts, qualifications, and purpose."
+} as const;
+
+export type GenerationInput = GenerateRequest & {
+  requestId?: string;
+  length?: "short" | "standard" | "detailed";
+  refinement?: {
+    action: keyof typeof REFINEMENT_ACTIONS;
+    section: GeneratedSection;
+  };
+};
+
+export const GENERATION_LIMITS = {
+  requestBytes: 96_000,
+  requestReadMs: 10_000,
+  outputCharacters: 100_000,
+  resultBytes: 128_000,
+  timeoutMs: 90_000,
+  maxRetries: 0,
+  maxOutputTokens: 24_000
+} as const;
+
+export class GenerationValidationError extends Error {}
+export type GenerationOutputFailure = "invalid_output" | "invalid_text" | "empty_text" | "invalid_section"
+  | "invalid_items" | "empty_section" | "missing_copy" | "item_count" | "platform_length"
+  | "asset_label" | "output_size" | "output_json" | "section_count" | "section_identity" | "saved_result_size";
+export class GenerationOutputError extends Error {
+  constructor(message = "Invalid generated output.", readonly diagnostic: GenerationOutputFailure = "invalid_output") {
+    super(message);
+  }
+}
+
+export function remainingGenerationTime(elapsedMs: number) {
+  // Leave twenty seconds of the 120-second route window for cleanup and persistence.
+  return Math.max(0, Math.min(GENERATION_LIMITS.timeoutMs, 100_000 - Math.max(0, elapsedMs)));
+}
+
+function record(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+const typeIds = new Set<string>(contentTypes.map(({ id }) => id));
+function isType(value: unknown): value is ContentTypeId {
+  return typeof value === "string" && typeIds.has(value);
+}
+
+function inputText(value: unknown, name: string, max: number, required = false): string {
+  if (value === undefined && !required) return "";
+  if (typeof value !== "string") throw new GenerationValidationError(`${name} must be text.`);
+  if (value.length > max) throw new GenerationValidationError(`${name} must be at most ${max} characters.`);
+  if (/data:[^\s,]*[;,]/i.test(value)) throw new GenerationValidationError("Inline media is not supported in generation text.");
+  return value.trim();
+}
+
+function choice<T extends string>(value: unknown, values: readonly T[], fallback: T, name: string): T {
+  if (value === undefined) return fallback;
+  if (typeof value !== "string" || !values.includes(value as T)) {
+    throw new GenerationValidationError(`Invalid ${name}.`);
+  }
+  return value as T;
+}
+
+export function normalizeGenerationRequest(body: unknown): GenerationInput {
+  if (!record(body)) throw new GenerationValidationError("Invalid request.");
+  const source = inputText(body.source, "Source", 8000, true);
+  if (source.length < 8 || !/[\p{L}\p{N}]/u.test(source)) {
+    throw new GenerationValidationError("Add a little more source material before generating.");
+  }
+  const selected = body.selectedTypes === undefined ? defaultSelectedTypes : body.selectedTypes;
+  if (!Array.isArray(selected) || selected.length === 0 || selected.length > contentTypes.length ||
+      !selected.every(isType) || new Set(selected).size !== selected.length) {
+    throw new GenerationValidationError("Choose one or more distinct supported content formats.");
+  }
+  const result: GenerationInput = {
+    source,
+    brandName: inputText(body.brandName, "Brand name", 180),
+    audience: inputText(body.audience, "Audience", 240),
+    offer: inputText(body.offer, "Offer", 240),
+    writingStyle: inputText(body.writingStyle, "Writing style", 320),
+    contentGoal: inputText(body.contentGoal, "Content goal", 180),
+    tone: choice(body.tone, tones.map(({ id }) => id), "professional", "tone"),
+    sharpness: choice(body.sharpness, sharpnessModes.map(({ id }) => id), "balanced", "sharpness"),
+    ctaMode: choice(body.ctaMode, ctaModes.map(({ id }) => id), "soft", "CTA mode"),
+    presetTopic: choice(body.presetTopic, presetTopics.map(({ id }) => id), "none", "category"),
+    selectedTypes: [...selected],
+    length: choice(body.length, ["short", "standard", "detailed"] as const, "standard", "length")
+  };
+  if (body.requestId !== undefined) {
+    const id = inputText(body.requestId, "Request ID", 36, true);
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+      throw new GenerationValidationError("Request ID must be a UUID.");
+    }
+    result.requestId = id;
+  }
+  if (body.refinement !== undefined) {
+    if (!record(body.refinement) || body.refinement.action === undefined) {
+      throw new GenerationValidationError("Invalid refinement.");
+    }
+    const action = choice(body.refinement.action, Object.keys(REFINEMENT_ACTIONS) as Array<keyof typeof REFINEMENT_ACTIONS>, "sharpen", "refinement action");
+    let section: GeneratedSection;
+    try {
+      section = validateSection(body.refinement.section);
+    } catch {
+      throw new GenerationValidationError("Refinement needs a complete, valid original section.");
+    }
+    if (selected.length !== 1 || selected[0] !== section.type) {
+      throw new GenerationValidationError("Refine exactly one matching content format.");
+    }
+    result.refinement = { action, section };
+  }
+  if (hasNoCtaInstruction(result)) result.ctaMode = "none";
+  return result;
+}
+
+// Count actual streamed bytes, including requests without Content-Length.
+export async function readGenerationRequest(request: Request): Promise<GenerationInput> {
+  const declaredSize = request.headers.get("content-length");
+  if (declaredSize && (!/^\d+$/.test(declaredSize) || Number(declaredSize) > GENERATION_LIMITS.requestBytes)) {
+    throw new GenerationValidationError("Request body is too large.");
+  }
+  if (!request.body) throw new GenerationValidationError("Invalid request.");
+  const reader = request.body.getReader();
+  const decoder = new TextDecoder("utf-8", { fatal: true });
+  let bytes = 0;
+  let text = "";
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => {
+      reject(new GenerationValidationError("Request body timed out."));
+      void reader.cancel().catch(() => {});
+    }, GENERATION_LIMITS.requestReadMs);
+  });
+  try {
+    while (true) {
+      const chunk = await Promise.race([reader.read(), deadline]);
+      if (chunk.done) break;
+      bytes += chunk.value.byteLength;
+      if (bytes > GENERATION_LIMITS.requestBytes) throw new GenerationValidationError("Request body is too large.");
+      text += decoder.decode(chunk.value, { stream: true });
+    }
+    text += decoder.decode();
+    return normalizeGenerationRequest(JSON.parse(text));
+  } catch (error) {
+    void reader.cancel().catch(() => {});
+    if (error instanceof GenerationValidationError) throw error;
+    throw new GenerationValidationError("Request must contain valid JSON.");
+  } finally {
+    clearTimeout(timeout);
+    reader.releaseLock();
+  }
+}
+
+function outputText(value: unknown, name: string, max: number, allowEmpty = false): string {
+  if (typeof value !== "string" || value.length > max || /data:[^\s,]*[;,]/i.test(value)) throw new GenerationOutputError(`Invalid ${name}.`, "invalid_text");
+  let cleaned: string;
+  try {
+    cleaned = cleanPlainText(value).replace(/[\u2014\u2013]/g, ", ").replace(/--+/g, ", ").trim();
+  } catch {
+    throw new GenerationOutputError(`Invalid ${name}.`, "invalid_text");
+  }
+  if (cleaned.length > max || /data:[^\s,]*[;,]/i.test(cleaned)) throw new GenerationOutputError(`Invalid ${name}.`, "invalid_text");
+  if (!allowEmpty && !/[\p{L}\p{N}]/u.test(cleaned)) throw new GenerationOutputError(`Empty ${name}.`, "empty_text");
+  return cleaned;
+}
+
+function validateSection(value: unknown): GeneratedSection {
+  if (!record(value) || !isType(value.type)) throw new GenerationOutputError("Invalid section type.", "invalid_section");
+  if (!Array.isArray(value.items) || value.items.length > 30) throw new GenerationOutputError("Invalid section items.", "invalid_items");
+  const section: GeneratedSection = {
+    id: outputText(value.id, "section id", 100),
+    type: value.type,
+    title: outputText(value.title, "section title", 240),
+    platform: outputText(value.platform, "section platform", 80),
+    body: outputText(value.body, "section body", 24_000, true),
+    items: value.items.map((item) => outputText(item, "section item", 6000)),
+    cta: outputText(value.cta ?? "", "section CTA", 1000, true)
+  };
+  if (!/[\p{L}\p{N}]/u.test(section.body) && section.items.length === 0) {
+    throw new GenerationOutputError("Empty section.", "empty_section");
+  }
+  return section;
+}
+
+export const REPURPOSE_LABELS = ["LinkedIn:", "Instagram:", "TikTok:", "X/Twitter:", "Carousel:", "Video:", "Email:"] as const;
+export const HASHTAG_LABELS = ["LinkedIn:", "Instagram:", "TikTok:", "X/Twitter:", "Facebook:", "YouTube Shorts:"] as const;
+
+function validateFormat(section: GeneratedSection, request: GenerationInput) {
+  const { type, body, items } = section;
+  const listFormats = ["hooks", "ctas", "carousel", "xThread", "platformHashtags", "repurposePack"];
+  if (!listFormats.includes(type) && !/[\p{L}\p{N}]/u.test(body.replace(/#[\p{L}\p{N}_]+/gu, ""))) {
+    throw new GenerationOutputError(`Missing copy for ${type}.`, "missing_copy");
+  }
+  const bounds: Partial<Record<ContentTypeId, [number, number]>> = {
+    hooks: [8, 8], ctas: request.ctaMode === "none" ? [0, 0] : [5, 5],
+    xThread: [5, 7], carousel: [5, 10], platformHashtags: [6, 6], repurposePack: [7, 7]
+  };
+  const range = bounds[type];
+  if (range && (items.length < range[0] || items.length > range[1])) {
+    throw new GenerationOutputError(`Incomplete ${type}.`, "item_count");
+  }
+  if (type === "ctas" && request.ctaMode === "none" && !body) throw new GenerationOutputError("Missing no-CTA explanation.", "missing_copy");
+  if (type === "twitter" && [...body].length > 280) throw new GenerationOutputError("X post is too long.", "platform_length");
+  if (type === "xThread" && items.some((item) => [...item].length > 280)) throw new GenerationOutputError("X thread post is too long.", "platform_length");
+  if (type === "repurposePack" || type === "platformHashtags") {
+    const labels = type === "repurposePack" ? REPURPOSE_LABELS : HASHTAG_LABELS;
+    for (const label of labels) {
+      const matches = items.filter((item) => item.startsWith(label));
+      if (matches.length !== 1 || !/[\p{L}\p{N}]/u.test(matches[0].slice(label.length))) {
+        throw new GenerationOutputError(`Missing asset: ${label}`, "asset_label");
+      }
+    }
+  }
+}
+
+export function parseGenerationOutput(text: string, request: GenerationInput): GenerationResult {
+  if (typeof text !== "string" || text.length > GENERATION_LIMITS.outputCharacters) throw new GenerationOutputError("Invalid output size.", "output_size");
+  let parsed: unknown;
+  try { parsed = JSON.parse(text); } catch { throw new GenerationOutputError("Invalid output JSON.", "output_json"); }
+  if (!record(parsed) || !Array.isArray(parsed.sections) || parsed.sections.length !== request.selectedTypes.length) {
+    throw new GenerationOutputError("The generation is incomplete.", "section_count");
+  }
+  const sections = parsed.sections.map(validateSection);
+  if (new Set(sections.map(({ type }) => type)).size !== sections.length ||
+      new Set(sections.map(({ id }) => id)).size !== sections.length ||
+      sections.some(({ type }) => !request.selectedTypes.includes(type))) {
+    throw new GenerationOutputError("Duplicate or unexpected output sections.", "section_identity");
+  }
+  for (const section of sections) {
+    validateFormat(section, request);
+    if (request.ctaMode === "none") section.cta = "";
+  }
+  const result: GenerationResult = {
+    id: crypto.randomUUID(), createdAt: new Date().toISOString(), source: request.source,
+    tone: request.tone, sharpness: request.sharpness, ctaMode: request.ctaMode,
+    presetTopic: request.presetTopic, selectedTypes: request.selectedTypes,
+    title: outputText(parsed.title, "title", 240), summary: outputText(parsed.summary, "summary", 1200),
+    sections: request.selectedTypes.map((type) => sections.find((section) => section.type === type)!)
+  };
+  if (new TextEncoder().encode(JSON.stringify(result)).byteLength > GENERATION_LIMITS.resultBytes) {
+    throw new GenerationOutputError("The complete result is too large to save.", "saved_result_size");
+  }
+  return result;
+}
+
+export function generationOutputSchema(selectedTypes: ContentTypeId[]) {
+  const text = (maxLength: number) => ({ type: "string", maxLength });
+  return {
+    type: "object", additionalProperties: false, required: ["title", "summary", "sections"],
+    properties: {
+      title: text(240), summary: text(1200),
+      sections: {
+        type: "array", minItems: selectedTypes.length, maxItems: selectedTypes.length,
+        items: {
+          type: "object", additionalProperties: false,
+          required: ["id", "type", "title", "platform", "body", "items", "cta"],
+          properties: {
+            id: text(100), type: { type: "string", enum: selectedTypes }, title: text(240),
+            platform: text(80), body: text(24_000),
+            items: { type: "array", maxItems: 30, items: text(6000) }, cta: text(1000)
+          }
+        }
+      }
+    }
+  };
+}

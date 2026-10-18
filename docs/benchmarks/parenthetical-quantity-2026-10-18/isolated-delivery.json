@@ -1,0 +1,90 @@
+{
+  "recordedAt": "2026-10-18T13:33:40.226Z",
+  "paidCalls": 0,
+  "productionWrites": 0,
+  "limitations": [
+    "Real isolated Neon transactions, synthetic fixtures and mechanical mock review certificates; not live AI validation.",
+    "Timings include local processing and warm isolated database network latency, but no model latency. Not production performance."
+  ],
+  "checks": [
+    "separate pooled transactions admit exactly one provider stage",
+    "repeated/lost-ack checkpoint is idempotent, preserves original admission",
+    "draft plus review can exceed the former shared deadline using separate durable stages",
+    "real PostgreSQL final-save rollback retains validated checkpoint without charging",
+    "concurrent final saves converge, with one charge and unchanged lifetime entitlement/history",
+    "account isolation refuses another account's stage checkpoint",
+    "crash/lost result becomes terminal uncertainty with nonrefunded spending and no lease takeover",
+    "Orin: captured 14-format pack persisted once with real isolated row locks and mocked review certificates"
+  ],
+  "results": [
+    {
+      "id": "Orin",
+      "isolatedDatabaseAndMockExecutionMs": 11549.687333,
+      "mockProviderCalls": 14,
+      "reviewedUnits": 307,
+      "correctionStages": 1,
+      "fullRevalidationBatches": 7,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "review",
+          "databaseAndMockMs": 428.6797499999998
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 915.1185419999997
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 1709.509
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 692.7318750000004
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 659.8898750000008
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 765.0224590000007
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 506.32737499999894
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 633.6051659999994
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 683.518583000001
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 1643.485584
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 684.0779590000002
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 697.5098330000001
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 693.5556670000005
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 374.33441700000003
+        }
+      ]
+    }
+  ]
+}

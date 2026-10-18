@@ -1,0 +1,129 @@
+{
+  "recordedAt": "2026-10-18T13:33:00.810Z",
+  "mode": "OFFLINE: captured first review plus explicitly mocked subsequent reviews",
+  "paidCalls": 0,
+  "newSpendGbp": 0,
+  "draftGenerationCalls": 0,
+  "originalFileHashes": {
+    "execution.json": "16c08b955865f0cb81befbea051993f1ceec246d82a9727db3197ff4e1ea8ef9",
+    "raw-draft.json": "768d810e2079b0e7f0e56a8775772367fee2013e2354e35f9c12af4e6fef85b2",
+    "brief.json": "5d714aa944a2c780856c970f4b58786476c3185d05d38b39caed968b72cf0ddc",
+    "origin-integrity.json": "4979ceacc601e2eb3aeec82b4237473296c30ee024a1bc73a93f85e8a869239e"
+  },
+  "draftHash": "9b4037c2e06bf366c29814dc602ef96de599f47c45ce0baa5bbfc22824f7da08",
+  "formats": 14,
+  "originalCertificates": 48,
+  "originalCertificatesAccepted": 48,
+  "capturedUnsupportedUnits": [
+    "u32",
+    "u44"
+  ],
+  "additionalOfflineRepairUnits": [
+    "u51",
+    "u117",
+    "u121",
+    "u128",
+    "u200",
+    "u256"
+  ],
+  "initialReviewUnits": 307,
+  "freshRevalidationUnits": 307,
+  "replayedReviewReceipts": 1,
+  "mockedReviewReceipts": 13,
+  "correctionStages": 1,
+  "historyEntries": 1,
+  "successfulUsageEvents": 1,
+  "duplicateSaveAddedEntries": 0,
+  "offlineElapsedMs": 16671.308042,
+  "stages": [
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54303,
+      "offlineMockMs": 0.1940830000000915
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54625,
+      "offlineMockMs": 367.4096670000001
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54449,
+      "offlineMockMs": 4454.091208
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54639,
+      "offlineMockMs": 1047.3434589999997
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54620,
+      "offlineMockMs": 753.909791
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 55275,
+      "offlineMockMs": 629.0807499999992
+    },
+    {
+      "pass": "initial_review",
+      "units": 19,
+      "inputBytes": 50089,
+      "offlineMockMs": 132.61699999999837
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54290,
+      "offlineMockMs": 392.3575830000009
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54577,
+      "offlineMockMs": 519.9454999999998
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54374,
+      "offlineMockMs": 1722.713749999999
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54627,
+      "offlineMockMs": 351.81383300000016
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54569,
+      "offlineMockMs": 306.32987499999945
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 55260,
+      "offlineMockMs": 403.00358400000187
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 19,
+      "inputBytes": 50077,
+      "offlineMockMs": 75.14470900000015
+    }
+  ],
+  "limitations": [
+    "Mechanical semantic decisions demonstrate orchestration only, not live AI reliability or final editorial acceptance.",
+    "Synthetic reservation timestamps are rebased for offline fixtures. Closed live campaigns and their spending ledgers are not reopened.",
+    "The original two unsupported decisions plus six additional conservative guard rejections are corrected in this offline scenario; a live reviewer may return different judgments."
+  ]
+}

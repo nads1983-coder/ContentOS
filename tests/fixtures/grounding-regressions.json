@@ -1,0 +1,1264 @@
+{
+  "schemaVersion": 1,
+  "syntheticOnly": true,
+  "description": "Grounding regression examples from fictional benchmark briefs. Original A/B provenance remains anonymous. Follow-up examples are an unblinded defect recheck, not scores.",
+  "contract": {
+    "brief": "Resolve each case.brief through briefs to obtain the complete original request, including source and brand fields.",
+    "field": "Section-relative body/cta/items[n]; format identifies section.type. text is the exact excerpt to evaluate, not necessarily a whole section.",
+    "expectedViolationCodes": "Expected categories for this excerpt in its brief and optional same-section context. Empty array means allowed for these checks, not endorsement of the whole source output.",
+    "context": "Additional exact excerpts from the same section needed to establish attribution. Do not discard this context when assembling inputs.",
+    "provenance": "observed_excerpt is a verbatim substring; observed_value uses textEncoding=json for the exact field value. constructed_control is explicitly authored, not observed output.",
+    "scope": "Covers material semantic failure families and structural blank-CTA companion. Not a full quality, length, format-shape or statistical evaluation. These fixtures do not establish that a deterministic validator can detect every paraphrase."
+  },
+  "violationCodes": {
+    "UNSUPPORTED_CURRICULUM": "Specific unprovided content attributed to the advertised class; explicitly illustrative advice is allowed.",
+    "EVENT_DURATION_AS_RESULT": "Event duration repurposed as a time-to-completion or benefit claim.",
+    "UNSUPPORTED_NUMBER": "Unprovided time, quantity, or comparison asserted as a fact/result; source numbers and proposed experiment lengths are allowed.",
+    "INVENTED_TESTIMONIAL": "Unprovided personal success, participant experience, or testimonial asserted as real.",
+    "NO_CTA_VIOLATION": "Audience engagement, subscription, or purchase request in No CTA mode, including body/items; practical content instructions are allowed.",
+    "EXTRA_OFFER": "Unprovided fulfillment, personalization, resource distribution, signup destination, or offer mechanics.",
+    "UNSUPPORTED_POPULATION_GENERALIZATION": "Unqualified assertion about most/all people's behavior or causes of failure without source support.",
+    "OPERATOR_META_COPY": "Publisher/assistant instructions leaking into an audience-facing asset or CTA; neutral section labels and script cues are allowed.",
+    "UNSUPPORTED_OUTCOME": "Unsupported guaranteed/automatic benefit or comparative efficacy, not merely an ordinary qualified suggestion.",
+    "UNUSABLE_REQUIRED_ASSET": "A required asset is replaced by writing instructions rather than actual copy.",
+    "INVALID_NO_CTA_ITEMS": "Structural companion check: No CTA options must be an empty array, not blank strings."
+  },
+  "briefs": {
+    "pilot": {
+      "source": "Fictional example: Example Studio is testing a weekly planning checklist with five freelance designers for two weeks. Results are not available yet. The checklist asks designers to choose three priorities, reserve two focus sessions, and review unfinished work each Friday. This is a pilot, not evidence of improved income or productivity.",
+      "brandName": "Example Studio",
+      "audience": "Freelance designers",
+      "offer": "Weekly planning checklist pilot",
+      "writingStyle": "Plain English, concrete steps, no hype",
+      "contentGoal": "Explain the pilot and invite thoughtful discussion",
+      "ctaMode": "soft",
+      "tone": "professional",
+      "sharpness": "balanced",
+      "presetTopic": "none",
+      "selectedTypes": [
+        "linkedin",
+        "instagram",
+        "tiktok",
+        "twitter",
+        "facebook",
+        "youtubeShorts",
+        "xThread",
+        "shortVideoScript",
+        "carousel",
+        "emailNewsletter",
+        "repurposePack",
+        "hooks",
+        "ctas",
+        "platformHashtags"
+      ],
+      "length": "standard"
+    },
+    "launch": {
+      "source": "Fictional example: Sample Workshop will offer a live 45-minute online class on organizing a small craft workspace on 12 November 2026 at 18:00 UTC. It costs GBP 12. Participants will group tools by task, label two storage zones, and plan a ten-minute weekly reset. No materials are sold with the class. No testimonials, discount, enrollment URL, capacity limit, or measured outcomes are available.",
+      "brandName": "Sample Workshop",
+      "audience": "Adults doing crafts in small homes",
+      "offer": "45-minute online workspace class for GBP 12",
+      "writingStyle": "Warm and practical",
+      "contentGoal": "Describe the class accurately",
+      "ctaMode": "product",
+      "tone": "professional",
+      "sharpness": "balanced",
+      "presetTopic": "none",
+      "selectedTypes": [
+        "linkedin",
+        "instagram",
+        "tiktok",
+        "twitter",
+        "facebook",
+        "youtubeShorts",
+        "xThread",
+        "shortVideoScript",
+        "carousel",
+        "emailNewsletter",
+        "repurposePack",
+        "hooks",
+        "ctas",
+        "platformHashtags"
+      ],
+      "length": "standard"
+    },
+    "sparse": {
+      "source": "Fictional example: Demo Notes is considering a monthly email about maintaining a reading habit. It has not launched, has no subscribers, and has no measured results. The first proposed issue would discuss placing a book near a familiar chair. No signup link or other offer exists.",
+      "brandName": "Demo Notes",
+      "audience": "People interested in reading",
+      "offer": "",
+      "writingStyle": "Restrained, clear, no invented anecdotes",
+      "contentGoal": "Explore the idea without overstating it",
+      "ctaMode": "none",
+      "tone": "professional",
+      "sharpness": "balanced",
+      "presetTopic": "none",
+      "selectedTypes": [
+        "linkedin",
+        "instagram",
+        "tiktok",
+        "twitter",
+        "facebook",
+        "youtubeShorts",
+        "xThread",
+        "shortVideoScript",
+        "carousel",
+        "emailNewsletter",
+        "repurposePack",
+        "hooks",
+        "ctas",
+        "platformHashtags"
+      ],
+      "length": "standard"
+    }
+  },
+  "cases": [
+    {
+      "id": "pilot-numeric-duration",
+      "brief": "pilot",
+      "format": "tiktok",
+      "field": "body",
+      "text": "A planning system that takes 5 minutes, not 50.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_NUMBER"
+      ],
+      "rationale": "Neither timing is provided; nearby pilot disclaimers do not repair the assertion.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "sparse-numeric-title",
+      "brief": "sparse",
+      "format": "youtubeShorts",
+      "field": "body",
+      "text": "Read More Books With This 10-Second Setup (Chair Trick)",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_NUMBER",
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Invented setup duration is coupled to an unproven reading outcome.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "sparse-numeric-hook",
+      "brief": "sparse",
+      "format": "hooks",
+      "field": "items[2]",
+      "text": "A 10-second change that makes reading feel easier: move the book, not your schedule.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_NUMBER"
+      ],
+      "rationale": "The source contains no setup duration.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "pilot-first-person-testimonial",
+      "brief": "pilot",
+      "format": "tiktok",
+      "field": "body",
+      "text": "The only weekly plan I can stick to: 3 priorities, 2 focus blocks, Friday review.",
+      "expectedViolationCodes": [
+        "INVENTED_TESTIMONIAL"
+      ],
+      "rationale": "Claims personal successful adherence; the source only describes a pilot with no results.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-tailoring-service",
+      "brief": "pilot",
+      "format": "repurposePack",
+      "field": "cta",
+      "text": "If you want, I can tailor these to your exact voice and formatting preferences.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER",
+        "OPERATOR_META_COPY"
+      ],
+      "rationale": "Invents an assistant tailoring service and addresses the publisher.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-hashtag-service-a",
+      "brief": "pilot",
+      "format": "platformHashtags",
+      "field": "cta",
+      "text": "If you tell me your niche (brand, web, UX, motion, etc.), I can make these more specific.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER",
+        "OPERATOR_META_COPY"
+      ],
+      "rationale": "Invented tag-personalization fulfillment.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-hashtag-service-b",
+      "brief": "pilot",
+      "format": "platformHashtags",
+      "field": "cta",
+      "text": "If you tell me your niche (brand, web, product, motion), I can tighten these tags further.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER",
+        "OPERATOR_META_COPY"
+      ],
+      "rationale": "Same service failure with different wording.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-template-reply",
+      "brief": "pilot",
+      "format": "repurposePack",
+      "field": "cta",
+      "text": "If you want the plain text checklist format, ask and I’ll paste it in a reply.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER"
+      ],
+      "rationale": "Mentioning a checklist is not authorization to promise its delivery.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-template-email",
+      "brief": "pilot",
+      "format": "emailNewsletter",
+      "field": "items[0]",
+      "text": "Optional add-on line: “If you want, reply with your current weekly reset and I’ll share the plain text checklist we’re piloting.”",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER",
+        "OPERATOR_META_COPY"
+      ],
+      "rationale": "Optional editorial framing still leaks an invented resource offer.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-template-carousel",
+      "brief": "pilot",
+      "format": "carousel",
+      "field": "items[14]",
+      "text": "Support: I can share the plain text version we’re piloting",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER"
+      ],
+      "rationale": "Invented distribution offer in a nested slide.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-population-overwork",
+      "brief": "pilot",
+      "format": "hooks",
+      "field": "items[4]",
+      "text": "Most freelancers are not overworked, they’re under planned in one specific way.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_POPULATION_GENERALIZATION"
+      ],
+      "rationale": "Unsupported diagnosis of most freelancers.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-population-plans",
+      "brief": "pilot",
+      "format": "hooks",
+      "field": "items[3]",
+      "text": "Most weekly plans fail for one reason: they are too big to repeat when client work gets chaotic.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_POPULATION_GENERALIZATION"
+      ],
+      "rationale": "Unqualified majority and sole-cause claim.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-stress-prevention",
+      "brief": "pilot",
+      "format": "xThread",
+      "field": "items[5]",
+      "text": "A weekly sweep prevents silent carryover from becoming stress.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Unqualified prevention outcome, not a pilot result.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "launch-keyword-linkedin",
+      "brief": "launch",
+      "format": "linkedin",
+      "field": "cta",
+      "text": "Want to join the 45-minute class? Reply “CLASS” and I’ll tell you the details.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER"
+      ],
+      "rationale": "Invents a reply-keyword fulfillment workflow.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-keyword-tiktok",
+      "brief": "launch",
+      "format": "tiktok",
+      "field": "cta",
+      "text": "Want the class info? Comment “CLASS” and I’ll share it.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER"
+      ],
+      "rationale": "Comment-triggered fulfillment is not provided.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-keyword-email",
+      "brief": "launch",
+      "format": "emailNewsletter",
+      "field": "cta",
+      "text": "Reply to this email with “CLASS” and I’ll send you the details for joining.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER"
+      ],
+      "rationale": "Email reply destination alone does not authorize fulfillment.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-personal-advice",
+      "brief": "launch",
+      "format": "facebook",
+      "field": "body",
+      "text": "If you tell me what you make (sewing, paper craft, jewelry, painting, etc.), I’ll suggest which two zones to start with.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER"
+      ],
+      "rationale": "Invented personalized service in body; a correct separate CTA cannot repair it.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-no-products",
+      "brief": "launch",
+      "format": "instagram",
+      "field": "body",
+      "text": "No products to buy, no materials sold with the class, just a practical setup you can use right away.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER"
+      ],
+      "rationale": "No materials sold does not establish no extra supplies needed; do not interpret this as an assertion that admission is free.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-nothing-to-buy",
+      "brief": "launch",
+      "format": "instagram",
+      "field": "body",
+      "text": "Nothing to buy, no materials sold with the class, just a system.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER"
+      ],
+      "rationale": "Overstates supplied offer conditions; the class price is not the disputed fact.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-duration-title",
+      "brief": "launch",
+      "format": "youtubeShorts",
+      "field": "body",
+      "text": "Organize a Tiny Craft Workspace in 45 Minutes (2 zones + 10-minute reset)",
+      "expectedViolationCodes": [
+        "EVENT_DURATION_AS_RESULT"
+      ],
+      "rationale": "The source's 45 minutes describes the event, not a completed organizing result.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-duration-followup-subject",
+      "brief": "launch",
+      "format": "emailNewsletter",
+      "field": "items[1]",
+      "text": "Organize your craft workspace in 45 minutes, live online",
+      "expectedViolationCodes": [
+        "EVENT_DURATION_AS_RESULT"
+      ],
+      "rationale": "Follow-up still turns event duration into outcome timing.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      }
+    },
+    {
+      "id": "launch-duration-followup-cta",
+      "brief": "launch",
+      "format": "ctas",
+      "field": "items[4]",
+      "text": "Take the class live online: organize your small craft workspace in 45 minutes on 12 Nov 2026 at 18:00 UTC (GBP 12).",
+      "expectedViolationCodes": [
+        "EVENT_DURATION_AS_RESULT"
+      ],
+      "rationale": "Correct event facts do not justify an added completion-time claim.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      }
+    },
+    {
+      "id": "launch-curriculum-original-a",
+      "brief": "launch",
+      "format": "xThread",
+      "field": "items[3]",
+      "text": "One for active projects, one for tools and supplies.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_CURRICULUM"
+      ],
+      "rationale": "Specific zone roles are tied to the class by the closing post.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      },
+      "context": [
+        {
+          "field": "items[5]",
+          "text": "That’s exactly what we’ll do in Sample Workshop’s live 45-minute online class"
+        }
+      ]
+    },
+    {
+      "id": "launch-curriculum-original-b",
+      "brief": "launch",
+      "format": "xThread",
+      "field": "items[3]",
+      "text": "One for “Active tools” (daily reach), one for “Backstock + rarely used”.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_CURRICULUM"
+      ],
+      "rationale": "Source names no zones; thread ties this method to the paid class.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/launch.json"
+      },
+      "context": [
+        {
+          "field": "items[5]",
+          "text": "If you want to do this live, Sample Workshop runs a 45-minute online class"
+        }
+      ]
+    },
+    {
+      "id": "launch-curriculum-followup-thread",
+      "brief": "launch",
+      "format": "xThread",
+      "field": "items[2]",
+      "text": "One for “active making” and one for “storage or overflow.”",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_CURRICULUM"
+      ],
+      "rationale": "Must evaluate attribution across thread items, not just the isolated sentence.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      },
+      "context": [
+        {
+          "field": "items[5]",
+          "text": "Sample Workshop is teaching this live in a 45-minute online class"
+        }
+      ]
+    },
+    {
+      "id": "launch-curriculum-followup-script",
+      "brief": "launch",
+      "format": "shortVideoScript",
+      "field": "body",
+      "text": "One zone for active projects, one zone for storage or overflow.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_CURRICULUM"
+      ],
+      "rationale": "Fixed zone roles presented in the class promotional script without example qualification.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      },
+      "context": [
+        {
+          "field": "body",
+          "text": "Sample Workshop is running a live 45-minute online class on 12 November 2026 at 18:00 UTC."
+        }
+      ]
+    },
+    {
+      "id": "launch-curriculum-nested-carousel",
+      "brief": "launch",
+      "format": "repurposePack",
+      "field": "items[4]",
+      "text": "Support: Active tools, and backstock + rarely used.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_CURRICULUM"
+      ],
+      "rationale": "Nested repurposed slide also attributes unprovided zone roles to the workshop.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/launch.json"
+      },
+      "context": [
+        {
+          "field": "items[4]",
+          "text": "Slide 6: Class invite."
+        }
+      ]
+    },
+    {
+      "id": "launch-reset-comparison",
+      "brief": "launch",
+      "format": "hooks",
+      "field": "items[4]",
+      "text": "A 10-minute weekly reset beats a 2-hour monthly cleanout.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_NUMBER",
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Ten-minute plan is supported, two-hour comparator and superiority are not.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-reset-guarantee",
+      "brief": "launch",
+      "format": "hooks",
+      "field": "items[3]",
+      "text": "The dining table craft takeover ends with one weekly reset routine.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Unqualified result absent from the source.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-cleanup-comparison",
+      "brief": "launch",
+      "format": "linkedin",
+      "field": "body",
+      "text": "Label two storage zones so cleanup is faster than setup",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Unsupported comparative performance attributed to the class.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-email-placeholder",
+      "brief": "launch",
+      "format": "repurposePack",
+      "field": "body",
+      "text": "Body: Invite to live class, include date, time, price, 3 outcomes (task groups, 2 zones, 10-minute reset), note no materials sold.",
+      "expectedViolationCodes": [
+        "OPERATOR_META_COPY",
+        "UNUSABLE_REQUIRED_ASSET"
+      ],
+      "rationale": "The email asset is a writing instruction, not a draft.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "launch-enrollment-link-instruction",
+      "brief": "launch",
+      "format": "repurposePack",
+      "field": "items[0]",
+      "text": "Editing note: Add your enrollment link wherever you normally share it, since no URL was provided in the source.",
+      "expectedViolationCodes": [
+        "OPERATOR_META_COPY"
+      ],
+      "rationale": "Publisher instruction, not an actually fabricated URL; keep classification precise.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "sparse-body-question-a",
+      "brief": "sparse",
+      "format": "facebook",
+      "field": "body",
+      "text": "Curious, where do you naturally sit most often at home, and would a book fit there without becoming clutter?",
+      "expectedViolationCodes": [
+        "NO_CTA_VIOLATION"
+      ],
+      "rationale": "Requests audience participation despite an empty CTA field.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "sparse-body-question-b",
+      "brief": "sparse",
+      "format": "facebook",
+      "field": "body",
+      "text": "Do you have a “default chair” at home, and if you do, what’s usually within arm’s reach?",
+      "expectedViolationCodes": [
+        "NO_CTA_VIOLATION"
+      ],
+      "rationale": "A direct engagement question is not content advice.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "sparse-zero-effort",
+      "brief": "sparse",
+      "format": "shortVideoScript",
+      "field": "body",
+      "text": "That way, starting takes zero effort.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Absolute effortless outcome; later experiment disclaimer does not erase it.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/sparse.json"
+      },
+      "context": [
+        {
+          "field": "body",
+          "text": "It’s not a promise. It’s a test you can run tonight."
+        }
+      ]
+    },
+    {
+      "id": "sparse-automatic-reading",
+      "brief": "sparse",
+      "format": "shortVideoScript",
+      "field": "body",
+      "text": "When the book is within arm’s reach, reading becomes the default option, not a decision you have to talk yourself into.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Claims automatic behavior, not just easier access to the book.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "sparse-proven-tip",
+      "brief": "sparse",
+      "format": "tiktok",
+      "field": "body",
+      "text": "Reading tip that works because it’s boring: change the location.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Asserts effectiveness for an untested proposal.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "sparse-population-followup-linkedin",
+      "brief": "sparse",
+      "format": "linkedin",
+      "field": "body",
+      "text": "Most reading goals fail for one boring reason: the book is never where you actually sit.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_POPULATION_GENERALIZATION"
+      ],
+      "rationale": "Most plus a single cause is unqualified factual generalization.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "sparse-population-followup-hooks",
+      "brief": "sparse",
+      "format": "hooks",
+      "field": "items[2]",
+      "text": "Most people don’t fail at reading. They fail at keeping the book within reach.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_POPULATION_GENERALIZATION"
+      ],
+      "rationale": "Population-wide diagnosis, not a proposed experiment.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "sparse-population-followup-thread",
+      "brief": "sparse",
+      "format": "xThread",
+      "field": "items[0]",
+      "text": "1/ Most reading goals don’t fail from lack of interest. They fail from friction.",
+      "expectedViolationCodes": [
+        "UNSUPPORTED_POPULATION_GENERALIZATION"
+      ],
+      "rationale": "Unqualified population causal assertion.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "pilot-meta-followup-hooks",
+      "brief": "pilot",
+      "format": "hooks",
+      "field": "cta",
+      "text": "Use one hook to introduce the pilot, then share the 3 steps in the next lines.",
+      "expectedViolationCodes": [
+        "OPERATOR_META_COPY"
+      ],
+      "rationale": "Addresses content operator rather than audience.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/pilot.json"
+      }
+    },
+    {
+      "id": "pilot-meta-followup-repurpose",
+      "brief": "pilot",
+      "format": "repurposePack",
+      "field": "cta",
+      "text": "Pick one platform and post the pilot framing plus the 3 steps, then invite others to share their simplest weekly ritual.",
+      "expectedViolationCodes": [
+        "OPERATOR_META_COPY"
+      ],
+      "rationale": "Publisher workflow instructions are not audience-ready CTA copy.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/pilot.json"
+      }
+    },
+    {
+      "id": "explicit-fabricated-testimonial",
+      "brief": "launch",
+      "format": "emailNewsletter",
+      "field": "body",
+      "text": "A past participant said, \"This class doubled my crafting time.\" ",
+      "expectedViolationCodes": [
+        "INVENTED_TESTIMONIAL",
+        "UNSUPPORTED_OUTCOME"
+      ],
+      "rationale": "Constructed control, not observed benchmark text; source explicitly supplies no testimonials.",
+      "provenance": {
+        "kind": "constructed_control"
+      }
+    },
+    {
+      "id": "invented-signup-no-cta",
+      "brief": "sparse",
+      "format": "instagram",
+      "field": "cta",
+      "text": "Sign up for Demo Notes at https://example.invalid/reading.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER",
+        "NO_CTA_VIOLATION"
+      ],
+      "rationale": "Constructed reserved invalid domain, never a real signup destination; no offer exists.",
+      "provenance": {
+        "kind": "constructed_control"
+      }
+    },
+    {
+      "id": "fabricated-paid-discount",
+      "brief": "launch",
+      "format": "ctas",
+      "field": "items[0]",
+      "text": "Join for GBP 6 today only; just three seats remain.",
+      "expectedViolationCodes": [
+        "EXTRA_OFFER",
+        "UNSUPPORTED_NUMBER"
+      ],
+      "rationale": "Constructed discount/scarcity control; supplied admission is GBP 12 with no capacity limit or discount.",
+      "provenance": {
+        "kind": "constructed_control"
+      }
+    },
+    {
+      "id": "allow-pilot-source-numbers",
+      "brief": "pilot",
+      "format": "tiktok",
+      "field": "body",
+      "text": "I am testing a 3 step weekly plan with 5 freelance designers for 2 weeks. No results yet, just the process.",
+      "expectedViolationCodes": [],
+      "rationale": "First person describing the supplied pilot is not a fabricated success testimonial.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/pilot.json"
+      }
+    },
+    {
+      "id": "allow-pilot-negated-results",
+      "brief": "pilot",
+      "format": "emailNewsletter",
+      "field": "body",
+      "text": "Quick context: this is a pilot. Results are not available yet, and this is not evidence of improved income or productivity.",
+      "expectedViolationCodes": [],
+      "rationale": "Negated outcome claims must not trigger outcome keywords.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/pilot.json"
+      }
+    },
+    {
+      "id": "allow-pilot-question-soft",
+      "brief": "pilot",
+      "format": "youtubeShorts",
+      "field": "cta",
+      "text": "Comment what your Friday review looks like (or why you avoid it).",
+      "expectedViolationCodes": [],
+      "rationale": "Audience engagement is permitted in soft CTA mode; no fulfillment promised.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/pilot.json"
+      }
+    },
+    {
+      "id": "allow-pilot-reply-no-offer",
+      "brief": "pilot",
+      "format": "emailNewsletter",
+      "field": "cta",
+      "text": "Reply with your simplest weekly planning ritual, even if it is only two steps.",
+      "expectedViolationCodes": [],
+      "rationale": "Reply request alone is not a resource-delivery workflow.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/pilot.json"
+      }
+    },
+    {
+      "id": "allow-pilot-one-week-test",
+      "brief": "pilot",
+      "format": "emailNewsletter",
+      "field": "body",
+      "text": "If you want to run your own one-week experiment, try the three steps once, then evaluate it based on whether you made clearer choices during the week.",
+      "expectedViolationCodes": [],
+      "rationale": "Proposed reader experiment can differ from the source pilot length without inventing results.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/pilot.json"
+      }
+    },
+    {
+      "id": "allow-launch-event-facts",
+      "brief": "launch",
+      "format": "emailNewsletter",
+      "field": "body",
+      "text": "Sample Workshop is running a live 45-minute online class on organizing a small craft workspace on 12 November 2026 at 18:00 UTC.",
+      "expectedViolationCodes": [],
+      "rationale": "Supported duration belongs to the event, not completion of a result.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      }
+    },
+    {
+      "id": "allow-launch-event-invite",
+      "brief": "launch",
+      "format": "ctas",
+      "field": "items[0]",
+      "text": "Join Sample Workshop’s live 45-minute online class on 12 November 2026 at 18:00 UTC (GBP 12).",
+      "expectedViolationCodes": [],
+      "rationale": "Generic product invitation is permitted without inventing a destination or service.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      }
+    },
+    {
+      "id": "allow-launch-reset-plan",
+      "brief": "launch",
+      "format": "emailNewsletter",
+      "field": "body",
+      "text": "In the session, participants will:\n- group tools by task\n- label two storage zones\n- plan a ten-minute weekly reset",
+      "expectedViolationCodes": [],
+      "rationale": "Source-backed curriculum and a plan duration, not promised reset efficacy.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      }
+    },
+    {
+      "id": "allow-launch-no-materials",
+      "brief": "launch",
+      "format": "emailNewsletter",
+      "field": "body",
+      "text": "No materials are sold with the class.",
+      "expectedViolationCodes": [],
+      "rationale": "Exact source condition; do not conflate with free admission or zero extra supplies.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      }
+    },
+    {
+      "id": "allow-launch-tool-examples",
+      "brief": "launch",
+      "format": "xThread",
+      "field": "items[2]",
+      "text": "3) Step 1: group tools by task. Example: cutting, measuring, adhesive, finishing. Keep each group together.",
+      "expectedViolationCodes": [],
+      "rationale": "Explicit illustrative task groups are reasonable elaboration, not invented fixed zone curriculum.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/launch.json"
+      }
+    },
+    {
+      "id": "allow-qualified-zone-examples",
+      "brief": "launch",
+      "format": "carousel",
+      "field": "items[0]",
+      "text": "For your own experiment, possible labels could be active projects and stored supplies. These are examples, not confirmed class zone names.",
+      "expectedViolationCodes": [],
+      "rationale": "Constructed minimal-pair control; do not reject every mention of zone names.",
+      "provenance": {
+        "kind": "constructed_control"
+      }
+    },
+    {
+      "id": "allow-sparse-qualified-benefit",
+      "brief": "sparse",
+      "format": "hooks",
+      "field": "items[3]",
+      "text": "A small change that can lower the “start reading” barrier: book by the chair.",
+      "expectedViolationCodes": [],
+      "rationale": "Ordinary qualified advice is not a measured result.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-conditional-idea",
+      "brief": "sparse",
+      "format": "facebook",
+      "field": "body",
+      "text": "A simple idea Demo Notes is considering for a future monthly email: place a book near a familiar chair.",
+      "expectedViolationCodes": [],
+      "rationale": "Preserves tentative status, with no invented launch or subscribers.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-reading-instruction",
+      "brief": "sparse",
+      "format": "emailNewsletter",
+      "field": "body",
+      "text": "Place a book near a familiar chair.",
+      "expectedViolationCodes": [],
+      "rationale": "Practical instruction is not an engagement CTA.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-experiment-number",
+      "brief": "sparse",
+      "format": "shortVideoScript",
+      "field": "body",
+      "text": "Try it for a week. Same chair, same spot, any book.",
+      "expectedViolationCodes": [],
+      "rationale": "Suggested experiment duration is not a claimed result or invented program mechanic.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "B",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-minimum-number",
+      "brief": "sparse",
+      "format": "xThread",
+      "field": "items[4]",
+      "text": "5) Set a minimum that feels almost too small. One page. Two minutes. Just start.",
+      "expectedViolationCodes": [],
+      "rationale": "Reader-selected practical targets are not measured efficacy or engagement requests.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-experimental-question",
+      "brief": "sparse",
+      "format": "xThread",
+      "field": "items[5]",
+      "text": "6) You’re not trying to prove anything. You’re running a clean experiment: does lowering friction increase reps?",
+      "expectedViolationCodes": [],
+      "rationale": "Self-evaluation question within advice, not an audience-response solicitation.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "original",
+        "label": "A",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-empty-cta-explanation",
+      "brief": "sparse",
+      "format": "ctas",
+      "field": "body",
+      "text": "No CTA requested.",
+      "expectedViolationCodes": [],
+      "rationale": "Requested explanation of deliberate absence is not operator leakage.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-empty-cta",
+      "brief": "sparse",
+      "format": "facebook",
+      "field": "cta",
+      "text": "",
+      "expectedViolationCodes": [],
+      "rationale": "No CTA text is correct in none mode.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-video-cues",
+      "brief": "sparse",
+      "format": "shortVideoScript",
+      "field": "body",
+      "text": "On-screen text: Book + familiar chair",
+      "expectedViolationCodes": [],
+      "rationale": "Production cues belong in a requested script; not assistant/publisher leakage.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    },
+    {
+      "id": "allow-launch-repurpose-email-draft",
+      "brief": "launch",
+      "format": "repurposePack",
+      "field": "items[6]",
+      "text": "Email: Hi,\n\nSample Workshop is running a live 45-minute online class on organizing a small craft workspace on 12 November 2026 at 18:00 UTC.\n\nWe will cover: tools by task, labeling two storage zones, and a ten-minute weekly reset plan.\n\nGBP 12. No materials are sold with the class.",
+      "expectedViolationCodes": [],
+      "rationale": "Corrected required email contains actual copy rather than an instruction to write it.",
+      "provenance": {
+        "kind": "observed_excerpt",
+        "run": "followup",
+        "file": "review/launch.json"
+      }
+    },
+    {
+      "id": "allow-negative-testimonial-statement",
+      "brief": "launch",
+      "format": "linkedin",
+      "field": "body",
+      "text": "No testimonials or measured outcomes are available for this class.",
+      "expectedViolationCodes": [],
+      "rationale": "Negation control for testimonial and outcome terms.",
+      "provenance": {
+        "kind": "constructed_control"
+      }
+    },
+    {
+      "id": "allow-hypothesis-not-population-fact",
+      "brief": "sparse",
+      "format": "hooks",
+      "field": "items[0]",
+      "text": "For some readers, keeping a book near a familiar chair may make starting easier.",
+      "expectedViolationCodes": [],
+      "rationale": "Qualified ordinary hypothesis without population frequency or guaranteed behavior.",
+      "provenance": {
+        "kind": "constructed_control"
+      }
+    },
+    {
+      "id": "sparse-blank-options-structural",
+      "brief": "sparse",
+      "format": "ctas",
+      "field": "items",
+      "text": "[\"\",\" \",\"\",\" \",\"\"]",
+      "textEncoding": "json",
+      "expectedViolationCodes": [
+        "INVALID_NO_CTA_ITEMS"
+      ],
+      "rationale": "Structural companion, not an actual engagement request or semantic grounding failure.",
+      "provenance": {
+        "kind": "observed_value",
+        "run": "original",
+        "label": "A",
+        "file": "blind/sparse.json"
+      }
+    },
+    {
+      "id": "allow-sparse-empty-options",
+      "brief": "sparse",
+      "format": "ctas",
+      "field": "items",
+      "text": "[]",
+      "textEncoding": "json",
+      "expectedViolationCodes": [],
+      "rationale": "Correct No CTA option shape.",
+      "provenance": {
+        "kind": "observed_value",
+        "run": "followup",
+        "file": "review/sparse.json"
+      }
+    }
+  ]
+}

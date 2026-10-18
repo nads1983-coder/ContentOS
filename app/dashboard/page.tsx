@@ -20,12 +20,15 @@ import {
   getUserProfileForUser,
   getMonthlyUsageCount,
   listBrandProfiles,
+  getWorkspace,
   syncUserSubscriptionState,
   upsertUserProfile
 } from "@/lib/repository";
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { founderOfferRetired } from "@/lib/founder-retirement";
+import type { GenerationResult } from "@/types/content";
 
 export const dynamic = "force-dynamic";
 
@@ -210,6 +213,12 @@ export default async function DashboardPage() {
   }
 
   const usage = buildUsageSummary(plan, monthlyUsageCount, profile?.subscription_current_period_end);
+  let recent: GenerationResult[] = [];
+  let historyUnavailable = false;
+  if (isDatabaseConfigured()) {
+    try { recent = (await getWorkspace(user.id)).store.recent.slice(0, 5); }
+    catch { historyUnavailable = true; }
+  }
 
   return (
     <main className="min-h-screen overflow-x-hidden px-4 py-6 text-bone sm:px-6 lg:px-8">
@@ -224,12 +233,16 @@ export default async function DashboardPage() {
           </div>
         </div>
 
+        <section className="mt-8 flex flex-wrap items-center justify-between gap-5 border-y border-white/10 py-6">
+          <div><h1 className="text-2xl font-semibold">Your next content pack</h1><p className="mt-2 text-sm text-muted">One idea, ready for every platform.</p></div>
+          <Link href="/studio" className="rounded bg-violet px-5 py-3 text-sm font-semibold text-white hover:bg-violetDeep">Create with AI</Link>
+        </section>
         <section className="mt-8 grid gap-4 lg:grid-cols-3">
           <article className="min-w-0 rounded border border-white/10 bg-panel/78 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
               Current plan
             </p>
-            <h1 className="mt-3 text-2xl font-semibold text-bone">{planLabels[plan]}</h1>
+            <h2 className="mt-3 text-2xl font-semibold text-bone">{planLabels[plan]}</h2>
             <p className="mt-2 text-sm text-muted">
               Status: {profile?.subscription_cancel_at_period_end && hasActiveSubscription
                 ? `${status} / canceling at period end`
@@ -248,7 +261,7 @@ export default async function DashboardPage() {
               </p>
             ) : null}
             <div className="mt-5 grid gap-3">
-              {canUpgradeToCreator && plan === "free" ? (
+              {canUpgradeToCreator && plan === "free" && !founderOfferRetired() ? (
                 <div className="rounded border border-gold/35 bg-gold/[0.08] p-3">
                   <p className="text-sm font-semibold text-goldSoft">Founder claim not active yet</p>
                   <p className="mt-1 text-xs leading-5 text-muted">
@@ -328,9 +341,7 @@ export default async function DashboardPage() {
 
           <article className="min-w-0 rounded border border-white/10 bg-panel/78 p-5">
             <h2 className="text-xl font-semibold">Recent generations</h2>
-            <p className="mt-2 text-sm leading-6 text-muted">
-              Your generation history is stored securely with your account. Recent work is also available in the workspace.
-            </p>
+            {recent.length ? <ul className="mt-4 divide-y divide-white/10">{recent.map(item => <li key={item.id} className="py-3"><Link className="text-sm font-semibold hover:underline" href={`/studio?generation=${encodeURIComponent(item.id)}`}>{item.title}</Link><p className="mt-1 text-xs text-muted">{item.sections.length} outputs · {formatDate(item.createdAt)}</p></li>)}</ul> : <p className="mt-2 text-sm leading-6 text-muted">{historyUnavailable ? "History is temporarily unavailable. Your account content has not been changed." : "Your first content pack starts with an idea."}</p>}
           </article>
         </section>
       </div>

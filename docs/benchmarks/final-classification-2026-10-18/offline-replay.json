@@ -1,0 +1,134 @@
+{
+  "recordedAt": "2026-10-18T14:24:36.865Z",
+  "mode": "OFFLINE: two captured reviews plus explicitly mocked subsequent reviews",
+  "paidCalls": 0,
+  "newSpendGbp": 0,
+  "draftGenerationCalls": 0,
+  "originalFileHashes": {
+    "acceptance-continuation-rc717-2026-10-18/execution.json": "16c08b955865f0cb81befbea051993f1ceec246d82a9727db3197ff4e1ea8ef9",
+    "acceptance-continuation-rc717-2026-10-18/raw-draft.json": "768d810e2079b0e7f0e56a8775772367fee2013e2354e35f9c12af4e6fef85b2",
+    "acceptance-continuation-rc717-2026-10-18/brief.json": "5d714aa944a2c780856c970f4b58786476c3185d05d38b39caed968b72cf0ddc",
+    "acceptance-final-a7cd-2026-10-18/execution.json": "033435a2212d6377d8d3e757e1396b1b177147a1b4de11d4557e48a10bcd8db5",
+    "acceptance-final-a7cd-2026-10-18/raw-draft.json": "768d810e2079b0e7f0e56a8775772367fee2013e2354e35f9c12af4e6fef85b2",
+    "acceptance-final-a7cd-2026-10-18/brief.json": "5d714aa944a2c780856c970f4b58786476c3185d05d38b39caed968b72cf0ddc"
+  },
+  "draftHash": "9b4037c2e06bf366c29814dc602ef96de599f47c45ce0baa5bbfc22824f7da08",
+  "formats": 14,
+  "originalCertificates": 96,
+  "originalCertificatesAccepted": 96,
+  "capturedUnsupportedUnits": [
+    "u32",
+    "u44",
+    "u50",
+    "u51",
+    "u58",
+    "u87"
+  ],
+  "additionalOfflineRepairUnits": [
+    "u117",
+    "u121",
+    "u128",
+    "u200",
+    "u256"
+  ],
+  "initialReviewUnits": 307,
+  "freshRevalidationUnits": 307,
+  "replayedReviewReceipts": 2,
+  "mockedReviewReceipts": 12,
+  "correctionStages": 1,
+  "historyEntries": 1,
+  "successfulUsageEvents": 1,
+  "duplicateSaveAddedEntries": 0,
+  "offlineElapsedMs": 20731.052625,
+  "stages": [
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54275,
+      "offlineMockMs": 0.24591699999996308
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54652,
+      "offlineMockMs": 0.14279099999998834
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54421,
+      "offlineMockMs": 1008.3308750000001
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54611,
+      "offlineMockMs": 346.89554099999987
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 54592,
+      "offlineMockMs": 270.63412500000004
+    },
+    {
+      "pass": "initial_review",
+      "units": 48,
+      "inputBytes": 55247,
+      "offlineMockMs": 280.43820800000003
+    },
+    {
+      "pass": "initial_review",
+      "units": 19,
+      "inputBytes": 50061,
+      "offlineMockMs": 78.32954100000006
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54308,
+      "offlineMockMs": 1223.3032910000002
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54716,
+      "offlineMockMs": 1573.8735830000005
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54392,
+      "offlineMockMs": 3530.0375409999997
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54645,
+      "offlineMockMs": 1004.5478330000005
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 54587,
+      "offlineMockMs": 857.3054579999989
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 48,
+      "inputBytes": 55278,
+      "offlineMockMs": 1396.243957999999
+    },
+    {
+      "pass": "fresh_final_revalidation",
+      "units": 19,
+      "inputBytes": 50095,
+      "offlineMockMs": 198.0383750000001
+    }
+  ],
+  "limitations": [
+    "Mechanical semantic decisions demonstrate orchestration only, not live AI reliability or final editorial acceptance.",
+    "Synthetic reservation timestamps are rebased for offline fixtures. Closed live campaigns and their spending ledgers are not reopened.",
+    "The original six unsupported decisions plus five additional conservative guard rejections are corrected in this offline scenario; a live reviewer may return different judgments."
+  ]
+}

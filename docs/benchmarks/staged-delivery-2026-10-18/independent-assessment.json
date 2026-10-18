@@ -1,0 +1,594 @@
+{
+  "assessmentType": "independent_factual_and_editorial_diagnostic",
+  "inputScope": [
+    "brief.json",
+    "raw-draft.json"
+  ],
+  "independence": "Read only the supplied brief and raw draft. Did not inspect execution logs, review payloads, implementation or other assessments. No network, provider call or deployment.",
+  "status": "Raw, unvalidated pack; no assertion of validation, delivery or publication success.",
+  "rubric": {
+    "scale": "0=unusable/absent; 1=weak; 2=adequate with substantial editing; 3=good with editing; 4=strong for the requested purpose.",
+    "dimensions": [
+      "relevance",
+      "naturalness",
+      "originality",
+      "platformFit",
+      "usefulness"
+    ],
+    "maximumTotal": 20,
+    "separation": "Editorial scores are qualitative judgments, not factual certification. Necessary empty/control sections are judged for their function, not volume of copy."
+  },
+  "factualVerdict": {
+    "criticalFailure": true,
+    "materialFindingCount": 9,
+    "affectedFormatCount": 8,
+    "definition": "A critical factual finding here means an unsupported objective operational assurance, explicit frequency claim or categorical limitation presented as fact. It does not mean that the assertion has been externally disproved.",
+    "summary": "The core event facts are faithful, but nine assertions across eight formats exceed the supplied evidence. The main risks are claims about accuracy or error risk, alleged common museum-shop behavior and a categorical stock-file limitation. No invented price, old-offer promotion, timed outcome, engagement CTA or explicit added event curriculum was found."
+  },
+  "overallEditorialScores": {
+    "relevance": 4,
+    "naturalness": 3,
+    "originality": 2,
+    "platformFit": 3,
+    "usefulness": 3,
+    "total": 15
+  },
+  "overallEditorialAssessment": "Relevant and readable, with useful examples and mostly workable format structures. Repeated 'two documents/two jobs' and 'lanes' language makes the pack formulaic. Standalone formats and repurposed assets overlap heavily. Finished-email and YouTube copy contain publisher-facing packaging. The draft needs source-grounding edits and copy cleanup; a good editorial score is not permission to publish it.",
+  "titleAndSummary": {
+    "paths": [
+      "title",
+      "summary"
+    ],
+    "criticalFactualFailure": false,
+    "scores": {
+      "relevance": 4,
+      "naturalness": 3,
+      "originality": 2,
+      "platformFit": 3,
+      "usefulness": 3,
+      "total": 15
+    },
+    "assessment": "Title accurately identifies the topic and brand. Summary preserves the event duration and example. Its claim to be platform-ready is a readiness description, not an established validation result.",
+    "editorialIssues": [
+      {
+        "path": "summary",
+        "quote": "Platform-ready awareness content",
+        "issue": "Overstates readiness: the email contains a direct publisher instruction and several assets contain unsupported operational or prevalence assertions. Treat this as an internal description, not evidence of delivery success."
+      }
+    ]
+  },
+  "sourceChecks": [
+    {
+      "check": "Event identity, presenter and scope",
+      "verdict": "preserved",
+      "sourceQuote": "Its new event, Shelf Notes, is a 35-minute live online demonstration led by Mira, the studio's founder.",
+      "note": "Mentions retain Shelf Notes/Folio Finch, Mira, live online demonstration and the fictional postcard example. No wrong presenter or event identity observed."
+    },
+    {
+      "check": "Duration versus outcome",
+      "verdict": "preserved",
+      "sourceQuote": "The 35 minutes describes the event's duration only: do not promise that a shop's records, displays, sales or confidence will improve within that time.",
+      "note": "35 minutes is used as event duration only. Unsupported generic operational benefits are flagged separately; none is explicitly promised within 35 minutes."
+    },
+    {
+      "check": "Older saved offer precedence",
+      "verdict": "preserved",
+      "sourceQuote": "Saved brand notes describe an older 60-minute consulting offer; that is not this event and must not be promoted here.",
+      "note": "No 60-minute or shop-specific consulting offer is promoted. Repeated demonstration-only language respects the current brief."
+    },
+    {
+      "check": "Pricing and unannounced logistics",
+      "verdict": "preserved",
+      "sourceQuote": "No price, date, booking link, attendee limit, recording, downloadable resource, qualification, testimonial or sales result has been announced.",
+      "note": "None is invented. References to unit cost and retail price describe sample stock-record fields, not an event price."
+    },
+    {
+      "check": "Curriculum and hypothetical illustrations",
+      "verdict": "no_explicit_invented_curriculum",
+      "sourceQuote": "Hypothetical illustrations may be clearly labelled as examples, not announced event activities or customer outcomes.",
+      "note": "The detailed field lists and fictional Local Views/spinner example are not explicitly announced as additional event activities. Some unlabelled prescriptive schemas deserve editorial qualification, but I do not equate all generic advice with invented curriculum."
+    },
+    {
+      "check": "No CTA",
+      "verdict": "preserved",
+      "sourceQuote": "No CTA anywhere: no invitation to book, click, follow, save, share, comment, message, subscribe or answer an engagement question.",
+      "note": "All CTA fields are empty and CTA suggestion items are empty. Quoted team questions are scenarios, not audience-response requests. Practical advice about where to put information is not an engagement CTA."
+    },
+    {
+      "check": "Publisher-facing instructions",
+      "verdict": "editorial_failure",
+      "sourceQuote": "Avoid publisher-facing instructions in finished copy.",
+      "note": "Email starts with 'Subject line options are below.' YouTube body includes 'Title idea:'. Script cues and carousel-outline labels are appropriate to those requested formats; the explicitly permitted neutral CTA explanation is also acceptable."
+    }
+  ],
+  "coverage": {
+    "sectionCount": 14,
+    "topLevelItemCount": 47,
+    "inspected": "Pack title and summary; every section's title, platform, body, items and CTA; all three Instagram and TikTok alternatives; six thread posts; nine carousel slides; three email subjects; seven repurposed assets with their internal slides/beats; eight hooks; six hashtag/keyword sets.",
+    "notInspected": "Execution evidence, grounding reviews, code, other assessors, external facts or media."
+  },
+  "formats": [
+    {
+      "type": "linkedin",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [
+        {
+          "id": "F01",
+          "path": "sections.0.body",
+          "quote": "It keeps details stable as items move through receiving, counting, replenishment, and reporting.",
+          "category": "unsupported_operational_assurance",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "The brief supplies a distinction between two documents, not evidence that a stock record preserves data stability through these operational stages. This states a reliability outcome as fact; it is not labelled as an illustrative aim or an optional practice."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.0.body",
+          "quote": "If your stock record is doing the job of a display note, something will always feel slightly off.",
+          "issue": "A subjective hook rather than a critical factual failure, but the absolute 'always' and generic tension make it less credible and less specific."
+        },
+        {
+          "path": "sections.0.body",
+          "quote": "When each document stays in its lane, the shop floor gets clearer without compromising the record.",
+          "issue": "The repeated 'stays in its lane' framing is familiar and the conclusion implies more certainty than the brief warrants. Prefer the supplied distinction or a qualified editorial benefit."
+        }
+      ],
+      "assessment": "Strong topical fit and readable spacing. The fictional postcard lists are explicitly introduced as an example, so I do not classify their fields as announced curriculum. Reliability language should be removed or qualified."
+    },
+    {
+      "type": "instagram",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.1.body",
+          "quote": "Two documents. Two jobs.",
+          "issue": "Clear but generic and repeated throughout the pack; the three alternatives change openings more than perspective."
+        },
+        {
+          "path": "sections.1.body",
+          "quote": "Keeping them separate reduces friction.",
+          "issue": "Vague natural marketing, not a measured business result or a 35-minute promise. Still more confident than necessary and less useful than a concrete, clearly hypothetical contrast."
+        }
+      ],
+      "assessment": "All three captions and three alternative hashtag sets inspected. Event identity, presenter, duration and scope remain correct. The embedded team question is a quoted workplace scenario, not an invitation for audience replies. No critical factual failure identified."
+    },
+    {
+      "type": "tiktok",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.2.body",
+          "quote": "Mixing them makes both weaker.",
+          "issue": "Vague evaluative rhetoric, not a specific measured result; it adds little explanatory value."
+        },
+        {
+          "path": "sections.2.body",
+          "quote": "A postcard range example: stock record tracks variants and quantities. Display note captures grouping, placement, and the label line.",
+          "issue": "A relevant example, but it would be clearer to say 'fictional example' locally so the alternative remains unambiguous when copied alone."
+        }
+      ],
+      "assessment": "Three concise alternatives plus the hashtag item inspected. Useful core distinction, though little distinctive voice or visual specificity. No announced event features or customer outcomes are invented."
+    },
+    {
+      "type": "twitter",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 16
+      },
+      "materialFailures": [
+        {
+          "id": "F02",
+          "path": "sections.3.body",
+          "quote": "Keeping them separate protects accuracy and makes the shop floor easier to run.",
+          "category": "unsupported_accuracy_outcome",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "The definitions do not establish that separating the documents protects accuracy. This is an unqualified operational outcome, not merely a document's intended purpose. The softer 'easier to run' wording alone would be an editorial judgment, but it does not neutralize the accuracy claim."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.3.body",
+          "quote": "Different jobs, different details.",
+          "issue": "Compact and readable, but conventional and repeated in closely related form elsewhere."
+        }
+      ],
+      "assessment": "Good single-post compression. The final sentence adds an unsupported accuracy benefit to an otherwise source-faithful distinction."
+    },
+    {
+      "type": "facebook",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [
+        {
+          "id": "F09",
+          "path": "sections.4.body",
+          "quote": "In a museum shop, it helps to separate two things that often get blended together.",
+          "category": "unsupported_industry_prevalence",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "This presents blending the two documents as a common occurrence. The brief supplies their distinct purposes but no evidence of how frequently shops combine them. This is the same unsupported prevalence framing found in the email and one hook."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.4.body",
+          "quote": "Keeping those two documents distinct keeps the record clean and the display clearer.",
+          "issue": "Generic, imprecise benefit language. I read 'clean' and 'clearer' here as qualitative marketing, not a quantified improvement or a timed promise."
+        }
+      ],
+      "assessment": "Event facts and demonstration-only scope are faithful. The opening nevertheless asserts undocumented prevalence. Descriptions of fields are intended purposes or guidance, not an explicit announcement of additional event curriculum."
+    },
+    {
+      "type": "youtubeShorts",
+      "scores": {
+        "relevance": 3,
+        "naturalness": 2,
+        "originality": 2,
+        "platformFit": 2,
+        "usefulness": 2,
+        "total": 11
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.5.body",
+          "quote": "Title idea: Stock Record vs Display Note (Museum Shop Merchandising Basics)",
+          "issue": "'Title idea' is publisher-facing packaging inside the finished body, conflicting with the brief's request to avoid publisher-facing instructions. Supply actual title/description copy without the drafting qualifier."
+        },
+        {
+          "path": "sections.5.body",
+          "quote": "Example shown with a fictional postcard range, aligned with Folio Finch’s Shelf Notes demonstration.",
+          "issue": "This assumes the eventual video shows that example. No video is supplied for inspection; verify this before publication rather than treating this caption as evidence that media exists."
+        }
+      ],
+      "assessment": "Title, description and keyword list are relevant but feel like an upload worksheet. I do not call the planned-video description a fabricated delivered asset on this raw evidence alone; it is a publication dependency. No critical business-fact failure identified."
+    },
+    {
+      "type": "xThread",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 16
+      },
+      "materialFailures": [
+        {
+          "id": "F03",
+          "path": "sections.6.items.0",
+          "quote": "1) If your stock record is also trying to be a display guide, it usually ends up doing neither job well.",
+          "category": "unsupported_frequency_and_performance",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "The brief distinguishes purposes but provides no evidence that a combined document usually fails at both. 'Usually' presents a general frequency/performance claim, not a labelled hypothetical example."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.6.items.5",
+          "quote": "6) Takeaway: keep counting and ordering details in the stock record, keep placement and signage decisions in the display note. Clear lanes make cleaner updates.",
+          "issue": "The practical advice is allowed under No CTA, but the closing repeats the pack's familiar 'lanes' metaphor rather than adding a memorable example."
+        }
+      ],
+      "assessment": "All six posts inspected. Post 4 explicitly marks the postcard example fictional; post 5 continues it. Those sample fields are not an invented event syllabus. The six-post structure is clear and scannable."
+    },
+    {
+      "type": "shortVideoScript",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.7.body",
+          "quote": "Your stock record is not a display note, and treating it like one creates mess fast.",
+          "issue": "Generic rhetorical exaggeration rather than a measurable factual promise, but it is a stock problem hook."
+        },
+        {
+          "path": "sections.7.body",
+          "quote": "Two documents, two jobs. Keeping them separate keeps the record clean and the display consistent.",
+          "issue": "Repeats the same close used across formats. A concrete contrast would be more distinctive than another broad cleanliness/consistency line."
+        }
+      ],
+      "assessment": "Hook, all five beats, on-screen text and close inspected. The invented 'Local Views' label and spinner placement are inside an explicitly fictional, optional example; they are permitted, not announced curriculum. Spoken/on-screen production cues are functional script structure, not inappropriate publisher instructions. No timed outcome or engagement request."
+    },
+    {
+      "type": "carousel",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [
+        {
+          "id": "F04",
+          "path": "sections.8.items.6",
+          "quote": "Slide 7: Common mix-up to avoid. Support: Using the stock record to store signage copy and placement rules makes updates harder and errors more likely.",
+          "category": "unsupported_error_risk_claim",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "The brief provides no evidence that including signage or placement in a stock record increases errors. This is an explicit causal risk claim, not subjective tone or an illustrative field list."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.8.items.2",
+          "quote": "Slide 3: What belongs in a stock record. Support: Item name and variant, SKU/internal code, supplier/source, unit cost, retail price, quantity on hand.",
+          "issue": "The detailed fields could be useful illustrative suggestions, but the categorical 'what belongs' wording should be softened to 'possible example fields'. The brief does not establish a universal schema or an event curriculum."
+        },
+        {
+          "path": "sections.8.items.7",
+          "quote": "Slide 8: Simple rule of thumb. Support: If it needs counting, it belongs in the stock record. If it needs setting up, it belongs in the display note.",
+          "issue": "Useful compression, but several earlier slides already state this distinction. The nine-slide outline could be tighter."
+        }
+      ],
+      "assessment": "All nine slides inspected. Slide 9 preserves event duration and demonstration-only scope. 'Slide' and 'Support' labels are acceptable for an outline, unlike drafting instructions in finished email copy."
+    },
+    {
+      "type": "emailNewsletter",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 2,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 14
+      },
+      "materialFailures": [
+        {
+          "id": "F05",
+          "path": "sections.9.body",
+          "quote": "In museum shops, two useful documents often get blended together, and it creates quiet friction.",
+          "category": "unsupported_industry_prevalence",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "The brief does not say that museum shops commonly combine these documents. This declares a practice across a business population as a frequent occurrence. 'Quiet friction' itself is qualitative; the material unsupported component is the asserted prevalence."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.9.body",
+          "quote": "Subject line options are below.",
+          "issue": "Direct publisher-facing instruction appears at the start of the email body and would leak into finished copy. Remove it from the message."
+        },
+        {
+          "path": "sections.9.items.1",
+          "quote": "Subject option 2: Two documents museum shops shouldn’t merge",
+          "issue": "A forceful recommendation but more categorical than the source distinction. The numbered 'Subject option' prefix is packaging, not subject-line copy."
+        }
+      ],
+      "assessment": "Body and all three subject alternatives inspected. Greeting and paragraphing work, but the email largely repeats LinkedIn. No invented sender identity, offer, booking detail or engagement CTA. The event description is accurate."
+    },
+    {
+      "type": "repurposePack",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 1,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 14
+      },
+      "materialFailures": [
+        {
+          "id": "F06",
+          "path": "sections.10.items.3",
+          "quote": "X/Twitter: Stock record = what is held. Display note = how it is presented. Different jobs, different details. Keeping them separate protects accuracy and keeps the floor clearer.",
+          "category": "unsupported_accuracy_outcome",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "The nested X asset repeats the unsupported promise that document separation protects accuracy. The current brief states what each document describes, not an established accuracy benefit."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.10.body",
+          "quote": "Seven ready-to-edit assets repurposed from the same core idea:",
+          "issue": "Honest as an internal pack overview, but not audience-facing copy. The nested assets mostly duplicate the standalone formats rather than providing much fresh value."
+        },
+        {
+          "path": "sections.10.items.5",
+          "quote": "Close: “Two documents, two jobs. Keep them separate for clean records and consistent displays.”",
+          "issue": "Practical advice, not an engagement CTA, but another broad benefit-oriented close. Avoid implying that document separation alone ensures record quality."
+        }
+      ],
+      "assessment": "All seven nested assets inspected individually, including eight nested carousel slides and three nested video beats. No older offer, invented event details or timed-outcome claim. Example fields remain illustrative or generic guidance rather than an explicit announcement of added curriculum.",
+      "nestedAssets": [
+        {
+          "label": "LinkedIn",
+          "path": "sections.10.items.0",
+          "criticalFindingIds": [],
+          "note": "Event facts and demonstration-only limitation preserved. 'Always feel slightly off' is subjective rhetoric; the fictional example is labelled."
+        },
+        {
+          "label": "Instagram",
+          "path": "sections.10.items.1",
+          "criticalFindingIds": [],
+          "note": "Labelled fictional example and faithful event framing; largely duplicates the standalone caption."
+        },
+        {
+          "label": "TikTok",
+          "path": "sections.10.items.2",
+          "criticalFindingIds": [],
+          "note": "Brief illustrative postcard distinction; make 'fictional' explicit when copying separately."
+        },
+        {
+          "label": "X/Twitter",
+          "path": "sections.10.items.3",
+          "criticalFindingIds": [
+            "F06"
+          ],
+          "note": "Unsupported accuracy protection claim."
+        },
+        {
+          "label": "Carousel",
+          "path": "sections.10.items.4",
+          "criticalFindingIds": [],
+          "note": "All eight slides inspected. Suggested fields are not identified as announced session content; the detailed schema would benefit from explicit illustrative framing."
+        },
+        {
+          "label": "Video",
+          "path": "sections.10.items.5",
+          "criticalFindingIds": [],
+          "note": "Hook, all three beats and close inspected. The postcard illustration is fictional; setup advice is not a CTA."
+        },
+        {
+          "label": "Email",
+          "path": "sections.10.items.6",
+          "criticalFindingIds": [],
+          "note": "Labelled fictional example and accurate event facts; repetitive qualitative benefit language, but no separate objective accuracy or frequency claim."
+        }
+      ]
+    },
+    {
+      "type": "hooks",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 3,
+        "usefulness": 3,
+        "total": 15
+      },
+      "materialFailures": [
+        {
+          "id": "F07",
+          "path": "sections.11.items.1",
+          "quote": "Two documents museum shops often merge by accident: the stock record and the display note.",
+          "category": "unsupported_industry_prevalence",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "The brief does not establish that museum shops often merge these documents, nor that this happens accidentally. This invents both frequency and cause for a business-population behavior."
+        },
+        {
+          "id": "F08",
+          "path": "sections.11.items.4",
+          "quote": "A clean stock file cannot hold every signage and placement decision. That is what a display note is for.",
+          "category": "unsupported_categorical_limitation",
+          "severity": "material",
+          "criticalFactualFailure": true,
+          "sourceQuote": "A stock record describes what is held; a display note describes how an item is presented.",
+          "sourceRationale": "The supplied distinction is about each document's purpose. It does not establish that a stock file cannot hold signage or placement decisions. The hook turns a useful distinction into an unsupported technical/operational impossibility."
+        }
+      ],
+      "editorialIssues": [
+        {
+          "path": "sections.11.items.5",
+          "quote": "A postcard range is the simplest place to see the difference between “held” and “presented.”",
+          "issue": "The superlative is an opinion, not a measured claim, but it is unnecessary and unsupported as a comparison."
+        },
+        {
+          "path": "sections.11.items.6",
+          "quote": "When “where does this go?” lives inside your stock record, day-to-day operations get noisy fast.",
+          "issue": "Another version of the same document-confusion tension; the eight hooks have limited angle variety."
+        }
+      ],
+      "assessment": "All eight hooks inspected. Counting-versus-setup advice and 'same product, different lens' are acceptable. Two hooks cross from subjective marketing into unsupported prevalence or categorical capability claims."
+    },
+    {
+      "type": "ctas",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 4,
+        "total": 17
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.12.body",
+          "quote": "No CTA requested. In No CTA mode, this set is intentionally left blank to avoid invitations to click, comment, message, sign up, or take action.",
+          "issue": "Complies with the requested empty set, but the explanation is longer and more system-oriented than necessary. 'No CTA requested.' would be sufficient."
+        }
+      ],
+      "assessment": "Items and CTA are empty as requested. Mentioning prohibited actions in a neutral explanation is not itself a call to action. The brief explicitly permits this explanation, so it is not classified as prohibited publisher leakage."
+    },
+    {
+      "type": "platformHashtags",
+      "scores": {
+        "relevance": 4,
+        "naturalness": 3,
+        "originality": 2,
+        "platformFit": 4,
+        "usefulness": 3,
+        "total": 16
+      },
+      "materialFailures": [],
+      "editorialIssues": [
+        {
+          "path": "sections.13.items.5",
+          "quote": "YouTube Shorts: museum shop, museum retail, cultural retail, merchandising, visual merchandising, retail operations, inventory basics, stock record, display notes, shop floor standards, retail process, postcard display",
+          "issue": "Relevant but broad keyword inventory. It does not add much specificity beyond the main distinction and audience."
+        }
+      ],
+      "assessment": "All six platform sets inspected. Topic hashtags and keywords do not claim qualifications, results or product capabilities. 'No tags recommended' is an internal set choice, not an engagement request. No critical factual failure identified."
+    }
+  ],
+  "recommendedEdits": [
+    "Remove or qualify the nine material assertions; retain the source-backed distinction rather than promising data integrity or asserting undocumented industry habits.",
+    "Present detailed schemas as possible illustrative fields, not universal requirements or announced curriculum.",
+    "Remove the email's publisher instruction and make YouTube title/description actual copy rather than a 'Title idea' worksheet.",
+    "Vary the angles and reduce duplicate 'lanes', 'two documents' and generic benefit endings while keeping the no-engagement constraint.",
+    "Keep the clearly hypothetical postcard illustration and the correct demonstration-only event framing."
+  ],
+  "inputSha256": {
+    "brief.json": "8b068cba52278740f02708aae075069fed286e14a3bb4bc2d7b6e7e8654de8d7",
+    "raw-draft.json": "54a76632fdd4043cb5e86f884a5f1ad201a739f62f847ea6d94bcb7896d9ee5c"
+  },
+  "assessmentDate": "2026-10-18",
+  "exactQuotationValidation": "All cited draft quotations and source quotations checked against the two input files."
+}

@@ -61,7 +61,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
   }
 
-  const event = JSON.parse(payload) as StripeWebhookEvent;
+  let event: StripeWebhookEvent;
+  try { event = JSON.parse(payload) as StripeWebhookEvent; }
+  catch { return NextResponse.json({ error: "Invalid event payload." }, { status: 400 }); }
+  if (!event || typeof event.type !== "string" || !event.data?.object || typeof event.data.object !== "object") {
+    return NextResponse.json({ error: "Invalid event payload." }, { status: 400 });
+  }
   const object = event.data.object;
 
   if (event.type === "checkout.session.completed") {
@@ -109,31 +114,15 @@ export async function POST(request: Request) {
           }
         });
 
-        console.log("[Founder Checkout] Lifetime entitlement activated", {
-          sessionId: object.id,
-          userId: object.client_reference_id ?? object.metadata?.user_id,
-          amountTotal: object.amount_total
-        });
+        console.log("billing.founder_activation", { status: "activated", count: 1 });
       } catch (error) {
         if (isPermanentFounderActivationError(error)) {
-          console.error("[Founder Checkout] Refused permanently invalid founder entitlement", {
-            sessionId: object.id,
-            userId: object.client_reference_id ?? object.metadata?.user_id,
-            amountTotal: object.amount_total,
-            paymentStatus: object.payment_status,
-            error: error.message
-          });
+          console.error("billing.founder_activation", { status: "permanently_rejected", count: 1 });
 
           return NextResponse.json({ received: true });
         }
 
-        console.error("[Founder Checkout] Retryable founder entitlement processing failure", {
-          sessionId: object.id,
-          userId: object.client_reference_id ?? object.metadata?.user_id,
-          amountTotal: object.amount_total,
-          paymentStatus: object.payment_status,
-          error: error instanceof Error ? error.message : "Unknown founder webhook error"
-        });
+        console.error("billing.founder_activation", { status: "retryable_failure", count: 1 });
 
         return NextResponse.json(
           { error: "Founder entitlement processing failed." },
@@ -150,17 +139,7 @@ export async function POST(request: Request) {
       email: object.customer_email
     });
 
-    console.log("Stripe checkout session subscription sync", {
-      userId: object.client_reference_id ?? object.metadata?.user_id,
-      email: object.customer_email,
-      plan: state.plan,
-      status: state.status,
-      rawStatus: object.status,
-      cancelAtPeriodEnd: state.cancelAtPeriodEnd,
-      stripeCustomerId: state.stripeCustomerId,
-      stripeSubscriptionId: state.stripeSubscriptionId,
-      currentPeriodEnd: state.currentPeriodEnd
-    });
+    console.log("billing.checkout_sync", { status: "resolved", count: 1 });
 
     await updateSubscriptionStatus({
       userId: object.client_reference_id ?? object.metadata?.user_id,
@@ -215,15 +194,15 @@ export async function POST(request: Request) {
       });
 
       if (!hasCompletedFounderClaim) {
-        console.warn("[Founder Checkout] Ignored founder subscription event before checkout confirmation", {
-          subscriptionId: object.id,
-          userId: object.metadata?.user_id
-        });
+        console.warn("billing.founder_subscription", { status: "unconfirmed_ignored", count: 1 });
       }
 
       return NextResponse.json({ received: true });
     }
 
+    if (event.type === "customer.subscription.deleted" && !object.id) {
+      return NextResponse.json({ error: "Missing subscription identity." }, { status: 400 });
+    }
     const fallbackState = stripeSubscriptionToState({
       id: object.id ?? "",
       customer: object.customer ?? "",
@@ -241,24 +220,13 @@ export async function POST(request: Request) {
         stripeSubscriptionId: object.id
       });
 
-    console.log("Stripe subscription event sync", {
-      eventType: event.type,
-      userId: object.metadata?.user_id,
-      email: object.customer_email,
-      rawStatus: object.status,
-      plan: state.plan,
-      status: state.status,
-      cancelAtPeriodEnd: state.cancelAtPeriodEnd,
-      rawCancelAtPeriodEnd: object.cancel_at_period_end,
-      stripeCustomerId: state.stripeCustomerId,
-      stripeSubscriptionId: state.stripeSubscriptionId,
-      currentPeriodEnd: state.currentPeriodEnd
-    });
+    console.log("billing.subscription_sync", { status: "resolved", count: 1 });
 
     await updateSubscriptionStatus({
       userId: object.metadata?.user_id,
       email: object.customer_email,
-      ...state
+      ...state,
+      ...(event.type === "customer.subscription.deleted" ? { expectedStripeSubscriptionId: object.id } : {})
     });
   }
 
@@ -269,16 +237,7 @@ export async function POST(request: Request) {
       email: object.customer_email ?? object.email
     });
 
-    console.log("Stripe invoice paid subscription sync", {
-      userId: object.metadata?.user_id,
-      email: object.customer_email ?? object.email,
-      plan: state.plan,
-      status: state.status,
-      cancelAtPeriodEnd: state.cancelAtPeriodEnd,
-      stripeCustomerId: state.stripeCustomerId,
-      stripeSubscriptionId: state.stripeSubscriptionId,
-      currentPeriodEnd: state.currentPeriodEnd
-    });
+    console.log("billing.invoice_sync", { status: "resolved", count: 1 });
 
     await updateSubscriptionStatus({
       userId: object.metadata?.user_id,

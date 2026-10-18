@@ -1,0 +1,46 @@
+{
+  "events": 24,
+  "remoteInputHashesMatchLocal": true,
+  "localCleanInstall": {
+    "status": 0,
+    "stdout": "{\"runnerInstallInputs\":[{\"path\":\"package.json\",\"sha256\":\"119f6a231c8bf185384e220ceac97e4c757b231b16a5bd1eb194ee0ada756360\"},{\"path\":\"package-lock.json\",\"sha256\":\"39503f87182b0953cb3b84f1739731b93d243036bd91ecd6d402c61159731e38\"}],\"node\":\"v24.15.0\"}\n\nadded 14 packages in 133ms\n",
+    "stderr": ""
+  },
+  "pinnedLockHash": "39503f87182b0953cb3b84f1739731b93d243036bd91ecd6d402c61159731e38",
+  "privateAuditHash": "7c9e2f3767d32eb14d2e7b5871ff444ac9ac0e9213ed5daba68ffdc16b213254",
+  "cleanup": {
+    "at": "2026-10-18T15:12:18.366Z",
+    "database": {
+      "disable": true,
+      "noLogin": true,
+      "revokeFunctions": true,
+      "revokeSchema": true,
+      "terminateSessions": true,
+      "verifyRevocation": true
+    },
+    "auditExported": true,
+    "discoveryComplete": true,
+    "verifiedDeployments": [
+      {
+        "id": "dpl_BTTwA5qAwzDVCepy2WRknQd7o7CK",
+        "projectId": "prj_aO6mDTNkCKe5jzepGPCvzOWy1eBS",
+        "target": null,
+        "meta": {
+          "benchmarkPlanHash": "f7e1c658a6447af44e3b35977c70eefda35b23ba01c1912e61ff57b230260802"
+        }
+      }
+    ],
+    "deletedDeploymentIds": [
+      "dpl_BTTwA5qAwzDVCepy2WRknQd7o7CK"
+    ],
+    "errors": [],
+    "safeToEraseRecovery": true
+  },
+  "runtimePreflight": {
+    "status": "ready",
+    "nextStage": "1:review:0:2",
+    "reviewed": 96,
+    "total": 307,
+    "reserved": 792508
+  }
+}

@@ -6,10 +6,12 @@ import { pageMetadata } from "@/lib/metadata";
 import { pricingPlans } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = pageMetadata({
-  title: "ContentOS | Authority-First AI Content Workflow",
+  title: "GetContentOS | AI Content Generator for Posts, Scripts & Newsletters",
   description:
-    "ContentOS helps creators, founders, consultants and professionals turn one idea into structured, platform-ready social content with clearer positioning, stronger hooks, repurposing packs and multi-platform execution.",
+    "Turn one idea into platform-ready content with AI. Create posts, captions, scripts and newsletters, refine your drafts, and export a content pack with GetContentOS.",
   path: "/"
 });
 
@@ -225,15 +227,14 @@ export default function Home() {
           <div className="mx-auto grid w-full max-w-7xl min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.88fr)] lg:items-center">
             <div className="min-w-0 overflow-hidden">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
-                Authority-first AI content workflow
+                AI content creation
               </p>
               <h1 className="mt-5 max-w-3xl break-words text-3xl font-black leading-[1.08] tracking-normal text-bone sm:text-5xl lg:text-6xl">
-                <span className="block sm:inline">Create </span>
-                <span className="block sm:inline">platform-ready </span>
-                <span className="block">content from one idea.</span>
+                <span className="block">GetContentOS</span>
+                <span className="mt-3 block text-2xl font-semibold leading-snug sm:text-3xl">One idea. Platform-ready content.</span>
               </h1>
               <p className="mt-6 max-w-2xl break-words text-base leading-7 text-muted sm:text-lg sm:leading-8">
-                ContentOS helps creators, founders, consultants and professionals turn rough ideas into structured posts, captions, scripts, hooks, CTAs and repurposing packs with a clearer, more authoritative style.
+                Turn your notes, ideas or transcripts into posts, captions, scripts and newsletters with AI. Shape every asset in your own voice, edit the details, and export when it is ready.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link

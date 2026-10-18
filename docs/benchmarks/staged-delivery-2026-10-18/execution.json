@@ -1,0 +1,323 @@
+{
+  "candidate": "c32110aa3711a14bc59a8e7b1da7e8d5f0e38e4c",
+  "planHash": "ce3773f2bfc67d632e6e32c65cd82ca4d7f945b7f747ce4b5ec61671d36c8268",
+  "briefHash": "95ab1655dcbd68340d9e7955f192aef21fcd11e64199aa9d732174de1950530e",
+  "requestHash": "8145f5b56b3d6eff35298dbcbd9edb87080a98c3ef7dd9959dcfa7cb2193a77d",
+  "sourceHashes": {
+    "lib/prompts.ts": "e526b4718d279d48b8a148201470aa4f980f22bcfbbd5f6bef232771bba5d2a5",
+    "lib/content-config.ts": "0810308c2b54d412bffd9b1150b3bbc5cd6cc7cb89b7b63bdf4f8cdfccf0572a",
+    "lib/text-normalize.ts": "d846543c98de084acf37599daaa02ea0486f0ba1aeacf5abb6f1fce46ccc4a3a",
+    "lib/generation-contract.ts": "5c6f177fa19bfa2b8e20863c24109b7ddf4e052388f153178c0217bcd2869d57",
+    "lib/cta-policy.ts": "7379a2f32a8a96988dae8edc95fa9ab7191018854441ec9bc94019198f7f06e3",
+    "lib/factual-grounding.ts": "8b9d9d6c3f69ffe4a2fe4493882e343d4632c5ec9b50e78dd735b0c9509d4dae",
+    "lib/grounding-batches.ts": "8bb82bb8b9bcb9f6c0875658e0d8236675943eaae755ff00df6edc3db0c34f9f",
+    "lib/generation-pipeline.ts": "55debbf8c02a3e8395c547c156be67adc58b947e4a5db7e49db2db157f4084df",
+    "lib/generation-stages.ts": "58b86f972afbb1d7f4414b6ac9192379f64511ae8ffbf7c72f33e025be320a60",
+    "lib/generation-reservation.ts": "bf72035f140db6281e2b5d04405e610db5d64772cbc302b031c4db7bb4f4b5e2",
+    "lib/workspace-contract.ts": "2755e3dce126d04c9b79dafecf9db67056fdaad19b747a34b13146459599ae12",
+    "lib/entitlements.ts": "901bbb5ca4274530512a00552b14c6bd0a86dbe2cc4112f89c638f60829b7762",
+    "lib/usage.ts": "501d480d9ccab169659f4d428001b37a063ba2eb7a5c2a9b1ed885e3e025207a",
+    "lib/stripe-rest.ts": "9ad58038161ce8f535b9dc37468e73e7fa149eeab34452b47cdcdbad367cd5ce"
+  },
+  "outcome": {
+    "calls": 2,
+    "reason": "validation_failed",
+    "status": "blocked",
+    "durationMs": 64378
+  },
+  "providerCalls": 2,
+  "reservedGbp": 0.63942,
+  "knownCostUsd": 0.09541175,
+  "knownCostGbpReference": 0.0715482140207056,
+  "actualCostComplete": true,
+  "maximumGbp": 4,
+  "maximumCalls": 23,
+  "parseFailure": false,
+  "totalDraftUnits": 280,
+  "acceptedReviewUnits": 0,
+  "coverage": [
+    {
+      "stage": "1:review:0:0",
+      "assignedUnits": 48,
+      "modelReturnedDecisions": 48,
+      "acceptedDecisions": 0,
+      "valid": false,
+      "failure": "batch_validation_failed",
+      "modelReportedUnsupported": [
+        {
+          "id": "u8",
+          "text": "A stock record is built for accuracy and continuity.",
+          "reason": "missing_evidence",
+          "replacement": "A stock record describes what is held."
+        },
+        {
+          "id": "u9",
+          "text": "It keeps details stable as items move through receiving, counting, replenishment, and reporting.",
+          "reason": "missing_evidence",
+          "replacement": "A stock record describes what is held."
+        },
+        {
+          "id": "u10",
+          "text": "A display note is built for the floor.",
+          "reason": "missing_evidence",
+          "replacement": "A display note describes how an item is presented."
+        },
+        {
+          "id": "u11",
+          "text": "It captures the decisions that make a display coherent: grouping, signage language, placement, handling notes, and any context that helps the team present the item consistently.",
+          "reason": "missing_evidence",
+          "replacement": "A display note describes how an item is presented."
+        },
+        {
+          "id": "u26",
+          "text": "When each document stays in its lane, the shop floor gets clearer without compromising the record.",
+          "reason": "missing_evidence",
+          "replacement": "Keeping the two documents distinct helps clarify the difference between recording stock and describing a display."
+        },
+        {
+          "id": "u35",
+          "text": "A stock record is for continuity: what you have, what it costs, what needs replenishing.",
+          "reason": "missing_evidence",
+          "replacement": "A stock record describes what is held."
+        },
+        {
+          "id": "u47",
+          "text": "One stays stable for counting and ordering. ",
+          "reason": "missing_evidence",
+          "replacement": "One document describes what is held. The other describes how an item is presented."
+        }
+      ],
+      "individualRejections": [
+        {
+          "id": "u4",
+          "text": "If your stock record is doing the job of a display note, something will always feel slightly off.",
+          "path": "sections.0.body",
+          "decision": {
+            "id": "u4",
+            "kind": "subjective",
+            "reason": "none",
+            "replacement": null,
+            "sourceIds": []
+          },
+          "deterministicFlags": []
+        },
+        {
+          "id": "u17",
+          "text": "- Unit cost and retail price",
+          "path": "sections.0.body",
+          "decision": {
+            "id": "u17",
+            "kind": "creative",
+            "reason": "none",
+            "replacement": null,
+            "sourceIds": [
+              "s12"
+            ]
+          },
+          "deterministicFlags": []
+        },
+        {
+          "id": "u31",
+          "text": "Instagram captions: Stock record vs display note (3 options)",
+          "path": "sections.1.title",
+          "decision": {
+            "id": "u31",
+            "kind": "structural",
+            "reason": "none",
+            "replacement": null,
+            "sourceIds": []
+          },
+          "deterministicFlags": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u46",
+          "text": "Keeping them separate reduces friction. ",
+          "path": "sections.1.body",
+          "decision": {
+            "id": "u46",
+            "kind": "subjective",
+            "reason": "none",
+            "replacement": null,
+            "sourceIds": []
+          },
+          "deterministicFlags": []
+        }
+      ],
+      "unsupported": [],
+      "unitIds": [
+        "u0",
+        "u1",
+        "u2",
+        "u3",
+        "u4",
+        "u5",
+        "u6",
+        "u7",
+        "u8",
+        "u9",
+        "u10",
+        "u11",
+        "u12",
+        "u13",
+        "u14",
+        "u15",
+        "u16",
+        "u17",
+        "u18",
+        "u19",
+        "u20",
+        "u21",
+        "u22",
+        "u23",
+        "u24",
+        "u25",
+        "u26",
+        "u27",
+        "u28",
+        "u29",
+        "u30",
+        "u31",
+        "u32",
+        "u33",
+        "u34",
+        "u35",
+        "u36",
+        "u37",
+        "u38",
+        "u39",
+        "u40",
+        "u41",
+        "u42",
+        "u43",
+        "u44",
+        "u45",
+        "u46",
+        "u47"
+      ]
+    }
+  ],
+  "historyEntries": 0,
+  "usageEvents": 0,
+  "journalFailure": "grounding_failed",
+  "draftPreserved": true,
+  "cleanup": {
+    "at": "2026-10-18T10:40:09.489Z",
+    "database": {
+      "disable": true,
+      "noLogin": true,
+      "revokeFunctions": true,
+      "revokeSchema": true,
+      "terminateSessions": true,
+      "verifyRevocation": true
+    },
+    "auditExported": true,
+    "discoveryComplete": true,
+    "verifiedDeployments": [
+      {
+        "id": "dpl_GGc41yKvaj7uGcPzRPPXGKaArqJH",
+        "projectId": "prj_aO6mDTNkCKe5jzepGPCvzOWy1eBS",
+        "target": null,
+        "meta": {
+          "benchmarkPlanHash": "ce3773f2bfc67d632e6e32c65cd82ca4d7f945b7f747ce4b5ec61671d36c8268"
+        }
+      }
+    ],
+    "deletedDeploymentIds": [
+      "dpl_GGc41yKvaj7uGcPzRPPXGKaArqJH"
+    ],
+    "errors": [],
+    "safeToEraseRecovery": true
+  },
+  "deployment": {
+    "id": "dpl_GGc41yKvaj7uGcPzRPPXGKaArqJH",
+    "state": "READY"
+  },
+  "protection": {
+    "status": 302,
+    "protected": true
+  },
+  "pricing": {
+    "inputUsdPerMillion": 1.75,
+    "cachedUsdPerMillion": 0.175,
+    "outputUsdPerMillion": 14,
+    "gbpPerUsdReservation": 1.25,
+    "checkedAt": "2026-10-18",
+    "source": "https://developers.openai.com/api/docs/models/gpt-5.2",
+    "gbpPerUsdReference": 0.7498889185106195
+  },
+  "jobs": [
+    {
+      "stage": "1:draft:0:0",
+      "state": "succeeded",
+      "reservedGbp": 0.466537,
+      "reservedAt": "2026-10-18T10:38:47.602Z",
+      "completedAt": "2026-10-18T10:39:38.257Z",
+      "payloadHash": "22533a09439e5705abb5bf3feba2f9902f44d25b5c1a4f4c6aaee3e1e8403512",
+      "payloadBytes": 17178,
+      "evidence": {
+        "model": "gpt-5.2-2025-12-11",
+        "usage": {
+          "input_tokens": 3435,
+          "total_tokens": 7624,
+          "output_tokens": 4189,
+          "input_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0
+          },
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "status": "completed",
+        "costUsd": 0.06465725,
+        "durationMs": 50446,
+        "inputBytes": 17178,
+        "outputText": "{\"title\":\"Folio Finch awareness content: stock records vs display notes\",\"summary\":\"Platform-ready awareness content that clarifies the practical difference between a stock record and a display note, using Folio Finch’s fictional postcard example and referencing Shelf Notes as a 35-minute live online demonstration without adding CTAs or extra event details.\",\"sections\":[{\"id\":\"linkedin-stock-vs-display-notes\",\"type\":\"linkedin\",\"title\":\"LinkedIn post: Stock record vs display note\",\"platform\":\"LinkedIn\",\"body\":\"If your stock record is doing the job of a display note, something will always feel slightly off.\\n\\nA stock record answers: what is held.\\nA display note answers: how the item is presented.\\n\\nThey are related, but they are not interchangeable.\\n\\nA stock record is built for accuracy and continuity.\\nIt keeps details stable as items move through receiving, counting, replenishment, and reporting.\\n\\nA display note is built for the floor.\\nIt captures the decisions that make a display coherent: grouping, signage language, placement, handling notes, and any context that helps the team present the item consistently.\\n\\nHere is a clean way to separate them using a fictional postcard range as an example:\\n\\nStock record (what is held)\\n- Item name and variant\\n- Supplier or source\\n- SKU or internal code\\n- Unit cost and retail price\\n- Quantity on hand and reorder triggers\\n\\nDisplay note (how it is presented)\\n- Where it lives on the shop floor\\n- Which titles it is grouped with\\n- The short line on the label, if you use one\\n- Display style notes, for example face-out vs stacked\\n\\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira, comparing a stock record with a display note using that fictional postcard range. It is a demonstration, not an inventory audit or a shop-specific consultation.\\n\\nWhen each document stays in its lane, the shop floor gets clearer without compromising the record.\",\"items\":[\"#MuseumRetail\",\"#RetailOperations\",\"#Merchandising\",\"#CollectionsRetail\"],\"cta\":\"\"},{\"id\":\"instagram-captions-stock-vs-display-notes\",\"type\":\"instagram\",\"title\":\"Instagram captions: Stock record vs display note (3 options)\",\"platform\":\"Instagram\",\"body\":\"Caption 1\\nA stock record is not a display note.\\n\\nA stock record is for continuity: what you have, what it costs, what needs replenishing.\\nA display note is for presentation: how the item shows up on the floor, with what, and where.\\n\\nExample (fictional): a postcard range.\\nStock record tracks the variants and quantities.\\nDisplay note captures the grouping and the label line that makes the set feel intentional.\\n\\nShelf Notes from Folio Finch is a 35-minute live online demonstration led by Mira that compares the two using a fictional postcard range. It is a demonstration, not an audit or a consultation.\\n\\nCaption 2\\nWhen the team asks, “Where does this belong?”, your stock record is not the best place to answer.\\n\\nStock records describe what is held.\\nDisplay notes describe how it is presented.\\n\\nKeeping them separate reduces friction. One stays stable for counting and ordering. The other stays practical for the floor and signage.\\n\\nShelf Notes is a 35-minute live online demonstration from Folio Finch, led by Mira, showing the difference with a fictional postcard range.\\n\\nCaption 3\\nTwo documents. Two jobs.\\n\\nStock record = accuracy over time.\\nDisplay note = consistency on the floor.\\n\\nIf a display needs a tiny rule, it belongs in a display note. If it needs to be counted, it belongs in the stock record.\\n\\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira, comparing a stock record with a display note using a fictional postcard range.\",\"items\":[\"Hashtag set option A: #museumshop #museumretail #retailops #merchandising #visualmerchandising #shopfloor #culturalretail\",\"Hashtag set option B: #independentretail #museumstore #retailmanagement #inventorymanagement #merchandisingtips #exhibitionshop #retailteam\",\"Hashtag set option C: #museumgiftshop #retailmerchandising #productpresentation #retailprocess #storestandards #shopoperations #museumcommunity\"],\"cta\":\"\"},{\"id\":\"tiktok-captions-stock-vs-display-notes\",\"type\":\"tiktok\",\"title\":\"TikTok captions: Stock record vs display note (3 options)\",\"platform\":\"TikTok\",\"body\":\"Caption 1\\nYour stock record says what you have. Your display note says how it shows up on the floor. Mixing them makes both weaker.\\n\\nCaption 2\\nQuick distinction for museum shops: stock record = held. display note = presented. Different tools, different decisions.\\n\\nCaption 3\\nA postcard range example: stock record tracks variants and quantities. Display note captures grouping, placement, and the label line.\",\"items\":[\"#museumshop #retailops #merchandising #inventorymanagement #visualmerchandising\"],\"cta\":\"\"},{\"id\":\"twitter-post-stock-vs-display-notes\",\"type\":\"twitter\",\"title\":\"X post: Stock record vs display note\",\"platform\":\"X/Twitter\",\"body\":\"A stock record describes what is held. A display note describes how an item is presented. Different jobs, different details. Keeping them separate protects accuracy and makes the shop floor easier to run.\",\"items\":[],\"cta\":\"\"},{\"id\":\"facebook-post-stock-vs-display-notes\",\"type\":\"facebook\",\"title\":\"Facebook post: Stock record vs display note\",\"platform\":\"Facebook\",\"body\":\"In a museum shop, it helps to separate two things that often get blended together.\\n\\nA stock record is for what is held: item details, quantities, and the information you need to keep purchasing and reporting accurate.\\n\\nA display note is for how the item is presented: where it lives on the shop floor, how it is grouped, what the label line says, and any small presentation rules the team needs for consistency.\\n\\nUsing a fictional postcard range as an example, Folio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira that compares a stock record with a display note. It is a demonstration, not an inventory audit or a shop-specific consultation.\\n\\nKeeping those two documents distinct keeps the record clean and the display clearer.\",\"items\":[],\"cta\":\"\"},{\"id\":\"youtube-shorts-caption-shelf-notes\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption: Stock record vs display note\",\"platform\":\"YouTube Shorts\",\"body\":\"Title idea: Stock Record vs Display Note (Museum Shop Merchandising Basics)\\n\\nDescription: A quick distinction for independent museum shops and cultural retail teams. Stock records describe what is held. Display notes describe how an item is presented. Example shown with a fictional postcard range, aligned with Folio Finch’s Shelf Notes demonstration.\\n\\nTags: museum shop, museum retail, cultural retail, merchandising, visual merchandising, retail operations, inventory basics, stock record, display notes, shop floor standards, retail process, postcard display\",\"items\":[],\"cta\":\"\"},{\"id\":\"x-thread-stock-vs-display-notes\",\"type\":\"xThread\",\"title\":\"X thread: Keep stock records and display notes in separate lanes\",\"platform\":\"X/Twitter\",\"body\":\"A concise thread on why stock records and display notes are different tools, and what each should contain.\",\"items\":[\"1) If your stock record is also trying to be a display guide, it usually ends up doing neither job well.\",\"2) A stock record describes what is held. It prioritizes accuracy, traceability, and continuity over time.\",\"3) A display note describes how an item is presented. It prioritizes consistency on the shop floor across shifts and seasons.\",\"4) Example (fictional): a postcard range. Stock record tracks the variants, codes, quantities, cost, and retail price.\",\"5) The display note captures where the postcards live, what they are grouped with, the label line, and any presentation rules (face-out vs stacked).\",\"6) Takeaway: keep counting and ordering details in the stock record, keep placement and signage decisions in the display note. Clear lanes make cleaner updates.\"],\"cta\":\"\"},{\"id\":\"short-video-script-stock-vs-display-notes\",\"type\":\"shortVideoScript\",\"title\":\"Short-form video script: Stock record vs display note\",\"platform\":\"Video\",\"body\":\"Hook (spoken)\\n“Your stock record is not a display note, and treating it like one creates mess fast.”\\n\\nOn-screen text\\nStock record ≠ Display note\\n\\nBeat 1 (spoken)\\n“A stock record answers one question: what is held.”\\n\\nOn-screen text\\nStock record = what is held\\n\\nBeat 2 (spoken)\\n“It is where quantities, variants, codes, cost, retail price, and replenishment info live.”\\n\\nOn-screen text\\nQty • variants • codes • cost • price\\n\\nBeat 3 (spoken)\\n“A display note answers a different question: how the item is presented.”\\n\\nOn-screen text\\nDisplay note = how it is presented\\n\\nBeat 4 (spoken)\\n“It captures what the team needs on the floor: where it goes, what it is grouped with, what the label line says, and any setup rules.”\\n\\nOn-screen text\\nPlacement • grouping • label line • setup notes\\n\\nBeat 5 (spoken, optional example)\\n“Example: a fictional postcard range. The stock record tracks each design and quantity. The display note says ‘all postcards together, face-out on the spinner, label reads: Local Views’.”\\n\\nOn-screen text\\nExample: postcard range\\n\\nClose (spoken)\\n“Two documents, two jobs. Keeping them separate keeps the record clean and the display consistent.”\\n\\nOn-screen text\\nClean records. Consistent displays.\",\"items\":[],\"cta\":\"\"},{\"id\":\"carousel-outline-stock-vs-display-notes\",\"type\":\"carousel\",\"title\":\"Carousel: Stock record vs display note (museum shop basics)\",\"platform\":\"Carousel\",\"body\":\"Carousel outline focused on the practical distinction between recording stock and describing a display, with a fictional postcard example.\",\"items\":[\"Slide 1: Stock record vs display note, same items, different jobs. Support: One tracks what you hold. One captures how you present it.\",\"Slide 2: Stock record = what is held. Support: Built for counting, replenishment, and reporting accuracy over time.\",\"Slide 3: What belongs in a stock record. Support: Item name and variant, SKU/internal code, supplier/source, unit cost, retail price, quantity on hand.\",\"Slide 4: Display note = how it is presented. Support: Built for the shop floor, signage, and consistent setup across shifts.\",\"Slide 5: What belongs in a display note. Support: Location on the floor, grouping rules, label line, handling notes, display style (face-out, stacked, pegged).\",\"Slide 6: Fictional example: postcard range. Support: Stock record tracks each design and quantity. Display note captures where it sits and how it is grouped.\",\"Slide 7: Common mix-up to avoid. Support: Using the stock record to store signage copy and placement rules makes updates harder and errors more likely.\",\"Slide 8: Simple rule of thumb. Support: If it needs counting, it belongs in the stock record. If it needs setting up, it belongs in the display note.\",\"Slide 9: Shelf Notes (Folio Finch). Support: A 35-minute live online demonstration led by Mira comparing a stock record with a display note using a fictional postcard range. Demonstration only, not an audit or consultation.\"],\"cta\":\"\"},{\"id\":\"email-newsletter-stock-vs-display-notes\",\"type\":\"emailNewsletter\",\"title\":\"Email draft: Stock record vs display note\",\"platform\":\"Email\",\"body\":\"Subject line options are below.\\n\\nHi,\\n\\nIn museum shops, two useful documents often get blended together, and it creates quiet friction.\\n\\nA stock record describes what is held.\\nIt is designed for accuracy over time, so it can support receiving, counting, replenishment, and reporting.\\n\\nA display note describes how an item is presented.\\nIt is designed for consistency on the shop floor, so the team can set up, label, and maintain a display the same way across shifts.\\n\\nA simple way to keep them separate:\\n\\nStock record (what is held)\\n- Item name and variant\\n- Supplier or source\\n- SKU or internal code\\n- Unit cost and retail price\\n- Quantity on hand\\n\\nDisplay note (how it is presented)\\n- Floor location\\n- Grouping rules\\n- Label line, if you use one\\n- Presentation notes, for example face-out vs stacked\\n\\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira, comparing a stock record with a display note using a fictional postcard range as the example. It is a demonstration, not an inventory audit or a shop-specific consultation.\\n\\nKeeping each document in its lane keeps the record clean and the display easier to run.\\n\",\"items\":[\"Subject option 1: Stock record vs display note (a useful distinction)\",\"Subject option 2: Two documents museum shops shouldn’t merge\",\"Subject option 3: What is held vs how it’s presented\"],\"cta\":\"\"},{\"id\":\"repurpose-pack-stock-vs-display-notes\",\"type\":\"repurposePack\",\"title\":\"Repurpose Pack: Stock record vs display note\",\"platform\":\"General\",\"body\":\"Seven ready-to-edit assets repurposed from the same core idea: stock records describe what is held, display notes describe how items are presented, with Shelf Notes referenced as a 35-minute live online demonstration led by Mira using a fictional postcard range.\",\"items\":[\"LinkedIn: If your stock record is doing the job of a display note, something will always feel slightly off.\\n\\nA stock record answers: what is held.\\nA display note answers: how the item is presented.\\n\\nA stock record is built for accuracy and continuity (receiving, counting, replenishment, reporting).\\nA display note is built for the floor (placement, grouping, label language, setup notes).\\n\\nExample (fictional): a postcard range.\\nStock record tracks variants and quantities.\\nDisplay note captures where it lives, how it is grouped, and the short label line.\\n\\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira comparing a stock record with a display note using a fictional postcard range. It is a demonstration, not an audit or consultation.\\n\\nClear lanes keep the record clean and the display consistent.\",\"Instagram: A stock record is not a display note.\\n\\nStock record = what you hold, designed for accuracy over time.\\nDisplay note = how you present it, designed for consistency on the shop floor.\\n\\nExample (fictional): a postcard range.\\nStock record tracks each design, code, and quantity.\\nDisplay note captures grouping, placement, and the label line.\\n\\nShelf Notes from Folio Finch is a 35-minute live online demonstration led by Mira comparing the two. Demonstration only, not an audit or a shop-specific consultation.\",\"TikTok: Stock record says what you have. Display note says how it shows up on the floor. Example: postcards. Stock record tracks variants and qty, display note captures placement, grouping, and label line.\",\"X/Twitter: Stock record = what is held. Display note = how it is presented. Different jobs, different details. Keeping them separate protects accuracy and keeps the floor clearer.\",\"Carousel: Slide 1: Stock record vs display note, same items, different jobs.\\nSlide 2: Stock record = what is held (counting, ordering, reporting).\\nSlide 3: Stock record includes: variants, codes, cost, retail, qty.\\nSlide 4: Display note = how it is presented (floor consistency).\\nSlide 5: Display note includes: placement, grouping, label line, setup notes.\\nSlide 6: Fictional example: postcard range, stock tracks designs, display note tracks presentation.\\nSlide 7: Rule of thumb: counting info in stock record, setup info in display note.\\nSlide 8: Shelf Notes is a 35-minute live online demonstration led by Mira using a fictional postcard range, not an audit or consultation.\",\"Video: Hook: “Your stock record is not a display note.”\\nBeat 1: Stock record = what is held (variants, codes, cost, price, qty).\\nBeat 2: Display note = how it is presented (placement, grouping, label line, setup rules).\\nBeat 3 (example): fictional postcard range, stock tracks each design and quantity, display note captures how it is merchandised.\\nClose: “Two documents, two jobs. Keep them separate for clean records and consistent displays.”\",\"Email: Hi,\\n\\nA stock record describes what is held. A display note describes how an item is presented.\\n\\nStock records are built for accuracy over time: receiving, counting, replenishment, reporting.\\nDisplay notes are built for the floor: placement, grouping, label language, and small setup rules.\\n\\nExample (fictional): a postcard range.\\nStock record tracks variants and quantities.\\nDisplay note captures where it lives and how it is grouped.\\n\\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira comparing a stock record with a display note using a fictional postcard range. It is a demonstration, not an inventory audit or a shop-specific consultation.\\n\\nKeeping each document in its lane keeps the record clean and the display consistent.\"],\"cta\":\"\"},{\"id\":\"hooks-stock-vs-display-notes\",\"type\":\"hooks\",\"title\":\"Hooks: Stock records vs display notes\",\"platform\":\"General\",\"body\":\"Eight hook options grounded in the distinction between recording stock and describing a display, written for independent museum-shop teams.\",\"items\":[\"Your stock record is not a display note, and mixing them makes both harder to maintain.\",\"Two documents museum shops often merge by accident: the stock record and the display note.\",\"If a note needs to help someone count, it belongs in one place. If it needs to help someone set up a display, it belongs in another.\",\"Stock records are built for accuracy over time. Display notes are built for consistency on the floor.\",\"A clean stock file cannot hold every signage and placement decision. That is what a display note is for.\",\"A postcard range is the simplest place to see the difference between “held” and “presented.”\",\"When “where does this go?” lives inside your stock record, day-to-day operations get noisy fast.\",\"One tracks quantities and codes. One tracks grouping and label language. Same product, different lens.\"],\"cta\":\"\"},{\"id\":\"ctas-no-cta-mode\",\"type\":\"ctas\",\"title\":\"CTAs: No CTA mode\",\"platform\":\"General\",\"body\":\"No CTA requested. In No CTA mode, this set is intentionally left blank to avoid invitations to click, comment, message, sign up, or take action.\",\"items\":[],\"cta\":\"\"},{\"id\":\"platform-hashtags-stock-vs-display-notes\",\"type\":\"platformHashtags\",\"title\":\"Platform hashtag and keyword sets\",\"platform\":\"General\",\"body\":\"Platform-appropriate hashtag and keyword sets aligned to independent museum retail and practical shop operations.\",\"items\":[\"LinkedIn: #MuseumRetail #RetailOperations #Merchandising #InventoryManagement\",\"Instagram: #museumshop #museumretail #culturalretail #merchandising #visualmerchandising #inventorymanagement #independentretail\",\"TikTok: #museumshop #retailops #merchandising #inventorymanagement #visualmerchandising\",\"X/Twitter: No tags recommended\",\"Facebook: No tags recommended\",\"YouTube Shorts: museum shop, museum retail, cultural retail, merchandising, visual merchandising, retail operations, inventory basics, stock record, display notes, shop floor standards, retail process, postcard display\"],\"cta\":\"\"}]}",
+        "payloadHash": "22533a09439e5705abb5bf3feba2f9902f44d25b5c1a4f4c6aaee3e1e8403512",
+        "serviceTier": "default",
+        "responseHash": "488dacfc3c4353189565d39aa1949008b3b6a018da79b403e7699f65b762bfbc",
+        "costGbpReference": 0.04848575527637075
+      }
+    },
+    {
+      "stage": "1:review:0:0",
+      "state": "succeeded",
+      "reservedGbp": 0.172883,
+      "reservedAt": "2026-10-18T10:39:39.827Z",
+      "completedAt": "2026-10-18T10:39:50.572Z",
+      "payloadHash": "8962f7cce5540779017db9df0fc8aa1a94c14d4da1190a68d4cf65672f8c3a6f",
+      "payloadBytes": 36536,
+      "evidence": {
+        "model": "gpt-5.2-2025-12-11",
+        "usage": {
+          "input_tokens": 7694,
+          "total_tokens": 8929,
+          "output_tokens": 1235,
+          "input_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0
+          },
+          "output_tokens_details": {
+            "reasoning_tokens": 0
+          }
+        },
+        "status": "completed",
+        "costUsd": 0.0307545,
+        "durationMs": 10641,
+        "inputBytes": 36536,
+        "outputText": "{\"decisions\":[{\"id\":\"u0\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s16\"]},{\"id\":\"u1\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s2\",\"s1\",\"s13\",\"s8\"]},{\"id\":\"u2\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s11\"]},{\"id\":\"u3\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u4\",\"kind\":\"subjective\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u5\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s3\"]},{\"id\":\"u6\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s4\"]},{\"id\":\"u7\",\"kind\":\"subjective\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u8\",\"kind\":\"unsupported\",\"reason\":\"missing_evidence\",\"replacement\":\"A stock record describes what is held.\",\"sourceIds\":[\"s3\"]},{\"id\":\"u9\",\"kind\":\"unsupported\",\"reason\":\"missing_evidence\",\"replacement\":\"A stock record describes what is held.\",\"sourceIds\":[\"s3\"]},{\"id\":\"u10\",\"kind\":\"unsupported\",\"reason\":\"missing_evidence\",\"replacement\":\"A display note describes how an item is presented.\",\"sourceIds\":[\"s4\"]},{\"id\":\"u11\",\"kind\":\"unsupported\",\"reason\":\"missing_evidence\",\"replacement\":\"A display note describes how an item is presented.\",\"sourceIds\":[\"s4\"]},{\"id\":\"u12\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u13\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s3\"]},{\"id\":\"u14\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u15\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u16\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u17\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u18\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u19\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s4\"]},{\"id\":\"u20\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u21\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u22\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u23\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u24\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s1\",\"s2\"]},{\"id\":\"u25\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s5\"]},{\"id\":\"u26\",\"kind\":\"unsupported\",\"reason\":\"missing_evidence\",\"replacement\":\"Keeping the two documents distinct helps clarify the difference between recording stock and describing a display.\",\"sourceIds\":[\"s11\"]},{\"id\":\"u27\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u28\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u29\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u30\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u31\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u32\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u33\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u34\",\"kind\":\"subjective\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u35\",\"kind\":\"unsupported\",\"reason\":\"missing_evidence\",\"replacement\":\"A stock record describes what is held.\",\"sourceIds\":[\"s3\"]},{\"id\":\"u36\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s4\"]},{\"id\":\"u37\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s2\"]},{\"id\":\"u38\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u39\",\"kind\":\"creative\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s12\"]},{\"id\":\"u40\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s1\",\"s2\"]},{\"id\":\"u41\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s5\"]},{\"id\":\"u42\",\"kind\":\"structural\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u43\",\"kind\":\"subjective\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u44\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s3\"]},{\"id\":\"u45\",\"kind\":\"supported\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[\"s4\"]},{\"id\":\"u46\",\"kind\":\"subjective\",\"reason\":\"none\",\"replacement\":null,\"sourceIds\":[]},{\"id\":\"u47\",\"kind\":\"unsupported\",\"reason\":\"missing_evidence\",\"replacement\":\"One document describes what is held. The other describes how an item is presented.\",\"sourceIds\":[\"s3\",\"s4\"]}]}",
+        "payloadHash": "8962f7cce5540779017db9df0fc8aa1a94c14d4da1190a68d4cf65672f8c3a6f",
+        "serviceTier": "default",
+        "responseHash": "a0f90923bc91468631109ab2756dfd64b668e15d09c63a8ae0ce31794ec9ad6c",
+        "costGbpReference": 0.023062458744334845
+      }
+    }
+  ],
+  "limits": [
+    "One synthetic brief; not a population reliability or quality estimate.",
+    "Exact candidate stage transitions and real isolated profile persistence; not a live browser/authenticated application HTTP test.",
+    "Any unsupported review decision stops this campaign; no corrective paid retry is purchased."
+  ]
+}

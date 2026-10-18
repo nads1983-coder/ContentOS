@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-18",
+  "status": "PASS",
+  "environment": "final local production build on localhost:3212 with existing isolated Neon",
+  "command": "node tests/auth-isolated.mjs --staged-browser",
+  "syntheticOnly": true,
+  "providerCalls": 0,
+  "mailSent": 0,
+  "productionWrites": 0,
+  "mockedStagedHttpResponses": 7,
+  "formatCards": 14,
+  "initialFixtureUnits": 280,
+  "finalFixtureUnits": 280,
+  "viewportWidths": [1440, 768, 390],
+  "checks": [
+    "real isolated signup, verification and login",
+    "cloud persistence across sessions and stale-write/account isolation",
+    "password reset revokes sessions and preserves saved content",
+    "session-scoped logout",
+    "stage progress and unchanged prior draft",
+    "lost checkpoint acknowledgement without automatic retry",
+    "reload and same-request-ID/payload recovery",
+    "correction and fresh revalidation progress before final fixture display",
+    "all 14 corrected-fixture formats visible",
+    "no horizontal overflow or unexpected browser exceptions",
+    "synthetic auth/profile fixtures removed"
+  ],
+  "limitations": [
+    "Generation HTTP responses are mocked. This is not a live AI or production browser flow.",
+    "All actual validation stages are exercised separately by route and isolated SQL tests; this UI test condenses them into seven HTTP responses.",
+    "Local server warned about absent Vercel client-IP forwarding and used a shared rate-limit bucket; no security check was disabled.",
+    "Pinned pg driver emitted its future SSL-mode alias warning; current verification semantics are unchanged."
+  ],
+  "screenshots": "/tmp/contentos-staged-browser"
+}

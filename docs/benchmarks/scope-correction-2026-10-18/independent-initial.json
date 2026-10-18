@@ -1,0 +1,250 @@
+{
+  "fixtureSha256": "cbe823b68e607865273582afd8a138adc8b3f54492270796aa66a3c5b6426066",
+  "mode": "offline adversarial review-certificate validation; no live model",
+  "cases": [
+    {
+      "id": "scope-01",
+      "category": "whole_vs_part",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "allow",
+      "match": false
+    },
+    {
+      "id": "scope-02",
+      "category": "whole_vs_part",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-03",
+      "category": "part_test_vs_whole_certification",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "reject",
+      "match": true
+    },
+    {
+      "id": "scope-04",
+      "category": "part_test_vs_whole_certification",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-05",
+      "category": "single_vs_every",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "allow",
+      "match": false
+    },
+    {
+      "id": "scope-06",
+      "category": "single_vs_every",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-07",
+      "category": "location_binding",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "allow",
+      "match": false
+    },
+    {
+      "id": "scope-08",
+      "category": "location_binding",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-09",
+      "category": "frequency",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "allow",
+      "match": false
+    },
+    {
+      "id": "scope-10",
+      "category": "frequency",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-11",
+      "category": "capacity_vs_actual_quantity",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "allow",
+      "match": false
+    },
+    {
+      "id": "scope-12",
+      "category": "capacity_vs_actual_quantity",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-13",
+      "category": "duration_vs_guaranteed_result",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "reject",
+      "match": true
+    },
+    {
+      "id": "scope-14",
+      "category": "explicit_qualified_guarantee",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-15",
+      "category": "same_feature_different_product",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "allow",
+      "match": false
+    },
+    {
+      "id": "scope-16",
+      "category": "same_feature_different_product",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-17",
+      "category": "relation_direction",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "allow",
+      "match": false
+    },
+    {
+      "id": "scope-18",
+      "category": "relation_direction",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-19",
+      "category": "negation_and_product_scope",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "reject",
+      "match": true
+    },
+    {
+      "id": "scope-20",
+      "category": "negation_and_product_scope",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-21",
+      "category": "current_brief_vs_saved_brand",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "allow",
+      "match": false
+    },
+    {
+      "id": "scope-22",
+      "category": "current_brief_vs_saved_brand",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-23",
+      "category": "positive_creative_advice",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "allow",
+      "match": true
+    },
+    {
+      "id": "scope-24",
+      "category": "positive_subjective_copy",
+      "layer": "semantic",
+      "expected": "allow",
+      "actual": "reject",
+      "match": false
+    },
+    {
+      "id": "scope-25",
+      "category": "creative_label_does_not_license_facts",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "reject",
+      "match": true
+    },
+    {
+      "id": "scope-26",
+      "category": "subjective_label_does_not_license_testimony",
+      "layer": "semantic",
+      "expected": "reject",
+      "actual": "reject",
+      "match": true
+    },
+    {
+      "id": "scope-27",
+      "category": "structural_duplicate_unit",
+      "layer": "review_structure",
+      "expected": "reject",
+      "actual": "reject",
+      "match": true
+    },
+    {
+      "id": "scope-28",
+      "category": "structural_missing_unit",
+      "layer": "review_structure",
+      "expected": "reject",
+      "actual": "reject",
+      "match": true
+    }
+  ],
+  "semantic": {
+    "total": 26,
+    "falsePositives": [
+      "scope-24"
+    ],
+    "falseNegatives": [
+      "scope-01",
+      "scope-05",
+      "scope-07",
+      "scope-09",
+      "scope-11",
+      "scope-15",
+      "scope-17",
+      "scope-21"
+    ]
+  },
+  "structural": {
+    "total": 2,
+    "failures": []
+  }
+}

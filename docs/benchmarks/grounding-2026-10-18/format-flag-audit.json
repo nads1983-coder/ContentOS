@@ -1,0 +1,1324 @@
+{
+  "schemaVersion": 1,
+  "auditType": "POST_UNBLIND_OFFLINE_NUMERIC_FORMAT_FLAG_AUDIT",
+  "target": "Frozen candidate raw drafts only; no live application or proposed parser fix was read or executed.",
+  "frozenCandidateRevision": "6daddcc4149932e0d1bc59e331ecba7ce99f78ad",
+  "frozenScoreProtection": {
+    "path": "/tmp/contentos-grounding-independent-audit.json",
+    "sha256": "a48c5395cf3f58ebd187d746ded2631c301dcb46d83ce2320e5cab50fc3be574",
+    "modified": false,
+    "scopeClarification": "The previous blind audit scored the supplied draft text. Its GO content judgments are not evidence that the FULL candidate pipeline delivered those drafts."
+  },
+  "provenance": {
+    "planSha256": "45bdb5febe2a593c7c7bac5c4c1ac1e38331ff48dae8d94663c4d1378d65cd65",
+    "evidenceSha256": "8c61581b105152603f196fa6bdc5a4008e1725e3823ea23ea0b0c3eecf97c3fa",
+    "moduleHashes": {
+      "lib/prompts.ts": "94a30f112fb7d718722d5409b6f1d325e3ab1e44f067710f7daf162668ef7422",
+      "lib/content-config.ts": "950989076169533c70c5d12df702e585d82b25a3f96bc5f71add75311ae29dbe",
+      "lib/text-normalize.ts": "21dba8b8b34bc6d1af852e1da0f2ad7f64f78659180a0ede9af91fb74e9bc921",
+      "lib/generation-contract.ts": "36b7867cd04e5392ce95a3d2926170fba1591d7793851276c88767d0f6a9ee23",
+      "lib/cta-policy.ts": "bbeebcb831bd43704ce6d678b9f8ad5e3a05df59f798e44e64547ff055fa70e6",
+      "lib/factual-grounding.ts": "dc0e8ec8cd825c94621d8fffa271e33c24975070a7d294fc556b07c42eb4fff6"
+    },
+    "frozenBlindAuditSha256": "a48c5395cf3f58ebd187d746ded2631c301dcb46d83ce2320e5cab50fc3be574",
+    "planPath": "/tmp/contentos-grounding-benchmark-20261018/plan.json",
+    "evidencePath": "/tmp/contentos-grounding-benchmark-20261018/evidence.json",
+    "moduleSource": "plan.modules.candidate only",
+    "draftSource": "evidence.jobs entries with ids H1:candidate:draft, H2:candidate:draft, H3:candidate:draft; evidence.outputText",
+    "rawDrafts": [
+      {
+        "brief": "H1",
+        "units": 228,
+        "flagged": 3,
+        "rawDraftSha256": "e0bd0a1c0e9dd6110c7328cd2278aab7386b9b5dde8313aec3e2fd62fdb51439",
+        "draftJobId": "H1:candidate:draft"
+      },
+      {
+        "brief": "H2",
+        "units": 267,
+        "flagged": 15,
+        "rawDraftSha256": "3d2c40305e84e7a701b222caa2fe829afc0a3ca577031cd181583308e577a568",
+        "draftJobId": "H2:candidate:draft"
+      },
+      {
+        "brief": "H3",
+        "units": 224,
+        "flagged": 6,
+        "rawDraftSha256": "63825e504dbc903985659fe343f15780fcc58855fb5709a399369cf6632231f8",
+        "draftJobId": "H3:candidate:draft"
+      }
+    ]
+  },
+  "operationalContext": {
+    "candidateDraftDelivery": "All three candidate drafts were withheld and not delivered, as reported by the user.",
+    "campaignOutcome": "User reports first review unknown after 90.003 combined seconds and campaign stopped after seven calls.",
+    "evidenceJobObservation": "The first candidate review job is unknown; later review jobs have no review output in this evidence.",
+    "fullPipelineSuccessEstablished": false,
+    "timeoutCauseEstablished": false,
+    "interpretation": "These offline numeric false positives are real validator blockers if left unresolved. They do not prove why the live review timed out, and clearing them would not by itself establish successful grounding, delivery or deadline compliance."
+  },
+  "independence": {
+    "meitnerFixRead": false,
+    "currentApplicationCodeRead": false,
+    "applicationModified": false,
+    "frozenPlanOrEvidenceModified": false,
+    "frozenBlindAuditModified": false,
+    "paidCalls": 0,
+    "providerCalls": 0,
+    "deploymentActions": 0,
+    "semanticJudgments": "Independent manual assessment of all 24 reproduced flagged units, using the previously sealed ground truth. Counterfactual detector results are supporting diagnostics, not substitutes for semantic review."
+  },
+  "reproduction": {
+    "loader": "An in-memory loadModules loader evaluates only the compiled CommonJS strings in plan.modules.candidate. Every module string is SHA-256 checked against plan.moduleHashes.candidate. Non-snapshot imports are rejected.",
+    "sequence": [
+      "normalizeGenerationRequest(pack.request) from the frozen contract",
+      "parseGenerationOutput(job.evidence.outputText, request) from the frozen contract",
+      "buildGroundingContext(request)",
+      "groundingUnits(parsedDraft)",
+      "deterministicIssues(unit.text, context) for every unit"
+    ],
+    "numericInspection": "The exact label and numbers helper definitions are extracted from the frozen factual-grounding module into an offline VM to enumerate unmatched numerals. No number-extraction fix is substituted.",
+    "counterfactual": "For each flagged unit, remove only the explicitly recorded structural annotations in an ephemeral string, retain factual words and numbers, and rerun the unmodified frozen deterministicIssues. No modified draft is written or treated as a candidate result.",
+    "generatedCountVerification": "Titles describing three captions, eight hooks and five CTAs are checked against actual caption headings or item counts in their generated sections.",
+    "noRepairValidationClaim": "This checks the cause of the 24 missing_evidence flags only. It does not certify that a repaired draft passes the full parseGroundingReview semantic/reference validator."
+  },
+  "summary": {
+    "totalCandidateUnits": 719,
+    "totalFlaggedUnits": 24,
+    "allOriginalFindingsMissingEvidenceOnly": true,
+    "numericFormatFalsePositives": 24,
+    "genuineUnsupportedBusinessNumericFindings": 0,
+    "ambiguousNumericFindings": 0,
+    "independentlyIdentifiedOtherMaterialSemanticIssuesInFlaggedUnits": 0,
+    "semanticIssuesElsewhere": "Not re-adjudicated in this artifact; the frozen independent audit remains authoritative for its broader content judgments.",
+    "countsByBrief": [
+      {
+        "brief": "H1",
+        "totalUnits": 228,
+        "flaggedUnits": 3,
+        "falsePositiveUnits": 3
+      },
+      {
+        "brief": "H2",
+        "totalUnits": 267,
+        "flaggedUnits": 15,
+        "falsePositiveUnits": 15
+      },
+      {
+        "brief": "H3",
+        "totalUnits": 224,
+        "flaggedUnits": 6,
+        "falsePositiveUnits": 6
+      }
+    ],
+    "countsByAnnotationKind": {
+      "caption_count_title": 2,
+      "nested_slide_ordinal": 6,
+      "thread_ordinal_slash": 9,
+      "nested_video_beat_ordinal": 4,
+      "hook_count_title": 1,
+      "cta_count_title": 1,
+      "multiple_nested_slide_ordinals": 1
+    },
+    "all24ResidualDeterministicFindingsCleared": true,
+    "generatedCountTitlesVerified": 4,
+    "verdict": "All 24 reproduced numeric missing_evidence findings are format-annotation false positives, not unsupported business-fact numbers."
+  },
+  "mechanism": {
+    "frozenLabelPattern": "/^(?:(?:caption|slide|subject|option|hook|beat|step)\\s*\\d+\\s*[:.)-]?|\\d+[.)]\\s*)/i",
+    "findings": [
+      "The anchored prefix recognizer does not recognize thread numbering such as 1/.",
+      "Nested Carousel: Slide N: wrappers and pipe-prefixed Slide N:/Beat N: markers are not recognized at the start of the numeric scan.",
+      "Plural/count-bearing section titles such as captions (3), Hooks: 8 and CTAs: 5 are generated-format descriptors, not source facts.",
+      "Numbers appearing elsewhere in source text can accidentally prevent a format flag, so the absence of flags on other ordinal values is not evidence that those values are semantically grounded."
+    ],
+    "validatorConsequence": "parseGroundingReview rejects every non-unsupported decision when deterministicIssues(unit.text, context) remains nonempty. Merely labeling one of these units structural, subjective, creative or supported cannot bypass the frozen numeric flag.",
+    "mixedUnitCaution": "Most affected units are not wholly structural: they mix a format annotation with factual or advisory copy. Classifying the entire sentence as structural would be wrong. The specific numeric complaint is false while dates, prices, duration, coverage and verification scope still require ordinary grounding."
+  },
+  "rows": [
+    {
+      "brief": "H1",
+      "unitId": "u22",
+      "path": "sections.1.title",
+      "format": "instagram",
+      "originalText": "Instagram captions (3): what happened, what we know, what we did not measure",
+      "start": 0,
+      "end": 76,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "caption_count_title",
+      "unmatchedFormatNumerals": [
+        "3"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": " (3)"
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Instagram captions: what happened, what we know, what we did not measure",
+      "rationale": "Three is the number of Instagram caption alternatives in this generated section, not a count of assessed items, people or repairs.",
+      "independentSemanticReview": {
+        "classification": "STRUCTURAL",
+        "reason": "Remaining title describes a recap and its measurement limits; it introduces no numerical outcome.",
+        "sourceQuotes": [],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H1",
+        "unitId": "u22",
+        "exactFrozenMissingNumerals": [
+          "3"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": {
+          "declaredCount": 3,
+          "actualGeneratedCount": 3,
+          "verified": true
+        },
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H1",
+      "unitId": "u50",
+      "path": "sections.2.title",
+      "format": "tiktok",
+      "originalText": "TikTok captions (3): quick session recap, no extra claims",
+      "start": 0,
+      "end": 57,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "caption_count_title",
+      "unmatchedFormatNumerals": [
+        "3"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": " (3)"
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "TikTok captions: quick session recap, no extra claims",
+      "rationale": "Three labels the number of TikTok caption alternatives, not a source-derived business metric.",
+      "independentSemanticReview": {
+        "classification": "STRUCTURAL",
+        "reason": "Remaining title is a format/editorial descriptor, not a result or offer.",
+        "sourceQuotes": [],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H1",
+        "unitId": "u50",
+        "exactFrozenMissingNumerals": [
+          "3"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": {
+          "declaredCount": 3,
+          "actualGeneratedCount": 3,
+          "verified": true
+        },
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H1",
+      "unitId": "u169",
+      "path": "sections.10.items.4",
+      "format": "repurposePack",
+      "originalText": "Carousel: Slide 1: Repair session recap, measured counts only | Alder Repair Circle, 6 Sep 2027",
+      "start": 0,
+      "end": 95,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_slide_ordinal",
+      "unmatchedFormatNumerals": [
+        "1"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "Carousel: Slide 1: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Repair session recap, measured counts only | Alder Repair Circle, 6 Sep 2027",
+      "rationale": "One is the first slide's ordinal after the repurpose asset wrapper. The dated repair-session claim must remain subject to grounding.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The remaining text identifies Alder Repair Circle's dated session; 6 September 2027 is supported.",
+        "sourceQuotes": [
+          "Alder Repair Circle held a household-item assessment session on 6 September 2027."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H1",
+        "unitId": "u169",
+        "exactFrozenMissingNumerals": [
+          "1"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "6",
+          "2027"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u109",
+      "path": "sections.6.items.0",
+      "format": "xThread",
+      "originalText": "1/ Digitising old photos feels like one job. ",
+      "start": 0,
+      "end": 45,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "1"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "1/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Digitising old photos feels like one job. ",
+      "rationale": "The leading 1/ is post ordering, not a factual quantity about photograph digitisation.",
+      "independentSemanticReview": {
+        "classification": "SUBJECTIVE",
+        "reason": "'Feels like one job' is subjective explanatory framing, not a measured result or paid deliverable.",
+        "sourceQuotes": [],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u109",
+        "exactFrozenMissingNumerals": [
+          "1"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u111",
+      "path": "sections.6.items.1",
+      "format": "xThread",
+      "originalText": "2/ Assessment is where you look closely at a small sample and figure out what you are dealing with, condition, priorities, and questions you need answered.",
+      "start": 0,
+      "end": 155,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "2"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "2/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Assessment is where you look closely at a small sample and figure out what you are dealing with, condition, priorities, and questions you need answered.",
+      "rationale": "The leading 2/ is the second thread post; it does not alter the number of sample photographs.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED_WITH_ADVICE",
+        "reason": "Looking at a small sample and identifying condition questions paraphrases the assessment; priorities is ordinary planning advice rather than an extra service.",
+        "sourceQuotes": [
+          "The session covers inspecting up to six sample photographs on camera, identifying questions about their condition, and discussing a possible digitisation order."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u111",
+        "exactFrozenMissingNumerals": [
+          "2"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u113",
+      "path": "sections.6.items.3",
+      "format": "xThread",
+      "originalText": "4/ What it is not: scanning, restoration, valuation, or file delivery. ",
+      "start": 0,
+      "end": 71,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "4"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "4/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "What it is not: scanning, restoration, valuation, or file delivery. ",
+      "rationale": "Four is only the post ordinal. The four exclusions are still factual copy and remain checked.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "Scanning, restoration, valuation and file delivery are explicitly excluded.",
+        "sourceQuotes": [
+          "No scanning, restoration, valuation or file delivery is included."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u113",
+        "exactFrozenMissingNumerals": [
+          "4"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u115",
+      "path": "sections.6.items.4",
+      "format": "xThread",
+      "originalText": "5/ Details: 19 February 2028 at 16:30 UTC. ",
+      "start": 0,
+      "end": 43,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "5"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "5/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Details: 19 February 2028 at 16:30 UTC. ",
+      "rationale": "Five is only the thread ordinal. The actual event date and time are not formatting and must be preserved.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "19 February 2028 at 16:30 UTC matches the current approved notice.",
+        "sourceQuotes": [
+          "on 19 February 2028 at 16:30 UTC."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u115",
+        "exactFrozenMissingNumerals": [
+          "5"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "19",
+          "2028",
+          "16:30"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u215",
+      "path": "sections.10.items.4",
+      "format": "repurposePack",
+      "originalText": "Carousel: Slide 1: Not ready to digitise your whole photo collection? ",
+      "start": 0,
+      "end": 70,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_slide_ordinal",
+      "unmatchedFormatNumerals": [
+        "1"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "Carousel: Slide 1: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Not ready to digitise your whole photo collection? ",
+      "rationale": "One identifies the opening carousel slide inside a repurpose asset, not the quantity of photographs or time required.",
+      "independentSemanticReview": {
+        "classification": "ADVICE_OR_QUESTION",
+        "reason": "The remaining reader-readiness question is permitted in product mode and does not promise digitisation.",
+        "sourceQuotes": [],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u215",
+        "exactFrozenMissingNumerals": [
+          "1"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u217",
+      "path": "sections.10.items.4",
+      "format": "repurposePack",
+      "originalText": "| Slide 2: What this is: a 25-minute remote assessment (North Quay Scan Desk). ",
+      "start": 85,
+      "end": 164,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_slide_ordinal",
+      "unmatchedFormatNumerals": [
+        "2"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "| Slide 2: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "What this is: a 25-minute remote assessment (North Quay Scan Desk). ",
+      "rationale": "Two is a nested slide ordinal after a pipe separator. The 25-minute duration is a real service fact and is retained.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "A 25-minute remote assessment with the named business is the documented offer.",
+        "sourceQuotes": [
+          "North Quay Scan Desk offers a 25-minute remote assessment of a household photograph collection"
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u217",
+        "exactFrozenMissingNumerals": [
+          "2"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "25"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u219",
+      "path": "sections.10.items.4",
+      "format": "repurposePack",
+      "originalText": "| Slide 4: What this is not: no scanning, restoration, valuation, or file delivery. ",
+      "start": 292,
+      "end": 376,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_slide_ordinal",
+      "unmatchedFormatNumerals": [
+        "4"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "| Slide 4: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "What this is not: no scanning, restoration, valuation, or file delivery. ",
+      "rationale": "Four is slide ordering, not an unsupported business metric; the negative service exclusions remain substantive.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The listed exclusions match the current notice.",
+        "sourceQuotes": [
+          "No scanning, restoration, valuation or file delivery is included."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u219",
+        "exactFrozenMissingNumerals": [
+          "4"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u220",
+      "path": "sections.10.items.4",
+      "format": "repurposePack",
+      "originalText": "| Slide 5: Session details: 19 Feb 2028, 16:30 UTC, EUR 18. ",
+      "start": 376,
+      "end": 436,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_slide_ordinal",
+      "unmatchedFormatNumerals": [
+        "5"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "| Slide 5: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Session details: 19 Feb 2028, 16:30 UTC, EUR 18. ",
+      "rationale": "Five is slide ordering. The date, time and EUR 18 price are actual offer terms and remain untouched.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The retained date/time/price are current, not the superseded draft terms.",
+        "sourceQuotes": [
+          "on 19 February 2028 at 16:30 UTC.",
+          "The assessment costs EUR 18."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u220",
+        "exactFrozenMissingNumerals": [
+          "5"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "19",
+          "2028",
+          "16:30",
+          "18"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u222",
+      "path": "sections.10.items.4",
+      "format": "repurposePack",
+      "originalText": "| Slide 7: First step: request the remote assessment.",
+      "start": 494,
+      "end": 547,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_slide_ordinal",
+      "unmatchedFormatNumerals": [
+        "7"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "| Slide 7: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "First step: request the remote assessment.",
+      "rationale": "Seven indexes the final carousel slide and does not claim a quantity of service deliverables.",
+      "independentSemanticReview": {
+        "classification": "PERMITTED_CTA",
+        "reason": "A channel-neutral request for the documented remote assessment is an allowed product CTA.",
+        "sourceQuotes": [],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u222",
+        "exactFrozenMissingNumerals": [
+          "7"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u224",
+      "path": "sections.10.items.5",
+      "format": "repurposePack",
+      "originalText": "| Beat 1: “We offer a 25-minute remote assessment.” ",
+      "start": 78,
+      "end": 130,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_video_beat_ordinal",
+      "unmatchedFormatNumerals": [
+        "1"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "| Beat 1: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "“We offer a 25-minute remote assessment.” ",
+      "rationale": "One is a script beat ordinal. The 25-minute remote assessment remains a genuine supported offer claim.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The business does offer the stated assessment; the duration is not converted into a digitisation completion promise.",
+        "sourceQuotes": [
+          "North Quay Scan Desk offers a 25-minute remote assessment of a household photograph collection"
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u224",
+        "exactFrozenMissingNumerals": [
+          "1"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "25"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u225",
+      "path": "sections.10.items.5",
+      "format": "repurposePack",
+      "originalText": "| Beat 2: “We look at up to six sample photos on camera.” ",
+      "start": 130,
+      "end": 188,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_video_beat_ordinal",
+      "unmatchedFormatNumerals": [
+        "2"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "| Beat 2: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "“We look at up to six sample photos on camera.” ",
+      "rationale": "Two is a script beat ordinal, not a sample-size claim. The up-to-six sample limit is substantive and retained.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The camera-based inspection and sample limit match the notice.",
+        "sourceQuotes": [
+          "inspecting up to six sample photographs on camera"
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u225",
+        "exactFrozenMissingNumerals": [
+          "2"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u227",
+      "path": "sections.10.items.5",
+      "format": "repurposePack",
+      "originalText": "| Beat 4: “No scanning, restoration, valuation, or file delivery included.” ",
+      "start": 296,
+      "end": 372,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_video_beat_ordinal",
+      "unmatchedFormatNumerals": [
+        "4"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "| Beat 4: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "“No scanning, restoration, valuation, or file delivery included.” ",
+      "rationale": "Four is a script beat ordinal; it does not change the service exclusions.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "All four explicitly excluded services remain excluded in this sentence.",
+        "sourceQuotes": [
+          "No scanning, restoration, valuation or file delivery is included."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u227",
+        "exactFrozenMissingNumerals": [
+          "4"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u228",
+      "path": "sections.10.items.5",
+      "format": "repurposePack",
+      "originalText": "| Beat 5: “19 Feb 2028, 16:30 UTC. ",
+      "start": 372,
+      "end": 407,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "nested_video_beat_ordinal",
+      "unmatchedFormatNumerals": [
+        "5"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "| Beat 5: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "“19 Feb 2028, 16:30 UTC. ",
+      "rationale": "Five is beat ordering; the event date and time are business facts retained for grounding.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The sentence fragment contains the correct current date/time; sentence segmentation leaves its surrounding quotation mark in the unit.",
+        "sourceQuotes": [
+          "on 19 February 2028 at 16:30 UTC."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u228",
+        "exactFrozenMissingNumerals": [
+          "5"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "19",
+          "2028",
+          "16:30"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u236",
+      "path": "sections.11.title",
+      "format": "hooks",
+      "originalText": "Hooks: 8 angles that stay within the facts",
+      "start": 0,
+      "end": 42,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "hook_count_title",
+      "unmatchedFormatNumerals": [
+        "8"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "8 "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Hooks: angles that stay within the facts",
+      "rationale": "Eight describes the generated hook list length, which is independently countable in the same section. It is not evidence of customer, photograph or service counts.",
+      "independentSemanticReview": {
+        "classification": "STRUCTURAL",
+        "reason": "The section contains eight hooks; title wording is an internal format descriptor.",
+        "sourceQuotes": [],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u236",
+        "exactFrozenMissingNumerals": [
+          "8"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": {
+          "declaredCount": 8,
+          "actualGeneratedCount": 8,
+          "verified": true
+        },
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H2",
+      "unitId": "u250",
+      "path": "sections.12.title",
+      "format": "ctas",
+      "originalText": "CTAs: 5 Product CTA options",
+      "start": 0,
+      "end": 27,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "cta_count_title",
+      "unmatchedFormatNumerals": [
+        "5"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "5 "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "CTAs: Product CTA options",
+      "rationale": "Five describes the number of generated CTA options, not any offer fact or discount.",
+      "independentSemanticReview": {
+        "classification": "STRUCTURAL",
+        "reason": "The section contains five CTA options; product-mode wording is a format label.",
+        "sourceQuotes": [],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H2",
+        "unitId": "u250",
+        "exactFrozenMissingNumerals": [
+          "5"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": {
+          "declaredCount": 5,
+          "actualGeneratedCount": 5,
+          "verified": true
+        },
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H3",
+      "unitId": "u95",
+      "path": "sections.6.items.0",
+      "format": "xThread",
+      "originalText": "1/ Bracken Route Atlas 2.6 is live. ",
+      "start": 0,
+      "end": 36,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "1"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "1/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Bracken Route Atlas 2.6 is live. ",
+      "rationale": "One is the thread post ordinal. Release version 2.6 is a real product fact and is retained.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The source says release 2.6 was published; 'is live' is a faithful announcement paraphrase.",
+        "sourceQuotes": [
+          "Bracken Route Atlas published website release 2.6 on 22 April 2027."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H3",
+        "unitId": "u95",
+        "exactFrozenMissingNumerals": [
+          "1"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "2.6"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H3",
+      "unitId": "u97",
+      "path": "sections.6.items.1",
+      "format": "xThread",
+      "originalText": "2/ Welsh: 8 of our 12 route-information pages now have Welsh translations, reviewed by volunteers.",
+      "start": 0,
+      "end": 98,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "2"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "2/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Welsh: 8 of our 12 route-information pages now have Welsh translations, reviewed by volunteers.",
+      "rationale": "Two is the post ordinal; 8 of 12 route-information pages is a real coverage claim and remains untouched.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "Coverage and volunteer review match the source without implying whole-site Welsh support.",
+        "sourceQuotes": [
+          "Of its 12 route-information pages, 8 now have Welsh translations reviewed by volunteers."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H3",
+        "unitId": "u97",
+        "exactFrozenMissingNumerals": [
+          "2"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "8",
+          "12"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H3",
+      "unitId": "u100",
+      "path": "sections.6.items.4",
+      "format": "xThread",
+      "originalText": "5/ Accessibility note: keyboard navigation was manually checked on 3 page templates. ",
+      "start": 0,
+      "end": 85,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "5"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "5/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Accessibility note: keyboard navigation was manually checked on 3 page templates. ",
+      "rationale": "Five is post ordering; three page templates is the substantive verification scope and is retained.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The unit accurately limits the keyboard check to three templates; it does not claim certification or a whole-site audit.",
+        "sourceQuotes": [
+          "Keyboard navigation was manually checked on 3 page templates; that check does not cover the whole website."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H3",
+        "unitId": "u100",
+        "exactFrozenMissingNumerals": [
+          "5"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "3"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H3",
+      "unitId": "u102",
+      "path": "sections.6.items.5",
+      "format": "xThread",
+      "originalText": "6/ We have not completed an independent accessibility audit or certification for the website at this stage.",
+      "start": 0,
+      "end": 107,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "6"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "6/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "We have not completed an independent accessibility audit or certification for the website at this stage.",
+      "rationale": "Six is post ordering, not an accessibility score, template count or audit result.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED",
+        "reason": "The denial of an independent audit or certification exactly preserves the source's limitation.",
+        "sourceQuotes": [
+          "No independent accessibility audit or certification has been completed."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H3",
+        "unitId": "u102",
+        "exactFrozenMissingNumerals": [
+          "6"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H3",
+      "unitId": "u103",
+      "path": "sections.6.items.6",
+      "format": "xThread",
+      "originalText": "7/ Takeaway: progress is real, and so are the gaps. ",
+      "start": 0,
+      "end": 52,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "thread_ordinal_slash",
+      "unmatchedFormatNumerals": [
+        "7"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "7/ "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Takeaway: progress is real, and so are the gaps. ",
+      "rationale": "Seven is the final thread post ordinal, not a claim about translated pages or outcomes.",
+      "independentSemanticReview": {
+        "classification": "SUBJECTIVE",
+        "reason": "'Progress is real, and so are the gaps' is qualitative framing consistent with partial coverage, not measured traffic or satisfaction.",
+        "sourceQuotes": [],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H3",
+        "unitId": "u103",
+        "exactFrozenMissingNumerals": [
+          "7"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [],
+        "counterfactualCheckPassed": true
+      }
+    },
+    {
+      "brief": "H3",
+      "unitId": "u185",
+      "path": "sections.10.items.4",
+      "format": "repurposePack",
+      "originalText": "Carousel: Slide 1: Release 2.6, Welsh coverage update | Slide 2: 8 of 12 route pages now in Welsh (volunteer-reviewed) | Slide 3: 4 route pages still English-only | Slide 4: Checkout + account still English-only | Slide 5: Keyboard nav checked on 3 templates (not whole site) | Slide 6: No independent audit or certification yet | Slide 7: Why we are being specific | Slide 8: Translation priorities next",
+      "start": 0,
+      "end": 404,
+      "originalFindings": [
+        "missing_evidence"
+      ],
+      "numericFinding": "missing_evidence",
+      "numericFindingFalsePositive": true,
+      "classification": "FORMAT_ANNOTATION_NOT_BUSINESS_FACT",
+      "annotationKind": "multiple_nested_slide_ordinals",
+      "unmatchedFormatNumerals": [
+        "1",
+        "2",
+        "5",
+        "6",
+        "7"
+      ],
+      "formatAnnotations": [
+        {
+          "quote": "Carousel: Slide 1: "
+        },
+        {
+          "quote": "| Slide 2: "
+        },
+        {
+          "quote": "| Slide 3: "
+        },
+        {
+          "quote": "| Slide 4: "
+        },
+        {
+          "quote": "| Slide 5: "
+        },
+        {
+          "quote": "| Slide 6: "
+        },
+        {
+          "quote": "| Slide 7: "
+        },
+        {
+          "quote": "| Slide 8: "
+        }
+      ],
+      "diagnosticTextWithoutFormatAnnotations": "Release 2.6, Welsh coverage update 8 of 12 route pages now in Welsh (volunteer-reviewed) 4 route pages still English-only Checkout + account still English-only Keyboard nav checked on 3 templates (not whole site) No independent audit or certification yet Why we are being specific Translation priorities next",
+      "rationale": "Eight nested slide ordinals label a carousel stored in one unit. The unmatched 1, 2, 5, 6 and 7 arise from slide numbering; the version, coverage counts and template scope are separate substantive numbers.",
+      "independentSemanticReview": {
+        "classification": "SUPPORTED_WITH_STRUCTURE",
+        "reason": "The retained copy preserves release 2.6, 8-of-12 Welsh pages, 4 English-only route pages, English-only checkout/account, the three-template check and absence of independent certification. Later headings express topics/priorities, not delivery promises.",
+        "sourceQuotes": [
+          "Bracken Route Atlas published website release 2.6 on 22 April 2027.",
+          "Of its 12 route-information pages, 8 now have Welsh translations reviewed by volunteers.",
+          "The remaining 4 route pages are English-only.",
+          "The checkout and account screens are also English-only.",
+          "Keyboard navigation was manually checked on 3 page templates; that check does not cover the whole website.",
+          "No independent accessibility audit or certification has been completed."
+        ],
+        "otherIssues": [],
+        "hasIndependentMaterialIssue": false
+      },
+      "verification": {
+        "brief": "H3",
+        "unitId": "u185",
+        "exactFrozenMissingNumerals": [
+          "1",
+          "2",
+          "5",
+          "6",
+          "7"
+        ],
+        "findingsAfterRemovingOnlyIdentifiedFormatAnnotations": [],
+        "contentCountCheck": null,
+        "remainingNumerals": [
+          "2.6",
+          "8",
+          "12",
+          "4",
+          "3"
+        ],
+        "counterfactualCheckPassed": true
+      }
+    }
+  ],
+  "boundedRecommendations": [
+    "Scope any format-number exception to the known section type, field path and recognized structural span; do not globally ignore numerals or entire titles.",
+    "Recognize ordinal wrappers without suppressing substantive numbers in the same span: e.g. thread index versus release 2.6; slide index versus 8 of 12 pages; beat index versus 25 minutes or EUR 18.",
+    "Verify generated option-count titles against their actual section contents, not against unrelated source numbers.",
+    "Keep semantic review, offer boundaries, No-CTA checks and factual evidence validation active on the non-annotation text.",
+    "Validate any proposed parser fix separately with genuine unsupported prices/durations/outcome counts as negative controls and the mixed units documented here. This audit has not inspected or approved Meitner's fix."
+  ],
+  "limitations": [
+    "This is a deliberately bounded audit of 24 reproduced flags from three raw drafts, not a general false-positive rate estimate.",
+    "The removal-only counterfactual is a diagnostic and is not a production implementation or an approved textual repair.",
+    "No paid rerun, completed review, successful delivery, latency improvement or deploy readiness is established by this artifact."
+  ]
+}

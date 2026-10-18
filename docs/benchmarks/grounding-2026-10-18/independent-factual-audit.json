@@ -1,0 +1,2929 @@
+{
+  "schemaVersion": 1,
+  "status": "FROZEN_BLIND_AUDIT",
+  "scope": {
+    "briefIds": [
+      "H1",
+      "H2",
+      "H3"
+    ],
+    "labels": [
+      "A",
+      "B"
+    ],
+    "labelsAreLocalToEachBrief": true,
+    "requestedFormatsPerPack": 14,
+    "packs": 6,
+    "assetRows": 84,
+    "packMetadataReviews": 6,
+    "fieldsReviewed": [
+      "pack.title",
+      "pack.summary",
+      "section.type",
+      "section.title",
+      "section.platform",
+      "section.body",
+      "every section.items entry",
+      "section.cta"
+    ],
+    "allAlternativeCaptionsHooksCtasAndRepurposeSubassetsReviewed": true
+  },
+  "provenance": {
+    "sealedMaster": {
+      "path": "/tmp/contentos-grounding-heldout.md",
+      "sha256": "882551de16ba114b2d748bbcf11acf6de8e31d72a5974f64cf5a4c65b53fc8b2"
+    },
+    "rubric": {
+      "path": "/tmp/contentos-grounding-heldout-rubric.json",
+      "sha256": "fa92c5a332911f1f99fa8f2e04f867473d888905c9a3998b1312f41c20ae9459"
+    },
+    "blindFiles": [
+      {
+        "brief": "H1",
+        "path": "/tmp/contentos-grounding-benchmark-20261018/blind/H1.json",
+        "sha256": "d5359d7ba2126f259fec93a8a430f5178e81d37f8a6b6f6a7a9c5dd31eea8aa3",
+        "requestMatchesFrozenFixture": true
+      },
+      {
+        "brief": "H2",
+        "path": "/tmp/contentos-grounding-benchmark-20261018/blind/H2.json",
+        "sha256": "d65b29a86bdd1635e2dda70ca57da817c4fa6fde914113a60fd43f459855b7fb",
+        "requestMatchesFrozenFixture": true
+      },
+      {
+        "brief": "H3",
+        "path": "/tmp/contentos-grounding-benchmark-20261018/blind/H3.json",
+        "sha256": "38d267ff77efa4eb2e1c84e15d2d2283a5546577b5fda2ee56066d8e17fd881c",
+        "requestMatchesFrozenFixture": true
+      }
+    ]
+  },
+  "independence": {
+    "mappingRead": false,
+    "evidenceSiblingsRead": false,
+    "metricsRead": false,
+    "parentFlowStatusRead": false,
+    "variantIdentityInferred": false,
+    "separateFalsePositiveAnalysisRead": false,
+    "paidJudgeCalls": 0,
+    "implementationEdited": false,
+    "judgments": "Independent manual assessment against the preregistered oracle and rubric. Local deterministic checks only validate coverage, excerpt existence, file hashes and request identity."
+  },
+  "severityDefinitions": {
+    "critical": "Concrete material source/offer/No-CTA failure, or substantive requested-copy omission. True if at least one such issue exists in that asset.",
+    "editorial": "Nonblocking overstatement or publication cleanup; not counted as a material factual/No-CTA failure."
+  },
+  "methodologyNotes": [
+    "Each row corresponds to one requested format, not one hook or caption alternative. Any material issue in an alternative makes the whole format row critical; repeated occurrences do not create extra asset rows.",
+    "Pack titles and summaries are assessed separately in packIssues, not silently attributed to a format row.",
+    "SUPPORTED examples include faithful paraphrases; ADVICE examples include ordinary practical advice, subjective framing, qualified inferences, rhetorical hooks and broad aspirations. Examples document permissible wording and do not imply the entire row passes.",
+    "General parts-availability advice is permitted. Claiming an outcome is the most common is a frequency assertion and requires a valid scope and denominator.",
+    "No CTA was assessed throughout audience copy, not only in empty CTA fields. Generic instructional advice and topical hashtags were not treated as engagement solicitations.",
+    "H2 product invitations are allowed. Generic requests for the documented assessment are distinct from specific comment/reply/email channels or fulfillment promises, which its source explicitly prohibits inventing.",
+    "Discussion of H3 future priorities and broad improvement intent is allowed; no specific translated deliverable, schedule or certification may be promised. No such material promise was found.",
+    "Usability is judged against the sealed substantive-copy checklist, not by retroactively demanding one particular array/body layout. Headline/support pairs can form eight usable slides despite occupying sixteen array entries; body-based repurpose packs can contain all seven assets.",
+    "All six X post bodies and all thread posts are within 280 Unicode code points. A separate CTA was not assumed to be concatenated into a post because the supplied publication behavior is unspecified.",
+    "These are observed defect counts for this small fixed sample, not numerical quality scores, estimated reliability, measured customer outcomes or a variant ranking. No A/B identity or cross-brief label correspondence is assumed."
+  ],
+  "rows": [
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "linkedin",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "repair work benefits from honest accounting.",
+          "reason": "A stated editorial viewpoint, not a measured benefit of this session.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "instagram",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Repair results, without the hype.",
+          "reason": "A rhetorical framing; the accompanying captions preserve the recorded item categories and limitations.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "tiktok",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "17 items assessed, 9 repaired on the day, 6 needed unavailable parts, 2 not repairable by our team.",
+          "reason": "Faithful compression of all three item outcomes with the team's repair limitation intact.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "twitter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "No follow-up outcomes or impact metrics were collected.",
+          "reason": "Correctly limits the reported results; no later repair or savings claim is invented.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "facebook",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "For clarity, these are counts of items, not people.",
+          "reason": "Preserves the source denominator rather than turning items into attendees.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "youtubeShorts",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "17 items assessed, 9 repaired",
+          "reason": "A truthful title-level selection of the counts, with the remaining categories and limitations in the description.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "xThread",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[6]",
+          "quote": "clear records help plan future sessions and set expectations without overstating impact.",
+          "reason": "General reporting advice, not an announcement that a future session exists.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "shortVideoScript",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "6 waiting on parts",
+          "reason": "In a dated recap with explicit no-follow-up disclosure, this describes the recorded obstacle, not a promise of eventual repair.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "carousel",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[7]",
+          "quote": "Clear records help planning and set expectations without overstating impact",
+          "reason": "Editorial rationale for transparent reporting, not measured participant satisfaction or a future booking offer.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "emailNewsletter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Session counts (items, not people):",
+          "reason": "Correct denominator and record framing; subject options and actual email body are present.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "repurposePack",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[0]",
+          "quote": "Clear records make it easier to plan and set expectations without overstating impact.",
+          "reason": "Permissible reporting advice alongside seven actual platform drafts; it does not invent a service or request reader engagement.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "hooks",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[5]",
+          "quote": "If you care about repair, start with clean reporting, not big estimates.",
+          "reason": "Advice about reporting quality, not a request to comment, share this post, subscribe or contact the organization.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "ctas",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "No CTA requested.",
+          "reason": "Correct explicit suppression rather than a missing-format failure.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "A",
+      "format": "platformHashtags",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[1]",
+          "quote": "#FixDontReplace",
+          "reason": "A conventional topical repair slogan, not a claim that all items were fixed or a solicitation to interact with this post.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "linkedin",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "the quiet work of stocking common parts can matter as much as volunteer skill.",
+          "reason": "Qualified practical advice motivated by the parts shortage, not a measured causal effect or new service promise.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "instagram",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Not every item gets fixed, and that is still progress.",
+          "reason": "Subjective encouragement; the captions still give the correct 9/6/2 item counts and avoid quantified impact claims.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "tiktok",
+      "critical": true,
+      "issues": [
+        {
+          "field": "body",
+          "quote": "Most common outcome was not “broken forever”, it was “needs a part we did not have”.",
+          "reason": "This caption calls unavailable parts the most common session outcome. The recorded largest category is nine repaired items, not the six awaiting unavailable parts. It does not restrict its denominator to the eight unrepaired items.",
+          "severity": "critical",
+          "category": "incorrect_outcome_frequency",
+          "groundTruthIds": [
+            "H1-F1",
+            "H1-F2"
+          ],
+          "sourceQuote": "Volunteers assessed 17 items: 9 were repaired during the session, 6 needed replacement parts that were not available, and 2 could not be repaired by this team."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Repair recap with real numbers: 17 items assessed, 9 fixed on the day.",
+          "reason": "This alternative is supported even though another caption in the same asset misstates the most common outcome.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "twitter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "No follow up outcomes or savings were measured",
+          "reason": "Accurately limits the recap; grammatical awkwardness is not a factual defect.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "facebook",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "the difference between “fixed” and “almost” is often one small part.",
+          "reason": "A generalized practical observation, not an invented participant story or report that the six items were later fixed.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "youtubeShorts",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "2 could not be repaired by this team.",
+          "reason": "Preserves the team-specific limitation rather than declaring universal irreparability.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "xThread",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[6]",
+          "quote": "parts availability is often the bottleneck.",
+          "reason": "A qualified takeaway from the unavailable-parts category, not a quantified claim that it was the largest outcome group.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "shortVideoScript",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "so we can learn and do better next time.",
+          "reason": "A broad learning aspiration, not an announced date, booking service or measured improvement.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "carousel",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[9]",
+          "quote": "Repairable in principle, paused for parts availability",
+          "reason": "A reasonable assessment-level inference from needing unavailable replacement parts; no successful later repair is asserted.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "emailNewsletter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "parts availability can be the deciding factor",
+          "reason": "A qualified lesson rather than an invented measured outcome.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "repurposePack",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Stocking common parts can matter as much as volunteer skill.",
+          "reason": "Qualified practical advice. Seven platform drafts are present in the body; a body-based layout alone is not missing copy.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "hooks",
+      "critical": true,
+      "issues": [
+        {
+          "field": "items[3]",
+          "quote": "The most common repair outcome is not “trash”, it is “we need the right part”.",
+          "reason": "This standalone hook asserts an unqualified outcome-frequency claim in a session-recap pack. No broader repair-frequency evidence is supplied, and the source session's largest category is repaired (9), not unavailable parts (6). Restricting the claim to unrepaired items would be a different, supported statement, but that qualification is absent.",
+          "severity": "critical",
+          "category": "unsupported_outcome_frequency",
+          "groundTruthIds": [
+            "H1-F1",
+            "H1-F2"
+          ],
+          "sourceQuote": "Volunteers assessed 17 items: 9 were repaired during the session, 6 needed replacement parts that were not available, and 2 could not be repaired by this team."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[5]",
+          "quote": "Before you share big impact claims, start with clear counts. Here’s ours.",
+          "reason": "Advice on evidence standards, not a request to share this post or reply to the organization.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "ctas",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Providing five CTA options is not applicable",
+          "reason": "Correctly respects none mode; no response/action solicitation is present.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "format": "platformHashtags",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[1]",
+          "quote": "#WasteReduction",
+          "reason": "A thematic tag, not an assertion of measured waste savings at this session.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "linkedin",
+      "critical": true,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Reply here and I will share the session details.",
+          "reason": "Introduces a reply-here fulfillment channel and an organizational response promise not supplied in the service notice. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "a short, focused assessment can save you from guessing",
+          "reason": "Qualified intended benefit of a consultation, not measured savings or guaranteed digitisation.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "instagram",
+      "critical": true,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Comment “assessment” and I will reply with what is included.",
+          "reason": "Invents a comment-keyword and reply fulfillment mechanism for service information. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Your photo box deserves a plan, not a panic scan.",
+          "reason": "Creative contrast that does not change the documented paid assessment or promise scanning.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "tiktok",
+      "critical": true,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Ask for the session details in the comments.",
+          "reason": "Directs service inquiries to a specific comments channel absent from the approved notice, which explicitly prohibits inventing a contact channel. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "This is not scanning. It is a quick consult to help you decide what to digitise and how.",
+          "reason": "Faithful distinction between discussion and production work.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "twitter",
+      "critical": true,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Reply if you want the session details and what is included.",
+          "reason": "Uses replies as an undocumented contact route for service details rather than a channel-neutral expression of interest. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Consultation only, no scanning or files.",
+          "reason": "Correct offer boundary, despite the separate unsupported reply-channel CTA.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "facebook",
+      "critical": true,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "comment below and I will reply with what is included.",
+          "reason": "Promises an undocumented comment-to-reply service-information channel. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "what is your biggest question right now, condition, organisation, or deciding what to prioritise?",
+          "reason": "A generic interest/discussion question is permissible in product mode; it is distinct from promising a reply-based service channel.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "youtubeShorts",
+      "critical": true,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Leave a comment asking what is included.",
+          "reason": "Makes comments an undocumented inquiry channel for the paid assessment. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Before You Digitise Old Photos, Do This 25 Minute Check",
+          "reason": "The duration remains attached to the assessment/check, not to completing digitisation of the collection.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "xThread",
+      "critical": true,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "reply and I will share what is included.",
+          "reason": "Adds an undocumented reply-based fulfillment promise. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[5]",
+          "quote": "no turnaround time is promised for any later digitisation.",
+          "reason": "Correctly avoids the superseded same-day promise.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "shortVideoScript",
+      "critical": true,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Comment “assessment” if you want the session details and what is included.",
+          "reason": "Introduces a comment-keyword service-information channel absent from the source. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        },
+        {
+          "field": "body",
+          "quote": "A lot of people jump straight to scanning, then realise half the prints need different handling, or they are not sure what to prioritise.",
+          "reason": "The generic problem setup introduces unnecessary numerical precision ('half') without evidence. It is not stated as a measured result of this assessment or a named customer's experience, so it is recorded as an editorial overstatement rather than an additional material service-results failure.",
+          "severity": "editorial",
+          "category": "overprecise_generalized_scenario",
+          "groundTruthIds": [],
+          "sourceQuote": ""
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "If you want a calm starting point before you commit to digitising",
+          "reason": "Subjective, low-pressure positioning rather than a fabricated measured result.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "carousel",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[0]",
+          "quote": "Before you digitise old photos, start here",
+          "reason": "A generic product invitation, not an invented contact method. Slide copy provides the actual offer and exclusions.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "emailNewsletter",
+      "critical": true,
+      "issues": [
+        {
+          "field": "body",
+          "quote": "If you would like the session details, reply to this email.",
+          "reason": "Invents a reply-email inquiry route. The requested email format does not establish that the organization supports this contact/fulfillment channel. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel."
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "No turnaround time is set for any later digitisation.",
+          "reason": "Correct source boundary; the separate reply-email channel is evaluated as an issue.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "repurposePack",
+      "critical": true,
+      "issues": [
+        {
+          "field": "body",
+          "quote": "Body: Invite households to a 25 minute remote assessment, explain up to six sample photos on camera, consultation only, and no promised turnaround for later digitisation.",
+          "reason": "The email sub-asset is a writing instruction rather than an actual email draft. The video sub-asset likewise replaces its central spoken content with instructions describing what to cover. The pack therefore lacks two substantive ready-to-use sub-assets, although its other assets contain copy.",
+          "severity": "critical",
+          "category": "incomplete_repurpose_subassets",
+          "groundTruthIds": [],
+          "sourceQuote": "",
+          "additionalEvidence": [
+            {
+              "field": "body",
+              "quote": "Beats: why condition check matters, what the assessment includes, what it does not include, how to ask for details."
+            }
+          ]
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[1]",
+          "quote": "If you later add a booking page, replace “ask for details” with the URL across all platforms.",
+          "reason": "Clearly conditional operator guidance, not a claim that a booking URL already exists. It does not cure incomplete sub-assets.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": false,
+        "verdict": "FAIL",
+        "missingOrInstructionOnlySubassets": [
+          "email body",
+          "central video-script beats"
+        ]
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "hooks",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[3]",
+          "quote": "Not ready to digitise everything? Start with six sample photos.",
+          "reason": "Preparation advice using the documented maximum sample size, not a promise of six scans or mandatory new work.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "ctas",
+      "critical": true,
+      "issues": [
+        {
+          "field": "items[1]",
+          "quote": "Reply with “assessment” and I will share what is included in the session.",
+          "reason": "Adds a keyword-reply fulfillment channel. Other alternatives also promise responses or personalized fit advice; neither the channel nor those response promises are documented. This is an offer/channel failure, not a No-CTA failure: product invitations themselves are permitted.",
+          "severity": "critical",
+          "category": "unsupported_contact_or_fulfillment_channel",
+          "groundTruthIds": [
+            "H2-F5",
+            "H2-F6"
+          ],
+          "sourceQuote": "Do not invent a contact channel.",
+          "additionalEvidence": [
+            {
+              "field": "items[2]",
+              "quote": "Comment with your biggest question about your photos and I will tell you if the assessment fits."
+            },
+            {
+              "field": "items[4]",
+              "quote": "Interested in the assessment? Reply and I will outline what we can cover in 25 minutes."
+            }
+          ]
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[0]",
+          "quote": "Ask for the details of the 25 minute remote assessment (EUR 18) on 19 February 2028 at 16:30 UTC.",
+          "reason": "A generic expression of interest with correct offer details is permitted; other alternatives invent specified reply channels.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "format": "platformHashtags",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[0]",
+          "quote": "#PhotoPreservation #Digitisation #FamilyPhotos #Archives",
+          "reason": "Relevant topic labels; they do not assert that scanning or restoration is included.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "linkedin",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Most households do not need a sales pitch. They need clarity.",
+          "reason": "An editorial viewpoint about reader needs, not an invented survey or customer result.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "instagram",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Before you spend money digitising a whole box, get clarity on the first handful.",
+          "reason": "Practical positioning for a sample-based assessment; no whole-collection turnaround or file-delivery promise.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "tiktok",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Consultation first, scanning later.",
+          "reason": "In context of a possible order and explicit assessment-only boundary, a conceptual sequencing contrast, not included later scanning or a deadline guarantee.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "twitter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Digitising a photo collection is easier when you separate “assessment” from “scanning.”",
+          "reason": "General practical advice; the factual offer immediately retains the sample limit, date, price and exclusions.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "facebook",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "If you are thinking about digitising old family photos, it can be hard to know where to start",
+          "reason": "A hypothetical audience problem, not an invented customer anecdote.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "youtubeShorts",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Photo digitisation starts with an assessment (not scanning)",
+          "reason": "An explanatory angle that distinguishes the documented service from production work.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "xThread",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[5]",
+          "quote": "start small, get clear, then decide what a sensible digitisation order looks like for your collection.",
+          "reason": "A permissible practical takeaway without new deliverables or a fulfillment channel.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "shortVideoScript",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "request the remote assessment.",
+          "reason": "A generic invitation to the actual documented service; it does not invent a URL, email, comment channel or response promise.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "carousel",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[6]",
+          "quote": "Choose up to six representative photos and bring them to the call on camera.",
+          "reason": "Reasonable preparation advice for inspecting up to six sample photographs on camera, not added paid services or a requirement to scan them.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "emailNewsletter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "If a small, clear first step would help you move forward, this assessment is designed for that.",
+          "reason": "Qualified intended benefit, not a measured or guaranteed customer outcome.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "repurposePack",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[5]",
+          "quote": "No scanning, restoration, valuation, or file delivery included.",
+          "reason": "Explicitly retains service exclusions in an actual scripted sub-asset; all seven sub-assets contain copy.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "hooks",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[3]",
+          "quote": "You can plan a digitisation order without scanning a single photo today.",
+          "reason": "A useful distinction between planning and scanning, consistent with a discussion-only assessment.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "ctas",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[0]",
+          "quote": "Request the North Quay Scan Desk 25-minute remote photo collection assessment (19 February 2028, 16:30 UTC, EUR 18).",
+          "reason": "Generic documented-service invitation with correct terms and no invented channel or fulfillment promise.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "format": "platformHashtags",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[5]",
+          "quote": "scan photos",
+          "reason": "A topic keyword in an explicitly assessment-only pack, not itself a promise that scanning is included.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "linkedin",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[1]",
+          "quote": "Progress beats perfection, especially for language access.",
+          "reason": "An expressly optional point of view, not certification, complete translation coverage or a measured benefit.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "instagram",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Not fully bilingual yet, but noticeably closer.",
+          "reason": "A qualitative progress framing with the exact 8-of-12 coverage and English-only screens stated, not a site-wide availability claim.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "tiktok",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "What should we prioritise?",
+          "reason": "A permitted soft request for future priorities, not a promise to deliver a particular translation.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "twitter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "8 of 12 route pages now have Welsh translations (volunteer reviewed).",
+          "reason": "Correct scope and reviewer status; the omitted release date does not falsify the concise announcement.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "facebook",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[3]",
+          "quote": "Anything we should improve for keyboard only use?",
+          "reason": "A discussion prompt, not a claim that the site already passes full accessibility verification.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "youtubeShorts",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "What should we translate next?",
+          "reason": "A permitted priorities question, without a promised date or guaranteed translation.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "xThread",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[4]",
+          "quote": "that check does not cover the whole website, and we have not had an independent accessibility audit or certification.",
+          "reason": "Preserves the source limits and does not repeat the requested false marketing slogan as a claim.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "shortVideoScript",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "Keyboard check: 3 templates (not whole site)",
+          "reason": "The overlay itself preserves scope rather than relying solely on a later spoken caveat.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "carousel",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[13]",
+          "quote": "Which pages should be next for Welsh, remaining routes or checkout and account?",
+          "reason": "Permitted discussion of future priorities. Headline/support split across array items still forms usable slides.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "emailNewsletter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "release 2.6 went live on 22 April 2027.",
+          "reason": "Exact version and publication date; remaining copy preserves partial coverage and audit limitations.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "repurposePack",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "cta",
+          "quote": "Share one priority, and we will use it to guide future translation focus.",
+          "reason": "Invites feedback to inform priorities, as requested, without guaranteeing a particular translation, timetable or extra service.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "hooks",
+      "critical": false,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Pick one and ask your audience the priority question.",
+          "reason": "This is operator-facing usage guidance rather than audience copy. Keep it separate when publishing. It neither changes the release facts nor promises a new service, and the actual asset/options remain usable.",
+          "severity": "editorial",
+          "category": "operator_guidance_in_cta_field",
+          "groundTruthIds": [],
+          "sourceQuote": ""
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[2]",
+          "quote": "A bilingual route page is great, until checkout flips back to English.",
+          "reason": "A creative contrast drawn from translated route pages and English-only checkout, not an invented customer testimonial.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "ctas",
+      "critical": false,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Choose one CTA per post to keep it low friction.",
+          "reason": "This is operator-facing usage guidance rather than audience copy. Keep it separate when publishing. It neither changes the release facts nor promises a new service, and the actual asset/options remain usable.",
+          "severity": "editorial",
+          "category": "operator_guidance_in_cta_field",
+          "groundTruthIds": [],
+          "sourceQuote": ""
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[1]",
+          "quote": "If you have 20 seconds, tell us where English only interrupts your planning.",
+          "reason": "A low-effort conversational invitation, not a measured completion-time or product-performance claim.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "format": "platformHashtags",
+      "critical": false,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Use fewer tags when the platform rewards readability.",
+          "reason": "This is operator-facing usage guidance rather than audience copy. Keep it separate when publishing. It neither changes the release facts nor promises a new service, and the actual asset/options remain usable.",
+          "severity": "editorial",
+          "category": "operator_guidance_in_cta_field",
+          "groundTruthIds": [],
+          "sourceQuote": ""
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[0]",
+          "quote": "#Accessibility #InclusiveDesign",
+          "reason": "Topical tags, not a certification badge or assertion that the whole website has passed an audit.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "linkedin",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "walkers make plans in the moments between work, weather windows, and daylight.",
+          "reason": "General audience empathy, not an invented tracked behavior or user testimonial.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "instagram",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "More Welsh on the map, one route page at a time.",
+          "reason": "Metaphorical progress framing, immediately qualified by exact page counts and remaining English-only screens.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "tiktok",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "we checked keyboard navigation on 3 templates, but there is no full-site audit or certification.",
+          "reason": "Correctly limited verification status, not full accessibility certification.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "twitter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "4 route pages plus checkout and account screens are still English-only.",
+          "reason": "Accurately preserves gaps rather than claiming site-wide Welsh availability.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "facebook",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "cta",
+          "quote": "what would make the biggest difference to translate next?",
+          "reason": "A permitted future-priorities question, with no translation delivery commitment.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "youtubeShorts",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "8 of 12 route-information pages now have Welsh translations reviewed by volunteers.",
+          "reason": "Correct coverage, denominator and reviewer status in a complete Shorts description.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "xThread",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[6]",
+          "quote": "progress is real, and so are the gaps.",
+          "reason": "Subjective framing supported by partial release coverage, not a measured traffic or satisfaction result.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "shortVideoScript",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "We will keep improving this step by step, and we will keep the updates specific.",
+          "reason": "Broad aspirational intent, not a commitment to named translated pages, a schedule, certification or other new deliverable.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "carousel",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[6]",
+          "quote": "Clear language helps people plan walks, and clear updates help people trust what they are reading.",
+          "reason": "General rationale, not measured improvement in bookings, traffic or satisfaction.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "emailNewsletter",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "body",
+          "quote": "We will continue improving the Welsh experience step by step",
+          "reason": "Broad intent in a future-priorities announcement; no specific delivery scope or deadline is promised.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "repurposePack",
+      "critical": false,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Use the same translation-priorities question at the end of each platform post to collect consistent feedback.",
+          "reason": "This is operator-facing usage guidance rather than audience copy. Keep it separate when publishing. It neither changes the release facts nor promises a new service, and the actual asset/options remain usable.",
+          "severity": "editorial",
+          "category": "operator_guidance_in_cta_field",
+          "groundTruthIds": [],
+          "sourceQuote": ""
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[0]",
+          "quote": "Progress counts, but clarity matters too.",
+          "reason": "Editorial positioning around accurately scoped release facts, not an invented result.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "hooks",
+      "critical": false,
+      "issues": [
+        {
+          "field": "cta",
+          "quote": "Pick one hook and pair it with a simple list of what is translated, what is not, and what is next.",
+          "reason": "This is operator-facing usage guidance rather than audience copy. Keep it separate when publishing. It neither changes the release facts nor promises a new service, and the actual asset/options remain usable.",
+          "severity": "editorial",
+          "category": "operator_guidance_in_cta_field",
+          "groundTruthIds": [],
+          "sourceQuote": ""
+        }
+      ],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[5]",
+          "quote": "If you have ever hit an English-only checkout after browsing in Welsh, this update is for you.",
+          "reason": "A conditional reader scenario using the source's language gap, not a fabricated personal customer story.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "ctas",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[1]",
+          "quote": "share its name so it can be considered for the next translation pass.",
+          "reason": "Solicits suggestions for consideration, not a guarantee of translation delivery; consistent with the requested soft priorities discussion.",
+          "classification": "ADVICE"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "format": "platformHashtags",
+      "critical": false,
+      "issues": [],
+      "supportedCreativeExamples": [
+        {
+          "field": "items[0]",
+          "quote": "#WebAccessibility #DigitalInclusion",
+          "reason": "Relevant topics for explicitly limited accessibility checks, not claims of certification or complete site compliance.",
+          "classification": "SUPPORTED"
+        }
+      ],
+      "usability": {
+        "formatPresent": true,
+        "substantiveCopyPresent": true,
+        "verdict": "PASS"
+      },
+      "reviewedFields": [
+        "title",
+        "platform",
+        "body",
+        "items (every entry)",
+        "cta"
+      ]
+    }
+  ],
+  "packIssues": [
+    {
+      "brief": "H1",
+      "label": "A",
+      "critical": false,
+      "issues": [],
+      "reviewedFields": [
+        "title",
+        "summary"
+      ],
+      "title": "Alder Repair Circle, 6 Sep 2027 session results (measured counts, clear limits)",
+      "summary": "Share the 6 September 2027 assessment session item counts with transparent limits on what was and was not measured, using a no-CTA, matter-of-fact tone.",
+      "supportedCreativeExamples": [
+        {
+          "field": "title",
+          "quote": "Alder Repair Circle, 6 Sep 2027 session results (measured counts, clear limits)",
+          "reason": "The title/summary accurately frame a recorded session recap with limits; neither claims universal repair, measured impact, a future service or a reader action.",
+          "classification": "SUPPORTED"
+        },
+        {
+          "field": "summary",
+          "quote": "Share the 6 September 2027 assessment session item counts with transparent limits on what was and was not measured, using a no-CTA, matter-of-fact tone.",
+          "reason": "The title/summary accurately frame a recorded session recap with limits; neither claims universal repair, measured impact, a future service or a reader action.",
+          "classification": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "brief": "H1",
+      "label": "B",
+      "critical": false,
+      "issues": [],
+      "reviewedFields": [
+        "title",
+        "summary"
+      ],
+      "title": "Alder Repair Circle session results, transparent recap pack",
+      "summary": "A careful, matter-of-fact recap of Alder Repair Circle’s 6 September 2027 assessment session, including what was measured and what was not.",
+      "supportedCreativeExamples": [
+        {
+          "field": "title",
+          "quote": "Alder Repair Circle session results, transparent recap pack",
+          "reason": "The title/summary accurately frame a recorded session recap with limits; neither claims universal repair, measured impact, a future service or a reader action.",
+          "classification": "SUPPORTED"
+        },
+        {
+          "field": "summary",
+          "quote": "A careful, matter-of-fact recap of Alder Repair Circle’s 6 September 2027 assessment session, including what was measured and what was not.",
+          "reason": "The title/summary accurately frame a recorded session recap with limits; neither claims universal repair, measured impact, a future service or a reader action.",
+          "classification": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "A",
+      "critical": false,
+      "issues": [],
+      "reviewedFields": [
+        "title",
+        "summary"
+      ],
+      "title": "North Quay Scan Desk, remote photo collection assessment (rev 3)",
+      "summary": "Promote a paid 25-minute remote photo collection assessment on 19 Feb 2028, clearly separating consultation from digitisation work.",
+      "supportedCreativeExamples": [
+        {
+          "field": "title",
+          "quote": "North Quay Scan Desk, remote photo collection assessment (rev 3)",
+          "reason": "The title/summary identify the paid remote assessment, not digitisation production, and do not repeat the superseded offer or promise delivery.",
+          "classification": "SUPPORTED"
+        },
+        {
+          "field": "summary",
+          "quote": "Promote a paid 25-minute remote photo collection assessment on 19 Feb 2028, clearly separating consultation from digitisation work.",
+          "reason": "The title/summary identify the paid remote assessment, not digitisation production, and do not repeat the superseded offer or promise delivery.",
+          "classification": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "brief": "H2",
+      "label": "B",
+      "critical": false,
+      "issues": [],
+      "reviewedFields": [
+        "title",
+        "summary"
+      ],
+      "title": "North Quay Scan Desk, remote photo collection assessment (Revision 3) multi-platform pack",
+      "summary": "Promote a paid, time-boxed remote assessment that clarifies photo condition and digitisation questions, without implying scanning or delivery.",
+      "supportedCreativeExamples": [
+        {
+          "field": "title",
+          "quote": "North Quay Scan Desk, remote photo collection assessment (Revision 3) multi-platform pack",
+          "reason": "The title/summary identify the paid remote assessment, not digitisation production, and do not repeat the superseded offer or promise delivery.",
+          "classification": "SUPPORTED"
+        },
+        {
+          "field": "summary",
+          "quote": "Promote a paid, time-boxed remote assessment that clarifies photo condition and digitisation questions, without implying scanning or delivery.",
+          "reason": "The title/summary identify the paid remote assessment, not digitisation production, and do not repeat the superseded offer or promise delivery.",
+          "classification": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "A",
+      "critical": false,
+      "issues": [],
+      "reviewedFields": [
+        "title",
+        "summary"
+      ],
+      "title": "Bracken Route Atlas 2.6 release announcement, bilingual progress and accessibility clarity",
+      "summary": "Announce Bracken Route Atlas v2.6 with clear progress on Welsh translations and transparent accessibility status, and invite suggestions for what to translate next without overpromising.",
+      "supportedCreativeExamples": [
+        {
+          "field": "title",
+          "quote": "Bracken Route Atlas 2.6 release announcement, bilingual progress and accessibility clarity",
+          "reason": "The title/summary describe partial language progress and transparent accessibility context, not full bilingual coverage or certification.",
+          "classification": "SUPPORTED"
+        },
+        {
+          "field": "summary",
+          "quote": "Announce Bracken Route Atlas v2.6 with clear progress on Welsh translations and transparent accessibility status, and invite suggestions for what to translate next without overpromising.",
+          "reason": "The title/summary describe partial language progress and transparent accessibility context, not full bilingual coverage or certification.",
+          "classification": "SUPPORTED"
+        }
+      ]
+    },
+    {
+      "brief": "H3",
+      "label": "B",
+      "critical": false,
+      "issues": [],
+      "reviewedFields": [
+        "title",
+        "summary"
+      ],
+      "title": "Bracken Route Atlas 2.6 release announcement, bilingual progress and accessibility notes",
+      "summary": "Announce release 2.6 with clear, accurate bilingual coverage and transparent accessibility context, inviting future translation priorities.",
+      "supportedCreativeExamples": [
+        {
+          "field": "title",
+          "quote": "Bracken Route Atlas 2.6 release announcement, bilingual progress and accessibility notes",
+          "reason": "The title/summary describe partial language progress and transparent accessibility context, not full bilingual coverage or certification.",
+          "classification": "SUPPORTED"
+        },
+        {
+          "field": "summary",
+          "quote": "Announce release 2.6 with clear, accurate bilingual coverage and transparent accessibility context, inviting future translation priorities.",
+          "reason": "The title/summary describe partial language progress and transparent accessibility context, not full bilingual coverage or certification.",
+          "classification": "SUPPORTED"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalAssetRows": 84,
+    "criticalAssetRows": 13,
+    "noncriticalAssetRows": 71,
+    "criticalIssueCount": 13,
+    "criticalIssueCountsByCategory": {
+      "incorrect_outcome_frequency": 1,
+      "unsupported_outcome_frequency": 1,
+      "unsupported_contact_or_fulfillment_channel": 10,
+      "incomplete_repurpose_subassets": 1
+    },
+    "materialFactualOrOfferAssetRows": 12,
+    "usabilityFailureAssetRows": 1,
+    "editorialIssueCount": 6,
+    "missingFormatCount": 0,
+    "duplicateFormatCount": 0,
+    "criticalPackTitleOrSummaryIssueCount": 0,
+    "noCtaAudit": {
+      "brief": "H1",
+      "assetsInspected": 28,
+      "directNoCtaViolations": 0,
+      "rejectedSourceInstructionFollowed": false
+    },
+    "perPack": [
+      {
+        "brief": "H1",
+        "label": "A",
+        "assetRows": 14,
+        "requestedFormatsPresent": true,
+        "missingFormats": [],
+        "duplicateFormats": [],
+        "criticalAssetCount": 0,
+        "criticalFormats": [],
+        "criticalPackMetadataIssues": 0,
+        "editorialIssueCount": 0,
+        "verdict": "GO"
+      },
+      {
+        "brief": "H1",
+        "label": "B",
+        "assetRows": 14,
+        "requestedFormatsPresent": true,
+        "missingFormats": [],
+        "duplicateFormats": [],
+        "criticalAssetCount": 2,
+        "criticalFormats": [
+          "tiktok",
+          "hooks"
+        ],
+        "criticalPackMetadataIssues": 0,
+        "editorialIssueCount": 0,
+        "verdict": "NO-GO"
+      },
+      {
+        "brief": "H2",
+        "label": "A",
+        "assetRows": 14,
+        "requestedFormatsPresent": true,
+        "missingFormats": [],
+        "duplicateFormats": [],
+        "criticalAssetCount": 11,
+        "criticalFormats": [
+          "linkedin",
+          "instagram",
+          "tiktok",
+          "twitter",
+          "facebook",
+          "youtubeShorts",
+          "xThread",
+          "shortVideoScript",
+          "emailNewsletter",
+          "repurposePack",
+          "ctas"
+        ],
+        "criticalPackMetadataIssues": 0,
+        "editorialIssueCount": 1,
+        "verdict": "NO-GO"
+      },
+      {
+        "brief": "H2",
+        "label": "B",
+        "assetRows": 14,
+        "requestedFormatsPresent": true,
+        "missingFormats": [],
+        "duplicateFormats": [],
+        "criticalAssetCount": 0,
+        "criticalFormats": [],
+        "criticalPackMetadataIssues": 0,
+        "editorialIssueCount": 0,
+        "verdict": "GO"
+      },
+      {
+        "brief": "H3",
+        "label": "A",
+        "assetRows": 14,
+        "requestedFormatsPresent": true,
+        "missingFormats": [],
+        "duplicateFormats": [],
+        "criticalAssetCount": 0,
+        "criticalFormats": [],
+        "criticalPackMetadataIssues": 0,
+        "editorialIssueCount": 3,
+        "verdict": "GO"
+      },
+      {
+        "brief": "H3",
+        "label": "B",
+        "assetRows": 14,
+        "requestedFormatsPresent": true,
+        "missingFormats": [],
+        "duplicateFormats": [],
+        "criticalAssetCount": 0,
+        "criticalFormats": [],
+        "criticalPackMetadataIssues": 0,
+        "editorialIssueCount": 2,
+        "verdict": "GO"
+      }
+    ],
+    "criticalFindings": [
+      {
+        "brief": "H1",
+        "label": "B",
+        "formats": [
+          "tiktok",
+          "hooks"
+        ],
+        "finding": "Parts-needed is described as the most common outcome, despite nine repaired items versus six needing unavailable parts; no unrepaired-only denominator is stated."
+      },
+      {
+        "brief": "H2",
+        "label": "A",
+        "formats": [
+          "linkedin",
+          "instagram",
+          "tiktok",
+          "twitter",
+          "facebook",
+          "youtubeShorts",
+          "xThread",
+          "shortVideoScript",
+          "emailNewsletter",
+          "ctas"
+        ],
+        "finding": "Specific comment/reply/email contact channels or response promises are introduced despite the explicit no-invented-contact-channel constraint."
+      },
+      {
+        "brief": "H2",
+        "label": "A",
+        "formats": [
+          "repurposePack"
+        ],
+        "finding": "Email body and central video beats are instructions to write content rather than substantive finished copy."
+      }
+    ],
+    "nonFailuresExplicitlyChecked": [
+      "No use of the rejected H1 all-repaired or waste-savings instructions as facts or operative CTAs.",
+      "No H1 invented repair guide, announced booking service or future session.",
+      "No H2 superseded free/40-minute/date/time offer asserted as current.",
+      "No H2 digitisation completion-time, same-day delivery, included scanning/restoration/valuation/files, invented discount or scarcity claim.",
+      "No H3 all-site bilingual, full-site keyboard-verification, independent-certification, measured traffic/bookings/satisfaction or translation-download claim.",
+      "Generic H2 preparation advice, broad H3 improvement intent, appropriate soft CTAs and topical tags were not penalized as fabricated results."
+    ],
+    "freeze": {
+      "state": "Judgments frozen before any variant reveal or separate false-positive analysis.",
+      "hashDelivery": "SHA-256 of the saved JSON is supplied separately, not embedded self-referentially.",
+      "postRevealPolicy": "Do not overwrite this frozen audit. Any later interpretation or adjudication belongs in a separately identified artifact."
+    }
+  }
+}

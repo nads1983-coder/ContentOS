@@ -1,0 +1,211 @@
+{
+  "id": "offline-synthetic-pack",
+  "createdAt": "2026-10-18T00:00:00.000Z",
+  "source": "Folio Finch is a fictional studio making editorial resources for independent museum shops. Its new event, Shelf Notes, is a 35-minute live online demonstration led by Mira, the studio's founder. The demonstration compares a stock record with a display note, using a fictional postcard range as the example. A stock record describes what is held; a display note describes how an item is presented. The session is a demonstration, not an inventory audit or a shop-specific consultation. The 35 minutes describes the event's duration only: do not promise that a shop's records, displays, sales or confidence will improve within that time. No price, date, booking link, attendee limit, recording, downloadable resource, qualification, testimonial or sales result has been announced. Do not invent those details or a detailed curriculum. Saved brand notes describe an older 60-minute consulting offer; that is not this event and must not be promoted here. Write useful, lively awareness content about the distinction between recording stock and describing a display. Hypothetical illustrations may be clearly labelled as examples, not announced event activities or customer outcomes. No CTA anywhere: no invitation to book, click, follow, save, share, comment, message, subscribe or answer an engagement question. Leave CTA suggestion items empty with a brief neutral explanation. Avoid publisher-facing instructions in finished copy.",
+  "title": "Folio Finch awareness content: stock records vs display notes",
+  "summary": "Platform-ready awareness content that clarifies the practical difference between a stock record and a display note, using Folio Finch’s fictional postcard example and referencing Shelf Notes as a 35-minute live online demonstration without adding CTAs or extra event details.",
+  "tone": "conversational",
+  "selectedTypes": [
+    "linkedin",
+    "instagram",
+    "tiktok",
+    "twitter",
+    "facebook",
+    "youtubeShorts",
+    "xThread",
+    "shortVideoScript",
+    "carousel",
+    "emailNewsletter",
+    "repurposePack",
+    "hooks",
+    "ctas",
+    "platformHashtags"
+  ],
+  "sharpness": "balanced",
+  "ctaMode": "none",
+  "presetTopic": "none",
+  "sections": [
+    {
+      "id": "linkedin-stock-vs-display-notes",
+      "type": "linkedin",
+      "title": "LinkedIn post: Stock record vs display note",
+      "platform": "LinkedIn",
+      "body": "If your stock record is doing the job of a display note, something will always feel slightly off.\n\nA stock record answers: what is held.\nA display note answers: how the item is presented.\n\nThey are related, but they are not interchangeable.\n\nA stock record describes what is held.\nA stock record describes what is held.\n\nA display note describes how an item is presented.\nA display note describes how an item is presented.\n\nHere is a clean way to separate them using a fictional postcard range as an example:\n\nStock record (what is held)\n- Item name and variant\n- Supplier or source\n- SKU or internal code\n- Unit cost and retail price\n- Quantity on hand and reorder triggers\n\nDisplay note (how it is presented)\n- Where it lives on the shop floor\n- Which titles it is grouped with\n- The short line on the label, if you use one\n- Display style notes, for example face-out vs stacked\n\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira, comparing a stock record with a display note using that fictional postcard range. It is a demonstration, not an inventory audit or a shop-specific consultation.\n\nKeeping the two documents distinct helps clarify the difference between recording stock and describing a display.",
+      "items": [
+        "#MuseumRetail",
+        "#RetailOperations",
+        "#Merchandising",
+        "#CollectionsRetail"
+      ],
+      "cta": ""
+    },
+    {
+      "id": "instagram-captions-stock-vs-display-notes",
+      "type": "instagram",
+      "title": "Instagram captions: Stock record vs display note (3 options)",
+      "platform": "Instagram",
+      "body": "Caption 1\nA stock record is not a display note.\n\nA stock record describes what is held.\nA display note is for presentation: how the item shows up on the floor, with what, and where.\n\nExample (fictional): a postcard range.\nStock record tracks the variants and quantities.\nDisplay note captures the grouping and the label line that makes the set feel intentional.\n\nShelf Notes from Folio Finch is a 35-minute live online demonstration led by Mira that compares the two using a fictional postcard range. It is a demonstration, not an audit or a consultation.\n\nCaption 2\nWhen the team asks, “Where does this belong?”, your stock record is not the best place to answer.\n\nStock records describe what is held.\nDisplay notes describe how it is presented.\n\nKeeping them separate reduces friction. One document describes what is held. The other describes how an item is presented. The other stays practical for the floor and signage.\n\nShelf Notes is a 35-minute live online demonstration from Folio Finch, led by Mira, showing the difference with a fictional postcard range.\n\nCaption 3\nTwo documents. Two jobs.\n\nStock record = accuracy over time.\nDisplay note = consistency on the floor.\n\nIf a display needs a tiny rule, it belongs in a display note. If it needs to be counted, it belongs in the stock record.\n\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira, comparing a stock record with a display note using a fictional postcard range.",
+      "items": [
+        "Hashtag set option A: #museumshop #museumretail #retailops #merchandising #visualmerchandising #shopfloor #culturalretail",
+        "Hashtag set option B: #independentretail #museumstore #retailmanagement #inventorymanagement #merchandisingtips #exhibitionshop #retailteam",
+        "Hashtag set option C: #museumgiftshop #retailmerchandising #productpresentation #retailprocess #storestandards #shopoperations #museumcommunity"
+      ],
+      "cta": ""
+    },
+    {
+      "id": "tiktok-captions-stock-vs-display-notes",
+      "type": "tiktok",
+      "title": "TikTok captions: Stock record vs display note (3 options)",
+      "platform": "TikTok",
+      "body": "Caption 1\nYour stock record says what you have. Your display note says how it shows up on the floor. Mixing them makes both weaker.\n\nCaption 2\nQuick distinction for museum shops: stock record = held. display note = presented. Different tools, different decisions.\n\nCaption 3\nA postcard range example: stock record tracks variants and quantities. Display note captures grouping, placement, and the label line.",
+      "items": [
+        "#museumshop #retailops #merchandising #inventorymanagement #visualmerchandising"
+      ],
+      "cta": ""
+    },
+    {
+      "id": "twitter-post-stock-vs-display-notes",
+      "type": "twitter",
+      "title": "X post: Stock record vs display note",
+      "platform": "X/Twitter",
+      "body": "A stock record describes what is held. A display note describes how an item is presented. Different jobs, different details. The distinction is between what is held and how it is presented.",
+      "items": [],
+      "cta": ""
+    },
+    {
+      "id": "facebook-post-stock-vs-display-notes",
+      "type": "facebook",
+      "title": "Facebook post: Stock record vs display note",
+      "platform": "Facebook",
+      "body": "A stock record and a display note describe different aspects of an item.\n\nA stock record describes what is held.\n\nA display note is for how the item is presented: where it lives on the shop floor, how it is grouped, what the label line says, and any small presentation rules the team needs for consistency.\n\nUsing a fictional postcard range as an example, Folio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira that compares a stock record with a display note. It is a demonstration, not an inventory audit or a shop-specific consultation.\n\nKeeping those two documents distinct keeps the record clean and the display clearer.",
+      "items": [],
+      "cta": ""
+    },
+    {
+      "id": "youtube-shorts-caption-shelf-notes",
+      "type": "youtubeShorts",
+      "title": "YouTube Shorts caption: Stock record vs display note",
+      "platform": "YouTube Shorts",
+      "body": "Stock Record vs Display Note (Museum Shop Merchandising Basics)\n\nDescription: A quick distinction for independent museum shops and cultural retail teams. Stock records describe what is held. Display notes describe how an item is presented. Example shown with a fictional postcard range, aligned with Folio Finch’s Shelf Notes demonstration.\n\nTags: museum shop, museum retail, cultural retail, merchandising, visual merchandising, retail operations, inventory basics, stock record, display notes, shop floor standards, retail process, postcard display",
+      "items": [],
+      "cta": ""
+    },
+    {
+      "id": "x-thread-stock-vs-display-notes",
+      "type": "xThread",
+      "title": "X thread: Keep stock records and display notes in separate lanes",
+      "platform": "X/Twitter",
+      "body": "A concise thread on why stock records and display notes are different tools, and what each should contain.",
+      "items": [
+        "1) A stock record describes what is held; a display note describes how an item is presented.",
+        "2) A stock record describes what is held. It prioritizes accuracy, traceability, and continuity over time.",
+        "3) A display note describes how an item is presented. It prioritizes consistency on the shop floor across shifts and seasons.",
+        "4) Example (fictional): a postcard range. Stock record tracks the variants, codes, quantities, cost, and retail price.",
+        "5) The display note captures where the postcards live, what they are grouped with, the label line, and any presentation rules (face-out vs stacked).",
+        "6) Takeaway: keep counting and ordering details in the stock record, keep placement and signage decisions in the display note. Clear lanes make cleaner updates."
+      ],
+      "cta": ""
+    },
+    {
+      "id": "short-video-script-stock-vs-display-notes",
+      "type": "shortVideoScript",
+      "title": "Short-form video script: Stock record vs display note",
+      "platform": "Video",
+      "body": "Hook (spoken)\n“Your stock record is not a display note, and treating it like one creates mess fast.”\n\nOn-screen text\nStock record ≠ Display note\n\nBeat 1 (spoken)\n“A stock record answers one question: what is held.”\n\nOn-screen text\nStock record = what is held\n\nBeat 2 (spoken)\n“It is where quantities, variants, codes, cost, retail price, and replenishment info live.”\n\nOn-screen text\nQty • variants • codes • cost • price\n\nBeat 3 (spoken)\n“A display note answers a different question: how the item is presented.”\n\nOn-screen text\nDisplay note = how it is presented\n\nBeat 4 (spoken)\n“It captures what the team needs on the floor: where it goes, what it is grouped with, what the label line says, and any setup rules.”\n\nOn-screen text\nPlacement • grouping • label line • setup notes\n\nBeat 5 (spoken, optional example)\n“Example: a fictional postcard range. The stock record tracks each design and quantity. The display note says ‘all postcards together, face-out on the spinner, label reads: Local Views’.”\n\nOn-screen text\nExample: postcard range\n\nClose (spoken)\n“Two documents, two jobs. Keeping them separate keeps the record clean and the display consistent.”\n\nOn-screen text\nClean records. Consistent displays.",
+      "items": [],
+      "cta": ""
+    },
+    {
+      "id": "carousel-outline-stock-vs-display-notes",
+      "type": "carousel",
+      "title": "Carousel: Stock record vs display note (museum shop basics)",
+      "platform": "Carousel",
+      "body": "Carousel outline focused on the practical distinction between recording stock and describing a display, with a fictional postcard example.",
+      "items": [
+        "Slide 1: Stock record vs display note, same items, different jobs. Support: One tracks what you hold. One captures how you present it.",
+        "Slide 2: Stock record = what is held. Support: Built for counting, replenishment, and reporting accuracy over time.",
+        "Slide 3: What belongs in a stock record. Support: Item name and variant, SKU/internal code, supplier/source, unit cost, retail price, quantity on hand.",
+        "Slide 4: Display note = how it is presented. Support: Built for the shop floor, signage, and consistent setup across shifts.",
+        "Slide 5: What belongs in a display note. Support: Location on the floor, grouping rules, label line, handling notes, display style (face-out, stacked, pegged).",
+        "Slide 6: Fictional example: postcard range. Support: Stock record tracks each design and quantity. Display note captures where it sits and how it is grouped.",
+        "Slide 7: Different purposes. Support: This comparison concerns what is held and how it is presented.",
+        "Slide 8: Simple rule of thumb. Support: If it needs counting, it belongs in the stock record. If it needs setting up, it belongs in the display note.",
+        "Slide 9: Shelf Notes (Folio Finch). Support: A 35-minute live online demonstration led by Mira comparing a stock record with a display note using a fictional postcard range. Demonstration only, not an audit or consultation."
+      ],
+      "cta": ""
+    },
+    {
+      "id": "email-newsletter-stock-vs-display-notes",
+      "type": "emailNewsletter",
+      "title": "Email draft: Stock record vs display note",
+      "platform": "Email",
+      "body": "Hi,\n\nThis comparison starts with what is held and how it is presented.\n\nA stock record describes what is held.\nIt is designed for accuracy over time, so it can support receiving, counting, replenishment, and reporting.\n\nA display note describes how an item is presented.\nIt is designed for consistency on the shop floor, so the team can set up, label, and maintain a display the same way across shifts.\n\nA simple way to keep them separate:\n\nStock record (what is held)\n- Item name and variant\n- Supplier or source\n- SKU or internal code\n- Unit cost and retail price\n- Quantity on hand\n\nDisplay note (how it is presented)\n- Floor location\n- Grouping rules\n- Label line, if you use one\n- Presentation notes, for example face-out vs stacked\n\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira, comparing a stock record with a display note using a fictional postcard range as the example. It is a demonstration, not an inventory audit or a shop-specific consultation.\n\nKeeping each document in its lane keeps the record clean and the display easier to run.",
+      "items": [
+        "Subject option 1: Stock record vs display note (a useful distinction)",
+        "Subject option 2: Two documents museum shops shouldn’t merge",
+        "Subject option 3: What is held vs how it’s presented"
+      ],
+      "cta": ""
+    },
+    {
+      "id": "repurpose-pack-stock-vs-display-notes",
+      "type": "repurposePack",
+      "title": "Repurpose Pack: Stock record vs display note",
+      "platform": "General",
+      "body": "Seven ready-to-edit assets repurposed from the same core idea: stock records describe what is held, display notes describe how items are presented, with Shelf Notes referenced as a 35-minute live online demonstration led by Mira using a fictional postcard range.",
+      "items": [
+        "LinkedIn: If your stock record is doing the job of a display note, something will always feel slightly off.\n\nA stock record answers: what is held.\nA display note answers: how the item is presented.\n\nA stock record is built for accuracy and continuity (receiving, counting, replenishment, reporting).\nA display note is built for the floor (placement, grouping, label language, setup notes).\n\nExample (fictional): a postcard range.\nStock record tracks variants and quantities.\nDisplay note captures where it lives, how it is grouped, and the short label line.\n\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira comparing a stock record with a display note using a fictional postcard range. It is a demonstration, not an audit or consultation.\n\nClear lanes keep the record clean and the display consistent.",
+        "Instagram: A stock record is not a display note.\n\nStock record = what you hold, designed for accuracy over time.\nDisplay note = how you present it, designed for consistency on the shop floor.\n\nExample (fictional): a postcard range.\nStock record tracks each design, code, and quantity.\nDisplay note captures grouping, placement, and the label line.\n\nShelf Notes from Folio Finch is a 35-minute live online demonstration led by Mira comparing the two. Demonstration only, not an audit or a shop-specific consultation.",
+        "TikTok: Stock record says what you have. Display note says how it shows up on the floor. Example: postcards. Stock record tracks variants and qty, display note captures placement, grouping, and label line.",
+        "X/Twitter: Stock record = what is held. Display note = how it is presented. Different jobs, different details. One describes what is held; the other describes how it is presented.",
+        "Carousel: Slide 1: Stock record vs display note, same items, different jobs.\nSlide 2: Stock record = what is held (counting, ordering, reporting).\nSlide 3: Stock record includes: variants, codes, cost, retail, qty.\nSlide 4: Display note = how it is presented (floor consistency).\nSlide 5: Display note includes: placement, grouping, label line, setup notes.\nSlide 6: Fictional example: postcard range, stock tracks designs, display note tracks presentation.\nSlide 7: Rule of thumb: counting info in stock record, setup info in display note.\nSlide 8: Shelf Notes is a 35-minute live online demonstration led by Mira using a fictional postcard range, not an audit or consultation.",
+        "Video: Hook: “Your stock record is not a display note.”\nBeat 1: Stock record = what is held (variants, codes, cost, price, qty).\nBeat 2: Display note = how it is presented (placement, grouping, label line, setup rules).\nBeat 3 (example): fictional postcard range, stock tracks each design and quantity, display note captures how it is merchandised.\nClose: “Two documents, two jobs. Keep them separate for clean records and consistent displays.”",
+        "Email: Hi,\n\nA stock record describes what is held. A display note describes how an item is presented.\n\nStock records are built for accuracy over time: receiving, counting, replenishment, reporting.\nDisplay notes are built for the floor: placement, grouping, label language, and small setup rules.\n\nExample (fictional): a postcard range.\nStock record tracks variants and quantities.\nDisplay note captures where it lives and how it is grouped.\n\nFolio Finch’s Shelf Notes is a 35-minute live online demonstration led by Mira comparing a stock record with a display note using a fictional postcard range. It is a demonstration, not an inventory audit or a shop-specific consultation.\n\nKeeping each document in its lane keeps the record clean and the display consistent."
+      ],
+      "cta": ""
+    },
+    {
+      "id": "hooks-stock-vs-display-notes",
+      "type": "hooks",
+      "title": "Hooks: Stock records vs display notes",
+      "platform": "General",
+      "body": "Eight hook options grounded in the distinction between recording stock and describing a display, written for independent museum-shop teams.",
+      "items": [
+        "Your stock record is not a display note, and mixing them makes both harder to maintain.",
+        "A stock record describes what is held; a display note describes how an item is presented.",
+        "If a note needs to help someone count, it belongs in one place. If it needs to help someone set up a display, it belongs in another.",
+        "Stock records are built for accuracy over time. Display notes are built for consistency on the floor.",
+        "A display note describes how an item is presented. That is what a display note is for.",
+        "A postcard range is the simplest place to see the difference between “held” and “presented.”",
+        "When “where does this go?” lives inside your stock record, day-to-day operations get noisy fast.",
+        "One tracks quantities and codes. One tracks grouping and label language. Same product, different lens."
+      ],
+      "cta": ""
+    },
+    {
+      "id": "ctas-no-cta-mode",
+      "type": "ctas",
+      "title": "CTAs: No CTA mode",
+      "platform": "General",
+      "body": "No CTA requested. In No CTA mode, this set is intentionally left blank to avoid invitations to click, comment, message, sign up, or take action.",
+      "items": [],
+      "cta": ""
+    },
+    {
+      "id": "platform-hashtags-stock-vs-display-notes",
+      "type": "platformHashtags",
+      "title": "Platform hashtag and keyword sets",
+      "platform": "General",
+      "body": "Platform-appropriate hashtag and keyword sets aligned to independent museum retail and practical shop operations.",
+      "items": [
+        "LinkedIn: #MuseumRetail #RetailOperations #Merchandising #InventoryManagement",
+        "Instagram: #museumshop #museumretail #culturalretail #merchandising #visualmerchandising #inventorymanagement #independentretail",
+        "TikTok: #museumshop #retailops #merchandising #inventorymanagement #visualmerchandising",
+        "X/Twitter: No tags recommended",
+        "Facebook: No tags recommended",
+        "YouTube Shorts: museum shop, museum retail, cultural retail, merchandising, visual merchandising, retail operations, inventory basics, stock record, display notes, shop floor standards, retail process, postcard display"
+      ],
+      "cta": ""
+    }
+  ]
+}

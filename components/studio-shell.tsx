@@ -29,6 +29,7 @@ import {
   Trash2,
   Type,
   Underline,
+  Undo2,
   Wand2,
   X
 } from "lucide-react";
@@ -38,6 +39,12 @@ import { clsx } from "clsx";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
 import { LogoutButton } from "@/components/logout-button";
+import { StudioComposer } from "@/components/studio-composer";
+import { createWorkspaceWriter } from "@/lib/workspace-sync";
+import type { WorkspaceSnapshot, WorkspacePreferences } from "@/lib/workspace-contract";
+import type { GenerationInput } from "@/lib/generation-contract";
+import { continueGeneration, GenerationClientError, readGenerationAttempt, storeGenerationAttempt } from "@/lib/generation-client";
+import type { GenerationAttempt } from "@/lib/generation-client";
 import {
   buildGenerationCopyText,
   buildSectionCopyText,
@@ -83,12 +90,15 @@ import {
   StudioStore,
   ToneId
 } from "@/types/content";
-import type { UsageSummary } from "@/types/saas";
+import type { UsageSummary, BrandProfile } from "@/types/saas";
 
 const starterText =
   "We just launched a lightweight planning service for busy founders who need consistent content but do not have time to turn every idea into platform-ready posts.";
 
 const LAST_USED_TONE_KEY = "contentos:last-used-tone";
+function generationDeviceStorage() {
+  try { return window.localStorage; } catch { return undefined; }
+}
 
 const sampleCreatedAt = "";
 
@@ -250,28 +260,6 @@ function isPaidContentType(id: ContentTypeId) {
 
 function buildGenerationText(result: GenerationResult) {
   return buildGenerationCopyText(result);
-}
-
-function refineText(text: string, action: string) {
-  const trimmed = text.trim();
-
-  if (action === "shorten") {
-    return trimmed
-      .split(/\n+/)
-      .map((line) => line.split(" ").slice(0, 22).join(" "))
-      .join("\n");
-  }
-
-  if (action === "improve hook") {
-    const firstLine = trimmed.split("\n")[0] ?? "";
-    return `Hook option:\nWhat if ${firstLine.charAt(0).toLowerCase()}${firstLine.slice(1)}?\n\n${trimmed}`;
-  }
-
-  if (action === "improve CTA") {
-    return `${trimmed}\n\nCTA options:\n- Save this for your next content planning session.\n- Want the full workflow? Start with one idea and build the pack.\n- Which platform would you turn this into first?`;
-  }
-
-  return `${action} version:\n\n${trimmed}`;
 }
 
 function imageFilename(title: string) {
@@ -479,11 +467,15 @@ export function StudioShell({
   embedded = false,
   initialPlan = "free",
   authenticated = false,
+  accountId,
+  textGenerationEnabled = true,
   initialUsage
 }: {
   embedded?: boolean;
   initialPlan?: PlanId;
   authenticated?: boolean;
+  accountId?: string;
+  textGenerationEnabled?: boolean;
   initialUsage?: UsageSummary;
 }) {
   const [source, setSource] = useState(cleanPlainText(starterText));
@@ -492,6 +484,7 @@ export function StudioShell({
   const [offer, setOffer] = useState("");
   const [writingStyle, setWritingStyle] = useState("");
   const [contentGoal, setContentGoal] = useState("");
+  const [length, setLength] = useState<"short" | "standard" | "detailed">("standard");
   const [tone, setTone] = useState<ToneId>("professional");
   const [lastUsedTone, setLastUsedTone] = useState<ToneId | null>(null);
   const [sharpness, setSharpness] = useState<SharpnessId>("balanced");
@@ -499,7 +492,20 @@ export function StudioShell({
   const [presetTopic, setPresetTopic] = useState<PresetTopicId>("business");
   const [selectedTypes, setSelectedTypes] = useState<ContentTypeId[]>(defaultSelectedTypes);
   const [activeFilter, setActiveFilter] = useState<FilterId>("all");
-  const [plan, setPlan] = useState<PlanId>(initialPlan);
+  const plan = initialPlan;
+  const [brandProfiles, setBrandProfiles] = useState<BrandProfile[]>([]);
+  const [saveStatus, setSaveStatus] = useState("");
+  const [historyWarning, setHistoryWarning] = useState("");
+  const [undoResults, setUndoResults] = useState<GenerationResult[]>([]);
+  const requestAttempt = useRef<GenerationAttempt | null>(null);
+  const imageRequestAttempt = useRef<{ fingerprint: string; id: string } | null>(null);
+  const imageInFlight = useRef(false);
+  const retryIntent = useRef<{ source: string; refinement?: { section: GeneratedSection; action: string } } | null>(null);
+  const workspaceWriter = useRef<ReturnType<typeof createWorkspaceWriter> | null>(null);
+  const activeAccount = useRef(accountId);
+  const lastWorkspaceState = useRef("");
+  const needsWorkspaceBaseline = useRef(true);
+  const [workspaceReady, setWorkspaceReady] = useState(false);
   const [store, setStore] = useState<StudioStore>({
     version: 1,
     recent: [],
@@ -511,6 +517,9 @@ export function StudioShell({
   const [anonymousUsed, setAnonymousUsed] = useState(0);
   const [result, setResult] = useState<GenerationResult>(sampleResult);
   const [error, setError] = useState("");
+  const [canStartNewAttempt, setCanStartNewAttempt] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState("");
+  const [canResumeGeneration, setCanResumeGeneration] = useState(false);
   const [copiedId, setCopiedId] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -530,11 +539,35 @@ export function StudioShell({
   const userInteractedDuringGenerationRef = useRef(false);
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      const nextStore = readStore();
-      const storedTone = window.localStorage.getItem(LAST_USED_TONE_KEY) as ToneId | null;
+    activeAccount.current = accountId;
+    let canceled = false;
+    const timeout = window.setTimeout(async () => {
+      setHasMounted(false);
+      setWorkspaceReady(false);
+      lastWorkspaceState.current = "";
+      needsWorkspaceBaseline.current = true;
+      requestAttempt.current = accountId ? readGenerationAttempt(generationDeviceStorage(), accountId) : null;
+      setCanResumeGeneration(!!requestAttempt.current);
+      setGenerationProgress(requestAttempt.current ? "An unfinished attempt is saved. Your existing draft is unchanged." : "");
+      setIsPending(false);
+      isGeneratingRef.current = false;
+      imageRequestAttempt.current = null;
+      setGeneratedImages({});
+      setImageSection(null);
+      setImageError("");
+      retryIntent.current = null;
+      const nextStore = readStore(accountId);
+      let storedTone: ToneId | null = null;
+      try { storedTone = window.localStorage.getItem(`${LAST_USED_TONE_KEY}:${accountId ?? "guest"}`) as ToneId | null; } catch { /* Storage is optional. */ }
 
       setStore(nextStore);
+      const deviceDraft = nextStore.drafts.find(d => d.id === "current-draft");
+      if (deviceDraft) {
+        setSource(deviceDraft.source); setBrandName(deviceDraft.brandName ?? "");
+        setAudience(deviceDraft.audience ?? ""); setOffer(deviceDraft.offer ?? "");
+        setWritingStyle(deviceDraft.writingStyle ?? ""); setContentGoal(deviceDraft.contentGoal ?? "");
+        setTone(deviceDraft.tone); setSelectedTypes(deviceDraft.selectedTypes);
+      }
       if (storedTone && tones.some((item) => item.id === storedTone)) {
         setTone(storedTone);
         setLastUsedTone(storedTone);
@@ -542,19 +575,93 @@ export function StudioShell({
       if (!authenticated) {
         setAnonymousUsed(monthlyStoredGenerationCount(nextStore));
       }
+      if (authenticated && accountId) {
+        try {
+          const response = await fetch("/api/workspace", { cache: "no-store", headers: { "X-ContentOS-Account": accountId }, signal: AbortSignal.timeout(15000) });
+          if (!response.ok) throw new Error("Account workspace could not load. Device copy remains available.");
+          const snapshot = await response.json() as WorkspaceSnapshot;
+          if (canceled) return;
+          // Keep a recoverable device copy before accepting the server snapshot.
+          try {
+            const key = `contentos:recovery:${accountId}`;
+            const raw = window.localStorage.getItem(key);
+            const previous = raw ? JSON.parse(raw) : [];
+            const copies: StudioStore[] = Array.isArray(previous) ? previous : [previous];
+            const serialized = JSON.stringify(nextStore);
+            if ((nextStore.recent.length || nextStore.saved.length || nextStore.drafts.length) && !copies.some(copy => JSON.stringify(copy) === serialized)) {
+              window.localStorage.setItem(key, JSON.stringify([nextStore, ...copies].slice(0, 3)));
+            }
+          } catch { /* Best effort recovery copy. */ }
+          setStore(snapshot.store);
+          setHistoryWarning(snapshot.unavailableHistoryCount ? `${snapshot.unavailableHistoryCount} older history item(s) cannot be displayed. Original records are retained in your account.` : "");
+          setBrandProfiles(snapshot.brandProfiles);
+          const p = snapshot.preferences;
+          setBrandName(p.brandName); setAudience(p.audience); setOffer(p.offer);
+          setWritingStyle(p.writingStyle); setContentGoal(p.contentGoal);
+          if (p.tone) setTone(p.tone);
+          if (p.sharpness) setSharpness(p.sharpness);
+          if (p.ctaMode) setCtaMode(p.ctaMode);
+          if (p.presetTopic) setPresetTopic(p.presetTopic);
+          if (p.selectedTypes?.length) setSelectedTypes(p.selectedTypes);
+          const autosave = snapshot.store.drafts.find(d => d.id === "current-draft");
+          if (autosave) setSource(autosave.source);
+          const selectedId = new URL(window.location.href).searchParams.get("generation");
+          const selected = snapshot.store.recent.find(item => item.id === selectedId) ?? snapshot.store.recent[0];
+          if (selected) setResult(selected);
+          workspaceWriter.current = createWorkspaceWriter(snapshot.revision, async input => {
+            const saved = await fetch("/api/workspace", { method: "PUT", headers: { "Content-Type": "application/json", "X-ContentOS-Account": accountId }, body: JSON.stringify(input) });
+            if (saved.status === 409) {
+              const conflict = await saved.json();
+              throw new Error(conflict.code === "account_changed" ? "Your signed-in account changed. Download this draft before reloading." : "Newer edits exist in another tab. Download your changes before reloading.");
+            }
+            if (!saved.ok) throw new Error("Account save failed. Your device copy is retained; download it before reloading.");
+            return await saved.json() as WorkspaceSnapshot;
+          }, message => { if (!canceled) setSaveStatus(message); });
+          setWorkspaceReady(true);
+        } catch (err) {
+          if (!canceled) setSaveStatus(err instanceof Error ? err.message : "Account workspace unavailable.");
+        }
+      } else {
+        const autosave = nextStore.drafts.find(d => d.id === "current-draft");
+        if (autosave) { setSource(autosave.source); setBrandName(autosave.brandName ?? ""); setAudience(autosave.audience ?? ""); setOffer(autosave.offer ?? ""); setWritingStyle(autosave.writingStyle ?? ""); setContentGoal(autosave.contentGoal ?? ""); }
+      }
+      if (canceled) return;
       setHasMounted(true);
     }, 0);
 
-    return () => window.clearTimeout(timeout);
-  }, [authenticated]);
+    return () => { canceled = true; workspaceWriter.current?.dispose(); workspaceWriter.current = null; window.clearTimeout(timeout); };
+  }, [authenticated, accountId]);
 
   useEffect(() => {
     if (!hasMounted) {
       return;
     }
 
-    writeStore(store);
-  }, [hasMounted, store]);
+    writeStore(store, accountId);
+  }, [hasMounted, store, accountId]);
+
+  useEffect(() => {
+    if (!hasMounted) return;
+    const preferences: WorkspacePreferences = { brandName, audience, offer, writingStyle, contentGoal, tone, sharpness, ctaMode, presetTopic, selectedTypes };
+    const draft: Draft = { ...preferences, id: "current-draft", title: source.trim().slice(0, 54) || "Current draft", source, tone, selectedTypes, updatedAt: new Date().toISOString() };
+    const nextStore = upsertDraft(store, draft);
+    const localSaved = writeStore(nextStore, accountId);
+    const stateKey = JSON.stringify({ source, preferences, store });
+    // Hydration is a read, not an edit. A passive second device must not advance
+    // the server revision or make an actively editing device stale.
+    if (needsWorkspaceBaseline.current) {
+      needsWorkspaceBaseline.current = false;
+      lastWorkspaceState.current = stateKey;
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      if (stateKey === lastWorkspaceState.current) return;
+      lastWorkspaceState.current = stateKey;
+      if (workspaceReady && workspaceWriter.current) void workspaceWriter.current.enqueue({ store: nextStore, preferences });
+      else if (!authenticated) setSaveStatus(localSaved ? "Draft saved on this device" : "Draft not saved. Download a copy of your content.");
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, [hasMounted, accountId, authenticated, workspaceReady, source, brandName, audience, offer, writingStyle, contentGoal, tone, sharpness, ctaMode, presetTopic, selectedTypes, store]);
 
   useEffect(() => {
     isGeneratingRef.current = isPending;
@@ -631,6 +738,8 @@ export function StudioShell({
   const isPro = plan !== "free";
   const isProStudio = plan === "pro_studio";
   const canGenerate =
+    textGenerationEnabled &&
+    hasMounted &&
     source.trim().length > 7 &&
     selectedTypes.length > 0 &&
     !isPending &&
@@ -639,19 +748,29 @@ export function StudioShell({
 
   function persistStore(nextStore: StudioStore) {
     setStore(nextStore);
-    writeStore(nextStore);
+    setSaveStatus(writeStore(nextStore, accountId) ? "Saved on this device" : "Not saved on this device. Download a copy.");
   }
 
-  async function generateContent(nextSource = source) {
+  async function generateContent(nextSource = source, refinement?: { section: GeneratedSection; action: string }, resume = false) {
+    if (!textGenerationEnabled) {
+      setError("AI text generation is temporarily unavailable. Your saved content and drafts are unchanged.");
+      return;
+    }
+    if (!hasMounted || isGeneratingRef.current) return;
+    if (document.querySelector('[data-content-editing="true"]')) {
+      setError("Apply or cancel your manual edits before generating another version.");
+      return;
+    }
     setError("");
+    setCanStartNewAttempt(false);
     const cleanedSource = cleanPlainText(nextSource);
 
-    if (!isPro && hasPaidSelection) {
+    if (!resume && !isPro && hasPaidSelection) {
       setError("Upgrade to Pro to unlock repurposing, formatter presets, CTAs, carousels, video scripts, email drafts, and saved history.");
       return;
     }
 
-    if (usage.remaining <= 0) {
+    if (!resume && usage.remaining <= 0) {
       setError(
         isPro
           ? "You have used this month's generation allowance."
@@ -663,9 +782,11 @@ export function StudioShell({
     isGeneratingRef.current = true;
     userInteractedDuringGenerationRef.current = false;
     setIsPending(true);
+    setGenerationProgress("Checking saved progress...");
+    setCanResumeGeneration(false);
 
-    const payload: GenerateRequest = {
-      source: cleanedSource,
+    const payload: GenerationInput = resume && requestAttempt.current ? requestAttempt.current.payload : {
+      source: refinement ? result.source : cleanedSource,
       brandName,
       audience,
       offer,
@@ -675,47 +796,68 @@ export function StudioShell({
       sharpness,
       ctaMode,
       presetTopic,
-      selectedTypes
+      selectedTypes: refinement ? [refinement.section.type] : selectedTypes,
+      length,
+      ...(refinement ? { refinement: { action: refinement.action as NonNullable<GenerationInput["refinement"]>["action"], section: refinement.section } } : {})
     };
+    const fingerprint = JSON.stringify(payload);
+    retryIntent.current = { source: nextSource, refinement };
+    if (requestAttempt.current?.fingerprint !== fingerprint) requestAttempt.current = { fingerprint, id: crypto.randomUUID(), payload, createdAt: Date.now() };
+    const attempt = requestAttempt.current;
+    const effectiveRefinement = resume && payload.refinement ? payload.refinement : refinement;
+    if (accountId) storeGenerationAttempt(generationDeviceStorage(), accountId, attempt);
 
     try {
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
+      const data = await continueGeneration(attempt, accountId ?? "", {
+        isCurrent: () => activeAccount.current === accountId && requestAttempt.current === attempt,
+        progress: setGenerationProgress,
+        checkpoint: saved => { if (accountId) storeGenerationAttempt(generationDeviceStorage(), accountId, saved); }
       });
-
-      const data = (await response.json()) as GenerationResult | { error?: string };
-
-      if (!response.ok) {
-        const message = "error" in data ? data.error : undefined;
-        throw new Error(message ?? "Generation failed.");
-      }
-
-      if (!("sections" in data)) {
-        throw new Error("Generation returned an unexpected response.");
-      }
+      if (activeAccount.current !== accountId) return;
 
       const cleanedResult = cleanGenerationResult(data);
+      if (accountId) storeGenerationAttempt(generationDeviceStorage(), accountId, null);
+      requestAttempt.current = null;
+      retryIntent.current = null;
+      setGenerationProgress("");
       pendingAutoScrollIdRef.current = cleanedResult.id;
-      setResult(cleanedResult);
-      persistStore(addRecent(readStore(), cleanedResult));
+      if (effectiveRefinement) {
+        const replacement = cleanedResult.sections.find(s => s.type === effectiveRefinement.section.type);
+        if (!replacement) throw new Error("The refinement did not return the requested content.");
+        if (result.sections.some(s => s.id === effectiveRefinement.section.id)) {
+          editSection({ ...replacement, id: effectiveRefinement.section.id });
+        } else {
+          // After a reload the original pack may not be open. Keep the completed
+          // refinement in recent history without overwriting the current draft.
+          persistStore(addRecent(store, cleanedResult));
+          setGenerationProgress("Validated refinement saved in recent history. Your current draft is unchanged.");
+        }
+      } else {
+        setUndoResults([]);
+        setResult(cleanedResult);
+        persistStore(addRecent(store, cleanedResult));
+      }
       if (authenticated) {
         setUsageUsed((current) => current + 1);
       } else {
-        setAnonymousUsed(monthlyStoredGenerationCount(addRecent(readStore(), cleanedResult)));
+        setAnonymousUsed(monthlyStoredGenerationCount(addRecent(store, cleanedResult)));
       }
     } catch (generationError) {
+      if (activeAccount.current !== accountId) return;
+      const terminal = generationError instanceof GenerationClientError && ["generation_failed", "grounding_failed", "generation_uncertain", "generation_budget", "request_failed", "request_expired"].includes(generationError.code);
+      setCanStartNewAttempt(terminal);
+      setCanResumeGeneration(!terminal && !!requestAttempt.current);
+      setGenerationProgress("Your existing draft is unchanged.");
       setError(
         generationError instanceof Error
           ? generationError.message
           : "Generation failed. Try again."
       );
     } finally {
-      isGeneratingRef.current = false;
-      setIsPending(false);
+      if (activeAccount.current === accountId) {
+        isGeneratingRef.current = false;
+        setIsPending(false);
+      }
     }
   }
 
@@ -733,6 +875,7 @@ export function StudioShell({
       updatedAt: new Date().toISOString(),
       title: source.trim().slice(0, 54) || "Untitled content note",
       source: cleanPlainText(source),
+      brandName, audience, offer, writingStyle, contentGoal,
       tone,
       sharpness,
       ctaMode,
@@ -740,7 +883,7 @@ export function StudioShell({
       selectedTypes
     };
 
-    persistStore(upsertDraft(readStore(), draft));
+    persistStore(upsertDraft(store, draft));
   }
 
   function loadDraft(draft: Draft) {
@@ -750,6 +893,8 @@ export function StudioShell({
     setCtaMode(draft.ctaMode ?? "soft");
     setPresetTopic(draft.presetTopic ?? "none");
     setSelectedTypes(draft.selectedTypes);
+    setBrandName(draft.brandName ?? ""); setAudience(draft.audience ?? "");
+    setOffer(draft.offer ?? ""); setWritingStyle(draft.writingStyle ?? ""); setContentGoal(draft.contentGoal ?? "");
     setHistoryOpen(false);
   }
 
@@ -759,18 +904,39 @@ export function StudioShell({
       return;
     }
 
-    persistStore(toggleSaved(readStore(), result));
+    persistStore(toggleSaved(store, result));
   }
 
   function deleteSaved(id: string) {
-    persistStore(removeSaved(readStore(), id));
+    persistStore(removeSaved(store, id));
   }
 
+  function editSection(section: GeneratedSection) {
+    setUndoResults(current => [...current.slice(-19), result]);
+    const edited = { ...result, sections: result.sections.map(s => s.id === section.id ? section : s) };
+    setResult(edited);
+    persistStore({ ...addRecent(store, edited), saved: store.saved.map(s => s.id === edited.id ? edited : s) });
+  }
+
+  function undoEdit() {
+    const previous = undoResults.at(-1);
+    if (!previous) return;
+    setUndoResults(current => current.slice(0, -1));
+    setResult(previous);
+    persistStore({ ...addRecent(store, previous), saved: store.saved.map(s => s.id === previous.id ? previous : s) });
+  }
+
+  function viewPlans() { window.location.assign("/pricing"); }
+
   function scrollToStudioSection(target: "composer" | "outputs" | "formatter") {
-    document.getElementById(target)?.scrollIntoView({
+    const section = document.getElementById(target);
+    const disclosure = section?.closest("details");
+    if (disclosure) disclosure.open = true;
+    section?.scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
+    if (target === "formatter") section?.querySelector<HTMLTextAreaElement>("textarea")?.focus({ preventScroll: true });
   }
 
   function handleRailAction(action: RailAction) {
@@ -821,7 +987,7 @@ export function StudioShell({
   }
 
   async function generateImage(section = imageSection) {
-    if (!section) {
+    if (!section || imageInFlight.current) {
       return;
     }
 
@@ -830,34 +996,40 @@ export function StudioShell({
       return;
     }
 
+    imageInFlight.current = true;
     setImagePending(true);
     setImageError("");
 
-    const outputText = buildSectionCopyText(section, { sourceText: result.source });
-
     try {
+      // The image uses a bounded excerpt; the original section and preferences stay intact.
+      const excerpt = (value: string, limit: number) => value.trim().slice(0, limit);
+      const outputText = excerpt(buildSectionCopyText(section, { sourceText: result.source }), 2600);
+      const payload = {
+        outputText,
+        platform: excerpt(section.platform, 80),
+        contentType: excerpt(labelForContentType(section.type), 80),
+        style: imageStyle,
+        format: imageFormat,
+        brandContext: {
+          brandName: excerpt(brandName, 140), audience: excerpt(audience, 220), offer: excerpt(offer, 220),
+          writingStyle: excerpt(writingStyle, 180), contentGoal: excerpt(contentGoal, 180),
+          brandColors: excerpt(imageBrandColors, 180),
+          visualStyle: excerpt(imageVisualStyle, 180),
+          contentTopic: excerpt(`${section.title} ${labelForContentType(section.type)}`, 180)
+        }
+      };
+      const fingerprint = JSON.stringify({ accountId, ...payload });
+      if (imageRequestAttempt.current?.fingerprint !== fingerprint) {
+        imageRequestAttempt.current = { fingerprint, id: crypto.randomUUID() };
+      }
+      const attempt = imageRequestAttempt.current;
       const response = await fetch("/api/generate-image", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "X-ContentOS-Account": accountId ?? ""
         },
-        body: JSON.stringify({
-          outputText,
-          platform: section.platform,
-          contentType: labelForContentType(section.type),
-          style: imageStyle,
-          format: imageFormat,
-          brandContext: {
-            brandName,
-            audience,
-            offer,
-            writingStyle,
-            contentGoal,
-            brandColors: imageBrandColors,
-            visualStyle: imageVisualStyle,
-            contentTopic: `${section.title} ${labelForContentType(section.type)}`
-          }
-        })
+        body: JSON.stringify({ ...payload, requestId: attempt.id })
       });
       const data = (await response.json()) as {
         image?: string;
@@ -867,15 +1039,22 @@ export function StudioShell({
         format?: ImageFormat;
         template?: string;
         imageCreditsLimit?: number;
+        creditCharged?: boolean;
         warning?: string;
         createdAt?: string;
         error?: string;
+        code?: string;
       };
+      if (activeAccount.current !== accountId) return;
 
       if (!response.ok || !data.image) {
+        // Only terminal failures permit a fresh ID on the next explicit click.
+        // Pending, network errors and uncertain saves must keep the original ID.
+        if (data.code === "request_failed" || data.code === "request_expired") imageRequestAttempt.current = null;
         throw new Error(data.error ?? "Image generation failed. Try again.");
       }
 
+      imageRequestAttempt.current = null;
       const generatedImage = data.image;
 
       setGeneratedImages((current) => ({
@@ -892,23 +1071,20 @@ export function StudioShell({
         }
       }));
     } catch (imageGenerationError) {
+      if (activeAccount.current !== accountId) return;
       setImageError(
         imageGenerationError instanceof Error
           ? imageGenerationError.message
           : "Image generation failed. Try again."
       );
     } finally {
+      imageInFlight.current = false;
       setImagePending(false);
     }
   }
 
   return (
     <main className="min-h-screen w-full overflow-x-hidden pb-28 text-bone lg:pb-0">
-      <div className="pointer-events-none fixed inset-0 opacity-80">
-        <div className="absolute right-[-5rem] top-12 h-72 w-72 rounded-full bg-violet/20 blur-3xl" />
-        <div className="absolute bottom-28 left-[-6rem] h-64 w-64 rounded-full bg-gold/10 blur-3xl" />
-      </div>
-
       <TopBar
         authenticated={authenticated}
         menuOpen={menuOpen}
@@ -916,12 +1092,12 @@ export function StudioShell({
         onToggleMenu={() => setMenuOpen((value) => !value)}
       />
 
-      <div className="relative mx-auto block w-full max-w-none min-w-0 space-y-4 px-3 pb-6 pt-4 sm:px-5 lg:grid lg:max-w-[96rem] lg:grid-cols-[4.5rem_minmax(0,1fr)_19rem] lg:gap-4 lg:space-y-0 lg:px-6 lg:pt-6 xl:max-w-[104rem] xl:grid-cols-[5rem_minmax(0,1fr)_21rem] 2xl:max-w-[112rem] 2xl:grid-cols-[5rem_minmax(0,1fr)_22rem] 2xl:gap-5">
+      <div className="relative mx-auto w-full max-w-[100rem] min-w-0 space-y-4 px-3 pb-6 pt-4 sm:px-5 lg:grid lg:grid-cols-[4.5rem_minmax(0,1fr)] lg:gap-6 lg:space-y-0 lg:px-6 lg:pt-6">
         <DesktopRail onNavigate={handleRailAction} />
 
         <div className="w-full min-w-0 overflow-hidden space-y-4">
-          <section className="block w-full min-w-0 space-y-4 2xl:grid 2xl:grid-cols-[minmax(24rem,0.9fr)_minmax(32rem,1.1fr)] 2xl:gap-4 2xl:space-y-0">
-            <ComposerPanel
+          <section className="block w-full min-w-0 space-y-6 xl:grid xl:grid-cols-[minmax(20rem,0.8fr)_minmax(28rem,1.2fr)] xl:items-start xl:gap-8 xl:space-y-0">
+            <StudioComposer
               id="composer"
               source={source}
               tone={tone}
@@ -935,10 +1111,13 @@ export function StudioShell({
               offer={offer}
               writingStyle={writingStyle}
               contentGoal={contentGoal}
+              length={length}
+              onLengthChange={setLength}
               plan={plan}
               usage={usage}
               canGenerate={canGenerate}
               isPending={isPending}
+              isLoading={!hasMounted}
               onSourceChange={setSource}
               onBrandNameChange={setBrandName}
               onAudienceChange={setAudience}
@@ -949,7 +1128,7 @@ export function StudioShell({
                 setTone(value);
                 setLastUsedTone(value);
                 if (hasMounted) {
-                  window.localStorage.setItem(LAST_USED_TONE_KEY, value);
+                  try { window.localStorage.setItem(`${LAST_USED_TONE_KEY}:${accountId ?? "guest"}`, value); } catch { /* Storage is optional. */ }
                 }
               }}
               onSharpnessChange={setSharpness}
@@ -958,7 +1137,13 @@ export function StudioShell({
               onToggleType={toggleType}
               onGenerate={() => generateContent()}
               onSaveDraft={saveDraft}
-              onPlanChange={setPlan}
+              brandProfiles={brandProfiles}
+              onSelectBrand={(brand) => {
+                setBrandName(brand.name); setAudience(brand.audience); setOffer(brand.offer);
+                setWritingStyle(brand.writing_preferences);
+                if (tones.some(t => t.id === brand.tone)) setTone(brand.tone as ToneId);
+                if (ctaModes.some(c => c.id === brand.cta_style)) setCtaMode(brand.cta_style as CtaModeId);
+              }}
             />
 
             <OutputPanel
@@ -966,6 +1151,7 @@ export function StudioShell({
               containerRef={outputWorkspaceRef}
               result={result}
               sourceText={result.source}
+              progress={generationProgress}
               activeFilter={activeFilter}
               visibleSections={visibleSections}
               error={error}
@@ -981,21 +1167,10 @@ export function StudioShell({
               }}
               onRegenerate={() => generateContent()}
               onSaveCurrent={saveCurrent}
-              onCopyRefinement={async (section, action) => {
-                try {
-                  setError("");
-                  const sectionText = buildSectionCopyText(section, { sourceText: result.source });
-                  await copyPlainText(refineText(sectionText, action));
-                  setCopiedId(`${section.id}-${action}`);
-                  window.setTimeout(() => setCopiedId(""), 1400);
-                } catch (copyError) {
-                  setError(
-                    copyError instanceof Error
-                      ? copyError.message
-                      : "Unable to copy clean text."
-                  );
-                }
-              }}
+              onEditSection={editSection}
+              onUndo={undoEdit}
+              canUndo={undoResults.length > 0}
+              onCopyRefinement={(section, action) => void generateContent(source, { section, action })}
               onCopyAll={async () => {
                 try {
                   setError("");
@@ -1023,12 +1198,29 @@ export function StudioShell({
             />
           </section>
 
-          <PlatformFormatterPanel id="formatter" plan={plan} onPlanChange={setPlan} />
+          {canStartNewAttempt ? <button type="button" disabled={isPending} onClick={() => { requestAttempt.current = null; const intent = retryIntent.current; void generateContent(intent?.source ?? source, intent?.refinement); }} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm"><RefreshCcw size={16} />Start a new attempt</button> : null}
+
+          <p className="min-h-5 text-sm text-muted" role="status" aria-live="polite">{generationProgress}</p>
+          {canResumeGeneration ? <button type="button" disabled={!hasMounted || isPending} onClick={() => void generateContent(source, undefined, true)} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm disabled:opacity-40"><RefreshCcw size={16} />Resume saved attempt</button> : null}
+          <p className="min-h-5 text-xs text-muted" role="status">{saveStatus}</p>
+          {historyWarning ? <p className="text-xs text-amber-200" role="status">{historyWarning}</p> : null}
+          <button type="button" onClick={() => {
+            let recovered = null;
+            try { recovered = accountId ? JSON.parse(window.localStorage.getItem(`contentos:recovery:${accountId}`) ?? "null") : null; } catch { /* Export current copy if recovery storage is unavailable. */ }
+            const backup = { current: readStore(accountId), previousDeviceCopies: recovered };
+            const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }));
+            const link = document.createElement("a"); link.href = url; link.download = "contentos-workspace-backup.json"; link.click(); URL.revokeObjectURL(url);
+          }} className="flex min-h-10 items-center gap-2 text-xs text-muted"><Save size={14} />Export device backup</button>
+          <details className="border-y border-white/10 py-4">
+            <summary className="cursor-pointer text-sm font-semibold">Text formatter</summary>
+            <PlatformFormatterPanel id="formatter" plan={plan} onPlanChange={viewPlans} />
+          </details>
 
           <SavedLibraryPanel
             store={store}
             plan={plan}
-            onPlanChange={setPlan}
+            onPlanChange={viewPlans}
+            onOpen={(item) => { setResult(item); setUndoResults([]); setActiveFilter("all"); scrollToStudioSection("outputs"); }}
             onCopy={async (item) => {
               try {
                 setError("");
@@ -1179,18 +1371,25 @@ function TopBar({
           )}
         </div>
 
-        <div className="relative z-[90] flex shrink-0 items-center lg:hidden">
+        <div className="relative z-[90] flex shrink-0 items-center lg:hidden" onKeyDown={event => {
+          if (event.key === "Escape" && menuOpen) {
+            event.preventDefault();
+            onToggleMenu();
+            event.currentTarget.querySelector<HTMLButtonElement>("button[aria-expanded]")?.focus();
+          }
+        }}>
           <button
             type="button"
             onClick={onToggleMenu}
             className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-muted"
             aria-label={menuOpen ? "Close account menu" : "Open account menu"}
             aria-expanded={menuOpen}
+            aria-controls="studio-account-menu"
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
           {menuOpen ? (
-            <div className="absolute right-0 top-full z-[100] mt-2 w-[11.25rem] rounded-xl border border-white/10 bg-[#07050d] p-1.5 shadow-[0_18px_45px_rgba(0,0,0,0.55)]">
+            <div id="studio-account-menu" className="absolute right-0 top-full z-[100] mt-2 w-[11.25rem] rounded-xl border border-white/10 bg-[#07050d] p-1.5 shadow-[0_18px_45px_rgba(0,0,0,0.55)]">
               {authenticated ? (
                 <>
                   <Link
@@ -1253,360 +1452,13 @@ function DesktopRail({ onNavigate }: { onNavigate: (action: RailAction) => void 
   );
 }
 
-function ComposerPanel({
-  id,
-  source,
-  tone,
-  lastUsedTone,
-  sharpness,
-  ctaMode,
-  presetTopic,
-  selectedTypes,
-  brandName,
-  audience,
-  offer,
-  writingStyle,
-  contentGoal,
-  plan,
-  usage,
-  canGenerate,
-  isPending,
-  onSourceChange,
-  onBrandNameChange,
-  onAudienceChange,
-  onOfferChange,
-  onWritingStyleChange,
-  onContentGoalChange,
-  onToneChange,
-  onSharpnessChange,
-  onCtaModeChange,
-  onPresetTopicChange,
-  onToggleType,
-  onGenerate,
-  onSaveDraft,
-  onPlanChange
-}: {
-  id: string;
-  source: string;
-  tone: ToneId;
-  lastUsedTone: ToneId | null;
-  sharpness: SharpnessId;
-  ctaMode: CtaModeId;
-  presetTopic: PresetTopicId;
-  selectedTypes: ContentTypeId[];
-  brandName: string;
-  audience: string;
-  offer: string;
-  writingStyle: string;
-  contentGoal: string;
-  plan: PlanId;
-  usage: UsageSummary;
-  canGenerate: boolean;
-  isPending: boolean;
-  onSourceChange: (value: string) => void;
-  onBrandNameChange: (value: string) => void;
-  onAudienceChange: (value: string) => void;
-  onOfferChange: (value: string) => void;
-  onWritingStyleChange: (value: string) => void;
-  onContentGoalChange: (value: string) => void;
-  onToneChange: (value: ToneId) => void;
-  onSharpnessChange: (value: SharpnessId) => void;
-  onCtaModeChange: (value: CtaModeId) => void;
-  onPresetTopicChange: (value: PresetTopicId) => void;
-  onToggleType: (value: ContentTypeId) => void;
-  onGenerate: () => void;
-  onSaveDraft: () => void;
-  onPlanChange: (value: PlanId) => void;
-}) {
-  const isPro = plan !== "free";
-
-  return (
-    <section
-      id={id}
-      className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-panel/82 p-4 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
-    >
-      <div className="mb-5 flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="font-display text-[2rem] uppercase leading-none tracking-normal text-bone sm:text-4xl">
-            ContentOS
-          </h1>
-          <p className="mt-3 max-w-none text-[0.95rem] leading-7 text-muted sm:max-w-sm sm:text-sm sm:leading-6">
-            Turn raw ideas into platform-ready content across every channel.
-          </p>
-        </div>
-        <div className="hidden border-l border-gold/50 pl-3 text-right text-xs text-goldSoft sm:block">
-          Generate.
-          <br />
-          Format.
-          <br />
-          Repurpose.
-        </div>
-      </div>
-
-      <div className="mb-5 rounded-xl border border-white/[0.08] bg-white/[0.045] p-4 sm:rounded sm:p-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-base font-semibold text-bone sm:text-sm">
-              {isPro
-                ? `${usage.used} of ${usage.limit} monthly generations used`
-                : `${usage.used} of ${usage.limit} free generations used`}
-            </p>
-            <p className="mt-1 text-sm leading-6 text-muted sm:text-xs sm:leading-5">
-              {isPro
-                ? `${usage.remaining} monthly generations remaining.`
-                : `${usage.remaining} free generations remaining. Pro unlocks full generation, formatter presets, repurposing, and saved history.`}
-            </p>
-          </div>
-          <div className="grid w-full grid-cols-3 overflow-hidden rounded-lg border border-white/10 bg-ink/70 sm:w-64 sm:rounded">
-            <button
-              type="button"
-              onClick={() => onPlanChange("free")}
-              className={clsx(
-                "min-h-11 px-3 text-sm font-semibold sm:min-h-10 sm:text-xs",
-                !isPro ? "bg-gold/10 text-bone" : "text-muted hover:text-bone"
-              )}
-            >
-              Free
-            </button>
-            <button
-              type="button"
-              onClick={() => onPlanChange("pro_creator")}
-              className={clsx(
-                "min-h-11 border-l border-white/10 px-3 text-sm font-semibold sm:min-h-10 sm:text-xs",
-                plan === "pro_creator" ? "bg-violet/25 text-bone" : "text-muted hover:text-bone"
-              )}
-            >
-              Creator
-            </button>
-            <button
-              type="button"
-              onClick={() => onPlanChange("pro_studio")}
-              className={clsx(
-                "min-h-11 border-l border-white/10 px-3 text-sm font-semibold sm:min-h-10 sm:text-xs",
-                plan === "pro_studio" ? "bg-violet/25 text-bone" : "text-muted hover:text-bone"
-              )}
-            >
-              Studio
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <label className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-        Source material
-      </label>
-      <textarea
-        value={source}
-        onChange={(event) => onSourceChange(event.target.value)}
-        rows={10}
-        className="studio-scroll mt-3 min-h-56 w-full resize-none rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:min-h-60 sm:rounded sm:text-base"
-        placeholder="Paste notes, a customer insight, a launch idea, an offer, or the messy thought you want to turn into content."
-      />
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        {[
-          { label: "Brand/business name", value: brandName, onChange: onBrandNameChange, placeholder: "Acme Studio" },
-          { label: "Target audience", value: audience, onChange: onAudienceChange, placeholder: "Busy founders and consultants" },
-          { label: "Offer/product/service", value: offer, onChange: onOfferChange, placeholder: "Content planning service" },
-          { label: "Content goal", value: contentGoal, onChange: onContentGoalChange, placeholder: "Generate qualified leads" }
-        ].map((item) => (
-          <label key={item.label} className="grid gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-            {item.label}
-            <input
-              value={item.value}
-              onChange={(event) => item.onChange(event.target.value)}
-              placeholder={item.placeholder}
-              className="min-h-12 rounded-xl border border-line bg-ink/90 px-4 text-[0.95rem] normal-case tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:min-h-11 sm:rounded sm:px-3 sm:text-sm"
-            />
-          </label>
-        ))}
-      </div>
-
-      <label className="mt-4 grid gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-        Writing style
-        <textarea
-          value={writingStyle}
-          onChange={(event) => onWritingStyleChange(event.target.value)}
-          rows={3}
-          placeholder="Confident, useful, concise, practical, lightly witty."
-          className="studio-scroll rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] normal-case leading-7 tracking-normal text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:p-3 sm:text-sm sm:leading-6"
-        />
-      </label>
-
-      <div className="mt-5 grid gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-2">
-        <button
-          type="button"
-          onClick={onGenerate}
-          disabled={!canGenerate}
-          className="flex min-h-14 items-center justify-center gap-2 rounded-xl border border-violet/70 bg-violet px-4 text-base font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/10 disabled:text-muted sm:min-h-12 sm:rounded sm:text-sm"
-        >
-          {isPending ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
-          Generate
-        </button>
-        <button
-          type="button"
-          onClick={onSaveDraft}
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded"
-        >
-          <Save size={17} />
-          Save draft
-        </button>
-      </div>
-
-      <div className="mt-6 sm:mt-5">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <label
-            htmlFor="preset-topic"
-            className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]"
-          >
-            Topic
-          </label>
-          <p className="truncate text-xs text-muted">{labelForPresetTopic(presetTopic)}</p>
-        </div>
-        <select
-          id="preset-topic"
-          value={presetTopic}
-          onChange={(event) => onPresetTopicChange(event.target.value as PresetTopicId)}
-          className="min-h-12 w-full rounded-xl border border-line bg-ink/90 px-4 text-[0.95rem] font-semibold text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:px-3 sm:text-sm"
-        >
-          {presetTopics.map((topic) => (
-            <option key={topic.id} value={topic.id} className="bg-ink text-bone">
-              {topic.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="mt-6 sm:mt-5">
-        <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-          Content types
-        </p>
-        <div className="studio-scroll flex snap-x gap-2 overflow-x-auto pb-2 sm:flex-wrap sm:overflow-visible">
-          {contentTypes.map((item) => {
-            const active = selectedTypes.includes(item.id);
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => onToggleType(item.id)}
-                title={item.paidOnly && !isPro ? "Pro output" : item.label}
-                className={clsx(
-                  "flex min-h-11 shrink-0 snap-start items-center gap-2 rounded-full border px-4 text-sm transition sm:min-h-10 sm:shrink sm:rounded sm:px-3",
-                  active
-                    ? "border-violet/70 bg-violet/20 text-bone"
-                    : "border-white/10 bg-white/[0.03] text-muted hover:border-violet/50"
-                )}
-              >
-                {item.paidOnly && !isPro ? (
-                  <Lock size={13} />
-                ) : active ? (
-                  <Check size={14} />
-                ) : (
-                  <span className="h-3.5 w-3.5 rounded border border-current" />
-                )}
-                {item.shortLabel}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="mt-6 sm:mt-5">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-            Tone
-          </p>
-          <p className="text-xs text-muted">{labelForTone(tone)}</p>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-2">
-          {tones.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onToneChange(item.id)}
-              className={clsx(
-                "rounded-xl border p-3 text-left transition sm:rounded sm:p-3",
-                tone === item.id
-                  ? "border-gold/70 bg-gold/10 text-bone"
-                  : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
-              )}
-            >
-              <span className="flex items-center justify-between gap-2 text-[0.95rem] font-semibold text-bone sm:text-sm">
-                {item.label}
-                {lastUsedTone === item.id ? (
-                  <span className="rounded-full border border-gold/40 bg-gold/10 px-2 py-0.5 text-[0.62rem] uppercase tracking-[0.12em] text-goldSoft">
-                    Last used
-                  </span>
-                ) : null}
-              </span>
-              <span className="mt-1 block text-xs leading-5">{item.description}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 sm:mt-5">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-            Sharpness
-          </p>
-          <p className="text-xs text-muted">{labelForSharpness(sharpness)}</p>
-        </div>
-        <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] sm:rounded sm:grid-cols-4">
-          {sharpnessModes.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onSharpnessChange(item.id)}
-              title={item.description}
-              className={clsx(
-                "min-h-12 border-r border-white/10 px-2 text-sm font-semibold transition last:border-r-0 sm:min-h-11 sm:text-xs",
-                sharpness === item.id
-                  ? "bg-violet/25 text-bone"
-                  : "text-muted hover:bg-white/[0.04] hover:text-bone"
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 sm:mt-5">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-            CTA
-          </p>
-          <p className="text-xs text-muted">{labelForCtaMode(ctaMode)}</p>
-        </div>
-        <div className="studio-scroll flex gap-2 overflow-x-auto pb-1">
-          {ctaModes.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => onCtaModeChange(item.id)}
-              title={item.description}
-              className={clsx(
-                "min-h-11 shrink-0 rounded-full border px-4 text-sm transition sm:min-h-10 sm:rounded sm:px-3",
-                ctaMode === item.id
-                  ? "border-gold/70 bg-gold/10 text-bone"
-                  : "border-white/10 bg-white/[0.03] text-muted hover:border-violet/50"
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function OutputPanel({
   id,
   containerRef,
   result,
   sourceText,
+  progress,
   activeFilter,
   visibleSections,
   error,
@@ -1620,6 +1472,9 @@ function OutputPanel({
   onOpenImagePanel,
   onRegenerate,
   onSaveCurrent,
+  onEditSection,
+  onUndo,
+  canUndo,
   onCopyRefinement,
   onCopyAll,
   onDownload
@@ -1628,6 +1483,7 @@ function OutputPanel({
   containerRef: React.RefObject<HTMLElement | null>;
   result: GenerationResult;
   sourceText: string;
+  progress: string;
   activeFilter: FilterId;
   visibleSections: GeneratedSection[];
   error: string;
@@ -1641,6 +1497,9 @@ function OutputPanel({
   onOpenImagePanel: (section: GeneratedSection) => void;
   onRegenerate: () => void;
   onSaveCurrent: () => void;
+  onEditSection: (section: GeneratedSection) => void;
+  onUndo: () => void;
+  canUndo: boolean;
   onCopyRefinement: (section: GeneratedSection, action: string) => void;
   onCopyAll: () => void;
   onDownload: () => void;
@@ -1649,12 +1508,12 @@ function OutputPanel({
     <section
       id={id}
       ref={containerRef}
-      className="scroll-mt-20 w-full min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-coal/88 p-4 backdrop-blur-xl sm:rounded sm:border sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 overflow-hidden"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 overflow-hidden">
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-            Output workspace
+            {result.id === "sample" ? "Example content pack" : "Your content pack"}
           </p>
           <h2 className="mt-2 line-clamp-2 font-display text-[1.7rem] uppercase leading-none tracking-normal text-bone sm:truncate sm:text-2xl">
             {result.title}
@@ -1677,7 +1536,7 @@ function OutputPanel({
       </div>
 
       {error ? (
-        <div className="mt-4 rounded border border-gold/40 bg-gold/10 p-3 text-sm leading-6 text-bone">
+        <div role="alert" className="mt-4 rounded border border-gold/40 bg-gold/10 p-3 text-sm leading-6 text-bone">
           {error}
         </div>
       ) : null}
@@ -1692,6 +1551,7 @@ function OutputPanel({
             key={filter.id}
             type="button"
             onClick={() => onFilterChange(filter.id)}
+            aria-pressed={activeFilter === filter.id}
             className={clsx(
               "min-h-11 shrink-0 rounded-full border px-4 text-sm transition sm:min-h-10 sm:rounded sm:px-3",
               activeFilter === filter.id
@@ -1706,7 +1566,7 @@ function OutputPanel({
 
       <div className="mt-4 grid w-full min-w-0 gap-4 sm:mt-3 sm:gap-3">
         {isPending ? (
-          <LoadingCard />
+          <LoadingCard progress={progress} />
         ) : visibleSections.length ? (
           visibleSections.map((section) => (
             <OutputCard
@@ -1719,6 +1579,7 @@ function OutputPanel({
               onCopy={() => onCopySection(section)}
               onGenerateImage={() => onOpenImagePanel(section)}
               onCopyRefinement={(action) => onCopyRefinement(section, action)}
+              onEdit={onEditSection}
             />
           ))
         ) : (
@@ -1737,6 +1598,7 @@ function OutputPanel({
         <RefreshCcw size={17} />
         Regenerate current set
       </button>
+      <button type="button" onClick={onUndo} disabled={!canUndo || isPending} className="mt-3 flex min-h-10 items-center gap-2 text-sm text-muted disabled:opacity-40" title="Undo last content edit"><Undo2 size={16} />Undo edit</button>
       <div className="mt-3 grid gap-2 sm:mt-2 sm:grid-cols-3">
         <button
           type="button"
@@ -2112,6 +1974,7 @@ function OutputCard({
   image,
   onCopy,
   onGenerateImage,
+  onEdit,
   onCopyRefinement
 }: {
   section: GeneratedSection;
@@ -2121,13 +1984,17 @@ function OutputCard({
   image?: GeneratedImage;
   onCopy: () => void;
   onGenerateImage: () => void;
+  onEdit: (section: GeneratedSection) => void;
   onCopyRefinement: (action: string) => void;
 }) {
   const canGenerateImage = plan === "pro_studio";
   const formattedOutput = formatOutputSection(section, sourceText);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(section);
+  const [refinement, setRefinement] = useState("shorten");
 
   return (
-    <article className="w-full min-w-0 overflow-hidden rounded-2xl border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:rounded sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
+    <article data-content-editing={editing} className="w-full min-w-0 overflow-hidden rounded border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
       <div className="mb-4 flex flex-col gap-3 sm:mb-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 overflow-hidden">
           <p className="text-[0.72rem] uppercase tracking-[0.14em] text-violet sm:text-xs sm:tracking-[0.18em]">
@@ -2161,14 +2028,23 @@ function OutputCard({
         </div>
       </div>
 
-      <PlatformOutputBlocks blocks={formattedOutput.blocks} />
+      {editing ? <div className="grid gap-3">
+        <label className="grid gap-2 text-sm">Body<textarea aria-label={`Edit ${section.title} body`} rows={10} maxLength={20000} value={draft.body} onChange={e => setDraft({ ...draft, body: e.target.value })} className="w-full rounded border border-white/20 bg-ink p-3 leading-7" /></label>
+        <label className="grid gap-2 text-sm">Items, one per line<textarea rows={4} maxLength={20000} value={draft.items.join("\n")} onChange={e => setDraft({ ...draft, items: e.target.value.split("\n") })} className="w-full rounded border border-white/20 bg-ink p-3" /></label>
+        <label className="grid gap-2 text-sm">Call to action<input maxLength={2000} value={draft.cta ?? ""} onChange={e => setDraft({ ...draft, cta: e.target.value })} className="min-h-11 rounded border border-white/20 bg-ink px-3" /></label>
+        <div className="flex gap-3">
+          <button className="flex min-h-11 items-center gap-2 rounded bg-violet px-4 text-sm" onClick={() => { onEdit({ ...draft, items: draft.items.filter(Boolean) }); setEditing(false); }}><Check size={16} />Apply edits</button>
+          <button className="min-h-11 px-3 text-sm text-muted" onClick={() => setEditing(false)}>Cancel</button>
+        </div>
+      </div> : <PlatformOutputBlocks blocks={formattedOutput.blocks} />}
 
       {image ? (
         <div className="mt-4 rounded-xl border border-gold/30 bg-ink/55 p-3 sm:rounded">
           <img
             src={image.image}
             alt={`Generated visual for ${section.title}`}
-            className="aspect-square w-full rounded border border-white/10 object-cover"
+            className="w-full rounded border border-white/10 object-contain"
+            style={{ aspectRatio: image.format === "landscape" ? "16 / 9" : image.format === "portrait" ? "4 / 5" : image.format === "vertical" ? "9 / 16" : "1" }}
           />
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted">
@@ -2190,22 +2066,13 @@ function OutputCard({
         </div>
       ) : null}
 
-      <div className="studio-scroll mt-5 flex gap-2 overflow-x-auto pb-1 sm:mt-4">
-        {[
-          "shorten",
-          "simplify",
-          "improve hook",
-          "improve CTA"
-        ].map((action) => (
-          <button
-            key={action}
-            type="button"
-            onClick={() => onCopyRefinement(action)}
-            className="min-h-10 shrink-0 rounded-full border border-white/10 bg-white/[0.035] px-3 text-xs font-semibold text-muted transition hover:border-violet/60 hover:text-bone sm:min-h-9 sm:rounded sm:bg-ink/70"
-          >
-            {action}
-          </button>
-        ))}
+      <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
+        <button type="button" onClick={() => { setDraft(section); setEditing(true); }} disabled={editing} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-3 text-sm"><PenLine size={15} />Edit</button>
+        <select aria-label={`Refine ${section.title}`} value={refinement} onChange={e => setRefinement(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/20 bg-ink px-2 text-xs">
+          {Object.entries({ shorten: "Make shorter", expand: "Make longer", simplify: "Simplify", professional: "More professional", conversational: "More conversational", hook: "Strengthen hook", cta: "Improve CTA", alternative: "Create alternative" }).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select>
+        <button type="button" disabled={editing} onClick={() => onCopyRefinement(refinement)} className="flex min-h-11 items-center gap-2 rounded border border-violet/60 px-3 text-xs"><Sparkles size={14} />Refine with AI</button>
+        <span className="text-xs text-muted">1 generation</span>
       </div>
     </article>
   );
@@ -2385,21 +2252,27 @@ function ImageGenerationPanel({
   onVisualStyleChange: (value: string) => void;
   onGenerate: () => void;
 }) {
-  if (!section) {
-    return null;
-  }
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (section && !dialog.open) dialog.showModal();
+    if (!section && dialog.open) dialog.close();
+  }, [section]);
 
   const isProStudio = plan === "pro_studio";
 
   return (
-    <div className="fixed inset-0 z-[70] overflow-y-auto bg-black/70 px-4 py-6 backdrop-blur-sm">
-      <div className="mx-auto w-full max-w-2xl rounded border border-white/10 bg-coal p-4 shadow-violet sm:p-5">
+    <dialog ref={dialogRef} aria-labelledby="image-generation-title" onCancel={onClose} onClose={onClose}
+      className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-y-auto overscroll-contain rounded border border-white/10 bg-coal p-4 text-bone shadow-violet backdrop:bg-black/70 backdrop:backdrop-blur-sm sm:p-5"
+    >
+      {section ? <div className="min-w-0">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
               Image generation
             </p>
-            <h2 className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
+            <h2 id="image-generation-title" className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
               Generate Visual
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted">
@@ -2451,8 +2324,10 @@ function ImageGenerationPanel({
                       key={item.id}
                       type="button"
                       onClick={() => onStyleChange(item.id)}
+                      disabled={isPending}
+                      aria-pressed={style === item.id}
                       className={clsx(
-                        "min-h-11 rounded border px-3 text-sm font-semibold transition",
+                        "min-h-11 rounded border px-3 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60",
                         style === item.id
                           ? "border-gold/70 bg-gold/10 text-bone"
                           : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
@@ -2474,8 +2349,10 @@ function ImageGenerationPanel({
                       key={item.id}
                       type="button"
                       onClick={() => onFormatChange(item.id)}
+                      disabled={isPending}
+                      aria-pressed={format === item.id}
                       className={clsx(
-                        "min-h-14 rounded border px-3 text-left transition",
+                        "min-h-14 rounded border px-3 text-left transition disabled:cursor-wait disabled:opacity-60",
                         format === item.id
                           ? "border-gold/70 bg-gold/10 text-bone"
                           : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
@@ -2495,6 +2372,8 @@ function ImageGenerationPanel({
                   </span>
                   <input
                     value={brandColors}
+                    maxLength={180}
+                    disabled={isPending}
                     onChange={(event) => onBrandColorsChange(event.target.value)}
                     className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
                     placeholder="Deep black, violet, gold, off-white"
@@ -2506,6 +2385,8 @@ function ImageGenerationPanel({
                   </span>
                   <input
                     value={visualStyle}
+                    maxLength={180}
+                    disabled={isPending}
                     onChange={(event) => onVisualStyleChange(event.target.value)}
                     className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
                     placeholder="Premium SaaS editorial, clean depth"
@@ -2515,7 +2396,7 @@ function ImageGenerationPanel({
             </div>
 
             {error ? (
-              <div className="mt-4 rounded border border-gold/40 bg-gold/10 p-3 text-sm leading-6 text-bone">
+              <div role="alert" className="mt-4 rounded border border-gold/40 bg-gold/10 p-3 text-sm leading-6 text-bone">
                 {error}
               </div>
             ) : null}
@@ -2571,20 +2452,20 @@ function ImageGenerationPanel({
             ) : null}
           </>
         )}
-      </div>
-    </div>
+      </div> : null}
+    </dialog>
   );
 }
 
-function LoadingCard() {
+function LoadingCard({ progress }: { progress: string }) {
   return (
     <div className="rounded border border-violet/30 bg-violet/10 p-5">
       <div className="flex items-center gap-3">
         <Loader2 className="animate-spin text-goldSoft" size={20} />
         <div>
-          <p className="font-semibold text-bone">Building the content set</p>
+          <p className="font-semibold text-bone">{progress || "Checking saved progress..."}</p>
           <p className="mt-1 text-sm text-muted">
-            Structuring it for clean platform-ready reuse.
+            Your previous content is unchanged.
           </p>
         </div>
       </div>
@@ -2598,6 +2479,7 @@ function SavedLibraryPanel({
   copiedId,
   onPlanChange,
   onCopy,
+  onOpen,
   onDelete
 }: {
   store: StudioStore;
@@ -2605,10 +2487,12 @@ function SavedLibraryPanel({
   copiedId: string;
   onPlanChange: (value: PlanId) => void;
   onCopy: (value: GenerationResult) => void;
+  onOpen: (value: GenerationResult) => void;
   onDelete: (id: string) => void;
 }) {
   const [platformFilter, setPlatformFilter] = useState<FilterId>("all");
   const [categoryFilter, setCategoryFilter] = useState<PresetTopicId>("none");
+  const [query, setQuery] = useState("");
   const isPro = plan !== "free";
 
   const filtered = store.saved.filter((item) => {
@@ -2618,7 +2502,8 @@ function SavedLibraryPanel({
       platformFilter === "all" ||
       item.sections.some((section) => sectionMatchesFilter(section, platformFilter));
 
-    return matchesCategory && matchesPlatform;
+    const searchable = `${item.title} ${item.source} ${item.sections.map(s => `${s.body} ${s.items.join(" ")}`).join(" ")}`.toLowerCase();
+    return matchesCategory && matchesPlatform && searchable.includes(query.trim().toLowerCase());
   });
 
   return (
@@ -2632,7 +2517,7 @@ function SavedLibraryPanel({
             Organized Outputs
           </h2>
           <p className="mt-2 max-w-none text-sm leading-6 text-muted sm:max-w-xl">
-            Save generated sets, filter by platform or category, copy them back out, and remove anything you no longer need.
+            Your saved content packs.
           </p>
         </div>
         {!isPro ? (
@@ -2649,12 +2534,14 @@ function SavedLibraryPanel({
 
       {!isPro ? (
         <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4 text-sm leading-6 text-muted sm:rounded">
-          Saved history is part of Pro. Upgrade or use the workspace plan switch while testing locally.
+          Saved history is included in paid plans. Your drafts and recent work remain available in the workspace.
         </div>
       ) : (
         <>
+          <label className="mb-3 grid gap-2 text-sm">Search my content<input value={query} onChange={e => setQuery(e.target.value)} type="search" placeholder="Title, topic, or phrase" className="min-h-11 rounded border border-white/20 bg-ink px-3" /></label>
           <div className="grid gap-3 sm:grid-cols-2">
             <select
+              aria-label="Filter saved content by platform"
               value={platformFilter}
               onChange={(event) => setPlatformFilter(event.target.value as FilterId)}
               className="min-h-11 rounded border border-line bg-ink/70 px-3 text-sm font-semibold text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
@@ -2668,6 +2555,7 @@ function SavedLibraryPanel({
                 ))}
             </select>
             <select
+              aria-label="Filter saved content by category"
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value as PresetTopicId)}
               className="min-h-11 rounded border border-line bg-ink/70 px-3 text-sm font-semibold text-bone outline-none transition focus:border-violet/70 focus:ring-2 focus:ring-violet/20"
@@ -2690,7 +2578,7 @@ function SavedLibraryPanel({
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h3 className="line-clamp-2 text-base font-semibold text-bone">
-                        {item.title}
+                        <button type="button" onClick={() => onOpen(item)} className="text-left hover:underline">{item.title}</button>
                       </h3>
                       <p className="mt-1 text-xs text-muted">
                         {labelForPresetTopic(item.presetTopic ?? "none")} · {item.sections.length} outputs
@@ -2751,23 +2639,17 @@ function HistoryPanel({
   onLoadDraft: (value: Draft) => void;
 }) {
   const recent = store.recent.length ? store.recent : [current];
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen && !dialog.open) dialog.showModal();
+    if (!isOpen && dialog.open) dialog.close();
+  }, [isOpen]);
 
   return (
-    <>
-      <button
-        type="button"
-        aria-label="Close history"
-        onClick={onClose}
-        className={clsx(
-          "fixed inset-0 z-40 bg-black/60 transition lg:hidden",
-          isOpen ? "opacity-100" : "pointer-events-none opacity-0"
-        )}
-      />
-      <aside
-        className={clsx(
-          "fixed bottom-0 right-0 top-0 z-50 w-full max-w-md border-l border-white/10 bg-coal p-4 transition-transform duration-300 lg:static lg:z-auto lg:block lg:min-w-0 lg:max-w-none lg:translate-x-0 lg:overflow-hidden lg:rounded lg:border lg:bg-white/[0.035] lg:p-4",
-          isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
-        )}
+      <dialog ref={dialogRef} aria-label="Recent work" onCancel={onClose} onClose={onClose}
+        className="fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-dvh w-full max-w-md border-l border-white/10 bg-coal p-4 text-bone backdrop:bg-black/60"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
@@ -2779,7 +2661,7 @@ function HistoryPanel({
           <button
             type="button"
             onClick={onClose}
-            className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted lg:hidden"
+            className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted"
             aria-label="Close"
           >
             <X size={18} />
@@ -2844,8 +2726,7 @@ function HistoryPanel({
             )}
           />
         </div>
-      </aside>
-    </>
+      </dialog>
   );
 }
 

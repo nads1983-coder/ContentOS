@@ -7,6 +7,8 @@ import { pageMetadata } from "@/lib/metadata";
 import { planCoversPlan } from "@/lib/plan-utils";
 import { pricingPlans } from "@/lib/pricing";
 import { getServerBillingState } from "@/lib/server-billing-state";
+import { founderOfferRetired } from "@/lib/founder-retirement";
+import { FounderRetired } from "@/components/founder-retired";
 
 export const metadata = pageMetadata({
   title: "Confirm Your Free Founder Access | ContentOS",
@@ -19,6 +21,7 @@ export default async function FounderCheckoutPage({
 }: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  if (founderOfferRetired()) return <FounderRetired />;
   const [user, billingState, params] = await Promise.all([
     getCurrentUser(),
     getServerBillingState(),

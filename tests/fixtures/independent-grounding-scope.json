@@ -1,0 +1,650 @@
+{
+  "schemaVersion": 1,
+  "status": "SEALED_INDEPENDENT_EXPECTATIONS_BEFORE_IMPLEMENTATION_EXECUTION",
+  "syntheticOnly": true,
+  "independence": "Authored without reading factual-grounding.ts, claim-scope.ts, new tests, runner results or parent edits for this task. Cases are newly authored and do not reuse Fieldline fixtures. The author has prior general grounding-review context from earlier tasks; this is independent of the latest implementation, not a claim of no prior exposure to the project.",
+  "scope": "Expected acceptance/rejection of individual proposed review classifications, with two separate structural adversarial certificates. No API, network, database, deployment or paid calls.",
+  "contract": {
+    "source": "Authoritative current source. A supplied brandContext is lower-priority saved information; the current notice explicitly controls conflicts.",
+    "output": "Exact text whose complete meaning must be evaluated. Do not substitute a fragment that omits a qualifier or relationship.",
+    "expected": "allow means this text/classification or certificate may pass; reject means it must not be approved as submitted. A rejection need not discard an entire generation; repair policy is outside this fixture.",
+    "kind": "The submitted reviewer classification, not the author's endorsement. Rejected creative/subjective cases intentionally disguise factual claims with those labels.",
+    "reason": "Independent expected-judgment rationale, not a required implementation enum.",
+    "evidence": "Proposed exact quotes. In negative cases a quote may be real but fail entailment, omit a negation, refer to another product or represent obsolete brand data. Structural cases instead carry an explicit review certificate.",
+    "positivePolicy": "Supported positives are fully entailed by the supplied facts, including stated conditions and straightforward arithmetic. Creative/subjective positives make no concrete unsupported factual assertion; they need not be quoted from the source.",
+    "structuralCases": "evaluationLayer=review_structure requires checking the supplied units/sourceStatements/review together. Do not pass these through a text-only claim classifier and report a semantic false negative.",
+    "ctaMode": "Defaults to none to distinguish ordinary instructional content from engagement. The location invitation pair explicitly uses product mode, so location grounding, not CTA mode, determines its expected result."
+  },
+  "cases": [
+    {
+      "id": "scope-01",
+      "category": "whole_vs_part",
+      "source": "Fictional catalogue notice. Vela Museum's online catalogue has 10 gallery pages. Four gallery pages have audio descriptions. The other six gallery pages and ticket checkout do not have audio descriptions.",
+      "output": "All gallery pages and ticket checkout now have audio descriptions.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Expands four gallery pages to the entire catalogue and checkout, directly contradicting the exclusions.",
+      "ctaMode": "none",
+      "pair": "gallery-scope",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Four gallery pages have audio descriptions."
+        }
+      ]
+    },
+    {
+      "id": "scope-02",
+      "category": "whole_vs_part",
+      "source": "Fictional catalogue notice. Vela Museum's online catalogue has 10 gallery pages. Four gallery pages have audio descriptions. The other six gallery pages and ticket checkout do not have audio descriptions.",
+      "output": "Four of the catalogue's 10 gallery pages have audio descriptions; the other six pages and ticket checkout do not.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Preserves the exact denominator, subset and excluded checkout. No site-wide coverage is implied.",
+      "ctaMode": "none",
+      "pair": "gallery-scope",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Vela Museum's online catalogue has 10 gallery pages."
+        },
+        {
+          "origin": "source",
+          "quote": "Four gallery pages have audio descriptions."
+        },
+        {
+          "origin": "source",
+          "quote": "The other six gallery pages and ticket checkout do not have audio descriptions."
+        }
+      ]
+    },
+    {
+      "id": "scope-03",
+      "category": "part_test_vs_whole_certification",
+      "source": "Fictional test record. The power switch on one Tern Lamp prototype survived 300 test cycles. No other components were tested. No durability certification was issued.",
+      "output": "Every Tern Lamp component is durability-certified.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "A test on one prototype's switch is neither testing of all components nor certification; certification is explicitly absent.",
+      "ctaMode": "none",
+      "pair": "component-scope",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "The power switch on one Tern Lamp prototype survived 300 test cycles."
+        }
+      ]
+    },
+    {
+      "id": "scope-04",
+      "category": "part_test_vs_whole_certification",
+      "source": "Fictional test record. The power switch on one Tern Lamp prototype survived 300 test cycles. No other components were tested. No durability certification was issued.",
+      "output": "One Tern Lamp prototype's power switch survived 300 test cycles; the other components were not tested.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Retains the one-prototype and one-component limitations and makes no certification claim.",
+      "ctaMode": "none",
+      "pair": "component-scope",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "The power switch on one Tern Lamp prototype survived 300 test cycles."
+        },
+        {
+          "origin": "source",
+          "quote": "No other components were tested."
+        }
+      ]
+    },
+    {
+      "id": "scope-05",
+      "category": "single_vs_every",
+      "source": "Fictional workshop record. Six designs were submitted to the Pebble Poster review. One submitted design received written feedback. The other five designs did not receive written feedback.",
+      "output": "Every submitted design received written feedback.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Changes one of six designs into all six and reverses the stated absence for five.",
+      "ctaMode": "none",
+      "pair": "feedback-quantifier",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "One submitted design received written feedback."
+        }
+      ]
+    },
+    {
+      "id": "scope-06",
+      "category": "single_vs_every",
+      "source": "Fictional workshop record. Six designs were submitted to the Pebble Poster review. One submitted design received written feedback. The other five designs did not receive written feedback.",
+      "output": "One of six submitted designs received written feedback; the remaining five did not.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Exactly preserves the quantified outcome and unit of observation.",
+      "ctaMode": "none",
+      "pair": "feedback-quantifier",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Six designs were submitted to the Pebble Poster review."
+        },
+        {
+          "origin": "source",
+          "quote": "One submitted design received written feedback."
+        },
+        {
+          "origin": "source",
+          "quote": "The other five designs did not receive written feedback."
+        }
+      ]
+    },
+    {
+      "id": "scope-07",
+      "category": "location_binding",
+      "source": "Fictional collection notice. Copper Parcel offers parcel collection at its East Wharf desk only. Its West Wharf room is a display room and does not provide parcel collection.",
+      "output": "Collect parcels at Copper Parcel's West Wharf room.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Transfers a service to the explicitly excluded location. This case is rejected for the location claim, independent of any CTA interpretation.",
+      "ctaMode": "product",
+      "pair": "collection-location",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Copper Parcel offers parcel collection at its East Wharf desk only."
+        }
+      ]
+    },
+    {
+      "id": "scope-08",
+      "category": "location_binding",
+      "source": "Fictional collection notice. Copper Parcel offers parcel collection at its East Wharf desk only. Its West Wharf room is a display room and does not provide parcel collection.",
+      "output": "Parcel collection is available only at Copper Parcel's East Wharf desk; its West Wharf room does not offer collection.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Keeps the service bound to the correct location and preserves exclusivity.",
+      "ctaMode": "product",
+      "pair": "collection-location",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Copper Parcel offers parcel collection at its East Wharf desk only."
+        },
+        {
+          "origin": "source",
+          "quote": "Its West Wharf room is a display room and does not provide parcel collection."
+        }
+      ]
+    },
+    {
+      "id": "scope-09",
+      "category": "frequency",
+      "source": "Fictional event notice. Cedar Loom has announced demonstrations on 5 May 2029 and 19 May 2029. These are the only announced dates. No recurring demonstration schedule has been announced.",
+      "output": "Cedar Loom runs demonstrations every week.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Two announced dates do not establish weekly recurrence; no recurrence is announced.",
+      "ctaMode": "none",
+      "pair": "event-frequency",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Cedar Loom has announced demonstrations on 5 May 2029 and 19 May 2029."
+        }
+      ]
+    },
+    {
+      "id": "scope-10",
+      "category": "frequency",
+      "source": "Fictional event notice. Cedar Loom has announced demonstrations on 5 May 2029 and 19 May 2029. These are the only announced dates. No recurring demonstration schedule has been announced.",
+      "output": "Cedar Loom has announced demonstrations on 5 and 19 May 2029, with no recurring schedule announced.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Date compression retains both dates and does not invent recurrence.",
+      "ctaMode": "none",
+      "pair": "event-frequency",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Cedar Loom has announced demonstrations on 5 May 2029 and 19 May 2029."
+        },
+        {
+          "origin": "source",
+          "quote": "No recurring demonstration schedule has been announced."
+        }
+      ]
+    },
+    {
+      "id": "scope-11",
+      "category": "capacity_vs_actual_quantity",
+      "source": "Fictional evaluation record. A Wren Colour evaluation can include at most four fabric samples. Three samples were reviewed during the most recent evaluation. No other sample was reviewed during that evaluation.",
+      "output": "Four fabric samples were reviewed during the most recent evaluation.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Substitutes the maximum permitted count for the actual count of three.",
+      "ctaMode": "none",
+      "pair": "sample-count",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "A Wren Colour evaluation can include at most four fabric samples."
+        }
+      ]
+    },
+    {
+      "id": "scope-12",
+      "category": "capacity_vs_actual_quantity",
+      "source": "Fictional evaluation record. A Wren Colour evaluation can include at most four fabric samples. Three samples were reviewed during the most recent evaluation. No other sample was reviewed during that evaluation.",
+      "output": "The most recent evaluation reviewed three fabric samples, one below the four-sample maximum.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "The count and maximum are supplied; the difference of one is an exact arithmetic transformation, not a success rate.",
+      "ctaMode": "none",
+      "pair": "sample-count",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "A Wren Colour evaluation can include at most four fabric samples."
+        },
+        {
+          "origin": "source",
+          "quote": "Three samples were reviewed during the most recent evaluation."
+        }
+      ]
+    },
+    {
+      "id": "scope-13",
+      "category": "duration_vs_guaranteed_result",
+      "source": "Fictional service notice. Juniper Assembly offers a 30-minute orientation explaining how to place an order. The orientation does not include shipping. No dispatch or delivery time has been promised.",
+      "output": "Your order is guaranteed to arrive within 30 minutes.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Moves orientation duration onto delivery and invents a guarantee despite the explicit absence of any delivery-time promise.",
+      "ctaMode": "none",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Juniper Assembly offers a 30-minute orientation explaining how to place an order."
+        }
+      ]
+    },
+    {
+      "id": "scope-14",
+      "category": "explicit_qualified_guarantee",
+      "source": "Fictional written offer. Juniper Assembly guarantees dispatch within two business days after payment has cleared. This guarantee concerns dispatch only. No delivery arrival date is guaranteed.",
+      "output": "Juniper Assembly guarantees dispatch within two business days after cleared payment, but does not guarantee a delivery arrival date.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "A guarantee is allowed when explicitly supplied; keeps its trigger, business-day unit, dispatch scope and arrival exclusion.",
+      "ctaMode": "none",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Juniper Assembly guarantees dispatch within two business days after payment has cleared."
+        },
+        {
+          "origin": "source",
+          "quote": "This guarantee concerns dispatch only."
+        },
+        {
+          "origin": "source",
+          "quote": "No delivery arrival date is guaranteed."
+        }
+      ]
+    },
+    {
+      "id": "scope-15",
+      "category": "same_feature_different_product",
+      "source": "Fictional product specification. HarborPad Mini can edit notes offline. HarborPad Plus requires an internet connection to edit notes and does not support offline editing. These are distinct products.",
+      "output": "HarborPad Plus supports offline note editing.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Reassigns the Mini capability to Plus, contradicting the explicit Plus limitation.",
+      "ctaMode": "none",
+      "pair": "product-feature-binding",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "HarborPad Mini can edit notes offline."
+        }
+      ]
+    },
+    {
+      "id": "scope-16",
+      "category": "same_feature_different_product",
+      "source": "Fictional product specification. HarborPad Mini can edit notes offline. HarborPad Plus requires an internet connection to edit notes and does not support offline editing. These are distinct products.",
+      "output": "HarborPad Mini can edit notes offline; HarborPad Plus requires an internet connection for note editing.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Preserves both product-to-capability relationships without combining their specifications.",
+      "ctaMode": "none",
+      "pair": "product-feature-binding",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "HarborPad Mini can edit notes offline."
+        },
+        {
+          "origin": "source",
+          "quote": "HarborPad Plus requires an internet connection to edit notes and does not support offline editing."
+        }
+      ]
+    },
+    {
+      "id": "scope-17",
+      "category": "relation_direction",
+      "source": "Fictional licensing record. Alder Type licenses its fonts to Bluefin Press. Alder Type is the licensor and Bluefin Press is the licensee. The agreement does not permit Bluefin Press to sublicense those fonts.",
+      "output": "Bluefin Press licenses its fonts to Alder Type under this agreement.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Uses the same names and licensing term but reverses the direction, ownership attribution and roles.",
+      "ctaMode": "none",
+      "pair": "licensing-direction",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Alder Type licenses its fonts to Bluefin Press."
+        }
+      ]
+    },
+    {
+      "id": "scope-18",
+      "category": "relation_direction",
+      "source": "Fictional licensing record. Alder Type licenses its fonts to Bluefin Press. Alder Type is the licensor and Bluefin Press is the licensee. The agreement does not permit Bluefin Press to sublicense those fonts.",
+      "output": "Bluefin Press is the licensee of Alder Type's fonts and cannot sublicense those fonts under this agreement.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Preserves licensee/licensor direction and the restriction on sublicensing.",
+      "ctaMode": "none",
+      "pair": "licensing-direction",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Alder Type licenses its fonts to Bluefin Press."
+        },
+        {
+          "origin": "source",
+          "quote": "Alder Type is the licensor and Bluefin Press is the licensee."
+        },
+        {
+          "origin": "source",
+          "quote": "The agreement does not permit Bluefin Press to sublicense those fonts."
+        }
+      ]
+    },
+    {
+      "id": "scope-19",
+      "category": "negation_and_product_scope",
+      "source": "Fictional shop policy. No refunds are available for downloaded patterns. Unopened physical kits can be refunded within 14 days.",
+      "output": "Refunds are available for downloaded patterns.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Trimming the negation produces the opposite policy. The separate physical-kit exception cannot support a downloaded-pattern refund.",
+      "ctaMode": "none",
+      "pair": "refund-scope",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "refunds are available for downloaded patterns."
+        },
+        {
+          "origin": "source",
+          "quote": "Unopened physical kits can be refunded within 14 days."
+        }
+      ]
+    },
+    {
+      "id": "scope-20",
+      "category": "negation_and_product_scope",
+      "source": "Fictional shop policy. No refunds are available for downloaded patterns. Unopened physical kits can be refunded within 14 days.",
+      "output": "Downloaded patterns are not refundable. Unopened physical kits can be refunded within 14 days.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Retains the negative policy and binds the positive exception to the correct product and time limit.",
+      "ctaMode": "none",
+      "pair": "refund-scope",
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "No refunds are available for downloaded patterns."
+        },
+        {
+          "origin": "source",
+          "quote": "Unopened physical kits can be refunded within 14 days."
+        }
+      ]
+    },
+    {
+      "id": "scope-21",
+      "category": "current_brief_vs_saved_brand",
+      "source": "Fictional current notice. This notice supersedes the saved business profile for parcel returns. Copper Parcel now accepts returns only on Wednesday. Returns are not accepted on other days.",
+      "output": "Copper Parcel accepts returns Monday through Friday.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Repeats the obsolete brand schedule despite an explicit current notice limiting returns to Wednesday. An extra current-source citation does not make the obsolete claim true.",
+      "ctaMode": "none",
+      "pair": "current-schedule",
+      "brandContext": {
+        "brandName": "Copper Parcel",
+        "offer": "Parcel returns accepted Monday through Friday."
+      },
+      "evidence": [
+        {
+          "origin": "brand",
+          "field": "offer",
+          "quote": "Parcel returns accepted Monday through Friday."
+        },
+        {
+          "origin": "source",
+          "quote": "This notice supersedes the saved business profile for parcel returns."
+        }
+      ]
+    },
+    {
+      "id": "scope-22",
+      "category": "current_brief_vs_saved_brand",
+      "source": "Fictional current notice. This notice supersedes the saved business profile for parcel returns. Copper Parcel now accepts returns only on Wednesday. Returns are not accepted on other days.",
+      "output": "Copper Parcel now accepts parcel returns only on Wednesday.",
+      "expected": "allow",
+      "kind": "supported",
+      "reason": "Uses the authoritative current brief rather than the conflicting saved brand offer.",
+      "ctaMode": "none",
+      "pair": "current-schedule",
+      "brandContext": {
+        "brandName": "Copper Parcel",
+        "offer": "Parcel returns accepted Monday through Friday."
+      },
+      "evidence": [
+        {
+          "origin": "source",
+          "quote": "Copper Parcel now accepts returns only on Wednesday."
+        }
+      ]
+    },
+    {
+      "id": "scope-23",
+      "category": "positive_creative_advice",
+      "source": "Fictional programme description. Paperway runs a discussion about arranging a desk. No prescribed desk layout or required exercise is specified.",
+      "output": "One optional idea: sketch two possible desk layouts and compare which feels calmer.",
+      "expected": "allow",
+      "kind": "creative",
+      "reason": "Clearly proposes an optional exercise. Two is the author's suggested comparison size, not an official programme requirement, measured result or promised benefit. It does not request engagement.",
+      "ctaMode": "none",
+      "evidence": []
+    },
+    {
+      "id": "scope-24",
+      "category": "positive_subjective_copy",
+      "source": "Fictional catalogue entry. Finch Bindery sells plain notebooks with blue covers. No awards, customer surveys or performance results are supplied.",
+      "output": "A quiet blue cover can feel like a fresh start.",
+      "expected": "allow",
+      "kind": "subjective",
+      "reason": "An aesthetic impression, qualified with can, does not assert an award, testimonial or measurable performance effect.",
+      "ctaMode": "none",
+      "evidence": []
+    },
+    {
+      "id": "scope-25",
+      "category": "creative_label_does_not_license_facts",
+      "source": "Fictional programme description. Paperway runs a desk-arrangement discussion. It has collected no participant output or productivity measurements.",
+      "output": "Our desk layout doubles every participant's output.",
+      "expected": "reject",
+      "kind": "creative",
+      "reason": "Despite the submitted creative label, this asserts a universal quantified efficacy result unsupported by the source.",
+      "ctaMode": "none",
+      "evidence": []
+    },
+    {
+      "id": "scope-26",
+      "category": "subjective_label_does_not_license_testimony",
+      "source": "Fictional catalogue entry. Finch Bindery sells plain notebooks with blue covers. No personal usage history, customer testimony or durability test results are supplied.",
+      "output": "I used this notebook for a year without a single torn page.",
+      "expected": "reject",
+      "kind": "subjective",
+      "reason": "This is an asserted personal usage and durability history, not aesthetic opinion. Both the duration and experience are invented.",
+      "ctaMode": "none",
+      "evidence": []
+    },
+    {
+      "id": "scope-27",
+      "category": "structural_duplicate_unit",
+      "source": "The parcel desk opens on Wednesday. It closes at noon.",
+      "output": "The parcel desk opens on Wednesday. It closes at noon.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "Both sentences are factually supported, but the review certifies u0 twice and never covers u1. Reject structurally rather than calling the output false.",
+      "ctaMode": "none",
+      "evaluationLayer": "review_structure",
+      "units": [
+        {
+          "id": "u0",
+          "path": "sections.0.body",
+          "start": 0,
+          "end": 35,
+          "text": "The parcel desk opens on Wednesday."
+        },
+        {
+          "id": "u1",
+          "path": "sections.0.body",
+          "start": 36,
+          "end": 54,
+          "text": "It closes at noon."
+        }
+      ],
+      "sourceStatements": [
+        {
+          "id": "s0",
+          "origin": "brief",
+          "field": "source",
+          "text": "The parcel desk opens on Wednesday."
+        },
+        {
+          "id": "s1",
+          "origin": "brief",
+          "field": "source",
+          "text": "It closes at noon."
+        }
+      ],
+      "review": {
+        "decisions": [
+          {
+            "id": "u0",
+            "kind": "supported",
+            "references": [
+              {
+                "sourceId": "s0",
+                "quote": "The parcel desk opens on Wednesday."
+              }
+            ],
+            "reason": "none",
+            "replacement": null
+          },
+          {
+            "id": "u0",
+            "kind": "supported",
+            "references": [
+              {
+                "sourceId": "s1",
+                "quote": "It closes at noon."
+              }
+            ],
+            "reason": "none",
+            "replacement": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "scope-28",
+      "category": "structural_missing_unit",
+      "source": "The parcel desk opens on Wednesday. It closes at noon.",
+      "output": "The parcel desk opens on Wednesday. It closes at noon.",
+      "expected": "reject",
+      "kind": "supported",
+      "reason": "The sole decision correctly supports u0, but u1 is unreviewed. Reject the incomplete certificate, not either source-backed sentence.",
+      "ctaMode": "none",
+      "evaluationLayer": "review_structure",
+      "units": [
+        {
+          "id": "u0",
+          "path": "sections.0.body",
+          "start": 0,
+          "end": 35,
+          "text": "The parcel desk opens on Wednesday."
+        },
+        {
+          "id": "u1",
+          "path": "sections.0.body",
+          "start": 36,
+          "end": 54,
+          "text": "It closes at noon."
+        }
+      ],
+      "sourceStatements": [
+        {
+          "id": "s0",
+          "origin": "brief",
+          "field": "source",
+          "text": "The parcel desk opens on Wednesday."
+        },
+        {
+          "id": "s1",
+          "origin": "brief",
+          "field": "source",
+          "text": "It closes at noon."
+        }
+      ],
+      "review": {
+        "decisions": [
+          {
+            "id": "u0",
+            "kind": "supported",
+            "references": [
+              {
+                "sourceId": "s0",
+                "quote": "The parcel desk opens on Wednesday."
+              }
+            ],
+            "reason": "none",
+            "replacement": null
+          }
+        ]
+      }
+    }
+  ],
+  "counts": {
+    "total": 28,
+    "semantic": 26,
+    "structural": 2,
+    "allow": 13,
+    "reject": 15
+  },
+  "limits": [
+    "Finite synthetic expectations, not a proof of arbitrary natural-language entailment or general factual safety.",
+    "Matched positive/negative pairs share contexts and are correlated; count them as examples, not independent statistical trials.",
+    "Independent expected labels are sealed before the parent executes the validator. Do not alter them retrospectively merely to fit implementation output.",
+    "Evidence provenance, wording, scope and relations matter together; shared tokens, numerals or category names alone do not establish support.",
+    "Structural failures are reported separately from semantic false positives/negatives.",
+    "No claim is made about actual LLM semantic-review accuracy or end-to-end delivery."
+  ]
+}

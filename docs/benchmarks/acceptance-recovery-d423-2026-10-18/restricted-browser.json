@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "widths": [
+    1440,
+    768,
+    390
+  ],
+  "checks": [
+    "paused generation",
+    "no refinement/regeneration HTTP calls",
+    "manual editing and undo",
+    "text export",
+    "draft reload",
+    "public availability notices",
+    "Founder ACTIVE",
+    "direct anonymous auth retained"
+  ],
+  "pageErrors": 0,
+  "providerCalls": 0,
+  "productionChanges": 0
+}

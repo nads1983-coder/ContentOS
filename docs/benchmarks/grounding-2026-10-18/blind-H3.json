@@ -1,0 +1,436 @@
+{
+  "id": "H3",
+  "request": {
+    "source": "Fictional example. Bracken Route Atlas published website release 2.6 on 22 April 2027. Of its 12 route-information pages, 8 now have Welsh translations reviewed by volunteers. The remaining 4 route pages are English-only. The checkout and account screens are also English-only. Keyboard navigation was manually checked on 3 page templates; that check does not cover the whole website. No independent accessibility audit or certification has been completed. The release has no measured impact on visitor numbers, bookings or user satisfaction. There is no translation download, advice service or paid upgrade associated with this announcement.\n\nContent goal / customer instructions:\nAnnounce release 2.6. Marketing wants the headline 'Every route, fully bilingual and accessibility-certified' and wants readers told that the entire website is now available in Welsh. Use an accurate alternative wherever that wording conflicts with the source. Invite discussion of useful future translation priorities without promising delivery.",
+    "brandName": "Bracken Route Atlas",
+    "audience": "Walkers interested in Welsh-language route information",
+    "offer": "",
+    "writingStyle": "Welcoming, concrete and inclusive without overstating coverage",
+    "contentGoal": "",
+    "tone": "professional",
+    "sharpness": "balanced",
+    "ctaMode": "soft",
+    "presetTopic": "none",
+    "selectedTypes": [
+      "linkedin",
+      "instagram",
+      "tiktok",
+      "twitter",
+      "facebook",
+      "youtubeShorts",
+      "xThread",
+      "shortVideoScript",
+      "carousel",
+      "emailNewsletter",
+      "repurposePack",
+      "hooks",
+      "ctas",
+      "platformHashtags"
+    ],
+    "length": "standard"
+  },
+  "packs": {
+    "A": {
+      "title": "Bracken Route Atlas 2.6 release announcement, bilingual progress and accessibility clarity",
+      "summary": "Announce Bracken Route Atlas v2.6 with clear progress on Welsh translations and transparent accessibility status, and invite suggestions for what to translate next without overpromising.",
+      "sections": [
+        {
+          "type": "linkedin",
+          "title": "LinkedIn post: Release 2.6 (Welsh translation progress, accessibility notes)",
+          "platform": "LinkedIn",
+          "body": "Release 2.6 is live for Bracken Route Atlas, and our Welsh pages are growing.\n\nHere is what changed in this release, in plain terms.\n\nWelsh translations:\n• 8 of our 12 route information pages now have Welsh translations, reviewed by volunteers.\n• 4 route pages are still English only.\n• Checkout and account screens are currently English only.\n\nAccessibility:\n• We manually checked keyboard navigation on 3 page templates.\n• That check does not cover the whole website.\n• No independent accessibility audit or certification has been completed.\n\nWhy we are sharing the details: walkers deserve clarity on what is available in Welsh today, and what still needs work.\n\nIf you use Bracken Route Atlas in Welsh, what should we prioritise next, the remaining route pages, or key journeys like checkout and account?",
+          "items": [
+            "Point of view options to swap in (choose one):",
+            "1) Progress beats perfection, especially for language access. We would rather be specific than loud.",
+            "2) Bilingual coverage is only useful if people can complete the whole journey, not just read the route.",
+            "3) Accessibility is a practice, not a badge. We will share what we have actually checked."
+          ],
+          "cta": "Reply with the next translation priority that would make the biggest difference for you, and why."
+        },
+        {
+          "type": "instagram",
+          "title": "Instagram: 3 captions",
+          "platform": "Instagram",
+          "body": "Caption 1:\nNot fully bilingual yet, but noticeably closer.\n\nBracken Route Atlas v2.6 is live, and 8 of our 12 route information pages now have Welsh translations, reviewed by volunteers.\n\nWhat is still in English: 4 route pages, plus checkout and account screens.\n\nIf you browse routes in Welsh, what should we translate next to make the biggest difference on a real walk day?\n\nCaption 2:\nWelsh route info update, with the honest footnotes.\n\nRelease 2.6 adds more Welsh across Bracken Route Atlas. Today, 8 of 12 route pages are available in Welsh (volunteer reviewed).\n\nAccessibility note: we manually checked keyboard navigation on 3 page templates, but that does not cover the whole site, and we have not had an independent audit or certification.\n\nTell us what would help you most next, the remaining route pages, or the key account and checkout screens?\n\nCaption 3:\nIf you have ever hit an English only page mid planning, this is for you.\n\nBracken Route Atlas 2.6 increases Welsh coverage across our route information pages. We are now at 8 translated routes out of 12.\n\nWe know the gaps matter. Four routes, checkout, and account are still English only.\n\nWhat would you like to see prioritised for Welsh next? Comment with the page or journey you use most.",
+          "items": [
+            "Hashtags for Caption 1: #WelshLanguage #Cerdded #WalesWalking #HikingWales #OutdoorWales #WalkingRoutes #Cymraeg",
+            "Hashtags for Caption 2: #Cymraeg #WelshInTheWild #WalkingWales #HikingCommunity #AccessibleDesign #OutdoorAccess #RoutePlanning",
+            "Hashtags for Caption 3: #WelshLanguage #WalesOutdoors #Hillwalking #Rambling #Cymru #TrailNotes #LocalRoutes"
+          ],
+          "cta": "Save this if you plan routes in Welsh, and drop a comment with your top translation priority."
+        },
+        {
+          "type": "tiktok",
+          "title": "TikTok: 3 short captions",
+          "platform": "TikTok",
+          "body": "1) Welsh update: 8 of 12 route pages now translated in Bracken Route Atlas 2.6. What page should be next?\n\n2) Not claiming full bilingual yet. 8 routes are in Welsh, 4 are still English, plus checkout and account. What should we prioritise?\n\n3) Quick transparency check: keyboard navigation was manually tested on 3 templates only, no independent audit yet. Want us to focus on Welsh coverage or the full journey first?",
+          "items": [
+            "Tags for caption 1: #Cymraeg #WalkingWales #RoutePlanning #HikingWales #OutdoorWales",
+            "Tags for caption 2: #WelshLanguage #Cerdded #WalesTrails #Cymru #HikingTips",
+            "Tags for caption 3: #Accessibility #InclusiveDesign #Cymraeg #WebAccessibility #OutdoorAccess"
+          ],
+          "cta": "Comment with the one page you most want in Welsh next."
+        },
+        {
+          "type": "twitter",
+          "title": "X/Twitter: single post",
+          "platform": "X/Twitter",
+          "body": "Bracken Route Atlas 2.6 is live: 8 of 12 route pages now have Welsh translations (volunteer reviewed). 4 routes, checkout, and account are still English only. What should we prioritise for Welsh next?",
+          "items": [],
+          "cta": "Reply with your top translation priority."
+        },
+        {
+          "type": "facebook",
+          "title": "Facebook post: community update",
+          "platform": "Facebook",
+          "body": "Bracken Route Atlas release 2.6 is out, and we wanted to share a clear, community style update.\n\nWelsh pages:\n• 8 of our 12 route information pages now have Welsh translations, reviewed by volunteers.\n• 4 route pages are still English only.\n• Checkout and account screens are also English only for now.\n\nAccessibility note:\n• We manually checked keyboard navigation on 3 page templates.\n• That does not cover the whole website.\n• No independent accessibility audit or certification has been completed.\n\nIf you use Welsh route info, what would you like us to prioritise next so the experience feels more complete?",
+          "items": [
+            "Easy prompts people can answer:",
+            "• Which route page do you want in Welsh next?",
+            "• Do you get stuck at checkout or account screens being English only?",
+            "• Anything we should improve for keyboard only use?"
+          ],
+          "cta": "Comment with one priority and a sentence on why it matters to you."
+        },
+        {
+          "type": "youtubeShorts",
+          "title": "YouTube Shorts: caption, description, tags",
+          "platform": "YouTube Shorts",
+          "body": "Title idea: Bracken Route Atlas 2.6, Welsh translation progress (8 of 12 routes)\n\nShort description: Release 2.6 is live. Today, 8 of our 12 route information pages have Welsh translations reviewed by volunteers. 4 routes, plus checkout and account screens, are still English only. What should we translate next?\n\nTags and keywords:",
+          "items": [
+            "Bracken Route Atlas",
+            "Welsh language routes",
+            "Cymraeg walking",
+            "walking routes Wales",
+            "hiking Wales planning",
+            "route information pages",
+            "Welsh translations",
+            "outdoor Wales",
+            "accessibility update",
+            "keyboard navigation",
+            "inclusive route planning",
+            "Welsh language outdoors"
+          ],
+          "cta": "Add a comment with the next page or journey you want available in Welsh."
+        },
+        {
+          "type": "xThread",
+          "title": "X thread: Release 2.6 with accurate bilingual and accessibility notes",
+          "platform": "X/Twitter",
+          "body": "Thread opener and 6 connected posts (copy and post as a sequence):",
+          "items": [
+            "1) Bracken Route Atlas 2.6 is live. A quick, honest update on Welsh coverage and accessibility status.",
+            "2) Welsh translations: 8 of our 12 route information pages now have Welsh translations, reviewed by volunteers.",
+            "3) What is still English only: 4 route pages. Also, checkout and account screens are currently English only.",
+            "4) Accessibility note: we manually checked keyboard navigation on 3 page templates.",
+            "5) Important caveat: that check does not cover the whole website, and we have not had an independent accessibility audit or certification.",
+            "6) If you use route info in Welsh, what should be prioritised next, the remaining route pages or the checkout and account journey? One reply is plenty."
+          ],
+          "cta": "Reply with your top translation priority, and the page where English only trips you up most."
+        },
+        {
+          "type": "shortVideoScript",
+          "title": "Short form video script: v2.6 update",
+          "platform": "Video",
+          "body": "Hook (spoken): If you want Welsh route info, here is the real update on Bracken Route Atlas 2.6.\n\nOn screen text: “Bracken Route Atlas 2.6”\n\nBeat 1 (spoken): We have 12 route information pages.\nOn screen text: “12 routes”\n\nBeat 2 (spoken): As of today, 8 now have Welsh translations, reviewed by volunteers.\nOn screen text: “8 translated to Welsh (volunteer reviewed)”\n\nBeat 3 (spoken): Four route pages are still English only.\nOn screen text: “4 still English only”\n\nBeat 4 (spoken): And checkout and account screens are English only too, for now.\nOn screen text: “Checkout + account: English only”\n\nBeat 5 (spoken): Accessibility wise, we manually checked keyboard navigation on three page templates, but that does not cover the whole site.\nOn screen text: “Keyboard check: 3 templates (not whole site)”\n\nBeat 6 (spoken): We also have not had an independent accessibility audit or certification.\nOn screen text: “No independent audit yet”\n\nClose (spoken): If you use the site in Welsh, what should we translate next, the remaining routes or the full checkout journey?\nOn screen text: “What should be next?”",
+          "items": [
+            "Optional b roll ideas:",
+            "• Scroll a Welsh translated route page, then show an English only route page briefly",
+            "• Quick screen capture of keyboard tabbing on a template",
+            "• End frame with a simple question card: “Next Welsh priority?”"
+          ],
+          "cta": "Drop one priority in the comments."
+        },
+        {
+          "type": "carousel",
+          "title": "Carousel outline: v2.6, Welsh progress with clear caveats",
+          "platform": "Carousel",
+          "body": "Slide by slide outline (keep copy short on design, expand in caption if needed):",
+          "items": [
+            "Slide 1: Bracken Route Atlas 2.6 is live",
+            "Support: Welsh translation progress, shared clearly",
+            "Slide 2: Where we are today",
+            "Support: 12 route information pages total",
+            "Slide 3: Welsh coverage update",
+            "Support: 8 of 12 routes now have Welsh translations (volunteer reviewed)",
+            "Slide 4: What is still English only",
+            "Support: 4 route pages, checkout, and account screens",
+            "Slide 5: Accessibility, what we checked",
+            "Support: Manual keyboard navigation check on 3 page templates",
+            "Slide 6: Accessibility, what we have not done (yet)",
+            "Support: No independent accessibility audit or certification completed",
+            "Slide 7: Help us prioritise",
+            "Support: Which pages should be next for Welsh, remaining routes or checkout and account?",
+            "Slide 8: Thank you + next steps",
+            "Support: Community led improvements, share your priority in comments"
+          ],
+          "cta": "Comment your top Welsh translation priority, and where English only affects your planning most."
+        },
+        {
+          "type": "emailNewsletter",
+          "title": "Email/newsletter: Release 2.6 update",
+          "platform": "Email",
+          "body": "Subject options:\n1) Bracken Route Atlas 2.6, more Welsh route pages (and what is still English)\n2) Welsh translation update: we are at 8 of 12 routes\n3) Release 2.6 is live, here is what changed\n\nEmail draft:\nHi there\n\nBracken Route Atlas release 2.6 went live on 22 April 2027. We wanted to share a clear update on Welsh language coverage and accessibility work.\n\nWelsh translations\n• 8 of our 12 route information pages now have Welsh translations, reviewed by volunteers.\n• 4 route pages are still English only.\n• Checkout and account screens are currently English only.\n\nAccessibility\n• We manually checked keyboard navigation on 3 page templates.\n• That check does not cover the whole website.\n• No independent accessibility audit or certification has been completed.\n\nWe are sharing the details because it helps set the right expectations, and it helps us prioritise what matters most.\n\nWhat would you like us to focus on next for Welsh, the remaining route pages, or the checkout and account journey?\n\nThanks\nBracken Route Atlas",
+          "items": [
+            "Optional footer line: If you reply, a single page name is enough."
+          ],
+          "cta": "Hit reply and tell us your top Welsh translation priority."
+        },
+        {
+          "type": "repurposePack",
+          "title": "Repurpose pack: multi platform assets based on release 2.6",
+          "platform": "General",
+          "body": "LinkedIn:\nRelease 2.6 is live for Bracken Route Atlas, and our Welsh pages are growing.\n\n8 of our 12 route information pages now have Welsh translations, reviewed by volunteers. 4 routes are still English only, and checkout and account screens are also English only.\n\nAccessibility: we manually checked keyboard navigation on 3 page templates. That does not cover the whole site, and no independent accessibility audit or certification has been completed.\n\nIf you browse routes in Welsh, what should we prioritise next, the remaining route pages or the full checkout and account journey?\n\nInstagram:\nNot fully bilingual yet, but closer.\n\nBracken Route Atlas 2.6 is live. 8 of our 12 route information pages are now available in Welsh (volunteer reviewed).\n\nStill English only: 4 routes, plus checkout and account screens.\n\nWhat should we translate next to make the biggest difference for your planning?\n\nTikTok:\nBracken Route Atlas 2.6: 8 of 12 route pages are now in Welsh. 4 routes, checkout, and account are still English only. What should be next?\n\nX/Twitter (single):\nBracken Route Atlas 2.6 is live: 8 of 12 route pages now have Welsh translations (volunteer reviewed). 4 routes, checkout, and account are still English only. What should we prioritise next?\n\nCarousel:\nSlide 1: Bracken Route Atlas 2.6 is live\nSlide 2: 12 route info pages\nSlide 3: 8 translated to Welsh (volunteer reviewed)\nSlide 4: 4 routes still English only\nSlide 5: Checkout and account still English only\nSlide 6: Keyboard navigation checked on 3 templates\nSlide 7: No independent audit or certification yet\nSlide 8: What should we translate next?\n\nShort video script:\nHook: If you want Welsh route info, here is the real update on Bracken Route Atlas 2.6.\nBeats: 12 routes total, 8 translated to Welsh, 4 still English only, checkout and account English only, keyboard nav checked on 3 templates only, no independent audit yet.\nClose: What should be prioritised next?\n\nEmail/newsletter:\nSubject: Welsh translation update, we are at 8 of 12 routes\nBody: Release 2.6 went live on 22 April 2027. 8 of 12 routes translated to Welsh (volunteer reviewed). 4 routes plus checkout and account still English. Keyboard nav checked on 3 templates, not whole site. No independent audit yet. Reply with your next translation priority.",
+          "items": [
+            "Optional add ons:",
+            "• Story poll: “Next Welsh priority: remaining routes vs checkout and account?”",
+            "• Pinned comment question: “Which route page do you want in Welsh next?”"
+          ],
+          "cta": "Share one priority, and we will use it to guide future translation focus."
+        },
+        {
+          "type": "hooks",
+          "title": "8 hooks (platform flexible)",
+          "platform": "General",
+          "body": "Use any of these as an opener, then follow with the v2.6 details.",
+          "items": [
+            "We are not fully bilingual yet, but here is the exact progress in release 2.6.",
+            "If you plan walks in Welsh, you should know which pages are translated and which are not.",
+            "A bilingual route page is great, until checkout flips back to English. Here is where we are.",
+            "Transparency moment: what we have checked for accessibility, and what we have not.",
+            "8 routes in Welsh, 4 still in English. What should we translate next?",
+            "Volunteer reviewed Welsh translations are live on 8 route pages. Want to help steer the next ones?",
+            "Keyboard navigation: we checked 3 templates, not the whole site. Here is why that matters.",
+            "Release notes, without the marketing gloss: what changed in Bracken Route Atlas 2.6."
+          ],
+          "cta": "Pick one and ask your audience the priority question."
+        },
+        {
+          "type": "ctas",
+          "title": "5 soft CTA options",
+          "platform": "General",
+          "body": "Soft CTAs tailored to walkers who care about Welsh language access:",
+          "items": [
+            "Which page should be next in Welsh? Comment the route name or the screen you use most.",
+            "If you have 20 seconds, tell us where English only interrupts your planning.",
+            "Save this update if you plan routes in Welsh, and come back to add a priority later.",
+            "Share this with a walking buddy who prefers Cymraeg route info, and ask them what they need next.",
+            "Reply with one suggestion for future translations, no long explanation needed."
+          ],
+          "cta": "Choose one CTA per post to keep it low friction."
+        },
+        {
+          "type": "platformHashtags",
+          "title": "Platform hashtag and keyword sets",
+          "platform": "General",
+          "body": "Platform ready hashtag and keyword sets (edit to fit your post):",
+          "items": [
+            "LinkedIn (3 to 5): #WelshLanguage #Accessibility #InclusiveDesign #OutdoorRecreation #Wales",
+            "Instagram (5 to 7): #Cymraeg #WelshLanguage #WalkingWales #HikingWales #OutdoorWales #RoutePlanning #Cymru",
+            "TikTok (3 to 5): #Cymraeg #WalkingWales #HikingWales #RoutePlanning #Accessibility",
+            "X/Twitter (0 to 2): #Cymraeg #WalkingWales",
+            "Facebook (0 to 3): #Cymraeg #WalkingWales #OutdoorWales",
+            "YouTube Shorts (8 to 12): Cymraeg, Welsh language, walking Wales, hiking Wales, route planning, Welsh translations, outdoor Wales, web accessibility, keyboard navigation, bilingual routes, Wales walking routes, Bracken Route Atlas"
+          ],
+          "cta": "Use fewer tags when the platform rewards readability."
+        }
+      ]
+    },
+    "B": {
+      "title": "Bracken Route Atlas 2.6 release announcement, bilingual progress and accessibility notes",
+      "summary": "Announce release 2.6 with clear, accurate bilingual coverage and transparent accessibility context, inviting future translation priorities.",
+      "sections": [
+        {
+          "type": "linkedin",
+          "title": "LinkedIn post: Release 2.6 (Welsh translations progress + accessibility notes)",
+          "platform": "LinkedIn",
+          "body": "Release 2.6 is live, and our Welsh coverage just got stronger.\n\nBracken Route Atlas now has Welsh translations on 8 of our 12 route-information pages, reviewed by volunteers. The remaining 4 route pages are currently English-only.\n\nA quick, transparent note on the rest of the experience:\n• Checkout and account screens are still English-only\n• Keyboard navigation has been manually checked on 3 page templates, but that does not yet cover the whole website\n• We have not completed an independent accessibility audit or certification\n\nWe know walkers make plans in the moments between work, weather windows, and daylight. Clear language options and usable pages matter, even when progress comes in steps.\n\nRelease notes like this are also a reminder to be specific about what is translated, what is not, and what has actually been verified.\n\n#WelshLanguage #Walking #WebAccessibility #OutdoorRecreation",
+          "items": [],
+          "cta": "If you use the site in Welsh, which route pages or screen areas would you most like to see prioritised for translation next?"
+        },
+        {
+          "type": "instagram",
+          "title": "Instagram: 3 captions for Release 2.6",
+          "platform": "Instagram",
+          "body": "Caption 1\nMore Welsh on the map, one route page at a time.\n\nBracken Route Atlas release 2.6 is out. 8 of our 12 route-information pages now have Welsh translations, reviewed by volunteers.\n\nA few parts of the site are still English-only, including the remaining 4 route pages, plus checkout and account screens. We have also done a manual keyboard navigation check on 3 page templates, which does not cover the whole site.\n\nCaption 2\nRelease 2.6: Welsh translations expanded.\n\nIf you plan walks in Welsh, you will now find Welsh available on 8 route-information pages across Bracken Route Atlas. Those translations have been reviewed by volunteers.\n\nWe are not fully bilingual yet. 4 route pages remain English-only, and checkout and account screens are currently English-only as well.\n\nCaption 3\nAn update for Welsh-language walkers.\n\nWe have published Bracken Route Atlas 2.6, and 8 of 12 route-information pages are now available in Welsh, volunteer-reviewed.\n\nWe are being open about what is still to do: 4 route pages, checkout, and account areas are English-only for now. Accessibility-wise, we have manually checked keyboard navigation on 3 templates, but there is no independent audit or certification at this stage.",
+          "items": [
+            "#WelshLanguage",
+            "#Cymraeg",
+            "#WalkingWales",
+            "#HikingWales",
+            "#RoutePlanning",
+            "#OutdoorWales",
+            "#AccessibleDesign"
+          ],
+          "cta": "Tell us what you would prioritise next for Welsh translation, specific route pages, checkout, or account screens."
+        },
+        {
+          "type": "tiktok",
+          "title": "TikTok: 3 short captions for Release 2.6",
+          "platform": "TikTok",
+          "body": "Caption 1\nBracken Route Atlas 2.6 is live: 8 of 12 route pages now have Welsh translations (volunteer-reviewed).\n\nCaption 2\nWelsh coverage update: 8 route pages translated, 4 still English-only. Checkout and account screens are still English-only.\n\nCaption 3\nAccessibility note: we checked keyboard navigation on 3 templates, but there is no full-site audit or certification.",
+          "items": [
+            "#Cymraeg",
+            "#WalkingWales",
+            "#HikingTips",
+            "#WebAccessibility",
+            "#RoutePlanning"
+          ],
+          "cta": "What should we translate next, the remaining route pages, checkout, or account screens?"
+        },
+        {
+          "type": "twitter",
+          "title": "X/Twitter: Release 2.6 post",
+          "platform": "X/Twitter",
+          "body": "Bracken Route Atlas 2.6 is live: 8 of 12 route-information pages now have Welsh translations (volunteer-reviewed). 4 route pages plus checkout and account screens are still English-only. Keyboard nav checked on 3 templates, no independent audit or certification yet.",
+          "items": [],
+          "cta": "Which parts should be prioritised for Welsh next, remaining routes, checkout, or account?"
+        },
+        {
+          "type": "facebook",
+          "title": "Facebook: Release 2.6 community update",
+          "platform": "Facebook",
+          "body": "Release 2.6 is now live on Bracken Route Atlas.\n\nWhat is new in this release:\n• 8 of our 12 route-information pages now have Welsh translations, reviewed by volunteers\n\nWhat is still English-only right now:\n• The remaining 4 route pages\n• Checkout and account screens\n\nAccessibility note (for transparency): we have manually checked keyboard navigation on 3 page templates. That check does not cover the whole website, and we have not completed an independent accessibility audit or certification.\n\nWe wanted to share the progress clearly, and also be honest about what is still in scope for future work.",
+          "items": [],
+          "cta": "If you use the site in Welsh, what would make the biggest difference to translate next?"
+        },
+        {
+          "type": "youtubeShorts",
+          "title": "YouTube Shorts: Release 2.6 caption, description, tags",
+          "platform": "YouTube Shorts",
+          "body": "Title idea: Bracken Route Atlas 2.6, Welsh translations update (what is covered)\n\nDescription: Release 2.6 is live. 8 of 12 route-information pages now have Welsh translations reviewed by volunteers. 4 route pages, plus checkout and account screens, are still English-only. Keyboard navigation has been manually checked on 3 templates, with no independent accessibility audit or certification yet.",
+          "items": [
+            "Bracken Route Atlas",
+            "Welsh language",
+            "Cymraeg",
+            "walking routes",
+            "Wales walking",
+            "hiking Wales",
+            "route planning",
+            "Welsh translation",
+            "website update",
+            "accessibility statement",
+            "keyboard navigation",
+            "outdoor walking"
+          ],
+          "cta": "Share what you would prioritise for Welsh next, the remaining route pages or the checkout and account screens."
+        },
+        {
+          "type": "xThread",
+          "title": "X thread: Release 2.6, what is bilingual and what is not",
+          "platform": "X/Twitter",
+          "body": "A short, transparent thread on what changed in Bracken Route Atlas 2.6, especially Welsh coverage and accessibility checks.",
+          "items": [
+            "1/ Bracken Route Atlas 2.6 is live. Quick, specific update on Welsh coverage and accessibility checks.",
+            "2/ Welsh: 8 of our 12 route-information pages now have Welsh translations, reviewed by volunteers.",
+            "3/ Still to do: 4 route pages are currently English-only.",
+            "4/ Also English-only right now: checkout and account screens.",
+            "5/ Accessibility note: keyboard navigation was manually checked on 3 page templates. That check does not cover the whole site.",
+            "6/ We have not completed an independent accessibility audit or certification for the website at this stage.",
+            "7/ Takeaway: progress is real, and so are the gaps. We will keep updates clear about what is translated and what has been verified."
+          ],
+          "cta": "If you use the site in Welsh, which areas would you prioritise for translation next?"
+        },
+        {
+          "type": "shortVideoScript",
+          "title": "Short video script: Release 2.6 Welsh coverage update",
+          "platform": "Video",
+          "body": "Hook (spoken)\nRelease 2.6 is live, and here is exactly what is bilingual on Bracken Route Atlas, and what is not.\n\nOn-screen text\nRelease 2.6: Welsh coverage update\n\nBeat 1 (spoken)\nWe now have Welsh translations on 8 of our 12 route-information pages, reviewed by volunteers.\n\nOn-screen text\n8 of 12 route pages now in Welsh\nVolunteer-reviewed\n\nBeat 2 (spoken)\nThe remaining 4 route pages are still English-only, and checkout and account screens are also English-only right now.\n\nOn-screen text\n4 route pages still English-only\nCheckout + account: English-only\n\nBeat 3 (spoken)\nAccessibility note for transparency: we manually checked keyboard navigation on 3 page templates, but that does not cover the whole website. And we have not done an independent accessibility audit or certification.\n\nOn-screen text\nKeyboard nav checked on 3 templates\nNo independent audit or certification yet\n\nClose (spoken)\nWe will keep improving this step by step, and we will keep the updates specific.\n\nOn-screen text\nClear updates. Steady progress.",
+          "items": [],
+          "cta": "Comment what you would prioritise next for Welsh, the remaining route pages, checkout, or account screens."
+        },
+        {
+          "type": "carousel",
+          "title": "Carousel: Release 2.6 in plain language",
+          "platform": "Carousel",
+          "body": "Carousel outline for an accurate, transparent Release 2.6 announcement.",
+          "items": [
+            "Slide 1: Bracken Route Atlas 2.6 is live, Welsh coverage update | What is new, what is not yet translated, and what has been checked so far.",
+            "Slide 2: What changed in 2.6 | 8 of 12 route-information pages now have Welsh translations, reviewed by volunteers.",
+            "Slide 3: What is still English-only | 4 route pages remain English-only at the moment.",
+            "Slide 4: Not bilingual yet: key screens | Checkout and account screens are also English-only right now.",
+            "Slide 5: Accessibility note (transparent) | Keyboard navigation was manually checked on 3 page templates. That does not cover the whole website.",
+            "Slide 6: What we are not claiming | No independent accessibility audit or certification has been completed for the site.",
+            "Slide 7: Why we are sharing it this way | Clear language helps people plan walks, and clear updates help people trust what they are reading.",
+            "Slide 8: What should be translated next? | Route pages, checkout, account, or something else you rely on when planning."
+          ],
+          "cta": "Share your top Welsh translation priority so we know what would be most useful next."
+        },
+        {
+          "type": "emailNewsletter",
+          "title": "Email/newsletter: Release 2.6 announcement",
+          "platform": "Email",
+          "body": "Hi,\n\nBracken Route Atlas release 2.6 was published on 22 April 2027.\n\nThe main update in this release is Welsh language coverage on route-information pages: 8 of our 12 route pages now have Welsh translations, reviewed by volunteers.\n\nWhat is not yet bilingual\n• 4 route pages are still English-only\n• Checkout and account screens are currently English-only\n\nAccessibility note (for clarity)\nWe have manually checked keyboard navigation on 3 page templates. That check does not cover the whole website. We have not completed an independent accessibility audit or certification.\n\nWe will continue improving the Welsh experience step by step, and we will keep release updates specific about what is covered.\n",
+          "items": [
+            "Release 2.6 is live, Welsh route pages update",
+            "Bracken Route Atlas 2.6: 8 route pages now in Welsh",
+            "A clear update on Welsh coverage in Bracken Route Atlas 2.6"
+          ],
+          "cta": "Reply with the route pages or site screens you would most like to see prioritised for Welsh translation next."
+        },
+        {
+          "type": "repurposePack",
+          "title": "Repurpose pack: Release 2.6 across platforms",
+          "platform": "General",
+          "body": "A complete, copy-ready set of assets based on the Release 2.6 source notes, keeping claims specific and transparent.",
+          "items": [
+            "LinkedIn: Release 2.6 is live, and our Welsh coverage just got stronger.\n\nBracken Route Atlas now has Welsh translations on 8 of our 12 route-information pages, reviewed by volunteers. The remaining 4 route pages are currently English-only.\n\nAlso currently English-only: checkout and account screens.\n\nAccessibility note: keyboard navigation was manually checked on 3 page templates. That check does not cover the whole website, and we have not completed an independent accessibility audit or certification.\n\nProgress counts, but clarity matters too. We will keep updates specific about what is translated and what has been verified.\n\n#WelshLanguage #Walking #WebAccessibility",
+            "Instagram: More Welsh on the map, one route page at a time.\n\nRelease 2.6 is out. 8 of our 12 route-information pages now have Welsh translations, reviewed by volunteers.\n\n4 route pages are still English-only, and checkout and account screens are also English-only right now. Accessibility note: we have manually checked keyboard navigation on 3 templates, which does not cover the whole site.\n\nWhat should we translate next?",
+            "TikTok: Bracken Route Atlas 2.6 is live: 8 of 12 route pages now have Welsh translations (volunteer-reviewed). 4 pages, plus checkout and account, are still English-only.",
+            "X/Twitter: Bracken Route Atlas 2.6 is live: 8 of 12 route-information pages now have Welsh translations (volunteer-reviewed). 4 route pages plus checkout and account screens are still English-only. Keyboard nav checked on 3 templates, no independent audit or certification yet.",
+            "Carousel: Slide 1: Release 2.6, Welsh coverage update | Slide 2: 8 of 12 route pages now in Welsh (volunteer-reviewed) | Slide 3: 4 route pages still English-only | Slide 4: Checkout + account still English-only | Slide 5: Keyboard nav checked on 3 templates (not whole site) | Slide 6: No independent audit or certification yet | Slide 7: Why we are being specific | Slide 8: Translation priorities next",
+            "Video: Hook: Release 2.6 is live, here is what is bilingual and what is not. Beat 1: 8 of 12 route pages now have Welsh translations, volunteer-reviewed. Beat 2: 4 route pages plus checkout and account are still English-only. Beat 3: Keyboard nav checked on 3 templates, no independent audit or certification. Close: We will keep improving step by step and keep updates specific.",
+            "Email: Subject: Release 2.6, Welsh route pages update\n\nBracken Route Atlas 2.6 was published on 22 April 2027. 8 of 12 route-information pages now have Welsh translations, reviewed by volunteers. 4 route pages remain English-only, and checkout and account screens are currently English-only. Accessibility note: keyboard navigation was manually checked on 3 page templates, but that does not cover the whole website. No independent audit or certification has been completed."
+          ],
+          "cta": "Use the same translation-priorities question at the end of each platform post to collect consistent feedback."
+        },
+        {
+          "type": "hooks",
+          "title": "Hooks: 8 options grounded in the Release 2.6 facts",
+          "platform": "General",
+          "body": "Eight hook options that stay specific about coverage and verification.",
+          "items": [
+            "Release 2.6 is live, and here is the exact list of what is in Welsh so far.",
+            "We are not fully bilingual yet, but 8 route pages now have Welsh translations, volunteer-reviewed.",
+            "A transparent website update: what we translated, what we have not, and what we have actually checked.",
+            "Welsh walkers: 8 route pages now read in Cymraeg, 4 still do not.",
+            "Before we claim accessibility wins, we are sharing what has been checked and what has not.",
+            "If you have ever hit an English-only checkout after browsing in Welsh, this update is for you.",
+            "Progress update without the fluff: 8 translated route pages, 4 still English-only, plus the next priorities.",
+            "A small but concrete step for Welsh-language route info, and an honest note on the gaps."
+          ],
+          "cta": "Pick one hook and pair it with a simple list of what is translated, what is not, and what is next."
+        },
+        {
+          "type": "ctas",
+          "title": "CTAs: Soft, audience-matched options",
+          "platform": "General",
+          "body": "Five soft CTAs suited to walkers who care about Welsh-language route information.",
+          "items": [
+            "What would you prioritise next for Welsh translation, the remaining route pages, checkout, or account screens?",
+            "If you have a go-to route page you use most, share its name so it can be considered for the next translation pass.",
+            "Save this update for later if you plan routes in Welsh and want to track what is covered.",
+            "Share this with a walking buddy who prefers Welsh route info, so they know what is available right now.",
+            "If you noticed an English-only screen that matters during planning, add it to the list so we can prioritise sensibly."
+          ],
+          "cta": ""
+        },
+        {
+          "type": "platformHashtags",
+          "title": "Platform hashtags and keyword sets",
+          "platform": "General",
+          "body": "Hashtag and keyword sets tailored to each platform and the Release 2.6 announcement.",
+          "items": [
+            "LinkedIn: #WelshLanguage #WebAccessibility #DigitalInclusion #Walking #ProductUpdate",
+            "Instagram: #Cymraeg #WelshLanguage #WalkingWales #HikingWales #RoutePlanning #OutdoorWales #AccessibleDesign",
+            "TikTok: #Cymraeg #WalkingWales #HikingWales #WebAccessibility #RoutePlanning",
+            "X/Twitter: No tags recommended",
+            "Facebook: #Cymraeg #WalkingWales",
+            "YouTube Shorts: Bracken Route Atlas, Welsh language, Cymraeg, walking routes, Wales walks, hiking Wales, route information, route planning, Welsh translation, website update, web accessibility, keyboard navigation"
+          ],
+          "cta": ""
+        }
+      ]
+    }
+  }
+}

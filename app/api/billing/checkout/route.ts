@@ -28,6 +28,7 @@ import {
 } from "@/lib/founder-checkout-service";
 import { getUserProfileForUser, syncUserSubscriptionState, updateSubscriptionStatus } from "@/lib/repository";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { founderOfferRetired, founderRetiredMessage } from "@/lib/founder-retirement";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -51,6 +52,10 @@ export async function POST(request: Request) {
       { error: "Founder discount could not be applied. Please try again." },
       { status: 400 }
     );
+  }
+
+  if (founderOffer && founderOfferRetired()) {
+    return NextResponse.json({ error: founderRetiredMessage, code: "founder_offer_retired", redirectUrl: "/founder" }, { status: 410 });
   }
 
   if ((founderOffer || isAuthConfigured()) && !user) {
