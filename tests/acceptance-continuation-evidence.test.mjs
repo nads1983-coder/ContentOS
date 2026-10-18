@@ -17,7 +17,12 @@ test("captured continuation contains no draft call and accounts for the immutabl
 });
 test("unchanged captured 48-decision response passes after the parenthetical quantity fix",()=>{
  const previous=JSON.parse(audit.jobs[0].payload.input),current=JSON.parse(batch.input);
- assert.deepEqual(current.originalSources,previous.originalSources);assert.deepEqual(current.sources,previous.sources);
+ assert.deepEqual(current.originalSources,previous.originalSources);
+ // Original statements/provenance are immutable; only the two physical-product
+ // noun phrases lose the erroneous curriculum category under the current fix.
+ const expectedSources=structuredClone(previous.sources);
+ for(const id of ["s6","s12"]){const source=expectedSources.find(s=>s.id===id);assert.deepEqual(source.categories,["curriculum"]);source.categories=[];}
+ assert.deepEqual(current.sources,expectedSources);
  assert.deepEqual(current.wholePack,previous.wholePack);assert.equal(batch.all.length,307);assert.equal(batch.units.length,48);
  const raw=JSON.parse(receipt);assert.equal(raw.decisions.length,48);assert.equal(batching.parseBatchReview(receipt,batch).decisions.length,48);
  const rejected=raw.decisions.filter(d=>{try{batching.parseBatchReview(JSON.stringify({decisions:[d]}),{...batch,units:[batch.units.find(u=>u.id===d.id)]});return false;}catch{return true;}});

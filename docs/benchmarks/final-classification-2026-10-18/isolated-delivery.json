@@ -1,0 +1,92 @@
+{
+  "recordedAt": "2026-10-18T14:24:46.738Z",
+  "paidCalls": 0,
+  "productionWrites": 0,
+  "limitations": [
+    "Real isolated Neon transactions, synthetic fixtures and mechanical mock review certificates; not live AI validation.",
+    "Timings include local processing and warm isolated database network latency, but no model latency. Not production performance."
+  ],
+  "checks": [
+    "separate pooled transactions admit exactly one provider stage",
+    "repeated/lost-ack checkpoint is idempotent, preserves original admission",
+    "draft plus review can exceed the former shared deadline using separate durable stages",
+    "real PostgreSQL final-save rollback retains validated checkpoint without charging",
+    "concurrent final saves converge, with one charge and unchanged lifetime entitlement/history",
+    "account isolation refuses another account's stage checkpoint",
+    "crash/lost result becomes terminal uncertainty with nonrefunded spending and no lease takeover",
+    "Orin: captured 14-format pack persisted once with real isolated row locks and mocked review certificates"
+  ],
+  "results": [
+    {
+      "id": "Orin",
+      "isolatedDatabaseAndMockExecutionMs": 21214.236584000002,
+      "mockProviderCalls": 14,
+      "reviewedUnits": 307,
+      "correctionStages": 1,
+      "fullRevalidationBatches": 7,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "duplicateSaveAddedEntries": 0,
+      "capturedReviewReceipts": 2,
+      "timings": [
+        {
+          "stage": "review",
+          "databaseAndMockMs": 1441.9867089999998
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 717.3585000000003
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 3841.3596670000006
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 2572.762666999999
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 2020.3008339999997
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 1507.7576250000002
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 781.5273329999982
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 1061.5010419999999
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 980.5180419999997
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 1868.1425830000007
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 1473.6591659999976
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 796.9237090000024
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 1001.0177499999991
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 480.41295900000114
+        }
+      ]
+    }
+  ]
+}

@@ -161,6 +161,13 @@ function formatAnnotations(result: GenerationResult, path: string, text: string)
     return prefix ? [[0, prefix[0].length]] : [];
   }
   if (field[3] === undefined) return [];
+  if (["instagram", "tiktok"].includes(type) && items.length === 3 && items.every((item, i) => {
+    const match = /^Hashtags set ([1-9]\d*):[ \t]+(\S[\s\S]*)$/i.exec(item);
+    return match && Number(match[1]) === i + 1 && /#[\p{L}\p{N}_]+/u.test(match[2]);
+  })) {
+    const prefix = /^Hashtags set [1-9]\d*:[ \t]+/i.exec(text);
+    if (prefix) return [[0, prefix[0].length]]; // Only the label; tags and prose remain reviewed.
+  }
   if (type === "repurposePack") {
     for (const [prefix, name, min, max] of [["Carousel: ", "Slide", 2, 10], ["Video: ", "Beat", 1, 30]] as const) {
       if (text.startsWith(prefix)) {
@@ -247,7 +254,14 @@ const categoryPatterns: Partial<Record<GroundingReason, RegExp>> = {
   capability: /\b(?:integrates?|integration|supports?|automates?|automatically|compatible|features?|includes?|we (?:offer|provide|send)|I(?:'ll| will) (?:send|suggest)|send you|tailor these)\b/i
 };
 export function claimCategories(text: string): GroundingReason[] {
-  return (Object.entries(categoryPatterns) as Array<[GroundingReason, RegExp]>).filter(([, pattern]) => pattern.test(text)).map(([category]) => category);
+  // A product-noun phrase before a nominal modifier/predicate is not the teaching
+  // verb "covers". Mask only that occurrence for curriculum classification;
+  // other curriculum verbs, facts, prices and promises retain every check.
+  const curriculumText = text.replace(/\b(?:cushion|duvet|pillow|outer|inner|fabric) covers?\b(?=\s*(?:[,.!?;:]|$|\b(?:starts?|ends?|feels?|looks?|seems?|remains?|comes?|has|have|needs?|requires?|with|without|for|of|in|on|at)\b))/gi,
+    (phrase, offset: number) => /\b(?:course|class|workshop|training|lesson|module|curriculum)s?\b/i.test(text.slice(0, offset).split(/[.!?;\n]/).at(-1) ?? "")
+      ? phrase : phrase.replace(/covers?$/i, "item"));
+  return (Object.entries(categoryPatterns) as Array<[GroundingReason, RegExp]>).filter(([category, pattern]) =>
+    pattern.test(category === "curriculum" ? curriculumText : text)).map(([category]) => category);
 }
 // Explicit objective relationships that the captured reviewer missed. These are
 // guards, not a replacement for semantic review or a closed list of all claims.

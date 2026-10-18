@@ -1,4 +1,4 @@
-// Characterization of a failed acceptance run, not proof of successful delivery.
+// Immutable failed-run evidence replayed against the corrected current parser.
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
@@ -9,22 +9,23 @@ const audit=read("execution"),draft=read("raw-draft"),cache=new Map();
 const request=loadTs("lib/generation-contract.ts",{},cache).normalizeGenerationRequest(read("brief"));
 const batches=loadTs("lib/grounding-batches.ts",{},cache),grounding=loadTs("lib/factual-grounding.ts",{},cache);
 const raw=JSON.parse(audit.jobs[0].evidence.outputText),batch=batches.groundingBatch(draft,request,1,0);
-test("captured new batch has 48 certificates and exactly two independently reproducible parser refusals",()=>{
- assert.equal(raw.decisions.length,48);assert.throws(()=>batches.parseBatchReview(audit.jobs[0].evidence.outputText,batch));
+test("captured new batch now accepts all 48 original certificates without changing historical failure evidence",()=>{
+ assert.equal(raw.decisions.length,48);assert.equal(batches.parseBatchReview(audit.jobs[0].evidence.outputText,batch).decisions.length,48);
  const refused=[];
  for(const decision of raw.decisions){const unit=batch.units.find(u=>u.id===decision.id);
   try{batches.parseBatchReview(JSON.stringify({decisions:[decision]}),{...batch,units:[unit]});}catch{refused.push(decision.id);}}
- assert.deepEqual(refused,["u49","u68"]);
- for(const id of refused)assert.deepEqual(grounding.deterministicIssues(batch.units.find(u=>u.id===id),batch.context),[]);
+ assert.deepEqual(refused,[]);
+ assert.deepEqual(audit.coverage[1].individualRejections.map(d=>d.id),["u49","u68"]);
+ for(const id of ["u49","u68"])assert.deepEqual(grounding.deterministicIssues(batch.units.find(u=>u.id===id),batch.context),[]);
 });
-test("refusal characterizations isolate unannotated hashtag-set ordinal and cover noun collision without changing evidence",()=>{
+test("legitimate ordinal and product-noun variants no longer require diagnostic edits",()=>{
  const changed=structuredClone(draft);
  changed.sections[1].items[0]=changed.sections[1].items[0].replace("Hashtags set 1: ","");
  changed.sections[3].body=changed.sections[3].body.replace("Choosing a cushion cover starts with care, not colour.","Choosing a textile starts with care, not colour.");
  const diagnostic=batches.groundingBatch(changed,request,1,0);
  for(const id of ["u49","u68"]){const unit=diagnostic.units.find(u=>u.id===id),decision=raw.decisions.find(d=>d.id===id);
   assert.doesNotThrow(()=>batches.parseBatchReview(JSON.stringify({decisions:[decision]}),{...diagnostic,units:[unit]}));}
- assert.deepEqual(grounding.claimCategories("Choosing a cushion cover starts with care, not colour."),["curriculum"]);
+ assert.deepEqual(grounding.claimCategories("Choosing a cushion cover starts with care, not colour."),[]);
  assert.deepEqual(grounding.claimCategories("Choosing a textile starts with care, not colour."),[]);
 });
 test("failed live batch did not correct, revalidate, deliver or charge successful usage; cleanup and reservations retained",()=>{
