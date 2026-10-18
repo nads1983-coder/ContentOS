@@ -468,12 +468,14 @@ export function StudioShell({
   initialPlan = "free",
   authenticated = false,
   accountId,
+  textGenerationEnabled = true,
   initialUsage
 }: {
   embedded?: boolean;
   initialPlan?: PlanId;
   authenticated?: boolean;
   accountId?: string;
+  textGenerationEnabled?: boolean;
   initialUsage?: UsageSummary;
 }) {
   const [source, setSource] = useState(cleanPlainText(starterText));
@@ -736,6 +738,7 @@ export function StudioShell({
   const isPro = plan !== "free";
   const isProStudio = plan === "pro_studio";
   const canGenerate =
+    textGenerationEnabled &&
     hasMounted &&
     source.trim().length > 7 &&
     selectedTypes.length > 0 &&
@@ -749,6 +752,10 @@ export function StudioShell({
   }
 
   async function generateContent(nextSource = source, refinement?: { section: GeneratedSection; action: string }, resume = false) {
+    if (!textGenerationEnabled) {
+      setError("AI text generation is temporarily unavailable. Your saved content and drafts are unchanged.");
+      return;
+    }
     if (!hasMounted || isGeneratingRef.current) return;
     if (document.querySelector('[data-content-editing="true"]')) {
       setError("Apply or cancel your manual edits before generating another version.");

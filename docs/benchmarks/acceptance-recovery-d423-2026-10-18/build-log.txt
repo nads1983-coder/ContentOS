@@ -1,0 +1,22 @@
+Running build in Cleveland, USA (East) – cle1
+Build machine configuration: 4 cores, 8 GB
+Retrieving list of deployment files...
+Downloading 12 deployment files...
+Restored build cache from previous deployment (8P7uKxxMGL5Nsgp1HiYaxDJWkfGU)
+Running "vercel build"
+Vercel CLI 64.0.2
+Running "install" command: `node install.mjs`...
+{"runnerInstallInputs":[{"path":"package.json","sha256":"119f6a231c8bf185384e220ceac97e4c757b231b16a5bd1eb194ee0ada756360"},{"path":"package-lock.json","sha256":"39503f87182b0953cb3b84f1739731b93d243036bd91ecd6d402c61159731e38"}],"node":"v24.21.0"}
+npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+added 14 packages in 736ms
+Signed candidate build passed. No provider or database call made.
+Installing dependencies...
+npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+up to date in 210ms
+Build Completed in /vercel/output [2s]
+Deploying outputs...
+Deployment completed
+Creating build cache...
+Created build cache: 507ms
+Uploading build cache [140.00 kB]
+Build cache uploaded: 45.000ms

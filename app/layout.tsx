@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@/components/analytics";
 import { absoluteUrl, siteConfig } from "@/lib/site";
+import { isTextGenerationEnabled, TEXT_GENERATION_PAUSED_MESSAGE } from "@/lib/text-generation-availability";
 import "./globals.css";
 
 const nadineAnalyticsSiteId = process.env.NEXT_PUBLIC_NADINE_ANALYTICS_SITE_ID;
@@ -78,6 +79,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        {!isTextGenerationEnabled() ? (
+          <aside aria-label="Service availability" className="border-b border-amber-300/30 bg-black px-4 py-3 text-center text-sm text-amber-100">
+            <strong>Restricted release. </strong>{TEXT_GENERATION_PAUSED_MESSAGE}
+            {" "}Subscription text allowances cannot be used during this pause.
+          </aside>
+        ) : null}
         {children}
         {nadineAnalyticsSiteId && nadineAnalyticsTrackingKey ? (
           <Analytics siteId={nadineAnalyticsSiteId} trackingKey={nadineAnalyticsTrackingKey} endpoint={nadineAnalyticsEndpoint} />

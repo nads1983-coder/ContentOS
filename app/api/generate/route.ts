@@ -11,6 +11,7 @@ import { beginTextGenerationStage, checkpointTextGenerationStage } from "@/lib/r
 import { PIPELINE_LIMITS } from "@/lib/generation-pipeline";
 import type { ProviderReceipt } from "@/lib/generation-pipeline";
 import type { StageAdmission } from "@/lib/generation-stages";
+import { isTextGenerationEnabled, TEXT_GENERATION_PAUSED_MESSAGE } from "@/lib/text-generation-availability";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -29,6 +30,11 @@ export async function POST(nextRequest: NextRequest) {
     return NextResponse.json({ error: "Your account session changed. Reload the page or sign in again before continuing.", code: "account_changed" }, { status: 409 });
   }
   let request: GenerationInput;
+  if (!isTextGenerationEnabled()) {
+    return NextResponse.json({ error: TEXT_GENERATION_PAUSED_MESSAGE, code: "text_generation_paused" }, {
+      status: 503, headers: { "Cache-Control": "no-store" }
+    });
+  }
   const expected = nextRequest.headers.get("X-ContentOS-Stage");
   if (expected !== null && !/^1:(?:draft|review|correction|revalidation|save):[01]:\d{1,2}$/.test(expected)) {
     return NextResponse.json({ error: "Invalid generation stage." }, { status: 400 });

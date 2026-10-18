@@ -15,6 +15,7 @@ import { getMonthlyUsageCount, getUserProfileForUser, syncUserSubscriptionState 
 import { buildUsageSummary } from "@/lib/usage";
 import type { PlanId, UsageSummary, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { isTextGenerationEnabled } from "@/lib/text-generation-availability";
 
 export const dynamic = "force-dynamic";
 
@@ -127,6 +128,7 @@ export default async function StudioPage() {
       accountId={initialState.accountId}
       authenticated={initialState.authenticated}
       initialUsage={initialState.usage}
+      textGenerationEnabled={isTextGenerationEnabled()}
     />
   );
 }
