@@ -19,7 +19,7 @@ export const captured = inputs.map(i => {
 // Real production always obtains independent model decisions; this helper is tests-only.
 export function mechanicalCertificate(unit, context, validator = grounding) {
   for (const kind of ["structural", "creative", "subjective", "supported"]) {
-    const groups = kind === "supported" ? [...context.sources.map(s => [s]), context.sources.slice(0, 12), context.sources.slice(-12)] : [[]];
+    const groups = kind === "supported" || validator.reviewEligibility?.(unit, context).requiresSources ? [...context.sources.map(s => [s]), context.sources.slice(0, 12), context.sources.slice(-12)] : [[]];
     for (const sources of groups) {
       const decision = { id: unit.id, kind, references: sources.map(s => ({ sourceId: s.id, quote: s.text })), reason: "none", replacement: null };
       try {

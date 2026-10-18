@@ -40,20 +40,32 @@ export function currentPack(payload) {
   return result;
 }
 export function classificationResponse(payload, options = {}) {
+  const validator = options.validator ?? grounding;
   if (payload.text.format.name === "social_content_generation") return {
     status: "completed", output_text: live.jobs[0].evidence.outputText, usage: live.jobs[0].evidence.usage
   };
   const data = JSON.parse(payload.input);
-  if (data.pass === "initial_review" && data.units[0].id === "u0" && !options.alterFirst) return {
-    status: "completed", output_text: live.jobs[1].evidence.outputText, usage: live.jobs[1].evidence.usage
-  };
-  const result = currentPack(payload), units = grounding.groundingUnits(result);
+  if (data.pass === "initial_review" && data.units[0].id === "u0" && !options.alterFirst) {
+    const review = JSON.parse(live.jobs[1].evidence.outputText);
+    // The new policy requires semantic classification for hashtags. Retain the
+    // captured four corrected certificates and all unsupported decisions; only
+    // these topical tag decisions are explicitly scripted for the offline run.
+    if (validator.reviewEligibility) {
+      const units = validator.groundingUnits(draft);
+      review.decisions = review.decisions.map(d => {
+        const unit = units.find(u => u.id === d.id);
+        return d.kind === "structural" && unit.text.includes("#") ? mechanicalCertificate(unit, context, validator) : d;
+      });
+    }
+    return {status:"completed",output_text:JSON.stringify(review),usage:live.jobs[1].evidence.usage};
+  }
+  const result = currentPack(payload), units = validator.groundingUnits(result);
   const decisions = data.units.map(wire => {
     const unit = units.find(u => u.id === wire.id);
     const repair = repairs.find(r => r.path === unit.path && r.original === unit.text);
     if (repair) return { id: unit.id, kind: "unsupported", sourceIds: [],
-      reason: grounding.deterministicIssues(unit, context)[0] ?? "missing_evidence", replacement: repair.replacement };
-    return mechanicalCertificate(unit, context);
+      reason: validator.deterministicIssues(unit, context)[0] ?? "missing_evidence", replacement: repair.replacement };
+    return mechanicalCertificate(unit, context, validator);
   });
   if (options.change) options.change(decisions, data, units);
   return { status: "completed", output_text: JSON.stringify({ decisions }), usage: { input_tokens: 100, output_tokens: 200 } };

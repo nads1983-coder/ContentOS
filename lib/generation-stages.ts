@@ -33,6 +33,7 @@ export function beginGenerationStage(data: Document, userId: string, id: string,
   const matched = matchingReservation(admitted.data, userId, id, fingerprint, now);
   const p = structuredClone(matched.entry.pipeline ?? newGenerationPipeline());
   if (p.version !== PIPELINE_LIMITS.version) throw new GenerationReservationError("This saved attempt needs its original pipeline version.", 409, "pipeline_version");
+  if (p.reviewPolicy !== PIPELINE_LIMITS.reviewPolicy) throw new GenerationReservationError("This saved attempt used an older factual-review policy. Its draft is preserved; start a new attempt explicitly to use the updated checks.", 409, "review_policy_changed");
   const progress = (): { data: Document; result: StageAdmission } => ({
     data: journal(matched.data, matched.entries, matched.entry, p), result: { status: "progress", progress: pipelineProgress(p, id) }
   });
@@ -76,7 +77,7 @@ export function checkpointGenerationStage(data: Document, userId: string, id: st
   durationMs: number, now = new Date()): { data: Document; result: GenerationProgress } {
   const matched = matchingReservation(data, userId, id, fingerprint, now);
   const p = structuredClone(matched.entry.pipeline);
-  if (!p || p.version !== PIPELINE_LIMITS.version) throw new GroundingError();
+  if (!p || p.version !== PIPELINE_LIMITS.version || p.reviewPolicy !== PIPELINE_LIMITS.reviewPolicy) throw new GroundingError();
   const metric = p.metrics.find(m => m.key === stage.key && m.payloadHash === stage.hash);
   if (!metric) throw new GenerationReservationError("Stage does not match this attempt.", 409, "stage_mismatch");
   // A lost database acknowledgment may replay persistence, never provider work.

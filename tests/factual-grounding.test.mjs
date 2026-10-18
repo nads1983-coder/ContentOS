@@ -174,11 +174,14 @@ test("UTF-8 review byte bound is independent of character count", () => {
   assert.throws(() => parseGroundingReview(raw, units, context), GroundingError);
 });
 
-test("structural labels and hashtags are allowed but cannot certify factual assertions", () => {
-  for (const text of ["LinkedIn", "#ReadingHabits", "No CTA requested."]) {
+test("structural labels are allowed; hashtags need a semantic decision", () => {
+  for (const text of ["LinkedIn", "No CTA requested."]) {
     const { units, context } = isolated(text);
     assert.doesNotThrow(() => parseGroundingReview(encoded(units.map((u) => allowed(u.id, "structural"))), units, context));
   }
+  const tag = isolated("#ReadingHabits");
+  assert.throws(() => parseGroundingReview(encoded(tag.units.map(u => allowed(u.id, "structural"))), tag.units, tag.context), GroundingError);
+  assert.doesNotThrow(() => parseGroundingReview(encoded(tag.units.map(u => allowed(u.id, "creative"))), tag.units, tag.context));
   const { units, context } = isolated("This checklist doubles revenue.");
   for (const kind of ["structural", "creative", "subjective"]) {
     assert.throws(() => parseGroundingReview(encoded([allowed(units[0].id, kind)]), units, context), GroundingError);
@@ -300,7 +303,7 @@ test("second-pass violation refuses without a third review or second repair", as
   assert.equal(GROUNDING_LIMITS.reviews, 2);
 });
 
-test("unsafe replacement is reviewed afresh and cannot obtain counterfeit approval", async () => {
+test("deterministically unsafe replacement is refused before another paid review", async () => {
   let calls = 0;
   await assert.rejects(groundGeneration(pack(), request(), async (raw) => {
     calls++;
@@ -309,7 +312,7 @@ test("unsafe replacement is reviewed afresh and cannot obtain counterfeit approv
       ? unsupported(u.id, "missing_evidence", "This earns 9000 pounds.")
       : supported(u.id, input.sources[0])));
   }), GroundingError);
-  assert.equal(calls, 2);
+  assert.equal(calls, 1);
 });
 
 test("structurally invalid repairs fail before a second reviewer call", async (t) => {

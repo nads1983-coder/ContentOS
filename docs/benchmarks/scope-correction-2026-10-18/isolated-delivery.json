@@ -1,0 +1,334 @@
+{
+  "recordedAt": "2026-10-18T12:10:19.458Z",
+  "paidCalls": 0,
+  "productionWrites": 0,
+  "limitations": [
+    "Real isolated Neon transactions, synthetic fixtures and mechanical mock review certificates; not live AI validation.",
+    "Timings include local processing and warm isolated database network latency, but no model latency. Not production performance."
+  ],
+  "checks": [
+    "separate pooled transactions admit exactly one provider stage",
+    "repeated/lost-ack checkpoint is idempotent, preserves original admission",
+    "draft plus review can exceed the former shared deadline using separate durable stages",
+    "real PostgreSQL final-save rollback retains validated checkpoint without charging",
+    "concurrent final saves converge, with one charge and unchanged lifetime entitlement/history",
+    "account isolation refuses another account's stage checkpoint",
+    "crash/lost result becomes terminal uncertainty with nonrefunded spending and no lease takeover",
+    "H1: captured 14-format pack persisted once with real isolated row locks and mocked review certificates",
+    "H2: captured 14-format pack persisted once with real isolated row locks and mocked review certificates",
+    "H3: captured 14-format pack persisted once with real isolated row locks and mocked review certificates",
+    "ShelfNotes: captured 14-format pack persisted once with real isolated row locks and mocked review certificates",
+    "Fieldline: captured 14-format pack persisted once with real isolated row locks and mocked review certificates"
+  ],
+  "results": [
+    {
+      "id": "H1",
+      "isolatedDatabaseAndMockExecutionMs": 3033.4876249999998,
+      "mockProviderCalls": 11,
+      "reviewedUnits": 228,
+      "correctionStages": 1,
+      "fullRevalidationBatches": 5,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "draft",
+          "databaseAndMockMs": 161.988875
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 270.8253749999999
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 256.86441700000023
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 253.73454200000015
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 269.0883329999997
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 266.15337499999987
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 276.55387500000006
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 254.3276249999999
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 264.1701670000002
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 277.03449999999975
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 269.3735000000006
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "isolatedDatabaseAndMockExecutionMs": 3772.8974160000007,
+      "mockProviderCalls": 13,
+      "reviewedUnits": 267,
+      "correctionStages": 1,
+      "fullRevalidationBatches": 6,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "draft",
+          "databaseAndMockMs": 159.5621659999997
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 258.85162500000024
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 274.3805419999999
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 280.0695829999995
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 282.34720800000014
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 313.75379200000043
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 263.8580000000002
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 250.74516700000004
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 335.3749590000007
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 297.69524999999976
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 283.5977499999999
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 298.4919580000005
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 270.86833399999887
+        }
+      ]
+    },
+    {
+      "id": "H3",
+      "isolatedDatabaseAndMockExecutionMs": 3305.2532499999998,
+      "mockProviderCalls": 11,
+      "reviewedUnits": 224,
+      "correctionStages": 1,
+      "fullRevalidationBatches": 5,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "draft",
+          "databaseAndMockMs": 195.768250000001
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 286.560958
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 302.3594580000008
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 273.1650410000002
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 339.4974579999998
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 272.7475830000003
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 268.2879589999993
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 314.15612500000134
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 269.690208
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 306.4639160000006
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 270.47420799999963
+        }
+      ]
+    },
+    {
+      "id": "ShelfNotes",
+      "isolatedDatabaseAndMockExecutionMs": 4022.8667499999992,
+      "mockProviderCalls": 13,
+      "reviewedUnits": 280,
+      "correctionStages": 1,
+      "fullRevalidationBatches": 6,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "draft",
+          "databaseAndMockMs": 160.9250830000001
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 273.3805000000011
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 358.25587500000074
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 372.1627499999995
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 274.7244579999988
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 320.22391700000117
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 338.407541999999
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 283.37495800000033
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 261.1538330000003
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 273.86570799999936
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 273.994791000001
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 305.31195800000023
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 272.3087919999998
+        }
+      ]
+    },
+    {
+      "id": "Fieldline",
+      "isolatedDatabaseAndMockExecutionMs": 3940.225457999999,
+      "mockProviderCalls": 13,
+      "reviewedUnits": 262,
+      "correctionStages": 1,
+      "fullRevalidationBatches": 6,
+      "formats": 14,
+      "finalHistoryEntries": 1,
+      "successfulUsageEvents": 1,
+      "timings": [
+        {
+          "stage": "draft",
+          "databaseAndMockMs": 153.3680829999994
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 252.14816699999938
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 407.22329100000206
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 385.5840419999986
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 302.98620799999844
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 315.88466699999844
+        },
+        {
+          "stage": "review",
+          "databaseAndMockMs": 234.54125000000204
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 252.10662500000035
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 338.8746250000004
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 264.8045420000017
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 279.1287919999995
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 289.2959579999988
+        },
+        {
+          "stage": "revalidation",
+          "databaseAndMockMs": 247.7456659999989
+        }
+      ]
+    }
+  ]
+}

@@ -28,7 +28,8 @@ function harness(fail=false) {
   reserve:async(k,b)=>{const v=validatePayload(b);if(!enabled||jobs.length>=13||reserved+v.reserve>2700000||jobs.some(j=>j.key===k||j.state!=="succeeded"))return false;
    jobs.push({key:k,state:"reserved"});reserved+=v.reserve;return true;},
   finish:async(k,s,e)=>Object.assign(jobs.find(j=>j.key===k),{state:s,evidence:e}),outcome:async()=>{enabled=false;},disable:async()=>{enabled=false;}};
- const transport=async b=>{assert.equal(jobs.at(-1).state,"reserved");if(fail)throw Error("synthetic failure");const r=classificationResponse(JSON.parse(b));
+ const validator=loadModules(plan.modules)("lib/factual-grounding.ts");
+ const transport=async b=>{assert.equal(jobs.at(-1).state,"reserved");if(fail)throw Error("synthetic failure");const r=classificationResponse(JSON.parse(b),{validator});
   return {...r,model:"gpt-5.2",service_tier:"default",usage:{...r.usage,total_tokens:r.usage.input_tokens+r.usage.output_tokens}};};
  return {p,ledger,transport,jobs,get data(){return data;},get reserved(){return reserved;}};
 }

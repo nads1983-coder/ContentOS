@@ -4,6 +4,7 @@ import { writeFileSync } from "node:fs";
 import { loadTs, input, receipt, reviewReceipt } from "./generation-test-helpers.mjs";
 import { captured, captureResponse } from "./grounding-capture-helpers.mjs";
 import { request as classificationRequest, draft as classificationDraft, classificationResponse } from "./classification-capture-helpers.mjs";
+import { request as scopeRequest, draft as scopeDraft, scopeResponse } from "./scope-capture-helpers.mjs";
 import { validateImageIsolatedEnvironment } from "./image-isolated.mjs";
 
 // Opt-in, existing isolated Neon only. No auth records, mail, Stripe or provider calls.
@@ -70,7 +71,8 @@ try {
   row = await read(crash); assert.equal(row.generation_reservations_json[0].pipeline.reservedMicroUsd, started.stage.reservedMicroUsd);
   checks.push("crash/lost result becomes terminal uncertainty with nonrefunded spending and no lease takeover");
   const capturedResults = [];
-  const packs = [...captured, ...(process.argv.includes("--include-classification") ? [{ id: "ShelfNotes", request: classificationRequest, result: classificationDraft }] : [])];
+  const packs = [...captured, ...(process.argv.includes("--include-classification") ? [{ id: "ShelfNotes", request: classificationRequest, result: classificationDraft }] : []),
+    ...(process.argv.includes("--include-scope") ? [{id:"Fieldline",request:scopeRequest,result:scopeDraft}] : [])];
   for (const pack of packs) {
     const target = await fixture(`capture-${pack.id}`), request = { ...pack.request, requestId: randomUUID() };
     let expected = null, calls = 0, delivered = false;
@@ -85,7 +87,7 @@ try {
         assert.notEqual(admitted.progress.status, "failed"); expected = admitted.progress.nextStage; continue;
       }
       calls++;
-      const providerStarted = performance.now(), response = pack.id === "ShelfNotes" ? classificationResponse(admitted.stage.payload) : captureResponse(pack, admitted.stage.payload);
+      const providerStarted = performance.now(), response = pack.id === "Fieldline" ? scopeResponse(admitted.stage.payload) : pack.id === "ShelfNotes" ? classificationResponse(admitted.stage.payload) : captureResponse(pack, admitted.stage.payload);
       const progress = await repository.checkpointTextGenerationStage(target, request.requestId, admitted.fingerprint,
         admitted.stage, request, response, performance.now() - providerStarted);
       assert.notEqual(progress.status, "failed"); expected = progress.nextStage;

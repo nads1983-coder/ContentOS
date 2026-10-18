@@ -20,8 +20,11 @@ function body(text, ctx = context) {
 
 test("all four original captured disagreements pass unchanged; seven unsupported decisions remain refused", () => {
   const batch = batches.groundingBatch(draft, request, 0, 0);
-  const review = batches.parseBatchReview(capturedReview, batch);
-  assert.equal(review.decisions.length, 48);
+  const original = JSON.parse(capturedReview);
+  // Hashtag syntax is no longer structural proof. Test the four original
+  // disagreements unchanged, not an implicit endorsement of every old label.
+  const retained = original.decisions.filter(d => d.kind !== "structural" || !batch.units.find(u => u.id === d.id).text.includes("#"));
+  const review = batches.parseBatchReview(JSON.stringify({decisions:retained}), {...batch,units:batch.units.filter(u=>retained.some(d=>d.id===u.id))});
   assert.deepEqual(review.decisions.filter(d => d.kind === "unsupported").map(d => d.id), ["u8", "u9", "u10", "u11", "u26", "u35", "u47"]);
   for (const id of ["u4", "u17", "u31", "u46"]) assert.notEqual(review.decisions.find(d => d.id === id).kind, "unsupported");
 });

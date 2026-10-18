@@ -10,6 +10,7 @@ import type { GenerationResult } from "@/types/content";
 
 export const PIPELINE_LIMITS = {
   version: 1, model: "gpt-5.2", stageMs: 90_000, runningMs: 120_000,
+  reviewPolicy: 2,
   lifetimeMs: 45 * 60_000, inputBytes: 160_000, responseBytes: 180_000,
   reviewTokens: 4_800, calls: 23, journalBytes: 750_000, accountJournalBytes: 8_000_000,
   // Conservative, nonrefundable admission accounting, not a provider invoice.
@@ -25,6 +26,7 @@ export type StageMetric = {
 };
 export type GenerationPipeline = {
   version: 1; pass: number; batch: number; phase: StageKind;
+  reviewPolicy: number;
   draft?: GenerationResult; decisions: GroundingDecision[]; metrics: StageMetric[];
   reservedMicroUsd: number; failure?: "generation_failed" | "grounding_failed" | "generation_uncertain" | "generation_budget";
 };
@@ -35,7 +37,7 @@ export type ProviderStage = {
 export type ProviderReceipt = { status?: string; output_text: string; usage?: { input_tokens?: number; output_tokens?: number } };
 export const pipelineHash = (v: unknown) => createHash("sha256").update(JSON.stringify(v)).digest("hex");
 export function newGenerationPipeline(): GenerationPipeline {
-  return { version: 1, pass: 0, batch: 0, phase: "draft", decisions: [], metrics: [], reservedMicroUsd: 0 };
+  return { version: 1, reviewPolicy: PIPELINE_LIMITS.reviewPolicy, pass: 0, batch: 0, phase: "draft", decisions: [], metrics: [], reservedMicroUsd: 0 };
 }
 export function pipelineKey(p: GenerationPipeline) { return `${p.version}:${p.phase}:${p.pass}:${p.batch}`; }
 export function pipelineProgress(p: GenerationPipeline, requestId: string): GenerationProgress {

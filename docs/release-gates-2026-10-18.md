@@ -4,7 +4,9 @@ Date: 2026-10-18. Repository `nads1983-coder/ContentOS`, existing branch `feat/a
 
 ## Verdict: NO-GO
 
-The latest independent raw assessment found ten unsupported page-layout assertions across eight formats (one repeated underlying invention). One such assertion passed the first review as source-supported. Fixing structural certificates alone is insufficient: source quantifier/scope preservation and safe replacements also remain blockers. No final pack was delivered.
+**Latest offline correction:** [structural and factual-scope report](scope-correction-2026-10-18.md). All 17 captured structural mismatches have safe classifications; all ten captured notebook-layout assertions and unsafe replacements are refused. Exhaustive actual-route and isolated-Neon replay delivers five packs with scripted review decisions: **1,261 initial + 1,261 fresh units**, one history/usage write each. Review policy 2 prevents old in-flight certificates from completing under the new rules. Hashtags require semantic classification; No CTA, actual sequence counts, collective distribution and written ranges are guarded. No paid calls or deployments occurred.
+
+**Material remaining limit:** independently authored adversarial certificates produce zero false-positive rejections but **eight false-negative guard results among thirteen unsupported semantic examples**. These require correct model decisions, not token matching. This is not a claim of general semantic safety. No successful live validated pack has yet completed. Keep PR #3 draft, production unchanged and the public Founder offer active.
 
 **Latest authorized live result:** the [GBP2.70 final-delivery campaign](final-live-delivery-2026-10-18.md) ran once against application candidate `28dadb0`. Three paid calls cost USD0.10313030 (approximately GBP0.077336); GBP0.799311 remains reserved. Draft generation took 38.321s and two reviews took 11.889s/11.923s. The second batch failed 17 structural certificates; 48/262 initial decisions were accepted, no correction/final review completed, and no validated pack was saved. Temporary Preview/access removal is verified. No timeout, paid retry or production change. Full updated suite: 488 passes, zero failures, one skip. PR stays draft and NO-GO. No new benchmark is automatically authorized. The public Founder offer was not changed; retirement requires a separately authorized, completed and verified launch.
 
@@ -40,14 +42,14 @@ The older, separate GBP5 campaign (six paired requests plus three corrected-cand
 
 | Gate / command | Result and scope |
 | --- | --- |
-| `npm test` | PASS, latest live-validation evidence revision: 468 passed / 0 failed / 1 opt-in isolated SQL test skipped (469 total). Prior app/grounding/benchmark/annotation tests remain included. Twelve new campaign/captured-failure checks pass. Mocked semantic decisions are not a live accuracy certification. Historical isolated ledger/delivery suites remain separately scoped; the new campaign SQL suite passed 10 checks. |
+| `npm test` | Current offline revision: **528 passed / 0 failed / 1 opt-in skip (529 total)**. Historical frozen campaigns and current route tests are separately scoped. Scripted semantic decisions are not a live accuracy certification. |
 | `npm run typecheck` | PASS. |
 | `npm run lint` | PASS. |
-| `npm run build` | PASS, Next.js 16.3.8, 51 generated pages. |
+| `npm run build` | Final default Turbopack reruns blocked by local CSS-worker port binding permissions, including an elevated retry. **`npm run build -- --webpack` passes** on final source with 51 generated pages. No build configuration/security check bypass; normal CI/Turbopack confirmation remains. |
 | `git diff --check` | PASS. |
 | Final GBP4 staged live validation | FAIL delivery gate: 2 completed calls, draft 50.446s, review 10.641s, no timeout/uncertainty/retry. 48 returned decisions, 4 refused certificates, 0/280 accepted batch coverage, no validated history/usage. USD0.09541175 known usage; GBP0.639420 retained reservation. Temporary deployment/access removed; audit and draft retained. |
 | Staged delivery focused tests | PASS, 46/46 route/pipeline/client cases. All 719 captured units, 24 corrected format-number false positives, complete correction/revalidation, quota, exact payload caps and failure recovery. |
-| `tests/generation-stages-isolated.mjs` | PASS, 10 real-Neon checks; actual row-lock/rollback/isolation tests and three captured 14-format packs with mock reviews. Complete isolated execution 1.553/1.652/1.413 seconds, excluding model latency. Synthetic profiles cleaned up. |
+| `tests/generation-stages-isolated.mjs --include-classification --include-scope` | Current PASS, 12 real-Neon checks; row-lock/rollback/isolation tests and five captured packs, each 14 formats with scripted reviews. 3.033-4.023 seconds per pack excluding model latency. Synthetic profiles cleaned; branch and audit retained. |
 | `tests/auth-isolated.mjs --staged-browser` | PASS, isolated auth checks plus lost-acknowledgement/reload/same-ID recovery through 7 mocked staged HTTP responses. All 14 cards at 1440/768/390, no unexpected browser errors or horizontal overflow. Hydration race fixed and rerun passed. |
 | `npm audit --omit=dev --json` | PASS, zero findings. |
 | `npm audit --json` | Exit 1, seven high development-only findings; intentionally not reported as a pass. |

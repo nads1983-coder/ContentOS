@@ -81,13 +81,13 @@ test("response usage must fit the prepaid token bounds and known tier/model",asy
 const liveDirectory=new URL("../docs/benchmarks/staged-delivery-2026-10-18/",import.meta.url);
 const live=JSON.parse(readFileSync(new URL("execution.json",liveDirectory),"utf8"));
 const liveRequest=JSON.parse(readFileSync(new URL("brief.json",liveDirectory),"utf8"));
-test("captured first batch now checkpoints; replaying it as a different batch still refuses unchecked delivery",async()=>{
+test("old raw hashtag-as-structural certificates fail closed under the current semantic policy",async()=>{
  const h=routeHarness(),request={...liveRequest,requestId:plan.request.requestId};
  h.provider=async payload=>{const e=live.jobs[payload.text.format.name==="social_content_generation"?0:1].evidence;return {status:e.status,output_text:e.outputText,usage:e.usage};};
  const result=await h.finish(request);assert.equal(result.response.status,502);assert.equal(result.body.code,"grounding_failed");
- assert.equal(h.calls.length,3);assert.equal(h.data.generation_history_json,undefined);assert.equal(h.data.usage_events_json,undefined);
- assert.equal(h.data.generation_reservations_json[0].pipeline.decisions.length,48);
- assert.ok(h.data.generation_reservations_json[0].pipeline.draft);assert.equal((await h.post(request)).response.status,409);assert.equal(h.calls.length,3);
+ assert.equal(h.calls.length,2);assert.equal(h.data.generation_history_json,undefined);assert.equal(h.data.usage_events_json,undefined);
+ assert.equal(h.data.generation_reservations_json[0].pipeline.decisions.length,0);
+ assert.ok(h.data.generation_reservations_json[0].pipeline.draft);assert.equal((await h.post(request)).response.status,409);assert.equal(h.calls.length,2);
 });
 test("captured 48-decision review has four reproducible certificate rejections, not a timeout or malformed response",()=>{
  const load=loadModules(plan.modules),contract=load("lib/generation-contract.ts"),batching=load("lib/grounding-batches.ts");
