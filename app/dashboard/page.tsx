@@ -27,6 +27,7 @@ import {
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { founderOfferRetired } from "@/lib/founder-retirement";
 import type { GenerationResult } from "@/types/content";
 
 export const dynamic = "force-dynamic";
@@ -260,7 +261,7 @@ export default async function DashboardPage() {
               </p>
             ) : null}
             <div className="mt-5 grid gap-3">
-              {canUpgradeToCreator && plan === "free" ? (
+              {canUpgradeToCreator && plan === "free" && !founderOfferRetired() ? (
                 <div className="rounded border border-gold/35 bg-gold/[0.08] p-3">
                   <p className="text-sm font-semibold text-goldSoft">Founder claim not active yet</p>
                   <p className="mt-1 text-xs leading-5 text-muted">

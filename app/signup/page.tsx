@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { authenticatedFounderDestination } from "@/lib/founder-offer";
 import { pageMetadata } from "@/lib/metadata";
 import { BillingPlan } from "@/lib/pricing";
+import { founderOfferRetired } from "@/lib/founder-retirement";
 
 export const metadata = pageMetadata({
   title: "Create a ContentOS Account",
@@ -31,6 +32,8 @@ export default async function SignupPage({
   const params = await searchParams;
   const plan = parseBillingPlan(params?.plan);
   const founderOffer = parseFounderOffer(params?.founder);
+
+  if (founderOffer && founderOfferRetired()) redirect("/founder");
 
   if (user) {
     redirect(authenticatedFounderDestination(founderOffer));

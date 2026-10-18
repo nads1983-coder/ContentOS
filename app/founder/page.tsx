@@ -1,13 +1,21 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
 import { pageMetadata } from "@/lib/metadata";
+import { founderOfferRetired } from "@/lib/founder-retirement";
+import { FounderRetired } from "@/components/founder-retired";
 
-export const metadata = pageMetadata({
+export const dynamic = "force-dynamic";
+export function generateMetadata() { return pageMetadata({
+  ...(founderOfferRetired() ? {
+    title: "Founding 100 Offer Closed | ContentOS",
+    description: "The Founding 100 offer has closed. Existing Founder lifetime access is unchanged."
+  } : {
   title: "Claim Your Free Lifetime Founder Account | ContentOS",
   description:
     "Claim a free lifetime ContentOS founder account and turn one idea into LinkedIn posts, blogs, emails and social content in minutes.",
+  }),
   path: "/founder"
-});
+}); }
 
 const benefits = [
   "Turn one rough idea into LinkedIn posts, blogs, emails and social content",
@@ -48,6 +56,7 @@ const faqs = [
 ];
 
 export default function FounderPage() {
+  if (founderOfferRetired()) return <FounderRetired />;
   return (
     <main className="min-h-screen overflow-x-hidden bg-ink text-bone">
       <section className="relative isolate border-b border-white/10 px-4 py-6 sm:px-6 lg:px-8">

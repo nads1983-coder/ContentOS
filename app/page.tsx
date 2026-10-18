@@ -6,6 +6,8 @@ import { pageMetadata } from "@/lib/metadata";
 import { pricingPlans } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = pageMetadata({
   title: "GetContentOS | AI Content Generator for Posts, Scripts & Newsletters",
   description:

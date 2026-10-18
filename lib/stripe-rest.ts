@@ -1,10 +1,12 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { getEnv, isStripeConfigured } from "@/lib/env";
+import { founderOfferRetired, founderRetiredMessage } from "@/lib/founder-retirement";
 import {
   FOUNDER_PROMOTION_CODE,
   founderCheckoutDiscountParams,
   founderCheckoutMetadata,
   founderOpenCheckoutSessionIsValid,
+  FounderOfferUnavailableError,
   resolveFounderOfferAvailability
 } from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
@@ -495,6 +497,7 @@ export async function createCheckoutSession(input: {
   founderPromotionCodeId?: string;
   idempotencyKey?: string;
 }) {
+  if (input.founderOffer && founderOfferRetired()) throw new FounderOfferUnavailableError(founderRetiredMessage);
   const price = stripePriceId(input.plan);
 
   if (!price) {
@@ -526,7 +529,9 @@ export async function createCheckoutSession(input: {
       body.set(key, value);
     });
   } else {
-    body.set("allow_promotion_codes", "true");
+    // Do not leave a manual FOUNDING100 entry path on ordinary checkout after
+    // retirement. Existing subscription discounts are never changed here.
+    body.set("allow_promotion_codes", founderOfferRetired() ? "false" : "true");
   }
 
   if (input.userId) {
