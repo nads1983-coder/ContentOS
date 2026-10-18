@@ -7,11 +7,13 @@ export type ScopeReason = "relationship_scope" | "quantity_scope" | "location_sc
   "frequency_scope" | "guarantee_scope";
 
 type Quantity = { min: number; max: number };
+type Breakdown = { components: { count: number; label: string }[]; valid: boolean };
 type Frequency = "unspecified" | "one" | "some" | "most" | "all" | "often" | "usually";
 type Subject = { kind: string; owner: string; frequency: Frequency };
 type Slot = {
   subject: Subject; relation: "contains" | "divided" | "outcome";
   object: string; attributes: string[]; quantity?: Quantity;
+  breakdown?: Breakdown;
   distribution: "per_item" | "aggregate";
   certainty: "possible" | "asserted" | "guaranteed";
   negative: boolean; conditional: boolean; located: boolean;
@@ -106,10 +108,57 @@ function quantity(text: string): Quantity | undefined {
   return { min: n, max: match[3] ? Number(match[3]) : n };
 }
 
-function object(text: string) {
-  const phrase = text.split(/[:,]|\b(?:that|which|for|so)\b/)[0];
+function outsideParentheses(text: string) {
+  let depth = 0;
+  return [...text].map(char => {
+    if (char === "(") { depth++; return " "; }
+    if (char === ")") { depth = Math.max(0, depth - 1); return " "; }
+    return depth ? " ".repeat(char.length) : char;
+  }).join("");
+}
+
+function splitOutside(text: string, separator: RegExp) {
+  const masked = outsideParentheses(text), parts: string[] = [];
+  let start = 0;
+  for (const match of masked.matchAll(separator)) {
+    parts.push(text.slice(start, match.index)); start = match.index! + match[0].length;
+  }
+  parts.push(text.slice(start));
+  return parts;
+}
+
+function breakdown(text: string, name: string, total: Quantity | undefined): Breakdown | undefined {
+  // Only explicit quantified partitions. Other parenthetical prose still needs
+  // semantic review; it never becomes source evidence by being in parentheses.
+  const parenthetical = /\([^)]*\d/.test(text);
+  const tail = parenthetical ? text.slice(text.indexOf("(") + 1, text.lastIndexOf(")"))
+    : text.includes(":") ? text.slice(text.indexOf(":") + 1).trim() : "";
+  if (!/^\s*\d/.test(tail) && !parenthetical) return undefined;
+  const result: Breakdown = { components: [], valid: !!total && total.min === total.max };
+  if (parenthetical && (!/^.*\([^()]*\)\s*$/.test(text) || text.split("(").length !== 2)) result.valid = false;
+  for (const part of tail.split(/,\s*(?:and\s+)?|\s+and\s+/)) {
+    const match = /^\s*(\d+)\s+(.+?)\s*$/.exec(part);
+    const labelFirst = /^\s*([a-z][a-z -]*?)\s+(\d+)\s*$/.exec(part);
+    if (!match && !labelFirst) { result.valid = false; continue; }
+    let label = match ? match[2] : labelFirst![1];
+    const membership = /^(?:([a-z-]+) )?belong(?:s)? to (?:the )?(.+)$/.exec(label);
+    if (membership) {
+      if (membership[1] && singular(membership[1]) !== name) result.valid = false;
+      label = membership[2];
+    }
+    if (!/^[a-z][a-z0-9 -]*$/.test(label)) result.valid = false;
+    result.components.push({ count: Number(match ? match[1] : labelFirst![2]), label });
+  }
+  if (!result.components.length || new Set(result.components.map(c => c.label)).size !== result.components.length ||
+    result.components.reduce((sum, c) => sum + c.count, 0) !== total?.min) result.valid = false;
+  return result;
+}
+
+function object(text: string): { name: string; attributes: string[]; quantity?: Quantity; breakdown?: Breakdown } {
+  const phrase = outsideParentheses(text).split(/[:,]|\b(?:that|which|for|so)\b/)[0];
   const words = tokens(phrase).filter(word => !/^(?:a|an|the|these|those|its|their|our|your|up|to|at|most|least|exactly)$/.test(word));
-  return { name: singular(words.at(-1) ?? ""), attributes: words.slice(0, -1), quantity: quantity(phrase) };
+  const name = singular(words.at(-1) ?? ""), count = quantity(phrase);
+  return { name, attributes: words.slice(0, -1), quantity: count, breakdown: breakdown(text, name, count) };
 }
 
 const negative = /\b(?:no|not|never|without|cannot|can't|doesn't|don't|isn't|aren't|unknown|unconfirmed|unannounced|unavailable)\b/;
@@ -129,7 +178,7 @@ function slots(clause: string, aliases: Aliases, evidence: boolean): Slot[] {
     distribution: Slot["distribution"] = "per_item") => {
     if (!sub.kind || !obj.name) return;
     results.push({ subject: sub, relation, object: obj.name, attributes: obj.attributes,
-      quantity: obj.quantity, distribution, certainty, negative: isNegative, conditional: isConditional, located });
+      quantity: obj.quantity, breakdown: obj.breakdown, distribution, certainty, negative: isNegative, conditional: isConditional, located });
   };
 
   const division = /^(.*?)\b(?:is|are) divided (?:by|into) (.+)$/.exec(clause);
@@ -141,8 +190,12 @@ function slots(clause: string, aliases: Aliases, evidence: boolean): Slot[] {
   if (containment && nominalWith) {
     const outer = subject(containment[1], aliases);
     // Counts bind to their own noun phrase, never to another coordinated object.
-    for (const part of containment[3].split(/\band\b/)) {
-      const location = /\b(on|in|inside|within|per|across|at) ((?:(?:each|every|all|some|a|an|the) )?[a-z][a-z0-9 -]*)$/.exec(part.split(/[:,]/)[0]);
+    // A colon introduces details of this object, including an explicit partition.
+    const detail = outsideParentheses(containment[3]).indexOf(":");
+    const parts = splitOutside(detail >= 0 ? containment[3].slice(0, detail) : containment[3], /\band\b/g);
+    if (detail >= 0) parts[parts.length - 1] += containment[3].slice(detail);
+    for (const part of parts) {
+      const location = /\b(on|in|inside|within|per|across|at) ((?:(?:each|every|all|some|a|an|the) )?[a-z][a-z0-9 -]*)$/.exec(outsideParentheses(part).split(/[:,]/)[0].trimEnd());
       // Placement requires a preceding object; "at most/least" starts a bound.
       const placement = location && part.slice(0, location.index).trim() ? location : null;
       const obj = object(placement ? part.slice(0, placement.index) : part);
@@ -197,6 +250,21 @@ function supportsFrequency(source: Frequency, claim: Frequency) {
 
 function supportsQuantity(source: Quantity | undefined, claim: Quantity | undefined) {
   return !claim || !!source && source.min >= claim.min && source.max <= claim.max;
+}
+
+function supportsBreakdown(source: Breakdown | undefined, claim: Breakdown | undefined) {
+  if (!claim) return true;
+  if (!claim.valid || !source?.valid || source.components.length !== claim.components.length) return false;
+  const used = new Set<number>();
+  for (const part of claim.components) {
+    // A short product name can identify one explicit source component, never an
+    // arbitrary word overlap or two components with the same prefix.
+    const matches = source.components.map((candidate, i) => ({ candidate, i })).filter(({ candidate }) =>
+      candidate.label === part.label || candidate.label.startsWith(`${part.label} `));
+    if (matches.length !== 1 || matches[0].candidate.count !== part.count || used.has(matches[0].i)) return false;
+    used.add(matches[0].i);
+  }
+  return true;
 }
 
 type ExplicitFact = {
@@ -370,7 +438,7 @@ export function scopeFindings(text: string, sources: string[], currentSources: s
       source.distribution === claim.distribution &&
       claim.attributes.every(attribute => source.attributes.includes(attribute)));
     const certaintyRank = { possible: 0, asserted: 1, guaranteed: 2 };
-    if (candidates.some(source => supportsQuantity(source.quantity, claim.quantity) &&
+    if (candidates.some(source => supportsQuantity(source.quantity, claim.quantity) && supportsBreakdown(source.breakdown, claim.breakdown) &&
       supportsFrequency(source.subject.frequency, claim.subject.frequency) &&
       certaintyRank[source.certainty] >= certaintyRank[claim.certainty])) continue;
     if (!candidates.length) {
@@ -379,6 +447,7 @@ export function scopeFindings(text: string, sources: string[], currentSources: s
       continue;
     }
     if (!candidates.some(source => supportsQuantity(source.quantity, claim.quantity))) findings.add("quantity_scope");
+    if (!candidates.some(source => supportsBreakdown(source.breakdown, claim.breakdown))) findings.add("quantity_scope");
     if (!candidates.some(source => supportsFrequency(source.subject.frequency, claim.subject.frequency))) findings.add("frequency_scope");
     if (!candidates.some(source => certaintyRank[source.certainty] >= certaintyRank[claim.certainty])) findings.add("guarantee_scope");
     // Individually matching facts are not a certificate for their conjunction.

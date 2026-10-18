@@ -5,6 +5,7 @@ import { loadTs, input, receipt, reviewReceipt } from "./generation-test-helpers
 import { captured, captureResponse } from "./grounding-capture-helpers.mjs";
 import { request as classificationRequest, draft as classificationDraft, classificationResponse } from "./classification-capture-helpers.mjs";
 import { request as scopeRequest, draft as scopeDraft, scopeResponse } from "./scope-capture-helpers.mjs";
+import { request as parentheticalRequest, draft as parentheticalDraft, seedCapturedDraft, parentheticalResponse } from "./parenthetical-capture-helpers.mjs";
 import { validateImageIsolatedEnvironment } from "./image-isolated.mjs";
 
 // Opt-in, existing isolated Neon only. No auth records, mail, Stripe or provider calls.
@@ -14,13 +15,15 @@ const repository = loadTs("lib/postgres-repository.ts", { "server-only": {} }, c
 const { getPool, getDb } = loadTs("lib/db/client.ts", { "server-only": {} }, cache, runtime);
 const contract = loadTs("lib/generation-contract.ts", {}, cache, runtime);
 const pool = getPool(), prefix = `stages-isolated-${randomUUID()}`, fixtures = [], checks = [];
-async function fixture(name) {
+async function fixture(name, capturedRequest) {
   const id = `${prefix}-${name}`, email = `${id}@example.invalid`;
   fixtures.push({ id, email });
-  await pool.query("INSERT INTO contentos_app.profiles (id,email,data) VALUES ($1,$2,$3::jsonb)", [id, email, JSON.stringify({
+  const data = {
     id, email, plan: "pro_studio", subscription_status: "active", stages_isolated_run: prefix,
     entitlement_source: "founder_offer", amount_paid: 0, retained_history: ["synthetic prior work"]
-  })]);
+  };
+  await pool.query("INSERT INTO contentos_app.profiles (id,email,data) VALUES ($1,$2,$3::jsonb)", [id, email, JSON.stringify(
+    capturedRequest ? seedCapturedDraft(data, capturedRequest) : data)]);
   return id;
 }
 async function read(id) {
@@ -71,10 +74,12 @@ try {
   row = await read(crash); assert.equal(row.generation_reservations_json[0].pipeline.reservedMicroUsd, started.stage.reservedMicroUsd);
   checks.push("crash/lost result becomes terminal uncertainty with nonrefunded spending and no lease takeover");
   const capturedResults = [];
-  const packs = [...captured, ...(process.argv.includes("--include-classification") ? [{ id: "ShelfNotes", request: classificationRequest, result: classificationDraft }] : []),
-    ...(process.argv.includes("--include-scope") ? [{id:"Fieldline",request:scopeRequest,result:scopeDraft}] : [])];
+  const packs = [...(process.argv.includes("--only-parenthetical") ? [] : captured), ...(process.argv.includes("--include-classification") ? [{ id: "ShelfNotes", request: classificationRequest, result: classificationDraft }] : []),
+    ...(process.argv.includes("--include-scope") ? [{id:"Fieldline",request:scopeRequest,result:scopeDraft}] : []),
+    ...(process.argv.includes("--only-parenthetical") ? [{id:"Orin",request:parentheticalRequest,result:parentheticalDraft}] : [])];
   for (const pack of packs) {
-    const target = await fixture(`capture-${pack.id}`), request = { ...pack.request, requestId: randomUUID() };
+    const request = { ...pack.request, requestId: randomUUID() };
+    const target = await fixture(`capture-${pack.id}`, pack.id === "Orin" ? request : undefined);
     let expected = null, calls = 0, delivered = false;
     const start = performance.now(), timings = [];
     for (let n = 0; n < 30; n++) {
@@ -87,7 +92,7 @@ try {
         assert.notEqual(admitted.progress.status, "failed"); expected = admitted.progress.nextStage; continue;
       }
       calls++;
-      const providerStarted = performance.now(), response = pack.id === "Fieldline" ? scopeResponse(admitted.stage.payload) : pack.id === "ShelfNotes" ? classificationResponse(admitted.stage.payload) : captureResponse(pack, admitted.stage.payload);
+      const providerStarted = performance.now(), response = pack.id === "Orin" ? parentheticalResponse(admitted.stage.payload) : pack.id === "Fieldline" ? scopeResponse(admitted.stage.payload) : pack.id === "ShelfNotes" ? classificationResponse(admitted.stage.payload) : captureResponse(pack, admitted.stage.payload);
       const progress = await repository.checkpointTextGenerationStage(target, request.requestId, admitted.fingerprint,
         admitted.stage, request, response, performance.now() - providerStarted);
       assert.notEqual(progress.status, "failed"); expected = progress.nextStage;
