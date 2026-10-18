@@ -1,0 +1,1549 @@
+{
+  "rubric": {
+    "version": "heldout-blind-five-dimension-0-to-4-v1",
+    "status": "FROZEN_BEFORE_UNBLINDING",
+    "source": "/tmp/contentos-grounding-heldout-rubric.json",
+    "dimensions": {
+      "fidelity": "Current-source facts, scope, qualifications, exclusions and absence of invented promises.",
+      "usefulness": "Complete, usable channel-native copy, including every alternative and nested asset.",
+      "originality": "Distinct relevant framing and adaptation rather than filler or unnecessary repetition; faithful fact reuse is allowed.",
+      "brandVoice": "Audience fit and the requested tone/style.",
+      "ctaCompliance": "Requested mode, audience-facing placement and legitimate actions without invented channels, resources or services."
+    },
+    "anchors": {
+      "0": "Unusable or contradictory.",
+      "1": "Major rewrite needed.",
+      "2": "Substantial editing needed.",
+      "3": "Minor editing needed.",
+      "4": "Publishable within the synthetic brief for this dimension."
+    },
+    "maximumTotal": 20,
+    "totalFormula": "fidelity + usefulness + originality + brandVoice + ctaCompliance",
+    "weights": "Equal dimensions and equal format weights within each brief. No global identity is inferred from A/B labels across briefs.",
+    "scope": "All 84 format instances, all alternatives, nested repurpose assets, overlays, headings, CTA fields and topical tags were read. Top-level titles and summaries were also reviewed.",
+    "criticalDefinition": "A concrete MATERIAL FAILURE or substantive USABILITY FAILURE. Critical gates override score totals.",
+    "issueFields": "field is relative to the selected section, with zero-based item indices. quote is an exact excerpt. sourceQuote, when present, is an exact excerpt from request.source.",
+    "judgmentRules": [
+      "Use the held-out rubric's distinction between supported claims, advice, material failure, usability failure, editorial notes and inconclusive evidence.",
+      "Ordinary qualified advice, preparation suggestions, rhetorical reader problems and clearly separate operator notes are not fabricated measured outcomes.",
+      "No CTA prohibits identifiable engagement or other audience-action solicitations, not ordinary instructions or neutral self-evaluation questions.",
+      "Permitted product invitations need not invent a contact URL. A specified reply/comment details-fulfillment channel is different from a generic request for the documented assessment.",
+      "Short assets need not repeat every detail, but outcome/coverage claims must preserve scope.",
+      "Correctly negated forbidden claims and explicitly superseded facts are not violations.",
+      "Do not infer a platform-length failure from body plus CTA without a frozen assembly/delivery specification.",
+      "An explicit no-CTA explanation with empty options is correct and receives full compliance credit.",
+      "Scores supplement the supplied rubric's GO/NO-GO gates as explicitly requested by the user; they do not replace those gates."
+    ],
+    "blindProtocol": "Read only the authorized rubric and H1/H2/H3 blind JSON files. No mapping, evidence, metrics, implementation, parent-thread inspection or provider calls.",
+    "hashProtocol": "Compute SHA-256 over the completed UTF-8 score file and report it before requesting or receiving the mapping."
+  },
+  "rows": [
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "linkedin",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete, readable account preserves all counts, item denominator, session scope and measurement limits. General argument for honest reporting is editorial opinion, not a claimed measured benefit."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "instagram",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Three complete but closely overlapping captions. Counts and limitations remain accurate; repetition and length reduce distinctness and ease of publication."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "tiktok",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Three usable short captions accurately distinguish assessed items, same-session repairs and unavailable parts; little variation in angle."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "twitter",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Compact factual recap with team-specific repair limits and no follow-up or impact claim."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "facebook",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Clear community recap preserves all outcome categories and measurement limits without requesting engagement."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "youtubeShorts",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Usable searchable title, description and tags. Waste-reduction keywords describe the topic, not a claim of measured diversion."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "xThread",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Seven connected posts preserve the denominator and session scope. Planning benefit is ordinary editorial advice, not an announced future event."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "shortVideoScript",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete spoken sequence with matching overlays; all counts and limitations remain intact."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "carousel",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Eight substantive slides with paired support. Repairs, unavailable parts, team limits and missing measurements stay distinct."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "emailNewsletter",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Subject line options:",
+          "reason": "Dangling editorial heading precedes the actual email while the subjects are separately supplied.",
+          "severity": "editorial",
+          "field": "body",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Actual email and three subjects; remove the dangling subject-options heading from the body before publication."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "repurposePack",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "All seven requested sub-assets contain actual copy, including a full script with overlays and an email subject/body. Cross-channel angles are repetitive."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "hooks",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Eight usable openers with several distinct transparency angles. Advice about reporting is not an engagement solicitation."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "ctas",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 4,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Correct explicit No CTA marker, empty options and empty CTA. Deliberate absence earns full credit."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "A",
+      "format": "platformHashtags",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Six labeled, relevant platform sets, including no-tag recommendations. Topic hashtags do not assert environmental savings."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "linkedin",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Faithful counts and exclusions. Stocking-parts advice is qualified and does not assert a measured effect or an available follow-up service."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "instagram",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Three complete captions vary the emphasis while preserving the counts. Some repetition and length; parts-access commentary is a reasonable inference."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "tiktok",
+      "fidelity": 1,
+      "usefulness": 2,
+      "originality": 3,
+      "brandVoice": 2,
+      "ctaCompliance": 4,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "Most common outcome was not “broken forever”, it was “needs a part we did not have”.",
+          "reason": "Caption 2 misidentifies the largest outcome category: nine repaired items exceed six needing unavailable parts. It does not restrict the claim to the eight unrepaired items.",
+          "severity": "material",
+          "field": "body",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "Volunteers assessed 17 items: 9 were repaired during the session, 6 needed replacement parts that were not available, and 2 could not be repaired by this team."
+        }
+      ],
+      "notes": "Caption 2 incorrectly makes unavailable parts the most common session outcome; nine repairs outnumber six parts cases. Other captions are usable."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "twitter",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "not a impact claim",
+          "reason": "Minor grammar correction: use 'an impact claim'.",
+          "severity": "editorial",
+          "field": "body",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Accurate compact recap; minor grammar correction needed in the final phrase."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "facebook",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete, grounded community post. Conditional reader framing and general repair advice are not invented customer testimony or an engagement CTA."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "youtubeShorts",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete title, description and keyword set with accurate session scope and outcome limits."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "xThread",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Seven coherent posts preserve actual results. General parts-bottleneck takeaway is not a new quantified study finding."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "shortVideoScript",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Usable spoken script and overlays; production timing suggestions are not invented repair timings."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "carousel",
+      "fidelity": 3,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Slide 5 support: Repairable in principle, paused for parts availability",
+          "reason": "Stronger than recording a need for unavailable parts. Prefer the recorded limitation; this is not an assertion that a later repair actually occurred.",
+          "severity": "editorial",
+          "field": "items[9]",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": "No subsequent repair outcomes were collected."
+        }
+      ],
+      "notes": "Eight identifiable slides split across headline/support entries. 'Repairable in principle' should be softened because later outcomes were not collected; it does not explicitly claim later repairs occurred."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "emailNewsletter",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Full email and three subject options embedded in the body. Requires light removal of drafting labels; practical takeaway is not an invented subsequent outcome."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "repurposePack",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Seven actual assets are present in body text. Nested carousel and script are terse and less layout-ready than the full standalone assets, but not instructions to write missing copy."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "hooks",
+      "fidelity": 1,
+      "usefulness": 2,
+      "originality": 3,
+      "brandVoice": 2,
+      "ctaCompliance": 4,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "The most common repair outcome is not “trash”, it is “we need the right part”.",
+          "reason": "Standalone hook asserts an unsupported population-frequency claim and, read as the session recap, conflicts with nine repaired versus six awaiting parts. No broader outcome-frequency evidence is supplied.",
+          "severity": "material",
+          "field": "items[3]",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "Volunteers assessed 17 items: 9 were repaired during the session, 6 needed replacement parts that were not available, and 2 could not be repaired by this team."
+        }
+      ],
+      "notes": "One standalone hook makes an unsupported most-common-outcome claim; the session data instead has repairs as the largest category. Other hooks offer usable reporting angles."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "ctas",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 4,
+      "brandVoice": 3,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Providing five CTA options is not applicable, so these are intentionally blank placeholders you can leave out.",
+          "reason": "Options are correctly empty, not five blank items. The explanation is verbose and publisher-facing, not a No CTA violation.",
+          "severity": "editorial",
+          "field": "body",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Correct empty options and CTA, but explanation is unnecessarily operator-facing and verbose."
+    },
+    {
+      "brief": "H1",
+      "variantLabel": "B",
+      "format": "platformHashtags",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Six relevant labeled sets. Different label styling is not itself a missing-format failure under the supplied rubric."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "linkedin",
+      "fidelity": 1,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 0,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "Interested in the 25 minute remote assessment on 19 February 2028 at 16:30 UTC? Reply here and I will share the session details.",
+          "reason": "Promises a supplied-details service via a reply channel that the approved notice does not provide.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Core current service facts and exclusions are accurate, but the CTA invents a reply-based details service. Broad opening diagnosis is editorial rather than a measured customer finding."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "instagram",
+      "fidelity": 1,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 0,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "Want the details for the 25 minute remote assessment (EUR 18)? Comment “assessment” and I will reply with what is included.",
+          "reason": "Invents comment-keyword fulfillment, not merely an invitation to the documented assessment.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Three usable alternatives retain the assessment boundary. Comment-keyword fulfillment is not supplied by the approved notice."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "tiktok",
+      "fidelity": 2,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 1,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "Interested in the 19 Feb 2028 remote assessment (EUR 18)? Ask for the session details in the comments.",
+          "reason": "Introduces comments as the channel for obtaining session details, contrary to the explicit no-invented-contact-channel constraint.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Usable short captions distinguish consultation from scanning; CTA invents a comment channel for requesting details."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "twitter",
+      "fidelity": 2,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 1,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "Reply if you want the session details and what is included.",
+          "reason": "Introduces a reply-for-details contact mechanism. A generic invitation without that mechanism would be permitted.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Current date, price, duration and sample scope are correct. Reply-for-details channel is unprovided. Combined body/CTA publication length is not scored as a blocker without a delivery specification."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "facebook",
+      "fidelity": 1,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 0,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "If you would like the details for the 25 minute remote assessment, comment below and I will reply with what is included.",
+          "reason": "Invents a comment-and-reply fulfillment service.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Reassuring full post accurately explains scope, but adds an unprovided comment-and-reply fulfillment promise."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "youtubeShorts",
+      "fidelity": 2,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 1,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "Want the session details for the remote assessment? Leave a comment asking what is included.",
+          "reason": "Directs viewers to a newly invented comment channel for service details.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Complete title, description and keywords. The 25-minute check denotes the assessment, not digitisation completion. Comment-based details channel is invented."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "xThread",
+      "fidelity": 1,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 0,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "If you want the session details for the 25 minute remote assessment, reply and I will share what is included.",
+          "reason": "Promises detail fulfillment via an unprovided reply channel.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Coherent six-post sequence preserves current service facts and exclusions; reply fulfillment is invented."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "shortVideoScript",
+      "fidelity": 1,
+      "usefulness": 2,
+      "originality": 3,
+      "brandVoice": 2,
+      "ctaCompliance": 1,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "A lot of people jump straight to scanning, then realise half the prints need different handling, or they are not sure what to prioritise.",
+          "reason": "Asserts a quantified half-of-the-prints experience for an unspecified population without supporting evidence. This is more specific than a general suggestion to consider condition.",
+          "severity": "material",
+          "field": "body",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome."
+        },
+        {
+          "quote": "Comment “assessment” if you want the session details and what is included.",
+          "reason": "Invents a comment-keyword contact channel for details. Generic spoken 'ask for details' alone is not the flagged issue.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Complete script and overlays, but a quantified 'half the prints' generalization and an invented comment-keyword contact channel require correction."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "carousel",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Eight understandable slides split into headline/support entries. Generic request for details does not invent a specific contact channel; qualified benefit framing is acceptable advice."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "emailNewsletter",
+      "fidelity": 2,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 1,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "If you would like the session details, reply to this email.",
+          "reason": "Establishes email replies as a details-request channel absent from the approved notice.",
+          "severity": "material",
+          "field": "body",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        },
+        {
+          "quote": "Reply to request the session details for the 25 minute remote assessment (EUR 18) on 19 February 2028 at 16:30 UTC.",
+          "reason": "Repeats the unsupported reply-for-details channel.",
+          "severity": "material",
+          "field": "cta",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Actual email with subjects and accurate service exclusions. Both body and CTA introduce a reply-to-email details channel that was not supplied."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "repurposePack",
+      "fidelity": 3,
+      "usefulness": 1,
+      "originality": 2,
+      "brandVoice": 3,
+      "ctaCompliance": 4,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "Body: Invite households to a 25 minute remote assessment, explain up to six sample photos on camera, consultation only, and no promised turnaround for later digitisation.",
+          "reason": "Required nested email body is an instruction to write copy, not an email draft.",
+          "severity": "material",
+          "field": "body",
+          "classification": "USABILITY_FAILURE",
+          "sourceQuote": null
+        },
+        {
+          "quote": "Beats: why condition check matters, what the assessment includes, what it does not include, how to ask for details.",
+          "reason": "Nested video supplies topics to write about rather than the requested actual body copy; hook and close alone do not complete the script.",
+          "severity": "material",
+          "field": "body",
+          "classification": "USABILITY_FAILURE",
+          "sourceQuote": null
+        },
+        {
+          "quote": "Editing suggestion: If you later add a booking page, replace “ask for details” with the URL across all platforms.",
+          "reason": "Clearly conditional operator guidance, not an assertion that a booking URL currently exists. Remove from publication copy.",
+          "severity": "editorial",
+          "field": "items[1]",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "LinkedIn, Instagram, TikTok and X copy are usable, but the nested email is a writing instruction and video beats are topic prompts rather than actual spoken copy. Generic details invitation itself is permitted."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "hooks",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Eight usable openers; some are categorical general advice or repetitive. Six-photo preparation advice does not assert six delivered scans."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "ctas",
+      "fidelity": 1,
+      "usefulness": 2,
+      "originality": 2,
+      "brandVoice": 3,
+      "ctaCompliance": 0,
+      "critical": true,
+      "issues": [
+        {
+          "quote": "Reply with “assessment” and I will share what is included in the session.",
+          "reason": "Invented keyword-reply fulfillment service.",
+          "severity": "material",
+          "field": "items[1]",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        },
+        {
+          "quote": "Comment with your biggest question about your photos and I will tell you if the assessment fits.",
+          "reason": "Invents personalized suitability advice via comments, beyond the documented paid assessment.",
+          "severity": "material",
+          "field": "items[2]",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        },
+        {
+          "quote": "Interested in the assessment? Reply and I will outline what we can cover in 25 minutes.",
+          "reason": "Invented reply-based pre-assessment service; the valid 25-minute duration does not authorize this additional offer.",
+          "severity": "material",
+          "field": "items[4]",
+          "classification": "MATERIAL_FAILURE",
+          "sourceQuote": "There is no supplied booking URL, capacity limit, discount, testimonial or measured outcome. Do not invent a contact channel."
+        }
+      ],
+      "notes": "Five options mix generic requests with invented reply fulfillment and personalized suitability advice. The latter are extra services, not merely invitations to the documented assessment."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "A",
+      "format": "platformHashtags",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Six topical platform sets without fabricated certification, outcome or contact details."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "linkedin",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete reassuring post accurately distinguishes assessment from production. Generic request/book invitation names no invented contact destination."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "instagram",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Three complete but closely related alternatives. Sample scope and consultation exclusions remain explicit."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "tiktok",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Three usable short captions. 'Scanning later' describes a possible later stage, not included scanning or a promised turnaround; surrounding copy preserves the boundary."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "twitter",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Accurate concise body. Long CTA repeats logistics; combined-post length depends on delivery behavior and is not a declared blocker."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "facebook",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Clear audience-facing explanation with accurate current date, price, sample limit and exclusions; generic request invitation is permitted."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "youtubeShorts",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete title, description and keyword set; no invented files, service channel or completion promise."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "xThread",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Six ordered posts clearly distinguish consultation from production work and retain up-to-six scope."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "shortVideoScript",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete spoken script and visual cues preserve the offer. Closing request and separate CTA are somewhat duplicative."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "carousel",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Eight usable slides. Choosing sample photographs is recognizable preparation advice, not an invented included service. Slide question and CTA repeat the invitation."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "emailNewsletter",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Subject: (see options below)",
+          "reason": "Subject options exist; remove this drafting instruction from the email body.",
+          "severity": "editorial",
+          "field": "body",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Full email and three subjects with accurate boundaries; remove the subject-placeholder instruction from the body."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "repurposePack",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Seven actual assets with correct scope. Nested email lacks its own subject and nested video lacks visual cues; these are editing needs, not replacement of copy by instructions."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "hooks",
+      "fidelity": 3,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "The fastest way to reduce uncertainty about old photos is to inspect a small sample, on purpose.",
+          "reason": "Overly categorical general advice. No measured timing or service-completion result is asserted, so this is editorial rather than a fabricated study finding.",
+          "severity": "editorial",
+          "field": "items[4]",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Eight usable angles, but 'fastest way' is unnecessarily categorical general advice. No measured comparison or actual digitisation result is asserted."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "ctas",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Five legitimate generic product invitations without invented contact channels; wording repeatedly uses the same request construction."
+    },
+    {
+      "brief": "H2",
+      "variantLabel": "B",
+      "format": "platformHashtags",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 3,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "LinkedIn: #DigitalPreservation #RecordsManagement #Archiving #CustomerExperience",
+          "reason": "Records-management and customer-experience tags are less targeted to households considering old photographs.",
+          "severity": "editorial",
+          "field": "items[0]",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Six valid sets; LinkedIn records-management/customer-experience tags are less well matched to a household audience."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "linkedin",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Point of view options to swap in (choose one):",
+          "reason": "Clearly separated publisher guidance, not factual copy or an invented offer. Select an option before publication.",
+          "severity": "editorial",
+          "field": "items[0]",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Correct page-level coverage, English-only screens and limited keyboard check. Optional viewpoint items need choosing/removal; body question and CTA repeat the ask."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "instagram",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Three complete alternatives preserve coverage and limitations. Several engagement requests overlap; none promises translation delivery."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "tiktok",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Three concise captions preserve partial translation and audit limits. Repeated body/field questions are an editing issue, not prohibited engagement in soft mode."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "twitter",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Accurate page-scope update; body question and separate CTA are redundant."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "facebook",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Easy prompts people can answer:",
+          "reason": "Operator label preceding optional prompts; select a prompt and remove the label.",
+          "severity": "editorial",
+          "field": "items[0]",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Faithful community post with useful optional questions. Remove the operator-facing prompt label and select one engagement ask."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "youtubeShorts",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete title, description and keywords; coverage remains explicitly partial. Description question duplicates the CTA."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "xThread",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Six connected posts preserve all important scope boundaries. Drafting instruction and repeated closing request need light editing."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "shortVideoScript",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete spoken script, overlays and optional visual ideas. All accessibility qualifications remain; closing question duplicates the separate CTA."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "carousel",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Eight identifiable slides split across sixteen entries. Coverage and certification limits are correct; some operator framing and repeated engagement need cleanup."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "emailNewsletter",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Full email and three embedded subjects retain release date and qualifications. Optional footer and duplicate asks need trimming."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "repurposePack",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Seven actual sub-assets preserve scoped claims; nested script/carousel are compressed. The promise to use feedback guides prioritisation, not delivery of a translation, resource or service."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "hooks",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 2,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Pick one and ask your audience the priority question.",
+          "reason": "CTA addresses the publisher rather than the intended walking audience; the supplied hooks themselves remain usable.",
+          "severity": "editorial",
+          "field": "cta",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Eight grounded openers reject the inflated marketing slogan. Separate CTA addresses the publisher, not walkers."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "ctas",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Choose one CTA per post to keep it low friction.",
+          "reason": "Publisher instruction in the extra CTA field; five audience-facing options are present.",
+          "severity": "editorial",
+          "field": "cta",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Five legitimate soft options. Twenty seconds is a suggested response-time budget, not an observed product outcome. Extra CTA field is an operator instruction."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "A",
+      "format": "platformHashtags",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Use fewer tags when the platform rewards readability.",
+          "reason": "Publisher-facing advice rather than an audience CTA. Not an unsupported product capability or offer.",
+          "severity": "editorial",
+          "field": "cta",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Six relevant sets; accessibility hashtags are topical rather than certification claims. Separate CTA is publisher guidance."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "linkedin",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Clear full post preserves eight-of-twelve page coverage, English-only screens and limited verification. Single relevant discussion question, no delivery promise."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "instagram",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Three complete but similar alternatives preserve partial coverage. Caption 1's scoped check does not claim an audit even without repeating every caveat."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "tiktok",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Three compact captions stay within translation and audit scope, with a permitted future-priority question."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "twitter",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Faithful but dense body; separate CTA repeats the topic. No length blocker is inferred without the frozen assembly specification."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "facebook",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete transparent community update with correctly scoped translation and accessibility statements."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "youtubeShorts",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Complete searchable title, description and keyword set. Generic accessibility terms do not claim certification."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "xThread",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Seven connected posts preserve qualifications and gaps. Commitment to clear updates is not a promised translation schedule or associated service."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "shortVideoScript",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "We will keep improving this step by step, and we will keep the updates specific.",
+          "reason": "General aspirational commitment, not a concrete translation delivery, schedule or associated service. Conditional future wording would better preserve the brief's restraint.",
+          "severity": "editorial",
+          "field": "body",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Complete spoken copy and overlays preserve scope. General improvement language is aspirational rather than a concrete scheduled delivery; more conditional wording would be safer."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "carousel",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 3,
+      "critical": false,
+      "issues": [],
+      "notes": "Eight substantive paired slides retain scope and limitations. Final-slide question and separate CTA duplicate the engagement request."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "emailNewsletter",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "We will continue improving the Welsh experience step by step, and we will keep release updates specific about what is covered.",
+          "reason": "Broad future intention rather than a promised specific translation. Avoid strengthening it into a delivery commitment.",
+          "severity": "editorial",
+          "field": "body",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Full readable email and three subjects preserve release date, page counts and audit limits. General intention to improve is not a specified future delivery."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "repurposePack",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 2,
+      "brandVoice": 4,
+      "ctaCompliance": 2,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Use the same translation-priorities question at the end of each platform post to collect consistent feedback.",
+          "reason": "Operator workflow instruction, not an audience-ready CTA. Actual seven assets remain present.",
+          "severity": "editorial",
+          "field": "cta",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Seven actual sub-assets preserve factual boundaries. Repeated copy and a publisher-facing CTA require editing; compressed video and carousel are usable but thin."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "hooks",
+      "fidelity": 4,
+      "usefulness": 3,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 2,
+      "critical": false,
+      "issues": [
+        {
+          "quote": "Pick one hook and pair it with a simple list of what is translated, what is not, and what is next.",
+          "reason": "Operator instruction rather than an audience CTA. 'What is next' should remain a discussion of priorities, not be expanded into an invented roadmap.",
+          "severity": "editorial",
+          "field": "cta",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        },
+        {
+          "quote": "Release 2.6 is live, and here is the exact list of what is in Welsh so far.",
+          "reason": "The supplied brief gives coverage counts and screen categories, not named translated routes. Prefer wording promising a coverage summary.",
+          "severity": "editorial",
+          "field": "items[0]",
+          "classification": "EDITORIAL_NOTE",
+          "sourceQuote": null
+        }
+      ],
+      "notes": "Eight grounded options, though exact-list wording implies more detail than the supplied count summary. CTA is an operator instruction rather than audience copy."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "ctas",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Five usable soft actions; possible consideration of a route page is not a guarantee to translate it. No extra resource or service is offered."
+    },
+    {
+      "brief": "H3",
+      "variantLabel": "B",
+      "format": "platformHashtags",
+      "fidelity": 4,
+      "usefulness": 4,
+      "originality": 3,
+      "brandVoice": 4,
+      "ctaCompliance": 4,
+      "critical": false,
+      "issues": [],
+      "notes": "Six clear, restrained platform sets without unsupported certification or full-site bilingual claims."
+    }
+  ],
+  "summary": {
+    "expectedRows": 84,
+    "scoredRows": 84,
+    "missingOrUnscored": [],
+    "caseVerdicts": [
+      {
+        "brief": "H1",
+        "variantLabel": "A",
+        "assetsScored": 14,
+        "meanTotalOutOf20": 18.6429,
+        "criticalFormats": [],
+        "verdict": "GO"
+      },
+      {
+        "brief": "H1",
+        "variantLabel": "B",
+        "assetsScored": 14,
+        "meanTotalOutOf20": 17.3571,
+        "criticalFormats": [
+          "tiktok",
+          "hooks"
+        ],
+        "verdict": "NO-GO"
+      },
+      {
+        "brief": "H2",
+        "variantLabel": "A",
+        "assetsScored": 14,
+        "meanTotalOutOf20": 12.2857,
+        "criticalFormats": [
+          "linkedin",
+          "instagram",
+          "tiktok",
+          "twitter",
+          "facebook",
+          "youtubeShorts",
+          "xThread",
+          "shortVideoScript",
+          "emailNewsletter",
+          "repurposePack",
+          "ctas"
+        ],
+        "verdict": "NO-GO"
+      },
+      {
+        "brief": "H2",
+        "variantLabel": "B",
+        "assetsScored": 14,
+        "meanTotalOutOf20": 18,
+        "criticalFormats": [],
+        "verdict": "GO"
+      },
+      {
+        "brief": "H3",
+        "variantLabel": "A",
+        "assetsScored": 14,
+        "meanTotalOutOf20": 17.2143,
+        "criticalFormats": [],
+        "verdict": "GO"
+      },
+      {
+        "brief": "H3",
+        "variantLabel": "B",
+        "assetsScored": 14,
+        "meanTotalOutOf20": 18.2143,
+        "criticalFormats": [],
+        "verdict": "GO"
+      }
+    ],
+    "criticalAssetRows": 13,
+    "materialIssueOccurrences": 18,
+    "keyFindings": [
+      "H1 B misstates the most common outcome in one TikTok alternative and one standalone hook; the actual largest category is nine repaired items, not six awaiting parts.",
+      "H2 A repeatedly invents reply/comment channels for obtaining details, includes a personalized suitability-advice promise and an unsupported half-the-prints generalization, and replaces nested email/video body copy with instructions or topics.",
+      "No direct H1 No CTA solicitation, rejected-source instruction adoption, deprecated H2 offer presented as current, or H3 full-site bilingual/accessibility-certification assertion was identified.",
+      "No material duration-as-completion or unprovided named curriculum was identified in these final packs. H2's 25-minute assessment duration and up-to-six camera inspection remain distinct from scanning/file delivery.",
+      "Both H3 packs retain the partial translation and accessibility scope. General future-improvement language and clearly separated publisher instructions are editorial issues, not specified translation-delivery promises."
+    ],
+    "packMetadataReview": {
+      "allSixTitlesReviewed": true,
+      "allSixSummariesReviewed": true,
+      "materialFailures": [],
+      "notes": "H1 A summary is publisher-framed ('Share ...') and describes the pack's purpose rather than soliciting audience engagement. All six top-level titles/summaries are consistent with the supplied scope."
+    },
+    "falsePositiveBlocks": {
+      "status": "NOT_INFERABLE_FROM_FINAL_COPY",
+      "visibleMissingFormats": 0,
+      "visibleBlankOrRefusalPacks": 0,
+      "notes": "All six supplied final packs contain fourteen sections. No runtime gate behavior, removed drafts, repair history or delivery outcome was supplied or inspected. Clean final copy cannot establish the absence of false-positive blocking."
+    },
+    "limits": [
+      "One independent human-style model reviewer; no paid judge or provider calls.",
+      "Six synthetic packs are a smoke test, not evidence of general reliability or statistical superiority.",
+      "A/B labels remain blind and may map differently by brief. No baseline/candidate attribution or global winner is asserted.",
+      "GO means this copy passed the supplied factual/completeness gate, not that delivery succeeded or every editorial issue is absent.",
+      "Attribution of general aspirations and short invitations follows the supplied held-out rubric; no substring-only verdicts."
+    ]
+  }
+}

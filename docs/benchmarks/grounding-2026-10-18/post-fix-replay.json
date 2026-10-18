@@ -1,0 +1,334 @@
+{
+  "recordedAt": "2026-10-18T09:32:00.409Z",
+  "planHash": "9eb39f8c7fe704362e9cba681feda352433fa27cbf3176a9eb56a25d7dae824f",
+  "frozenCandidateCommit": "6daddcc4149932e0d1bc59e331ecba7ce99f78ad",
+  "method": "Offline-only replay of all three captured candidate raw drafts. CURRENT TypeScript modules normalize requests, parse drafts, construct units and run deterministicIssues(unit, context). Frozen candidate modules reconstruct the original string-based deterministic checks. No provider call or semantic review performed.",
+  "limitations": [
+    "This local fix is beyond the frozen paid benchmark and is not live validated.",
+    "These captures are now regression data, not unseen validation.",
+    "Zero deterministic flags is not a factual correctness verdict or a complete grounding-review pass.",
+    "No inference about remote timeout cause or latency improvement is supported.",
+    "The shared-deadline release blocker and NO-GO remain unchanged."
+  ],
+  "artifactSha256": {
+    "planJson": "45bdb5febe2a593c7c7bac5c4c1ac1e38331ff48dae8d94663c4d1378d65cd65",
+    "evidenceJson": "8c61581b105152603f196fa6bdc5a4008e1725e3823ea23ea0b0c3eecf97c3fa"
+  },
+  "currentSourceSha256": {
+    "lib/factual-grounding.ts": "2af3f517da59e0a72c19edfe1686da3970d634dbf3641041f334ed785e2f645f",
+    "lib/generation-contract.ts": "5c6f177fa19bfa2b8e20863c24109b7ddf4e052388f153178c0217bcd2869d57",
+    "lib/content-config.ts": "0810308c2b54d412bffd9b1150b3bbc5cd6cc7cb89b7b63bdf4f8cdfccf0572a",
+    "lib/text-normalize.ts": "d846543c98de084acf37599daaa02ea0486f0ba1aeacf5abb6f1fce46ccc4a3a",
+    "lib/cta-policy.ts": "7379a2f32a8a96988dae8edc95fa9ab7191018854441ec9bc94019198f7f06e3"
+  },
+  "frozenCandidateSourceSha256": {
+    "lib/prompts.ts": "e526b4718d279d48b8a148201470aa4f980f22bcfbbd5f6bef232771bba5d2a5",
+    "lib/content-config.ts": "0810308c2b54d412bffd9b1150b3bbc5cd6cc7cb89b7b63bdf4f8cdfccf0572a",
+    "lib/text-normalize.ts": "d846543c98de084acf37599daaa02ea0486f0ba1aeacf5abb6f1fce46ccc4a3a",
+    "lib/generation-contract.ts": "5c6f177fa19bfa2b8e20863c24109b7ddf4e052388f153178c0217bcd2869d57",
+    "lib/cta-policy.ts": "7379a2f32a8a96988dae8edc95fa9ab7191018854441ec9bc94019198f7f06e3",
+    "lib/factual-grounding.ts": "1230ddf111aa9cd08a31c71cbfd45cd03038e9e8b3c88610d3cecb1b6a6e1777",
+    "app/api/generate/route.ts": "d9d639c7c67a8d1811c9e6268f1a33f2de670812bc19f0e32db9c2e41c99f101"
+  },
+  "aggregate": {
+    "packs": 3,
+    "unitCount": 719,
+    "originalFlaggedUnitCount": 24,
+    "currentFlaggedUnitCount": 0,
+    "resolvedOriginalFlagCount": 24,
+    "newlyFlaggedUnitCount": 0
+  },
+  "packs": [
+    {
+      "packId": "H1:candidate",
+      "briefSourceSha256": "07464aeb2e102ad63edd02ffa1bff55a53a5efb99ae7817d2b6399cdbcef369d",
+      "capturedDraftSha256": "e0bd0a1c0e9dd6110c7328cd2278aab7386b9b5dde8313aec3e2fd62fdb51439",
+      "capturedDraftHashMatchesLedger": true,
+      "currentParser": "passed",
+      "sectionCount": 14,
+      "unitCount": 228,
+      "originalUnitTextPathsAndOffsetsPreserved": true,
+      "originalFlaggedUnitCount": 3,
+      "currentFlaggedUnitCount": 0,
+      "resolvedOriginalFlagCount": 3,
+      "newlyFlaggedUnitCount": 0,
+      "originalFindings": [
+        {
+          "id": "u22",
+          "path": "sections.1.title",
+          "start": 0,
+          "end": 76,
+          "textSha256": "88402d1b04b54360dc613f58f458b36b49e1c818b61d4fc4f638d3bd10cac029",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u50",
+          "path": "sections.2.title",
+          "start": 0,
+          "end": 57,
+          "textSha256": "6ea26e0de0cc0c7891f4b55e70fe82e9dad9ba808887eec5a19f19dfdcd3f7e9",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u169",
+          "path": "sections.10.items.4",
+          "start": 0,
+          "end": 95,
+          "textSha256": "e1061ce4f7984aaee47e593226b744c446305f973691061b7ba9996c33a63b2a",
+          "reasons": [
+            "missing_evidence"
+          ]
+        }
+      ],
+      "currentFindings": []
+    },
+    {
+      "packId": "H2:candidate",
+      "briefSourceSha256": "f3f31addf0d55fae725857e9a6b3092e29283b1f531a07cde505a82ff346a714",
+      "capturedDraftSha256": "3d2c40305e84e7a701b222caa2fe829afc0a3ca577031cd181583308e577a568",
+      "capturedDraftHashMatchesLedger": true,
+      "currentParser": "passed",
+      "sectionCount": 14,
+      "unitCount": 267,
+      "originalUnitTextPathsAndOffsetsPreserved": true,
+      "originalFlaggedUnitCount": 15,
+      "currentFlaggedUnitCount": 0,
+      "resolvedOriginalFlagCount": 15,
+      "newlyFlaggedUnitCount": 0,
+      "originalFindings": [
+        {
+          "id": "u109",
+          "path": "sections.6.items.0",
+          "start": 0,
+          "end": 45,
+          "textSha256": "8c0b1a6fabbf4e8c5aa648cf240cfb9ba339d07749d3c9fb202e925b51e6df3a",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u111",
+          "path": "sections.6.items.1",
+          "start": 0,
+          "end": 155,
+          "textSha256": "6314f8f18387bb4d65df696aa23d0d0a5306132ca759d6f92c61ce3b6883b9d2",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u113",
+          "path": "sections.6.items.3",
+          "start": 0,
+          "end": 71,
+          "textSha256": "10731d4f020c8d50d9a1e1d89484248e4851a7be05299d8a35131229f82e6d23",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u115",
+          "path": "sections.6.items.4",
+          "start": 0,
+          "end": 43,
+          "textSha256": "924949328195a860a7911e52d68155a42a65163e6e3c36d377e48a6dcc761123",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u215",
+          "path": "sections.10.items.4",
+          "start": 0,
+          "end": 70,
+          "textSha256": "dc0f8fb2b346c28209b03b83717cfe1d5896625e9226d47737728ade9c50a807",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u217",
+          "path": "sections.10.items.4",
+          "start": 85,
+          "end": 164,
+          "textSha256": "2d2866833aef3ddccc271f7a44ff0f23eca51495dae86cbe8681a0db56ea6774",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u219",
+          "path": "sections.10.items.4",
+          "start": 292,
+          "end": 376,
+          "textSha256": "5c6a16122e5a50af4d6305a62ec891111df509ca9fe2dfdd6f49fbcfac281adb",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u220",
+          "path": "sections.10.items.4",
+          "start": 376,
+          "end": 436,
+          "textSha256": "89fab7e1ee9742721077a722f29ef4fc932aab547e7f2d6331bb4471b1e1b8ef",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u222",
+          "path": "sections.10.items.4",
+          "start": 494,
+          "end": 547,
+          "textSha256": "bf6a76d3864754583765e2ed5026c34ed9149af0c8944a8e0d7d89ed1a77572e",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u224",
+          "path": "sections.10.items.5",
+          "start": 78,
+          "end": 130,
+          "textSha256": "c58759d92eba450d189893b822f64fa050c1cd9708734f1c0ce87cc051d849a7",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u225",
+          "path": "sections.10.items.5",
+          "start": 130,
+          "end": 188,
+          "textSha256": "2550cf93780599162d82951e154ee2fb19823a072ff35e505bba836f1ca00ae9",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u227",
+          "path": "sections.10.items.5",
+          "start": 296,
+          "end": 372,
+          "textSha256": "ae9f363a09266b57e914a4bf89847e513f8a9681382e332779e0fa021d25e9c9",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u228",
+          "path": "sections.10.items.5",
+          "start": 372,
+          "end": 407,
+          "textSha256": "d96ebcf9aab93588d3d8ed18fa29d5fd9b1048f50da7c106d958deba5bd5ea3e",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u236",
+          "path": "sections.11.title",
+          "start": 0,
+          "end": 42,
+          "textSha256": "61cea57548e8dba9a3833ae63dd76e1c60f564b1f1a50e8c116d83b1a24b7b67",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u250",
+          "path": "sections.12.title",
+          "start": 0,
+          "end": 27,
+          "textSha256": "abfbb3c8bab5b92f1c5c9f2b6d90779de2bcf3f687454fc980858fb3e703e3c4",
+          "reasons": [
+            "missing_evidence"
+          ]
+        }
+      ],
+      "currentFindings": []
+    },
+    {
+      "packId": "H3:candidate",
+      "briefSourceSha256": "6f7ed9ec15c46ba93977758273436e90d0f37295c3cdb45dda53c465340e75eb",
+      "capturedDraftSha256": "63825e504dbc903985659fe343f15780fcc58855fb5709a399369cf6632231f8",
+      "capturedDraftHashMatchesLedger": true,
+      "currentParser": "passed",
+      "sectionCount": 14,
+      "unitCount": 224,
+      "originalUnitTextPathsAndOffsetsPreserved": true,
+      "originalFlaggedUnitCount": 6,
+      "currentFlaggedUnitCount": 0,
+      "resolvedOriginalFlagCount": 6,
+      "newlyFlaggedUnitCount": 0,
+      "originalFindings": [
+        {
+          "id": "u95",
+          "path": "sections.6.items.0",
+          "start": 0,
+          "end": 36,
+          "textSha256": "77935fb17da1fdd3196bb190e5c469d1ab9699df035dc1b21721f19b9be764ba",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u97",
+          "path": "sections.6.items.1",
+          "start": 0,
+          "end": 98,
+          "textSha256": "b59abe4f11c8fe9d739ac86ec2f0d5bfdc01e0a959455327c09d858020ab7fb0",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u100",
+          "path": "sections.6.items.4",
+          "start": 0,
+          "end": 85,
+          "textSha256": "555edf7a68fa7e6b13c49546fd9cc41fa8d7c428b0f1ede858ee7d6640ef8cc8",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u102",
+          "path": "sections.6.items.5",
+          "start": 0,
+          "end": 107,
+          "textSha256": "4e3b93cbb3338e44c581704aca5f2008e598eab630baea191cda2239e6f6f2e5",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u103",
+          "path": "sections.6.items.6",
+          "start": 0,
+          "end": 52,
+          "textSha256": "57e4e6b6e652effedcb9d0752cd1814f4f771db123f2ead70141a3f6f841663b",
+          "reasons": [
+            "missing_evidence"
+          ]
+        },
+        {
+          "id": "u185",
+          "path": "sections.10.items.4",
+          "start": 0,
+          "end": 404,
+          "textSha256": "864eb2b4c815827a9b230261b48e8aa317e6ce09f18848b6697bd85db75030e4",
+          "reasons": [
+            "missing_evidence"
+          ]
+        }
+      ],
+      "currentFindings": []
+    }
+  ]
+}

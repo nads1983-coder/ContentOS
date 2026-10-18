@@ -1,6 +1,6 @@
 # Held-out grounding benchmark proposal
 
-**Not authorized or executed.** Request one protected temporary build-only Preview in the existing `content-os` project and a **new maximum GBP 9 API budget**, separate from the closed previous campaign. No endpoint, production writes, customer data, new account/key/service or deployment-protection change. Do not activate a ledger or dispatch until explicit approval and secure preflight pass.
+**Historical proposal, subsequently authorized, executed and CLOSED.** The owner approved one protected Preview and a fresh maximum GBP9. Seven requests ran; the first review ended uncertain at the shared deadline and stopped the campaign. All 84 drafts were captured, but no candidate pack completed grounding. Cleanup is verified. See [measured results and NO-GO verdict](controlled-grounding-benchmark-2026-10-18.md). The proposal below records the original design, not permission to repeat it. No further budget or deployment is requested.
 
 ## Frozen evaluation design
 

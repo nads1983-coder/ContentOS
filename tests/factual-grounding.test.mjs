@@ -546,7 +546,12 @@ test("REGRESSION: No CTA permits practical reading experiments, not just declara
 
 test("REGRESSION: a self-evaluation question within advice is not audience engagement", () => {
   const entry = fixture("allow-sparse-experimental-question");
-  const { units, context } = isolated(entry.text, request(fixtures.briefs.sparse));
+  const req = request({ ...fixtures.briefs.sparse, selectedTypes: ["xThread"] });
+  const result = rawPack(["xThread"]);
+  // The observed fixture is xThread.items[5], not an isolated LinkedIn body.
+  result.sections[0].items = [...Array(5).fill(fact), entry.text];
+  const units = groundingUnits(result).filter(unit => unit.path === "sections.0.items.5");
+  const context = buildGroundingContext(req);
   assert.deepEqual(deterministicIssues(entry.text, context), []);
   assert.doesNotThrow(() => parseGroundingReview(encoded(units.map((u) => allowed(u.id, "creative"))), units, context));
 });

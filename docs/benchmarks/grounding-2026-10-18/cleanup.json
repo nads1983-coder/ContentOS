@@ -1,0 +1,28 @@
+{
+  "stoppedAt": "2026-10-18T09:11:44.854Z",
+  "database": {
+    "disable": true,
+    "noLogin": true,
+    "revokeFunctions": true,
+    "revokeSchema": true,
+    "terminateSessions": true,
+    "verifyRevocation": true
+  },
+  "auditExported": true,
+  "discoveryComplete": true,
+  "verifiedDeployments": [
+    {
+      "id": "dpl_4rGWTWW918WeewKyprB1u9Vmf4ae",
+      "projectId": "prj_aO6mDTNkCKe5jzepGPCvzOWy1eBS",
+      "target": null,
+      "meta": {
+        "benchmarkPlanHash": "9eb39f8c7fe704362e9cba681feda352433fa27cbf3176a9eb56a25d7dae824f"
+      }
+    }
+  ],
+  "deletedDeploymentIds": [
+    "dpl_4rGWTWW918WeewKyprB1u9Vmf4ae"
+  ],
+  "errors": [],
+  "safeToEraseRecovery": true
+}

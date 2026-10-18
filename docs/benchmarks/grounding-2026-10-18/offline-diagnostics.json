@@ -1,0 +1,122 @@
+{
+  "planHash": "9eb39f8c7fe704362e9cba681feda352433fa27cbf3176a9eb56a25d7dae824f",
+  "candidateCommit": "6daddcc4149932e0d1bc59e331ecba7ce99f78ad",
+  "method": "Frozen candidate modules and captured drafts; first review callback intercepted locally; no provider calls.",
+  "limitations": [
+    "Deterministic flags are heuristics, not factual judgments or model verdicts.",
+    "Byte and unit counts do not establish token count, runtime requirements, or remote failure cause.",
+    "No review response, reviewer usage, or underlying remote error is available for the unknown review.",
+    "H2 and H3 review payloads were reconstructed offline only; neither was dispatched.",
+    "No diagnostic feedback was sent to blind evaluation agents."
+  ],
+  "limits": {
+    "unitsPerPack": 500,
+    "reviewInputBytes": 240000,
+    "serializedReviewRequestBytes": 256000,
+    "reviewResponseBytes": 180000,
+    "reviewMaxOutputTokens": 16000,
+    "sharedProviderBudgetMsPerCandidate": 90000
+  },
+  "packs": [
+    {
+      "packId": "H1:candidate",
+      "draftProviderElapsedMs": 45151,
+      "reviewProviderBudgetMs": 44849,
+      "capturedDraftBytes": 16739,
+      "localParse": "passed",
+      "sections": 14,
+      "sourceStatementCount": 12,
+      "unitCount": 228,
+      "unitsByField": {
+        "title": 1,
+        "summary": 1,
+        "section.title": 14,
+        "section.platform": 14,
+        "section.body": 100,
+        "section.items": 98
+      },
+      "unitTextBytes": 14624,
+      "reviewInputBytes": 36128,
+      "reviewSerializedRequestBytes": 45618,
+      "reviewFixedEnvelopeBytes": 5142,
+      "flaggedUnitCount": 3,
+      "deterministicFindingCount": 3,
+      "deterministicFindingsByCategory": { "missing_evidence": 3 },
+      "withinInputAndUnitCaps": true,
+      "reviewPayloadHash": "5308eb52ee801e8ab59fe26a91c10c2b09bcb477fa0a61b1b143e2c7e229a630",
+      "recordedReviewState": "unknown",
+      "payloadMatchesRecordedReview": true,
+      "recordedReviewElapsedMs": 44852
+    },
+    {
+      "packId": "H2:candidate",
+      "draftProviderElapsedMs": 55449,
+      "reviewProviderBudgetMs": 34551,
+      "capturedDraftBytes": 19582,
+      "localParse": "passed",
+      "sections": 14,
+      "sourceStatementCount": 14,
+      "unitCount": 267,
+      "unitsByField": {
+        "title": 1,
+        "summary": 1,
+        "section.title": 14,
+        "section.platform": 14,
+        "section.body": 109,
+        "section.cta": 12,
+        "section.items": 116
+      },
+      "unitTextBytes": 15879,
+      "reviewInputBytes": 41115,
+      "reviewSerializedRequestBytes": 51377,
+      "reviewFixedEnvelopeBytes": 5142,
+      "flaggedUnitCount": 15,
+      "deterministicFindingCount": 15,
+      "deterministicFindingsByCategory": { "missing_evidence": 15 },
+      "withinInputAndUnitCaps": true,
+      "reviewPayloadHash": "3ab845ab807820ded56e0b80de75a87fe0e12d9dfb38af00429e74a42e95a2d9",
+      "recordedReviewState": "ready",
+      "payloadMatchesRecordedReview": null,
+      "recordedReviewElapsedMs": null
+    },
+    {
+      "packId": "H3:candidate",
+      "draftProviderElapsedMs": 52906,
+      "reviewProviderBudgetMs": 37094,
+      "capturedDraftBytes": 18504,
+      "localParse": "passed",
+      "sections": 14,
+      "sourceStatementCount": 17,
+      "unitCount": 224,
+      "unitsByField": {
+        "title": 1,
+        "summary": 1,
+        "section.title": 14,
+        "section.platform": 14,
+        "section.body": 89,
+        "section.cta": 12,
+        "section.items": 93
+      },
+      "unitTextBytes": 14855,
+      "reviewInputBytes": 36383,
+      "reviewSerializedRequestBytes": 45895,
+      "reviewFixedEnvelopeBytes": 5142,
+      "flaggedUnitCount": 6,
+      "deterministicFindingCount": 6,
+      "deterministicFindingsByCategory": { "missing_evidence": 6 },
+      "withinInputAndUnitCaps": true,
+      "reviewPayloadHash": "cdb5e215bb75213043d8e06e9dbfe81b7579150f1938f31f6a9fb50ce0fdff0d",
+      "recordedReviewState": "ready",
+      "payloadMatchesRecordedReview": null,
+      "recordedReviewElapsedMs": null
+    }
+  ],
+  "aggregate": {
+    "packs": 3,
+    "unitCount": 719,
+    "reviewSerializedRequestBytes": 142890,
+    "flaggedUnitCount": 24,
+    "deterministicFindingCount": 24,
+    "deterministicFindingsByCategory": { "missing_evidence": 24 }
+  }
+}

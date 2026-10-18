@@ -4,13 +4,13 @@ Date: 2026-10-18. Repository `nads1983-coder/ContentOS`, existing branch `feat/a
 
 ## Verdict: NO-GO
 
-Keep PR #3 in draft. **Server-side factual grounding and bounded correction are now implemented and locally tested; their live quality gate is pending new approval.** The previous prompt-only live recheck failed factual grounding. Six original paired requests plus three separately approved corrected-candidate requests completed with no provider failure, uncertainty or retry. Usage-derived total cost was **USD 0.50587425, approximately GBP 0.3817327 of GBP 5 authorized**. The conservative permanent spending reservation is GBP 4.804294; measured lower cost does not replenish it. No further paid calls or temporary benchmark deployments ran during the grounding implementation.
+Keep PR #3 in draft. **The newly authorized GBP9 held-out grounding benchmark failed the release gate.** Six draft calls produced 84 assets; the first candidate review ended uncertain at the shared deadline, immediately stopping further calls. No candidate pack completed grounding. Both independent blind reviewers found zero material failures in the 42 candidate raw drafts versus 13 critical baseline asset rows; mean scores were 18.29 versus 15.62, with slightly lower candidate originality. These are not delivered-quality results. Seven paid calls were admitted, no retry; GBP4.262720 remains permanently reserved, including GBP0.848960 for the uncertain call. Confirmed usage subtotal is USD0.37024225 (about GBP0.27764), not a fully reconciled total. See [controlled benchmark evidence](controlled-grounding-benchmark-2026-10-18.md) for blind assessment, exact timings, cost limits and cleanup. The Preview was deleted, temporary database access revoked, and audit retained. No production or customer-data changes occurred. No more budget or deployment is requested.
 
-The owner approved one protected temporary Preview and then one follow-up. Both one-shot builds accessed the existing OpenAI Secret securely in Vercel, without exporting it. A restricted atomic ledger on the existing isolated Neon branch enforced cumulative admission. Both temporary deployments/staging were removed; the runner role is disabled/revoked and all nine audit rows remain. No new OpenAI key/account, service or Vercel project was created.
+The older, separate GBP5 campaign (six paired requests plus three corrected-candidate requests) remains closed at GBP4.804294 reserved and USD0.50587425 usage-priced cost. Its two Preview deployments were already removed and all nine audit rows preserved. The fresh campaign did not reset or reuse that authorization. No new OpenAI key/account, service or Vercel project was created.
 
 ## Completed Corrections
 
-- Added server-side source provenance, exhaustive unit review across all 14 formats, deterministic claim guards, one bounded correction/revalidation pass and fail-closed delivery. Ten new route tests, 106 grounding tests/subtests, 70 synthetic fixtures, and browser error recovery cover actual behavior. Details and semantic limitations: [factual grounding](factual-grounding-2026-10-18.md). Next independently prepared held-out evaluation: [proposal](grounding-benchmark-proposal.md), not executed or authorized.
+- Added server-side source provenance, exhaustive unit review across all 14 formats, deterministic claim guards, one bounded correction/revalidation pass and fail-closed delivery. Ten new route tests, 106 grounding tests/subtests, 70 synthetic fixtures, and browser error recovery cover actual behavior. Details and semantic limitations: [factual grounding](factual-grounding-2026-10-18.md). The subsequently approved [held-out evaluation](controlled-grounding-benchmark-2026-10-18.md) ran and failed; no candidate delivery or semantic accuracy pass is claimed.
 
 - Durable atomic image admission, monthly holds, per-account concurrency and attempt limits, stable UUID/fingerprint deduplication, successful accounting before response and bounded replay. Real row locks coordinate separate application instances; provider calls never hold a database transaction.
 - Failed work releases only its application hold, not its attempt budget or provider spend. Uncertain completion never releases/re-dispatches; same-ID replay recovers a committed result. Expired IDs become terminal and require an explicit new attempt. Free template fallback is clearly disclosed and consumes no successful image credit.
@@ -20,7 +20,7 @@ The owner approved one protected temporary Preview and then one follow-up. Both 
 - Auth hooks use the active adapter transaction instead of requesting a second pool connection. Password-reset pre-revocation participates in atomic token consumption, before credential mutation; failure rolls back consumption. Post-reset revocation remains defense in depth.
 - Stripe signatures require freshness and support rotated v1 signatures. A delayed subscription deletion cannot replace a newer subscription under the row lock. Verified Founder/manual lifetime guards remain intact. Billing logs no longer print customer/session/account identifiers or raw errors.
 - Passive device hydration no longer increments workspace revisions. Workspace uploads have a body deadline. Formatter navigation, filter selection semantics, zoom metadata, mobile menu Escape and native image-dialog keyboard behavior were corrected from observed usability failures.
-- All 14 text formats, AI refinements, manual editing, undo, exports, image controls and existing plan entitlements remain. No runtime dependency, paid service, database schema or migration was added.
+- All 14 text formats, AI refinements, manual editing, undo, exports, image controls and existing plan entitlements remain. No runtime dependency, paid service, application/production schema or migration was added.
 - Added isolated operator-only benchmark scripts and 18 additional unit tests, plus 18 real-Neon ledger checks. This creates only a dedicated benchmark schema on the existing temporary branch, not an application or production migration. Scripts expose no HTTP endpoint and are not part of the app build.
 - Added prompt mitigations for source-number meaning, unsupported personal experience/offers/curriculum, publisher-facing commentary and No CTA precedence, with two instruction-delivery tests. These improved some live defects but did not fully resolve factual grounding; no successful final quality gate is claimed.
 
@@ -28,7 +28,7 @@ The owner approved one protected temporary Preview and then one follow-up. Both 
 
 | Gate / command | Result and scope |
 | --- | --- |
-| `npm test` | PASS, 366/366, no skipped tests, rerun after the grounding implementation. Real route/helper logic with isolated mocks, including correction/revalidation, bounded review failures, replay, billing/lifetime, auth/reset faults, benchmark guard and read projection. Semantic model decisions are mocked, not a live accuracy certification. |
+| `npm test` | PASS, 437 passed / 0 failed / 1 opt-in isolated SQL test skipped in the offline run, rerun after the post-benchmark format fix. That isolated SQL suite separately passed 18/18 checks against Neon. The prior 366 app/grounding tests remain included; 56 new offline benchmark safety checks and 15 format-label regressions pass. Mocked semantic decisions are not a live accuracy certification. |
 | `npm run typecheck` | PASS. |
 | `npm run lint` | PASS. |
 | `npm run build` | PASS, Next.js 16.3.8, 51 generated pages. |
@@ -39,6 +39,9 @@ The owner approved one protected temporary Preview and then one follow-up. Both 
 | `node --test tests/benchmark-preview.test.mjs tests/benchmark-budget.test.mjs` | PASS within full suite, 38/38, including 18 signed-manifest/runtime/atomic-dispatch/follow-up/failure tests and the new closed-entry-point test. |
 | Isolated benchmark ledger test | PASS, 18 real PostgreSQL checks: restricted access, null-safe binding, rollback, concurrent admission, uncertainty, durability, idempotency, expiry, exact/cumulative caps, prior-row preservation, old-job refusal and automatic close. |
 | Temporary benchmark dependencies | PASS, locked pg-only staging dependency audit, zero advisories; install scripts disabled. |
+| Fresh GBP9 benchmark safety | PASS: 16 runtime/closed-entry tests, 33 cleanup/recovery checks, 7 SQL structural checks; separate isolated Neon run 18/18 including 10 behavioral subchecks. No paid requests in tests. |
+| Post-benchmark annotation fix | PASS: 15 new behavior tests; 148/148 focused grounding/route tests. Format labels are server-certified by field/sequence/count, not a numeric whitelist. Fractions, decimals, prices, guarantees, duration, No CTA and forged metadata remain guarded. Not live-validated; deadline blocker remains. |
+| Fresh held-out pipeline benchmark | FAIL: 6 drafts / 84 assets captured; first candidate review uncertain at shared deadline; 7 requests total, no retry, 0 validated candidate deliveries, 2 candidate review pipelines unattempted. Cleanup verified; see [full results](controlled-grounding-benchmark-2026-10-18.md). |
 | Live paired benchmark and follow-up | 9/9 completed, 126 sections across all 14 formats. Original/corrected candidate contract acceptance 6/6. Factual-quality gate FAIL; see below. |
 | `tests/auth-isolated.mjs --browser --reset-faults` | PASS against existing isolated Neon and local production build, real Better Auth and PostgreSQL. See below. |
 | `tests/image-isolated.mjs` | PASS, nine real-Neon checks; eight synthetic profiles cleaned up. |
@@ -63,7 +66,7 @@ A synthetic one-million-character SVG produced a full serialized JSON document o
 
 Automated fixtures retain exact FOUNDING100 promotion enforcement, paid/already-Founder refusal, persistent claim coordination, permanent-versus-retryable webhook responses, repeated activation convergence and lifetime preservation after cancellation. New tests cover rotated/stale signatures and reordered recurring deletion. No live checkout, redemption, payment, cancellation, webhook replay or customer entitlement write was used as validation.
 
-## AI Benchmark Evidence
+## Historical GBP5 Benchmark Evidence
 
 Three paired synthetic briefs requested all 14 formats from actual baseline/candidate prompt and schema modules. Fixed gpt-5.2/default tier, 24,000 output-token cap, 90-second deadline, no tools/images, no automatic retry and no API judge calls. Execution window: 2026-10-18 07:47:02-07:51:04 UTC. All six calls completed, returning 42 baseline and 42 candidate sections. All three candidate outputs passed the current strict contract; baseline outputs did not pass the new contract, which is not evidence that their old parser would fail.
 
@@ -91,7 +94,7 @@ Prompt mitigations explicitly preserve the meaning of source numbers; prohibit i
 - The fictional class's 45-minute duration becomes a promise to organize the workspace in 45 minutes in an email subject and CTA option.
 - The model invents specific storage-zone assignments and presents them as curriculum, across thread, script, carousel and repurposed carousel.
 
-Publisher-facing CTA instructions and categorical population claims also remained editorial risks in that historical run. Stronger prompts alone did not establish a pass. The grounding/claim-validation correction is now implemented and locally validated, but has not undergone a newly authorized live evaluation. Exact quotations and deterministic checks do not guarantee semantic entailment; false positives and missed claims remain possible. See the new report and proposal above. No budget increase was applied. Only GBP 0.195706 of conservative old reservation headroom remains; measured savings do not authorize more calls. No third benchmark Preview or further provider calls were created.
+Publisher-facing CTA instructions and categorical population claims also remained editorial risks in that historical run. Stronger prompts alone did not establish a pass. The newer grounding/claim-validation correction was subsequently evaluated under a separate explicit GBP9 authorization; that campaign's deadline/uncertainty failure is documented above. Exact quotations and deterministic checks do not guarantee semantic entailment; false positives and missed claims remain possible. The old GBP5 headroom was not reused. All benchmark authorizations are now closed, and no additional paid call or Preview is requested.
 
 ## Residual Risks and Boundaries
 

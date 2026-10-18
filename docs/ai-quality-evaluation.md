@@ -2,7 +2,7 @@
 
 ## Current grounding implementation
 
-The newer [server-side grounding report](factual-grounding-2026-10-18.md) supersedes prompt-only mitigation as the implementation. Its extraction, structured semantic review, deterministic guards, one correction pass and fresh revalidation run before successful persistence/delivery. Local tests pass, but **none of the historical live results below evaluate this pipeline**. A [new held-out benchmark](grounding-benchmark-proposal.md) requires explicit budget/deployment approval. No new paid calls ran.
+The [server-side grounding report](factual-grounding-2026-10-18.md) supersedes prompt-only mitigation as the implementation. Its extraction, structured semantic review, deterministic guards, one correction pass and fresh revalidation run before successful persistence/delivery. The newly authorized [held-out live campaign](controlled-grounding-benchmark-2026-10-18.md) captured 84 drafts but stopped after an uncertain first review at the shared deadline. No candidate pack completed grounding; the verdict is NO-GO. Seven calls were admitted against the fresh GBP9 ledger, then execution/access were disabled and the Preview deleted. The historical live results below belong to the separate closed GBP5 campaign, not this pipeline.
 
 ## Scope and baseline
 

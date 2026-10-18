@@ -1,0 +1,38 @@
+{
+  "H1:A": {
+    "variant": "candidate",
+    "delivered": false,
+    "evaluated": "withheld_raw_draft",
+    "outcome": "campaign_stopped_before_outcome"
+  },
+  "H1:B": {
+    "variant": "baseline",
+    "delivered": true,
+    "evaluated": "delivered_pack",
+    "outcome": null
+  },
+  "H2:A": {
+    "variant": "baseline",
+    "delivered": true,
+    "evaluated": "delivered_pack",
+    "outcome": null
+  },
+  "H2:B": {
+    "variant": "candidate",
+    "delivered": false,
+    "evaluated": "withheld_raw_draft",
+    "outcome": "campaign_stopped_before_outcome"
+  },
+  "H3:A": {
+    "variant": "baseline",
+    "delivered": true,
+    "evaluated": "delivered_pack",
+    "outcome": null
+  },
+  "H3:B": {
+    "variant": "candidate",
+    "delivered": false,
+    "evaluated": "withheld_raw_draft",
+    "outcome": "campaign_stopped_before_outcome"
+  }
+}

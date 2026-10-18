@@ -1,6 +1,6 @@
 # Server-side factual grounding
 
-Status: implemented and locally tested; live semantic accuracy, quality, latency and cost remain unverified. PR #3 stays draft. No new paid calls, temporary benchmark deployments, production writes or migrations were made for this change.
+Status: implemented and locally tested; **live release gate failed** in the subsequently authorized [controlled benchmark](controlled-grounding-benchmark-2026-10-18.md). Six drafts completed; the first candidate review ended uncertain at the shared deadline and stopped the campaign. No candidate pack completed grounding. PR #3 stays draft. The original implementation made no paid calls; the separate authorized campaign is now closed and its temporary Preview/access removed. Production and customer data remain unchanged.
 
 ## Delivery boundary
 
@@ -33,6 +33,8 @@ Regression fixes include written-number versus numeral equivalence, unrelated du
 - Existing completed replays and historical/manual content are preserved, not retroactively certified or rewritten. Images, subscriptions and Founder entitlements are untouched.
 
 ## Executed evidence
+
+- Post-benchmark annotation correction: 15 new behavior tests, 148/148 focused grounding/route checks and 437 full-suite passes (one separately executed isolated SQL opt-in). Only server-certified field/sequence/count spans are exempt from business-number evidence; original text and offsets remain intact. Real claims after labels, decimal percentages, fractions, wrong counts and forged annotation metadata remain tested. This is locally validated only, beyond the frozen live candidate; the shared-deadline release blocker remains.
 
 - 70 synthetic fixtures: 46 negative (including one structural No-CTA companion) and 24 acceptable examples. They retain provenance from the previous failed benchmark and explicit counterexamples; no customer information or provider credentials.
 - 106 grounding tests/subtests execute source extraction, deterministic decisions, structured review validation, all-format traversal, bounded correction, revalidation, ambiguous/conflicting evidence transport, format preservation and refusal paths. Mixed-reference price laundering, factual claims disguised as experimental questions and short engagement prompts have explicit regression tests.
