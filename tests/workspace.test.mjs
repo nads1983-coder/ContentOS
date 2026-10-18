@@ -125,16 +125,17 @@ function routeHarness() {
   });
   return { routes, calls, setUser: value => { user = value; }, fail: () => { failed = true; }, reject: () => { rejected = true; } };
 }
-const putRequest = value => new Request("https://app.test/api/workspace?userId=bob", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(value) });
+const getRequest = (account = "alice") => new Request("https://app.test/api/workspace?userId=bob", { headers: { "X-ContentOS-Account": account } });
+const putRequest = (value, account = "alice") => new Request("https://app.test/api/workspace?userId=bob", { method: "PUT", headers: { "Content-Type": "application/json", "X-ContentOS-Account": account }, body: JSON.stringify(value) });
 test("route requires authentication and only uses session ID, with no-store responses", async () => {
   const h = routeHarness();
-  const response = await h.routes.GET(new Request("https://app.test/api/workspace?userId=bob"));
+  const response = await h.routes.GET(getRequest());
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("cache-control"), "private, no-store");
   assert.equal((await h.routes.PUT(putRequest(input()))).status, 200);
   assert.deepEqual(h.calls, ["alice", "alice"]);
   h.setUser(null);
-  assert.equal((await h.routes.GET()).status, 401);
+  assert.equal((await h.routes.GET(getRequest())).status, 401);
   assert.equal((await h.routes.PUT(putRequest(input()))).status, 401);
   assert.equal(h.calls.length, 2);
 });
@@ -145,15 +146,29 @@ test("route rejects unsafe writes, reports stale revisions and never invents per
   assert.equal(stale.status, 409);
   assert.equal((await stale.json()).revision, 1);
   h.fail();
-  assert.equal((await h.routes.GET()).status, 503);
+  assert.equal((await h.routes.GET(getRequest())).status, 503);
   assert.equal((await h.routes.PUT(putRequest(input()))).status, 503);
   h.reject();
   assert.equal((await h.routes.PUT(putRequest(input()))).status, 403);
 });
 test("route bounds streamed body size and rejects invalid JSON before repository writes", async () => {
   const h = routeHarness();
-  const request = body => new Request("https://app.test/api/workspace", { method: "PUT", body });
+  const request = body => new Request("https://app.test/api/workspace", { method: "PUT", headers: { "X-ContentOS-Account": "alice" }, body });
   assert.equal((await h.routes.PUT(request("x".repeat(contract.MAX_WORKSPACE_BYTES + 1)))).status, 413);
   assert.equal((await h.routes.PUT(request("{"))).status, 400);
   assert.equal(h.calls.length, 0);
+});
+
+test("a stale account tab cannot load or save content under a changed session", async () => {
+  const h = routeHarness();
+  for (const account of ["bob", ""]) {
+    const read = await h.routes.GET(getRequest(account));
+    const write = await h.routes.PUT(putRequest(input(), account));
+    assert.equal(read.status, 409);
+    assert.equal(write.status, 409);
+    assert.equal((await write.json()).code, "account_changed");
+  }
+  h.setUser({ id: "bob", email: "bob@example.test" });
+  assert.equal((await h.routes.PUT(putRequest(input(), "alice"))).status, 409);
+  assert.deepEqual(h.calls, [], "Session binding rejects before any database access");
 });

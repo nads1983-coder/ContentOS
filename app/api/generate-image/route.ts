@@ -74,6 +74,13 @@ export async function POST(request: Request) {
     );
   }
 
+  if (request.headers.get("X-ContentOS-Account") !== user.id) {
+    return NextResponse.json({
+      error: "Your account session changed. Reload the page or sign in again before continuing.",
+      code: "account_changed"
+    }, { status: 409 });
+  }
+
   if (!isDatabaseConfigured()) {
     return NextResponse.json(
       { error: "Subscription checks are not configured yet." },

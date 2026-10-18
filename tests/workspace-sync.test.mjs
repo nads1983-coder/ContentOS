@@ -45,3 +45,18 @@ test("a lost save acknowledgement is never silently retried with a new revision"
   await writer.enqueue(state("newer"));
   assert.equal(calls, 1);
 });
+
+test("disposing a workspace cancels queued saves and ignores an in-flight completion", async () => {
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  const calls = [], messages = [];
+  const writer = createWorkspaceWriter(0, async input => { calls.push(input); await gate; return { revision: 1 }; }, message => messages.push(message));
+  const pending = writer.enqueue(state("old account"));
+  await writer.enqueue(state("queued old account"));
+  writer.dispose();
+  await writer.enqueue(state("must not save"));
+  release();
+  await pending;
+  assert.equal(calls.length, 1);
+  assert.deepEqual(messages, ["Saving to your account..."]);
+});

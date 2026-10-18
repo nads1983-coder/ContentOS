@@ -14,10 +14,17 @@ function failure(error: unknown) {
   console.error("[workspace] persistence unavailable");
   return json({ error: "Workspace could not be loaded or saved. Please retry later." }, 503);
 }
-export async function GET() {
+function accountMatches(request: Request, userId: string) {
+  return request.headers.get("X-ContentOS-Account") === userId;
+}
+function accountChanged() {
+  return json({ error: "Your signed-in account changed. Reload before continuing.", code: "account_changed" }, 409);
+}
+export async function GET(request: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) return json({ error: "Login required." }, 401);
+    if (!accountMatches(request, user.id)) return accountChanged();
     return json(await getWorkspace(user.id));
   } catch (error) { return failure(error); }
 }
@@ -51,6 +58,7 @@ export async function PUT(request: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) return json({ error: "Login required." }, 401);
+    if (!accountMatches(request, user.id)) return accountChanged();
     const input = await readInput(request);
     return json(await saveWorkspace(user.id, input));
   } catch (error) { return failure(error); }

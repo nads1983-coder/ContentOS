@@ -47,10 +47,11 @@ async function routeFixture(options = {}) {
   let providerInput;
   const analytics = [];
   const errors = [];
+  const gateCalls = [];
   const route = loadTs("app/api/generate/route.ts", {
     "@/lib/request-security": { rejectUnsafeWrite: () => options.unsafe ? Response.json({ error: "Unsafe origin." }, { status: 403 }) : null },
     "@/lib/auth": { getCurrentUser: async () => options.anonymous ? null : { id: "user-test", email: "test@example.invalid" } },
-    "@/lib/backend": { isDatabaseConfigured: () => !options.noDatabase },
+    "@/lib/backend": { isDatabaseConfigured: () => { gateCalls.push("database_config"); return !options.noDatabase; } },
     "@/lib/monitoring": {
       captureServerError: (error, context) => errors.push({ message: error.message, context }),
       analyticsEvent: (event, fields) => { if (options.analyticsError) throw new Error("logger unavailable"); analytics.push({ event, fields }); }
@@ -98,10 +99,13 @@ async function routeFixture(options = {}) {
   try {
     if (options.noKey) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = "offline-placeholder-not-a-real-key";
-    const response = await route.POST(new Request("https://test.local/api/generate", {
-      method: "POST", body: JSON.stringify(options.body ?? { source, selectedTypes: ["linkedin"], requestId })
-    }));
-    return { response, body: await response.json(), calls, clientOptions, providerInput, analytics, errors };
+    const headers = new Headers();
+    if (options.accountHeader !== null) headers.set("X-ContentOS-Account", options.accountHeader ?? "user-test");
+    const incoming = new Request("https://test.local/api/generate", {
+      method: "POST", headers, body: options.rawBody ?? JSON.stringify(options.body ?? { source, selectedTypes: ["linkedin"], requestId })
+    });
+    const response = await route.POST(incoming);
+    return { response, body: await response.json(), calls, clientOptions, providerInput, analytics, errors, gateCalls, bodyRead: incoming.bodyUsed };
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = previous;
@@ -127,6 +131,23 @@ test("route rejects unsafe/unauthenticated/invalid/unconfigured requests before 
     assert.equal(result.response.status, status);
     assert.deepEqual(result.calls, []);
   }
+});
+
+test("text route rejects missing, empty, and stale account headers before reading data or accessing storage", async () => {
+  for (const accountHeader of [null, "", "previous-account"]) {
+    const result = await routeFixture({ accountHeader, rawBody: "{", noDatabase: true });
+    assert.equal(result.response.status, 409);
+    assert.equal(result.body.code, "account_changed");
+    assert.match(result.body.error, /Reload the page or sign in again/);
+    assert.deepEqual(result.calls, []);
+    assert.deepEqual(result.gateCalls, []);
+    assert.equal(result.bodyRead, false);
+    assert.equal(result.clientOptions, undefined);
+    assert.deepEqual(result.analytics, []);
+    assert.ok(!JSON.stringify(result.body).includes("user-test"));
+    assert.ok(!JSON.stringify(result.body).includes("previous-account"));
+  }
+  assert.equal((await routeFixture({ anonymous: true, accountHeader: null })).response.status, 401);
 });
 
 test("route quota, paid-format, conflict and unavailable admission errors never call provider", async () => {
@@ -330,16 +351,17 @@ test("failed provider attempt is terminal on retry and never counted as successf
 async function imageRouteFixture(t, options = {}) {
   const calls = [];
   const usage = [];
+  const gateCalls = [];
   const route = loadTs("app/api/generate-image/route.ts", {
     "@/lib/request-security": { rejectUnsafeWrite: () => null },
     "@/lib/auth": { getCurrentUser: async () => options.anonymous ? null : { id: "user-test", email: "test@example.invalid" } },
-    "@/lib/backend": { isDatabaseConfigured: () => !options.noDatabase },
+    "@/lib/backend": { isDatabaseConfigured: () => { gateCalls.push("database_config"); return !options.noDatabase; } },
     "@/lib/env": { isStripeConfigured: () => false },
     "next/server": { NextResponse: Response },
     "@/lib/repository": {
-      getUserProfileForUser: async () => options.noProfile ? null : {
+      getUserProfileForUser: async () => { gateCalls.push("profile"); return options.noProfile ? null : {
         id: "user-test", plan: "pro_studio", subscription_status: "active", ...options.profile
-      },
+      }; },
       getMonthlyUsageCount: async (input) => {
         calls.push("quota");
         assert.equal(input.eventType, "image_generation");
@@ -360,10 +382,13 @@ async function imageRouteFixture(t, options = {}) {
   try {
     if (options.noKey) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = "offline-placeholder-not-a-real-key";
-    const response = await route.POST(new Request("https://test.local/api/generate-image", {
-      method: "POST", body: JSON.stringify({ outputText: source, platform: "LinkedIn", style: "minimal", format: "square" })
-    }));
-    return { response, body: await response.json(), calls, usage };
+    const headers = new Headers();
+    if (options.accountHeader !== null) headers.set("X-ContentOS-Account", options.accountHeader ?? "user-test");
+    const incoming = new Request("https://test.local/api/generate-image", {
+      method: "POST", headers, body: options.rawBody ?? JSON.stringify({ outputText: source, platform: "LinkedIn", style: "minimal", format: "square" })
+    });
+    const response = await route.POST(incoming);
+    return { response, body: await response.json(), calls, usage, gateCalls, bodyRead: incoming.bodyUsed };
   } finally {
     if (previous === undefined) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = previous;
@@ -378,6 +403,22 @@ test("image auth and plan failures block provider access and usage recording", a
     assert.equal(result.response.status, status);
     assert.deepEqual(result.calls, []);
   }
+});
+
+test("image route rejects missing, empty, and stale account headers before reading data or accessing storage", async (t) => {
+  for (const accountHeader of [null, "", "previous-account"]) {
+    const result = await imageRouteFixture(t, { accountHeader, rawBody: "{", noDatabase: true });
+    assert.equal(result.response.status, 409);
+    assert.equal(result.body.code, "account_changed");
+    assert.match(result.body.error, /Reload the page or sign in again/);
+    assert.deepEqual(result.calls, []);
+    assert.deepEqual(result.gateCalls, []);
+    assert.deepEqual(result.usage, []);
+    assert.equal(result.bodyRead, false);
+    assert.ok(!JSON.stringify(result.body).includes("user-test"));
+    assert.ok(!JSON.stringify(result.body).includes("previous-account"));
+  }
+  assert.equal((await imageRouteFixture(t, { anonymous: true, accountHeader: null })).response.status, 401);
 });
 
 test("image quota outage or invalid counter fails closed; exhausted credits return 429", async (t) => {

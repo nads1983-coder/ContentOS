@@ -41,6 +41,7 @@ The image path retains explicit generation, four supported formats, style/brand 
 
 - No migration required. Existing profile JSON stores `studio_state_json`, reservation/replay metadata and durable text-usage counters. Existing row locking coordinates application instances; provider calls occur outside transactions.
 - Workspace writes project only allowed content/preferences. They cannot write another account ID, billing, usage or brand ownership. Server revisions reject stale writes with 409, including another tab/device.
+- Workspace reads/writes and text/image generation require an originating-account header that must match the authenticated session. The header never selects the account. This prevents a stale tab from loading/saving/generating under a different account after a shared-cookie login switch. Workspace queues are disposed on unmount and Studio remounts when account identity changes. Older open clients must reload before generation.
 - Local drafts are written before debounced cloud saves. In-flight cloud saves serialize and coalesce newer edits. A failed/uncertain save blocks further writes until a fresh load; it never silently advances its revision.
 - Device backup export includes current work and up to three pre-hydration recovery copies. It is a recovery export, not an automatic import/merge tool. Legacy unscoped browser data remains untouched and is not assigned to an account without ownership evidence.
 - An unrenderable legacy history entry is omitted from the rendered list with an explicit warning count; its original database record remains intact. Malformed container/state data fails closed rather than replacing it with an empty workspace.
@@ -60,7 +61,7 @@ Local browser baseline at 1440x1000: 107 visible buttons, 8 visible fields and 5
 
 Tests execute generation/workspace routes with mocked auth/provider/database boundaries, real contract/state logic, simulated commit failures, tenant rejection and quota concurrency. Repository locking tests use a transaction mock, not a live Postgres concurrency benchmark. Existing Founder and SEO regression suites are retained.
 
-Final local commands: `npm test` passed 111/111; `npm run typecheck`, `npm run lint`, `npm run build` (51 generated pages) and `git diff --check` passed. The test runner retains pre-existing module-type warnings from direct TypeScript imports. Browser fixtures passed at all three viewport sizes with four intercepted provider responses and no page exceptions.
+Final local commands: `npm test` passed 115/115; `npm run typecheck`, `npm run lint`, `npm run build` (51 generated pages) and `git diff --check` passed. The test runner retains pre-existing module-type warnings from direct TypeScript imports. Browser fixtures passed at all three viewport sizes with four intercepted provider responses and no page exceptions. Account-switch regressions and writer disposal are included in the automated coverage.
 
 The same browser suite also passed against the local production build on port 3211 with zero console errors, zero page exceptions and no diagnostic exclusions. Its inventory was 45 visible buttons, 21 fields and 3,429px document height; the development toolbar accounts for three extra buttons in the development comparison. This remains a mocked-provider browser check, not live generation or authenticated persistence validation.
 

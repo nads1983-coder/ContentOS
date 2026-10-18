@@ -49,6 +49,12 @@ export async function POST(nextRequest: NextRequest) {
   if (rejected) return rejected;
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Login required." }, { status: 401 });
+  if (nextRequest.headers.get("X-ContentOS-Account") !== user.id) {
+    return NextResponse.json({
+      error: "Your account session changed. Reload the page or sign in again before continuing.",
+      code: "account_changed"
+    }, { status: 409 });
+  }
   let request: GenerationInput;
   try {
     request = await readGenerationRequest(nextRequest);

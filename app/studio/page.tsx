@@ -122,6 +122,7 @@ export default async function StudioPage() {
 
   return (
     <StudioShell
+      key={initialState.accountId ?? "guest"}
       initialPlan={initialState.plan}
       accountId={initialState.accountId}
       authenticated={initialState.authenticated}

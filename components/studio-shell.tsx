@@ -493,6 +493,7 @@ export function StudioShell({
   const requestAttempt = useRef<{ fingerprint: string; id: string } | null>(null);
   const retryIntent = useRef<{ source: string; refinement?: { section: GeneratedSection; action: string } } | null>(null);
   const workspaceWriter = useRef<ReturnType<typeof createWorkspaceWriter> | null>(null);
+  const activeAccount = useRef(accountId);
   const lastWorkspaceState = useRef("");
   const [workspaceReady, setWorkspaceReady] = useState(false);
   const [store, setStore] = useState<StudioStore>({
@@ -526,8 +527,14 @@ export function StudioShell({
   const userInteractedDuringGenerationRef = useRef(false);
 
   useEffect(() => {
+    activeAccount.current = accountId;
     let canceled = false;
     const timeout = window.setTimeout(async () => {
+      setHasMounted(false);
+      setWorkspaceReady(false);
+      lastWorkspaceState.current = "";
+      requestAttempt.current = null;
+      retryIntent.current = null;
       const nextStore = readStore(accountId);
       let storedTone: ToneId | null = null;
       try { storedTone = window.localStorage.getItem(`${LAST_USED_TONE_KEY}:${accountId ?? "guest"}`) as ToneId | null; } catch { /* Storage is optional. */ }
@@ -549,7 +556,7 @@ export function StudioShell({
       }
       if (authenticated && accountId) {
         try {
-          const response = await fetch("/api/workspace", { cache: "no-store", signal: AbortSignal.timeout(15000) });
+          const response = await fetch("/api/workspace", { cache: "no-store", headers: { "X-ContentOS-Account": accountId }, signal: AbortSignal.timeout(15000) });
           if (!response.ok) throw new Error("Account workspace could not load. Device copy remains available.");
           const snapshot = await response.json() as WorkspaceSnapshot;
           if (canceled) return;
@@ -581,8 +588,11 @@ export function StudioShell({
           const selected = snapshot.store.recent.find(item => item.id === selectedId) ?? snapshot.store.recent[0];
           if (selected) setResult(selected);
           workspaceWriter.current = createWorkspaceWriter(snapshot.revision, async input => {
-            const saved = await fetch("/api/workspace", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(input) });
-            if (saved.status === 409) throw new Error("Newer edits exist in another tab. Download your changes before reloading.");
+            const saved = await fetch("/api/workspace", { method: "PUT", headers: { "Content-Type": "application/json", "X-ContentOS-Account": accountId }, body: JSON.stringify(input) });
+            if (saved.status === 409) {
+              const conflict = await saved.json();
+              throw new Error(conflict.code === "account_changed" ? "Your signed-in account changed. Download this draft before reloading." : "Newer edits exist in another tab. Download your changes before reloading.");
+            }
             if (!saved.ok) throw new Error("Account save failed. Your device copy is retained; download it before reloading.");
             return await saved.json() as WorkspaceSnapshot;
           }, message => { if (!canceled) setSaveStatus(message); });
@@ -598,7 +608,7 @@ export function StudioShell({
       setHasMounted(true);
     }, 0);
 
-    return () => { canceled = true; workspaceWriter.current = null; window.clearTimeout(timeout); };
+    return () => { canceled = true; workspaceWriter.current?.dispose(); workspaceWriter.current = null; window.clearTimeout(timeout); };
   }, [authenticated, accountId]);
 
   useEffect(() => {
@@ -763,12 +773,14 @@ export function StudioShell({
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "X-ContentOS-Account": accountId ?? ""
         },
         body: JSON.stringify({ ...payload, requestId: requestAttempt.current.id })
       });
 
       const data = (await response.json()) as GenerationResult | { error?: string; code?: string };
+      if (activeAccount.current !== accountId) return;
 
       if (!response.ok) {
         if ("code" in data && ["generation_failed", "invalid_generation", "generation_timeout", "request_failed", "request_expired"].includes(data.code ?? "")) setCanStartNewAttempt(true);
@@ -799,6 +811,7 @@ export function StudioShell({
         setAnonymousUsed(monthlyStoredGenerationCount(addRecent(store, cleanedResult)));
       }
     } catch (generationError) {
+      if (activeAccount.current !== accountId) return;
       setError(
         generationError instanceof Error
           ? generationError.message
@@ -950,7 +963,8 @@ export function StudioShell({
       const response = await fetch("/api/generate-image", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "X-ContentOS-Account": accountId ?? ""
         },
         body: JSON.stringify({
           outputText,
@@ -982,6 +996,7 @@ export function StudioShell({
         createdAt?: string;
         error?: string;
       };
+      if (activeAccount.current !== accountId) return;
 
       if (!response.ok || !data.image) {
         throw new Error(data.error ?? "Image generation failed. Try again.");
