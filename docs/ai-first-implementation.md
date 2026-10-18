@@ -1,5 +1,7 @@
 # AI-first Studio implementation and release review
 
+Latest correction: [contextual factual review](classification-correction-2026-10-18.md), with all four captured disagreements resolved and nine material assertions guarded. Full offline replay, isolated persistence and browser recovery pass; no new paid call. PR stays draft/NO-GO pending complete independently assessed live delivery.
+
 Latest evidence: [final staged live validation](staged-live-validation-2026-10-18.md). Two completed calls, no timeout, but a rejected review batch and zero validated delivery. The separately approved GBP4 campaign is closed, temporary Preview/access removed, production unchanged. The application implementation was not changed to bypass the failure.
 
 Date: 2026-10-18. This branch is a reviewable preview, not a production rollout. Current launch verdict and executed evidence: [release gates](release-gates-2026-10-18.md). The [server-side validation and correction pipeline](factual-grounding-2026-10-18.md) uses [durable bounded stages](staged-grounding-delivery-2026-10-18.md), replacing the shared deadline that blocked the [held-out live evaluation](controlled-grounding-benchmark-2026-10-18.md). Local checks pass, including all 719 older captured units and isolated SQL/browser recovery. The later authorized GBP4 check completed a draft and first review, but no validated pack. The verdict remains NO-GO. All campaigns are closed and temporary access/deployments removed; no further paid call is authorized.

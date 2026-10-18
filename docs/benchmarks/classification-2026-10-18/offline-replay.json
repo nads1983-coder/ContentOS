@@ -1,0 +1,569 @@
+{
+  "kind": "offline-scripted-classification-and-orchestration-not-live-validation",
+  "recordedAt": "2026-10-18T11:12:27.542Z",
+  "originalEvidenceHashes": {
+    "docs/benchmarks/grounding-2026-10-18/execution-audit.json": "30ba5cb332c7bb064573cefe6cafd8c277df4ab4bc8f22e44a7608ad6ed5071c",
+    "docs/benchmarks/grounding-2026-10-18/adapted-inputs.json": "9185c65703bd5ad825bcf2f6997836c55ce6e1576c478eaf24a084fcbf6a35ac",
+    "docs/benchmarks/staged-delivery-2026-10-18/execution.json": "2771958b6bd6f297227ece3040d8d19ddc79db6868cb9eec59b03fd192d88ebe",
+    "docs/benchmarks/staged-delivery-2026-10-18/brief.json": "8b068cba52278740f02708aae075069fed286e14a3bb4bc2d7b6e7e8654de8d7",
+    "docs/benchmarks/staged-delivery-2026-10-18/raw-draft.json": "54a76632fdd4043cb5e86f884a5f1ad201a739f62f847ea6d94bcb7896d9ee5c",
+    "docs/benchmarks/staged-delivery-2026-10-18/independent-assessment.json": "fc01e0c25e4b8b6e25cc8b5198532a0494168c7c857a23b52b45e51d2410d85a",
+    "tests/fixtures/grounding-regressions.json": "c47f8fdba228946e9781374bf98e820f5b1f3e045d02ba84f1527c6568317f40"
+  },
+  "implementationHashes": {
+    "lib/factual-grounding.ts": "96f0333079cc8a038fc2d241ee1891e714567a3b2029945b00ffda107bad50cc",
+    "lib/prompts.ts": "e72fde1886c3245c38e32a0daefe8a1bce8db2ac28adafa269cc32c05ef30d4f"
+  },
+  "originalLiveFirstBatchDecisionsReplayedUnchanged": 48,
+  "originalDisagreementsNowAccepted": 4,
+  "independentlyFlaggedMaterialCasesGuarded": 9,
+  "reviewedOriginalUnits": 999,
+  "freshlyRevalidatedUnits": 999,
+  "paidCalls": 0,
+  "productionWrites": 0,
+  "repairs": [
+    {
+      "id": "u8",
+      "path": "sections.0.body",
+      "original": "A stock record is built for accuracy and continuity.",
+      "replacement": "A stock record describes what is held.",
+      "origin": "captured-review"
+    },
+    {
+      "id": "u9",
+      "path": "sections.0.body",
+      "original": "It keeps details stable as items move through receiving, counting, replenishment, and reporting.",
+      "replacement": "A stock record describes what is held.",
+      "origin": "captured-review"
+    },
+    {
+      "id": "u10",
+      "path": "sections.0.body",
+      "original": "A display note is built for the floor.",
+      "replacement": "A display note describes how an item is presented.",
+      "origin": "captured-review"
+    },
+    {
+      "id": "u11",
+      "path": "sections.0.body",
+      "original": "It captures the decisions that make a display coherent: grouping, signage language, placement, handling notes, and any context that helps the team present the item consistently.",
+      "replacement": "A display note describes how an item is presented.",
+      "origin": "captured-review"
+    },
+    {
+      "id": "u26",
+      "path": "sections.0.body",
+      "original": "When each document stays in its lane, the shop floor gets clearer without compromising the record.",
+      "replacement": "Keeping the two documents distinct helps clarify the difference between recording stock and describing a display.",
+      "origin": "captured-review"
+    },
+    {
+      "id": "u35",
+      "path": "sections.1.body",
+      "original": "A stock record is for continuity: what you have, what it costs, what needs replenishing.",
+      "replacement": "A stock record describes what is held.",
+      "origin": "captured-review"
+    },
+    {
+      "id": "u47",
+      "path": "sections.1.body",
+      "original": "One stays stable for counting and ordering. ",
+      "replacement": "One document describes what is held. The other describes how an item is presented.",
+      "origin": "captured-review"
+    },
+    {
+      "id": "u79",
+      "path": "sections.3.body",
+      "original": "Keeping them separate protects accuracy and makes the shop floor easier to run.",
+      "replacement": "The distinction is between what is held and how it is presented.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u82",
+      "path": "sections.4.body",
+      "original": "In a museum shop, it helps to separate two things that often get blended together.",
+      "replacement": "A stock record and a display note describe different aspects of an item.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u83",
+      "path": "sections.4.body",
+      "original": "A stock record is for what is held: item details, quantities, and the information you need to keep purchasing and reporting accurate.",
+      "replacement": "A stock record describes what is held.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u90",
+      "path": "sections.5.body",
+      "original": "Title idea: Stock Record vs Display Note (Museum Shop Merchandising Basics)",
+      "replacement": "Stock Record vs Display Note (Museum Shop Merchandising Basics)",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u99",
+      "path": "sections.6.items.0",
+      "original": "1) If your stock record is also trying to be a display guide, it usually ends up doing neither job well.",
+      "replacement": "1) A stock record describes what is held; a display note describes how an item is presented.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u160",
+      "path": "sections.8.items.6",
+      "original": "Slide 7: Common mix-up to avoid. ",
+      "replacement": "Slide 7: Different purposes.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u161",
+      "path": "sections.8.items.6",
+      "original": "Support: Using the stock record to store signage copy and placement rules makes updates harder and errors more likely.",
+      "replacement": "Support: This comparison concerns what is held and how it is presented.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u170",
+      "path": "sections.9.body",
+      "original": "Subject line options are below.",
+      "replacement": "",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u172",
+      "path": "sections.9.body",
+      "original": "In museum shops, two useful documents often get blended together, and it creates quiet friction.",
+      "replacement": "This comparison starts with what is held and how it is presented.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u224",
+      "path": "sections.10.items.3",
+      "original": "Keeping them separate protects accuracy and keeps the floor clearer.",
+      "replacement": "One describes what is held; the other describes how it is presented.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u254",
+      "path": "sections.11.items.1",
+      "original": "Two documents museum shops often merge by accident: the stock record and the display note.",
+      "replacement": "A stock record describes what is held; a display note describes how an item is presented.",
+      "origin": "scripted-offline-regression"
+    },
+    {
+      "id": "u259",
+      "path": "sections.11.items.4",
+      "original": "A clean stock file cannot hold every signage and placement decision. ",
+      "replacement": "A display note describes how an item is presented.",
+      "origin": "scripted-offline-regression"
+    }
+  ],
+  "results": [
+    {
+      "id": "H1",
+      "formats": 14,
+      "originalReviewedUnits": 228,
+      "freshlyRevalidatedUnits": 228,
+      "offlineRouteMs": 143.40175000000005,
+      "mockedCalls": 11,
+      "actualProviderCalls": 0,
+      "actualNewApiCost": 0,
+      "reservedMicroUsd": 2153241,
+      "successfulUsageEvents": 1,
+      "historyEntries": 1,
+      "finalReplayWithoutProvider": true,
+      "stages": [
+        {
+          "pass": "draft",
+          "requestBytes": 17450,
+          "outputBytes": 16739,
+          "mockCpuMs": 0.05929099999997334,
+          "outputTokenLimit": 24000
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 34310,
+          "outputBytes": 4068,
+          "mockCpuMs": 7.495999999999981,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 35077,
+          "outputBytes": 4191,
+          "mockCpuMs": 9.737291000000027,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 34919,
+          "outputBytes": 4118,
+          "mockCpuMs": 5.127333999999962,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 35422,
+          "outputBytes": 4110,
+          "mockCpuMs": 5.369624999999985,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 33205,
+          "outputBytes": 3082,
+          "mockCpuMs": 3.311584000000039,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 34308,
+          "outputBytes": 4068,
+          "mockCpuMs": 4.288499999999999,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 35050,
+          "outputBytes": 4124,
+          "mockCpuMs": 5.131791999999905,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 34917,
+          "outputBytes": 4118,
+          "mockCpuMs": 4.669750000000022,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 35420,
+          "outputBytes": 4110,
+          "mockCpuMs": 5.1232499999999845,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 33203,
+          "outputBytes": 3082,
+          "mockCpuMs": 3.321957999999995,
+          "outputTokenLimit": 4800
+        }
+      ]
+    },
+    {
+      "id": "H2",
+      "formats": 14,
+      "originalReviewedUnits": 267,
+      "freshlyRevalidatedUnits": 267,
+      "offlineRouteMs": 183.36591699999997,
+      "mockedCalls": 13,
+      "actualProviderCalls": 0,
+      "actualNewApiCost": 0,
+      "reservedMicroUsd": 2545139,
+      "successfulUsageEvents": 1,
+      "historyEntries": 1,
+      "finalReplayWithoutProvider": true,
+      "stages": [
+        {
+          "pass": "draft",
+          "requestBytes": 17381,
+          "outputBytes": 19582,
+          "mockCpuMs": 0.03049999999996089,
+          "outputTokenLimit": 24000
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 36848,
+          "outputBytes": 4119,
+          "mockCpuMs": 5.121999999999957,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 36719,
+          "outputBytes": 4385,
+          "mockCpuMs": 6.642416000000026,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 36625,
+          "outputBytes": 4044,
+          "mockCpuMs": 4.190208000000098,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 37376,
+          "outputBytes": 4226,
+          "mockCpuMs": 6.363915999999904,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 37796,
+          "outputBytes": 4185,
+          "mockCpuMs": 6.279374999999959,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 34685,
+          "outputBytes": 2308,
+          "mockCpuMs": 3.322332999999958,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 36846,
+          "outputBytes": 4119,
+          "mockCpuMs": 5.050166999999988,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 36692,
+          "outputBytes": 4320,
+          "mockCpuMs": 6.672874999999976,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 36623,
+          "outputBytes": 4044,
+          "mockCpuMs": 8.040457999999944,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 37374,
+          "outputBytes": 4226,
+          "mockCpuMs": 6.3130840000000035,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 37794,
+          "outputBytes": 4185,
+          "mockCpuMs": 6.089417000000026,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 34683,
+          "outputBytes": 2308,
+          "mockCpuMs": 7.403082999999924,
+          "outputTokenLimit": 4800
+        }
+      ]
+    },
+    {
+      "id": "H3",
+      "formats": 14,
+      "originalReviewedUnits": 224,
+      "freshlyRevalidatedUnits": 224,
+      "offlineRouteMs": 158.61687500000005,
+      "mockedCalls": 11,
+      "actualProviderCalls": 0,
+      "actualNewApiCost": 0,
+      "reservedMicroUsd": 2187485,
+      "successfulUsageEvents": 1,
+      "historyEntries": 1,
+      "finalReplayWithoutProvider": true,
+      "stages": [
+        {
+          "pass": "draft",
+          "requestBytes": 17344,
+          "outputBytes": 18504,
+          "mockCpuMs": 0.04737499999998818,
+          "outputTokenLimit": 24000
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 36415,
+          "outputBytes": 4253,
+          "mockCpuMs": 6.9397089999999935,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 35755,
+          "outputBytes": 4191,
+          "mockCpuMs": 5.5210839999999735,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 36347,
+          "outputBytes": 4114,
+          "mockCpuMs": 5.392459000000031,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 37491,
+          "outputBytes": 4382,
+          "mockCpuMs": 8.887333000000012,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 34805,
+          "outputBytes": 2856,
+          "mockCpuMs": 6.900833999999918,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 36413,
+          "outputBytes": 4253,
+          "mockCpuMs": 6.973457999999937,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 35728,
+          "outputBytes": 4122,
+          "mockCpuMs": 5.600791999999956,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 36345,
+          "outputBytes": 4114,
+          "mockCpuMs": 5.3039589999999635,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 37489,
+          "outputBytes": 4382,
+          "mockCpuMs": 8.904999999999973,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 34803,
+          "outputBytes": 2856,
+          "mockCpuMs": 8.180875000000015,
+          "outputTokenLimit": 4800
+        }
+      ]
+    },
+    {
+      "id": "ShelfNotes",
+      "formats": 14,
+      "originalReviewedUnits": 280,
+      "freshlyRevalidatedUnits": 280,
+      "offlineRouteMs": 191.75979200000006,
+      "mockedCalls": 13,
+      "actualProviderCalls": 0,
+      "actualNewApiCost": 0,
+      "reservedMicroUsd": 2584345,
+      "successfulUsageEvents": 1,
+      "historyEntries": 1,
+      "finalReplayWithoutProvider": true,
+      "stages": [
+        {
+          "pass": "draft",
+          "requestBytes": 18119,
+          "outputBytes": 19117,
+          "mockCpuMs": 0.07262500000001637,
+          "outputTokenLimit": 24000
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 38232,
+          "outputBytes": 4618,
+          "mockCpuMs": 0.14979199999993398,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 38780,
+          "outputBytes": 4205,
+          "mockCpuMs": 3.2424579999999423,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 37997,
+          "outputBytes": 4081,
+          "mockCpuMs": 8.908666999999923,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 38432,
+          "outputBytes": 4214,
+          "mockCpuMs": 4.126208000000133,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 39311,
+          "outputBytes": 4049,
+          "mockCpuMs": 3.9305420000000595,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "initial_review",
+          "requestBytes": 37598,
+          "outputBytes": 3468,
+          "mockCpuMs": 6.194833000000017,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 37508,
+          "outputBytes": 3911,
+          "mockCpuMs": 3.2792919999999413,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 37958,
+          "outputBytes": 3923,
+          "mockCpuMs": 3.095291999999972,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 37658,
+          "outputBytes": 3976,
+          "mockCpuMs": 3.803000000000111,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 37851,
+          "outputBytes": 4010,
+          "mockCpuMs": 4.347917000000052,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 38836,
+          "outputBytes": 3968,
+          "mockCpuMs": 10.52108300000009,
+          "outputTokenLimit": 4800
+        },
+        {
+          "pass": "fresh_final_revalidation",
+          "requestBytes": 37084,
+          "outputBytes": 3303,
+          "mockCpuMs": 6.3055420000000595,
+          "outputTokenLimit": 4800
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Original captures and the independent assessment are unchanged. Repairs are explicit offline regression decisions, not new model responses.",
+    "The original 48-unit first review is replayed exactly. All other review decisions are scripted/mechanical TEST certificates, not independent semantic certification.",
+    "Route time excludes provider/network/database latency. Token-priced live cost and model reliability remain unknown.",
+    "Final fixtures prove coverage, correction, persistence and retry orchestration, not that a live reviewer will approve all units or catch all semantic issues.",
+    "Prompt variety improvements are unmeasured until a new approved live run. No zero-fabrication or production-readiness claim is made."
+  ],
+  "verdict": "NO-GO pending complete independently assessed live delivery"
+}

@@ -85,6 +85,9 @@ type Annotation = [number, number];
 // Only server-derived spans confer exemptions. Serialized metadata (or reviewer input)
 // cannot manufacture them. Original text/offsets remain authoritative for repairs.
 const certifiedAnnotations = new WeakMap<GroundingUnit, Annotation[]>();
+const unitContext = new WeakMap<GroundingUnit, {
+  path: string; text: string; hypotheticalField: boolean; quotedCondition: boolean; noCtaExplanation: boolean;
+}>();
 
 function sequenceSpans(text: string, matches: RegExpMatchArray[], min: number, max: number): Annotation[] {
   if (matches.length < min || matches.length > max || matches.some((match, i) =>
@@ -94,7 +97,7 @@ function sequenceSpans(text: string, matches: RegExpMatchArray[], min: number, m
 
 function sequentialLabels(text: string, name: string, min: number, max: number, prefix = ""): Annotation[] {
   const boundaries = new Set([0, ...spans(text).map(part => part.start)]);
-  const cue = name === "Beat" ? "(?: \\(spoken(?:, (?:clarity line|details))?\\))?" : "";
+  const cue = name === "Beat" ? "(?: \\((?:spoken(?:, (?:clarity line|details|optional example))?|example)\\))?" : "";
   const pattern = new RegExp(`\\b${name} ([1-9]\\d*)${cue}(?::[ \\t]+|:?(?=[ \\t]*(?:\\r?\\n|$)))`, "g");
   const matches = [...text.matchAll(pattern)].filter(match => {
     const before = text.slice(0, match.index);
@@ -119,6 +122,11 @@ function formatAnnotations(result: GenerationResult, path: string, text: string)
     let pattern: RegExp | undefined;
     if (captions.length === 3) {
       const platform = type === "instagram" ? "Instagram" : "TikTok";
+      const suffix = /\s*\(3 (?:options|captions)\)\s*$/i.exec(text);
+      const prefix = new RegExp(`^${platform} captions:\\s*`, "i").exec(text);
+      if (prefix && suffix && suffix.index > prefix[0].length) {
+        return [[0, prefix[0].length], [suffix.index, text.length]];
+      }
       pattern = new RegExp(`^${platform}(?: captions \\(3\\)|: 3 (?:short )?captions?(?: options)?)(?=[:\\s]|$):?\\s*`, "i");
     } else if (type === "hooks" && items.length === 8) {
       pattern = /^Hooks: 8 (?:angles|options)(?=[:\s]|$):?\s*/i;
@@ -140,7 +148,7 @@ function formatAnnotations(result: GenerationResult, path: string, text: string)
   }
   const formats: Partial<Record<typeof type, [string, number, number]>> = {
     hooks: ["Hook", 8, 8], ctas: ["(?:CTA|Option)", 5, 5], carousel: ["Slide", 5, 10],
-    xThread: ["Post", 5, 7], emailNewsletter: ["Subject", 2, 3]
+    xThread: ["Post", 5, 7], emailNewsletter: ["Subject(?: option)?", 2, 3]
   };
   const format = formats[type];
   if (!format || items.length < format[1] || items.length > format[2]) return [];
@@ -164,6 +172,20 @@ export function groundingUnits(result: GenerationResult): GroundingUnit[] {
     const annotations = formatAnnotations(result, path, text);
     for (const part of spans(text)) {
       const unit: GroundingUnit = { ...part, path, id: `u${units.length}` };
+      const preceding = text.slice(Math.max(0, part.start - 1200), part.start);
+      const example = /(?:fictional|hypothetical)[^\n.!?]{0,100}\bexample\s*:\s*\n([\s\S]*)$/i.exec(preceding);
+      // A labelled example may scope a list of field NAMES, never values or promises.
+      // End scope at narrative copy, another caption or a new factual proposition.
+      const hypotheticalField = !!example && example[1].split(/\r?\n/).every(line =>
+        !line.trim() || /^\s*[-*] [\p{L} /(),-]+$/u.test(line) ||
+        /^[\p{L} ]+\((?:what|how) [\p{L} ]+\)\s*$/u.test(line));
+      const quotedCondition = /^(?:When|If) ["\u201c][^"\u201c\u201d]+\?["\u201d]\s*$/i.test(unit.text) &&
+        /^(?:lives?|appears?|belongs?|sits?|is|becomes?)\b/i.test(text.slice(part.end).trimStart());
+      const sectionIndex = /^sections\.(\d+)\.body$/.exec(path)?.[1];
+      const section = sectionIndex === undefined ? undefined : result.sections[Number(sectionIndex)];
+      const noCtaExplanation = section?.type === "ctas" && section.items.length === 0 && !section.cta &&
+        /^In No CTA mode, this set is intentionally left blank to avoid invitations to (?:click|comment|message|sign up|take action)(?:, (?:or )?(?:click|comment|message|sign up|take action))*\.$/i.test(unit.text.trim());
+      unitContext.set(unit, { path, text: unit.text, hypotheticalField, quotedCondition, noCtaExplanation });
       const local = annotations.filter(([start, end]) => start >= part.start && end <= part.end)
         .map(([start, end]): Annotation => [start - part.start, end - part.start]);
       if (local.length) {
@@ -189,6 +211,49 @@ const categoryPatterns: Partial<Record<GroundingReason, RegExp>> = {
 };
 export function claimCategories(text: string): GroundingReason[] {
   return (Object.entries(categoryPatterns) as Array<[GroundingReason, RegExp]>).filter(([, pattern]) => pattern.test(text)).map(([category]) => category);
+}
+// Explicit objective relationships that the captured reviewer missed. These are
+// guards, not a replacement for semantic review or a closed list of all claims.
+const objectiveRelationships = [
+  /\b(?:often|usually|commonly|typically|routinely)\s+(?:get\s+)?(?:blend(?:ed)?|merg(?:e|ed)|combin(?:e|ed)|buy|sell|use|choose|end[sd]? up)\b/i,
+  /\bcommon (?:mix.up|mistake|error|practice|problem)s?\b/i,
+  /\b(?:protects?|ensures?|preserves?|guarantees?)\b[^.!?\n]{0,45}\b(?:accuracy|reliability|safety|profits?|sales)\b/i,
+  /\b(?:keeps?|stays?|remain[sd]?)\b[^.!?\n]{0,45}\b(?:details? stable|stable for|accurate|error.free)\b/i,
+  /\b(?:errors?|mistakes?|failures?)\b[^.!?\n]{0,35}\b(?:more|less) likely\b/i,
+  /\b(?:cannot|can't|can never|is unable to)\s+(?:hold|store|record|handle|support|contain)\b/i
+];
+function relationshipFindings(text: string, sources: string[]) {
+  return objectiveRelationships.filter(pattern => pattern.test(text) && !sources.some(source => pattern.test(source)));
+}
+
+function nonFactualAssessment(text: string, unit: GroundingUnit, context: GroundingContext) {
+  let assessed = text;
+  // Only the aesthetic predicate loses its universal modifier. Other clauses,
+  // numbers, outcomes and product capabilities remain subject to normal checks.
+  assessed = assessed.replace(/\b(?:always|never) (?=(?:feels?|seems?|looks?|sounds?) (?:slightly |rather |a little )?(?:off|cluttered|disjointed|cohesive|awkward)\b)/gi, "");
+  if (/^(?:keeping|viewing|treating) (?:them|these|the (?:ideas|concepts|notes|documents)) (?:separate|together|distinct) reduces friction[.!]?$/i.test(assessed)) {
+    assessed = assessed.replace(/reduces friction/i, "feels simpler");
+  }
+  const own = unitContext.get(unit);
+  const brief = context.sources.filter(s => s.origin === "brief");
+  const forbidsExamples = brief.some(s => /\b(?:no|not|never|forbid|without)\b[^.;]{0,50}\b(?:hypothetical|fictional)\s+(?:examples?|illustrations?)/i.test(s.text));
+  const permitsExamples = !forbidsExamples && brief.some(s =>
+    /\b(?:hypothetical|fictional)\b/i.test(s.text) && /\b(?:examples?|illustrations?)\b/i.test(s.text) &&
+    !/\b(?:no|not|never|forbid|without)\s+(?:hypothetical|fictional|examples?|illustrations?)\b/i.test(s.text));
+  if (own?.text === unit.text && own.hypotheticalField && permitsExamples &&
+      /^\s*[-*] (?:unit |retail |wholesale |purchase )?(?:cost|price)(?: (?:and|or) (?:unit |retail |wholesale |purchase )?(?:cost|price))?\s*$/i.test(assessed)) {
+    assessed = "Hypothetical record field names";
+  }
+  return assessed;
+}
+
+function topicHeading(unit: GroundingUnit, assessed: string, context: GroundingContext) {
+  const own = unitContext.get(unit);
+  if (own?.text !== unit.text || !own?.path.endsWith(".title") || !certifiedAnnotations.has(unit)) return false;
+  const topics = assessed.split(/\s+(?:vs\.?|versus)\s+/i);
+  return topics.length === 2 && topics.every(topic => /^[\p{L} ]{2,60}$/u.test(topic) &&
+    !hardClaim.test(topic) && !claimCategories(topic).length &&
+    context.sources.some(s => normalized(s.text).includes(normalized(topic))));
 }
 const label = /^(?:(?:caption|slide|subject|option|hook|beat|step)\s*\d+(?:[:.)-]\s+|(?=\r?\n|$))|\d+[.)]\s+)/i;
 function numbers(text: string, includeWords = false): string[] {
@@ -222,16 +287,20 @@ function readerQuestion(text: string) {
   const question = text.split(/[.!:\n]/).at(-1) ?? "";
   return /[?\uff1f]/.test(text) && !experimentalQuestion(text) && /\b(?:you|your|anyone|who else|what|how|which|where|thoughts|agree|interested)\b/i.test(question);
 }
-const metaCopy = /\b(?:I can tailor|I(?:'ll| will) suggest|write (?:a|an|the) (?:post|email|caption)|use one hook|pick one platform and post)\b/i;
+const metaCopy = /\b(?:I can tailor|I(?:'ll| will) suggest|write (?:a|an|the) (?:post|email|caption)|use one hook|pick one platform and post|subject line options are (?:below|above))\b|\btitle idea\s*:/i;
 
 export function deterministicIssues(value: string | GroundingUnit, context: GroundingContext): GroundingReason[] {
   const text = typeof value === "string" ? value : assessmentText(value);
   const issues = new Set<GroundingReason>();
   const evidence = context.sources.map(s => s.text).join("\n");
   const verbatim = context.sources.some(s => normalized(s.text).includes(normalized(text)));
-  if (context.noCta && (engagement.test(text) || readerQuestion(text))) issues.add("cta");
+  const own = typeof value === "string" ? undefined : unitContext.get(value);
+  const currentContext = typeof value !== "string" && own?.text === value.text ? own : undefined;
+  if (context.noCta && !currentContext?.noCtaExplanation &&
+      (engagement.test(text) || (readerQuestion(text) && !currentContext?.quotedCondition))) issues.add("cta");
   if (metaCopy.test(text)) issues.add("meta_copy");
   if (!verbatim) {
+    if (relationshipFindings(text, context.sources.map(s => s.text)).length) issues.add("missing_evidence");
     // Preserve the legacy string helper for callers without a pack. The server
     // review path always supplies a unit and uses only certified annotations.
     const numericText = typeof value === "string" ? text.replace(label, "") : text;
@@ -254,8 +323,10 @@ Classifications:
 - structural: platform/format labels and non-assertive topic hashtags only, never factual copy.
 - unsupported: unsupported, uncertain, contradictory, prohibited CTA, invented capability or fulfillment, or assistant/editorial directions instead of audience-ready copy.
 Current brief overrides conflicting saved/selected brand context. Writing style, content goals and previous drafts are instructions, NEVER factual evidence. Conflicts within the brief with no clear current correction are unresolved: use neutral wording, do not pick a fact arbitrarily. Explicit No CTA overrides every other instruction and platform convention. It forbids engagement questions and requests for replies, saves, shares, contact, signups or purchases in EVERY field, not only cta. Practical instructional steps and clearly hypothetical self-evaluation within an experiment are content, not engagement CTAs; do not remove them merely for being useful advice. A suggested experiment duration is not a claimed result or actual product duration. Still refuse any invented promise about what that experiment achieves.
-An event lasting 45 minutes does NOT promise attendees will complete a task in 45 minutes. A mention of two storage zones does NOT establish their names, prescribed contents or actual curriculum. No testimonials/discounts/results is NEGATIVE evidence, not permission to invent them. Proposed pilots are not successful outcomes. Never add prices, promotional offers, guarantees, qualifications, testimonials, statistics, measured outcomes, durations, product features, curriculum or fulfillment promises unless explicitly supported. Most people/always/never/works better are factual generalisations requiring evidence.
-For an unsupported unit set a specific reason and propose one complete replacement of that unit only: remove the claim or use neutral, useful source-supported wording; optional advice must be clearly labelled. Prefer natural, persuasive copy, not blanket disclaimers. Preserve required platform labels, numbering and structure. An empty replacement removes the unit when safe. No extra offer or CTA may be introduced by a repair. Do not invent an answer to missing information. A labelled [detail to confirm] placeholder is acceptable only when neutral copy cannot work. For allowed units use reason none and replacement null.
+An event lasting 45 minutes does NOT promise attendees will complete a task in 45 minutes. A mention of two storage zones does NOT establish their names, prescribed contents or actual curriculum. No testimonials/discounts/results is NEGATIVE evidence, not permission to invent them. Proposed pilots are not successful outcomes. Never add prices, promotional offers, guarantees, qualifications, testimonials, statistics, measured outcomes, durations, product features, curriculum or fulfillment promises unless explicitly supported. Universal or comparative assertions about concrete outcomes or customer practices require evidence; distinguish those from aesthetic impressions as described below.
+Classify the proposition in context, not isolated keywords. Universal modifiers on aesthetic impressions (such as a layout feeling off) are not measured guarantees. An abstract distinction feeling less awkward is subjective; a product reducing errors, costs or time is an objective benefit requiring evidence. Neither "always" nor "reduces" is globally allowed. A labelled hypothetical list of record-field names may contain cost/price fields without asserting a real price; values, offers, promised curriculum and outcomes still require evidence. A server-certified caption count describes actual supplied alternatives, never business results. Topic-only comparison headings can be structural when both topics are supplied, not when they contain a claim.
+Claims about common customer practices, operational accuracy, data stability, error likelihood or what a system cannot hold are factual even without numbers. A distinction between two document purposes does not establish such benefits or limitations. Do not accept them as harmless marketing. In mixed sentences preserve the legitimate observation but remove the unsupported clause. Keep fictional/optional scope explicit and local, never use it to justify real business claims later in the asset.
+For an unsupported unit set a specific reason and propose one complete replacement of that unit only: remove the claim or use neutral, useful source-supported wording; optional advice must be clearly labelled. Prefer natural, persuasive copy, not blanket disclaimers. Preserve required platform labels, numbering and structure. An empty replacement removes the unit when safe. No extra offer or CTA may be introduced by a repair. Do not invent an answer to missing information. A labelled [detail to confirm] placeholder is acceptable only when neutral copy cannot work. For allowed units use reason none and replacement null. Remove publisher-facing preambles such as "Subject line options are below" and "Title idea:" from finished copy, while retaining useful script directions and required asset labels. Vary a repair's angle and rhythm using supplied facts rather than repeating one fallback sentence throughout the pack.
 Every referenced quote must actually support the whole assertion in context, not merely share words or numbers. Check the supplied deterministic findings too: they cannot be ignored. On the final pass, review corrected copy afresh without trusting the previous review; any remaining violation must be unsupported. Do not claim external verification.`;
 
 export function groundingReviewSchema() {
@@ -307,6 +378,7 @@ export function parseGroundingReview(text: string, units: GroundingUnit[], conte
     if (decision.kind === "supported") {
       if (!references.length || numbers(assessed).some(n => !numbers(references.map(r => r.quote).join("\n"), true).includes(n))) throw new GroundingError();
       const quoted = references.map(r => r.quote).join("\n");
+      if (relationshipFindings(assessed, references.map(r => r.quote)).length) throw new GroundingError();
       if (prices(unit.text).some(p => !prices(quoted).includes(p))) throw new GroundingError();
       for (const ref of references) {
         const full = context.sources.find(s => s.id === ref.sourceId)!.text;
@@ -334,8 +406,9 @@ export function parseGroundingReview(text: string, units: GroundingUnit[], conte
         if (briefPrices.length && prices(unit.text).some(p => !briefPrices.includes(p))) throw new GroundingError();
       }
     } else if (decision.kind === "structural") {
-      if (assessed ? !structural(assessed) : !certifiedAnnotations.has(unit)) throw new GroundingError();
-    } else if ((hardClaim.test(assessed) && !experimentalQuestion(assessed)) || claimCategories(assessed).length) {
+      if (assessed ? !structural(assessed) && !topicHeading(unit, assessed, context) : !certifiedAnnotations.has(unit)) throw new GroundingError();
+    } else if ((hardClaim.test(nonFactualAssessment(assessed, unit, context)) && !experimentalQuestion(assessed)) ||
+        claimCategories(nonFactualAssessment(assessed, unit, context)).length || objectiveRelationships.some(pattern => pattern.test(assessed))) {
       // Optional illustrations may mention source facts but must not be a back door for measurable claims.
       throw new GroundingError();
     }

@@ -1,5 +1,7 @@
 # Generation contract and offline quality evaluation
 
+Latest offline correction: [classification evidence](classification-correction-2026-10-18.md). 999 initial and 999 fresh final units replayed across four packs, including the unchanged first 48 live reviewer decisions. Remaining decisions are explicit scripted/mechanical fixtures, not new model quality scores. Four disagreements pass, nine independent material cases reject counterfeit approval, and all four packs complete isolated persistence. Live release verdict remains NO-GO.
+
 Latest campaign: [staged live validation](staged-live-validation-2026-10-18.md). One unseen brief produced all 14 raw formats, but the first factual review was rejected by the deterministic validator. No final validated pack exists; independent raw-content assessment is diagnostic, not a delivered-quality pass. Two calls completed without timeout; the GBP4 campaign is closed and cleaned up.
 
 ## Current grounding implementation

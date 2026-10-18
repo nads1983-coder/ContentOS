@@ -13,7 +13,7 @@ test("captured 719 units have disjoint exhaustive batch coverage, all context an
       assert.deepEqual(wire.wholePack, grounding.groundingFields(pack.result).filter(([, text]) => text));
       for (const u of b.units) {
         assert.ok(!seen.has(u.id)); seen.add(u.id);
-        assert.deepEqual(grounding.deterministicIssues(u, b.context), []);
+        assert.deepEqual(grounding.deterministicIssues(u, b.context), u.text.startsWith("Title idea:") ? ["meta_copy"] : []);
         const original = first.all.find(v => v.id === u.id); assert.deepEqual(u, original);
       }
     }
@@ -27,10 +27,12 @@ for (const pack of captured) test(`${pack.id}: full captured pack completes offl
   const req = { ...pack.request, requestId: requestId() };
   const result = await h.finish(req);
   assert.equal(result.response.status, 200); assert.equal(result.body.sections.length, 14);
-  assert.deepEqual(result.body.sections, pack.result.sections);
+  const expected = structuredClone(pack.result.sections);
+  expected[5].body = expected[5].body.replace(/^Title idea: /, "");
+  assert.deepEqual(result.body.sections, expected);
   const entry = h.data.generation_reservations_json[0];
   assert.equal(entry.pipelineAudit.reviewedUnits, grounding.groundingUnits(pack.result).length);
-  assert.equal(h.calls.length, 1 + Math.ceil(entry.pipelineAudit.reviewedUnits / 48));
+  assert.equal(h.calls.length, 1 + 2 * Math.ceil(entry.pipelineAudit.reviewedUnits / 48));
   assert.equal(h.data.usage_events_json.length, 1);
   assert.ok(entry.pipelineAudit.reservedMicroUsd < 4_000_000);
 });
@@ -43,7 +45,7 @@ test("interrupted captured review resumes from next batch, not from draft or pri
   const lookup = await h.post(req, { instance: h.instance() });
   assert.equal(h.calls.length, 2); assert.equal(lookup.body.reviewedUnits, 48);
   assert.equal((await h.finish(req, lookup.body.nextStage)).response.status, 200);
-  assert.equal(h.calls.length, 7);
+  assert.equal(h.calls.length, 13);
 });
 test("one corruption/missing batch fails closed for the entire captured pack", async () => {
   const pack = captured[2], h = harness(); let calls = 0;

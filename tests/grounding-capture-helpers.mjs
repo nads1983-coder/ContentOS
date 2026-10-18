@@ -17,23 +17,35 @@ export const captured = inputs.map(i => {
 // Mechanical TEST certificates for transport/checkpoint coverage, NOT semantic
 // judgments or predictions of model output. The blind findings remain separate.
 // Real production always obtains independent model decisions; this helper is tests-only.
-export function mechanicalCertificate(unit, context) {
+export function mechanicalCertificate(unit, context, validator = grounding) {
   for (const kind of ["structural", "creative", "subjective", "supported"]) {
     const groups = kind === "supported" ? [...context.sources.map(s => [s]), context.sources.slice(0, 12), context.sources.slice(-12)] : [[]];
     for (const sources of groups) {
       const decision = { id: unit.id, kind, references: sources.map(s => ({ sourceId: s.id, quote: s.text })), reason: "none", replacement: null };
       try {
-        grounding.parseGroundingReview(JSON.stringify({ decisions: [decision] }), [unit], context);
+        validator.parseGroundingReview(JSON.stringify({ decisions: [decision] }), [unit], context);
         return { id: unit.id, kind, sourceIds: sources.map(s => s.id), reason: "none", replacement: null };
       } catch { /* Try another mechanical certificate; never alter a captured unit. */ }
     }
   }
   throw new Error(`No mechanical test certificate for ${unit.id}`);
 }
-export function captureResponse(pack, payload) {
+export function captureResponse(pack, payload, validator = grounding) {
   if (payload.text.format.name === "social_content_generation") return { status: "completed", output_text: pack.evidence.outputText, usage: pack.evidence.usage };
   const data = JSON.parse(payload.input);
-  const units = grounding.groundingUnits(pack.result), context = grounding.buildGroundingContext(pack.request);
-  return { status: "completed", output_text: JSON.stringify({ decisions: data.units.map(u => mechanicalCertificate(units.find(full => full.id === u.id), context)) }),
+  const result = structuredClone(pack.result);
+  for (const [path, value] of data.wholePack ?? []) {
+    const keys = path.split("."), field = keys.pop();
+    keys.reduce((target, key) => target[key], result)[field] = value;
+  }
+  const units = validator.groundingUnits(result), context = validator.buildGroundingContext(pack.request);
+  return { status: "completed", output_text: JSON.stringify({ decisions: data.units.map(u => {
+    const unit = units.find(full => full.id === u.id);
+    // Explicit offline publisher-copy repair; historical source files stay untouched.
+    if (validator.deterministicIssues(unit, context).includes("meta_copy") && /^Title idea: /i.test(unit.text)) {
+      return { id: unit.id, kind: "unsupported", sourceIds: [], reason: "meta_copy", replacement: unit.text.replace(/^Title idea: /i, "") };
+    }
+    return mechanicalCertificate(unit, context, validator);
+  }) }),
     usage: { input_tokens: 100, output_tokens: 200 } }; // Explicitly synthetic, never used for cost estimates.
 }

@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
-import { captured } from "./grounding-capture-helpers.mjs";
+import { grounding } from "./grounding-capture-helpers.mjs";
+import { draft } from "./classification-capture-helpers.mjs";
+const validatedFixture = JSON.parse(readFileSync(new URL("../docs/benchmarks/classification-2026-10-18/offline-corrected-pack.json", import.meta.url), "utf8"));
+const originalUnits = grounding.groundingUnits(draft).length, finalUnits = grounding.groundingUnits(validatedFixture).length;
 
 export async function runAuthenticatedBrowser({ alice, passwordA }) {
   const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ? pathToFileURL(process.env.PLAYWRIGHT_MODULE).href : "playwright");
@@ -20,7 +24,7 @@ export async function runAuthenticatedBrowser({ alice, passwordA }) {
     assert.equal(payload.selectedTypes.length, 14);
     key ??= payload.requestId; assert.equal(payload.requestId, key);
     const progress = (nextStage, reviewedUnits, phase = "review") => route.fulfill({ status: 202, json: {
-      status: "pending", requestId: key, nextStage, stage: phase, running: false, totalUnits: 228, reviewedUnits
+      status: "pending", requestId: key, nextStage, stage: phase, running: false, totalUnits: ["revalidation", "save"].includes(phase) ? finalUnits : originalUnits, reviewedUnits
     } });
     if (serverStage === "draft") { serverStage = "1:review:0:0"; return progress(serverStage, 0); }
     if (interrupt) {
@@ -28,10 +32,10 @@ export async function runAuthenticatedBrowser({ alice, passwordA }) {
       return route.abort("failed"); // Server checkpoint succeeded; HTTP acknowledgment lost.
     }
     if (token !== serverStage) return progress(serverStage, 48);
-    if (serverStage === "1:review:0:1") { serverStage = "1:correction:0:5"; return progress(serverStage, 228, "correction"); }
-    if (serverStage === "1:correction:0:5") { serverStage = "1:revalidation:1:0"; return progress(serverStage, 0, "revalidation"); }
-    if (serverStage === "1:revalidation:1:0") { serverStage = "1:save:1:5"; return progress(serverStage, 228, "save"); }
-    return route.fulfill({ json: { ...captured[0].result, source: payload.source, id: "staged-browser-complete", title: "Validated staged fixture" } });
+    if (serverStage === "1:review:0:1") { serverStage = "1:correction:0:6"; return progress(serverStage, originalUnits, "correction"); }
+    if (serverStage === "1:correction:0:6") { serverStage = "1:revalidation:1:0"; return progress(serverStage, 0, "revalidation"); }
+    if (serverStage === "1:revalidation:1:0") { serverStage = "1:save:1:6"; return progress(serverStage, finalUnits, "save"); }
+    return route.fulfill({ json: { ...validatedFixture, source: payload.source, id: "staged-browser-complete", title: "Validated staged fixture" } });
   });
   try {
     await page.goto("http://localhost:3212/login");
@@ -45,12 +49,12 @@ export async function runAuthenticatedBrowser({ alice, passwordA }) {
     stage = "bounded stage progress and preserved draft";
     const oldBody = await page.locator("#outputs").innerText();
     await page.getByRole("button", { name: "Generate content pack", exact: true }).click();
-    await page.getByRole("status").filter({ hasText: "Checking facts: 0 of 228" }).waitFor();
+    await page.getByRole("status").filter({ hasText: `Checking facts: 0 of ${originalUnits}` }).waitFor();
     assert.equal(await page.getByRole("heading", { name: "Validated staged fixture" }).count(), 0);
     assert.ok(oldBody.includes(await page.locator("#outputs h2").first().innerText()));
     for (const width of [1440, 768, 390]) {
       await page.setViewportSize({ width, height: 900 });
-      const status = page.getByRole("status").filter({ hasText: "Checking facts: 0 of 228" });
+      const status = page.getByRole("status").filter({ hasText: `Checking facts: 0 of ${originalUnits}` });
       await status.scrollIntoViewIfNeeded(); await page.screenshot({ path: `${artifacts}/progress-${width}.png` });
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
       assert.ok(await status.evaluate(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.left >= 0 && r.right <= innerWidth; }));

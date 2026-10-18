@@ -8,6 +8,7 @@ import {execute,validateManifest,validatePayload,validateRuntime,providerCall,re
 import {harness as routeHarness} from "./generation-test-helpers.mjs";
 import {captured,captureResponse} from "./grounding-capture-helpers.mjs";
 const plan=buildPlan(Date.now()+3600000),pack=captured[0];
+const frozenGrounding=loadModules(plan.modules)("lib/factual-grounding.ts");
 test("consumed campaign refuses prepare/execute before credential or database access",()=>{
  for(const mode of ["prepare","execute"]){const r=spawnSync(process.execPath,["scripts/staged-validation/operator.mjs",mode],{encoding:"utf8",env:{PATH:process.env.PATH,HOME:process.env.HOME}});
  assert.equal(r.status,1);assert.match(r.stderr,/staged_validation_campaign_closed/);assert.match(r.stderr,/"providerCalls":0/);}
@@ -26,7 +27,7 @@ function harness(options={}) {
  };
  return {p,ledger,calls,jobs,get data(){return data;},get reserved(){return reserved;},get outcome(){return outcome;},
  transport:async b=>{calls.push(b);assert.equal(jobs.at(-1).state,"reserved");if(options.fail)throw Error("secret-like error must never escape");
-   const r=asResponse(captureResponse(pack,JSON.parse(b)));if(options.unknownUsage)delete r.usage;return r;}};
+   const r=asResponse(captureResponse(pack,JSON.parse(b),frozenGrounding));if(options.unknownUsage)delete r.usage;return r;}};
 }
 test("signed manifest binds one brief, all formats, candidate, expiry and GBP4/23 calls",()=>{
  const {publicKey,privateKey}=generateKeyPairSync("ed25519"),manifest=JSON.stringify(plan),signed={manifest,signature:sign(null,Buffer.from(manifest),privateKey).toString("base64")};
@@ -80,12 +81,13 @@ test("response usage must fit the prepaid token bounds and known tier/model",asy
 const liveDirectory=new URL("../docs/benchmarks/staged-delivery-2026-10-18/",import.meta.url);
 const live=JSON.parse(readFileSync(new URL("execution.json",liveDirectory),"utf8"));
 const liveRequest=JSON.parse(readFileSync(new URL("brief.json",liveDirectory),"utf8"));
-test("captured live failure reproduces in actual route: no delivery, no usage and no paid replay",async()=>{
+test("captured first batch now checkpoints; replaying it as a different batch still refuses unchecked delivery",async()=>{
  const h=routeHarness(),request={...liveRequest,requestId:plan.request.requestId};
  h.provider=async payload=>{const e=live.jobs[payload.text.format.name==="social_content_generation"?0:1].evidence;return {status:e.status,output_text:e.outputText,usage:e.usage};};
  const result=await h.finish(request);assert.equal(result.response.status,502);assert.equal(result.body.code,"grounding_failed");
- assert.equal(h.calls.length,2);assert.equal(h.data.generation_history_json,undefined);assert.equal(h.data.usage_events_json,undefined);
- assert.ok(h.data.generation_reservations_json[0].pipeline.draft);assert.equal((await h.post(request)).response.status,409);assert.equal(h.calls.length,2);
+ assert.equal(h.calls.length,3);assert.equal(h.data.generation_history_json,undefined);assert.equal(h.data.usage_events_json,undefined);
+ assert.equal(h.data.generation_reservations_json[0].pipeline.decisions.length,48);
+ assert.ok(h.data.generation_reservations_json[0].pipeline.draft);assert.equal((await h.post(request)).response.status,409);assert.equal(h.calls.length,3);
 });
 test("captured 48-decision review has four reproducible certificate rejections, not a timeout or malformed response",()=>{
  const load=loadModules(plan.modules),contract=load("lib/generation-contract.ts"),batching=load("lib/grounding-batches.ts");

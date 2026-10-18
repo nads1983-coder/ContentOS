@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import { loadTs, input, receipt, reviewReceipt } from "./generation-test-helpers.mjs";
 import { captured, captureResponse } from "./grounding-capture-helpers.mjs";
+import { request as classificationRequest, draft as classificationDraft, classificationResponse } from "./classification-capture-helpers.mjs";
 import { validateImageIsolatedEnvironment } from "./image-isolated.mjs";
 
 // Opt-in, existing isolated Neon only. No auth records, mail, Stripe or provider calls.
@@ -69,7 +70,8 @@ try {
   row = await read(crash); assert.equal(row.generation_reservations_json[0].pipeline.reservedMicroUsd, started.stage.reservedMicroUsd);
   checks.push("crash/lost result becomes terminal uncertainty with nonrefunded spending and no lease takeover");
   const capturedResults = [];
-  for (const pack of captured) {
+  const packs = [...captured, ...(process.argv.includes("--include-classification") ? [{ id: "ShelfNotes", request: classificationRequest, result: classificationDraft }] : [])];
+  for (const pack of packs) {
     const target = await fixture(`capture-${pack.id}`), request = { ...pack.request, requestId: randomUUID() };
     let expected = null, calls = 0, delivered = false;
     const start = performance.now(), timings = [];
@@ -83,7 +85,7 @@ try {
         assert.notEqual(admitted.progress.status, "failed"); expected = admitted.progress.nextStage; continue;
       }
       calls++;
-      const providerStarted = performance.now(), response = captureResponse(pack, admitted.stage.payload);
+      const providerStarted = performance.now(), response = pack.id === "ShelfNotes" ? classificationResponse(admitted.stage.payload) : captureResponse(pack, admitted.stage.payload);
       const progress = await repository.checkpointTextGenerationStage(target, request.requestId, admitted.fingerprint,
         admitted.stage, request, response, performance.now() - providerStarted);
       assert.notEqual(progress.status, "failed"); expected = progress.nextStage;
@@ -94,10 +96,12 @@ try {
     assert.equal(saved.generation_history_json.length, 1); assert.equal(saved.usage_events_json.length, 1);
     capturedResults.push({ id: pack.id, isolatedDatabaseAndMockExecutionMs: elapsed, mockProviderCalls: calls,
       reviewedUnits: saved.generation_reservations_json[0].pipelineAudit.reviewedUnits,
+      correctionStages: saved.generation_reservations_json[0].pipelineAudit.metrics.filter(m => m.kind === "correction").length,
+      fullRevalidationBatches: saved.generation_reservations_json[0].pipelineAudit.metrics.filter(m => m.kind === "revalidation").length,
       formats: 14, finalHistoryEntries: 1, successfulUsageEvents: 1, timings });
     checks.push(`${pack.id}: captured 14-format pack persisted once with real isolated row locks and mocked review certificates`);
   }
-  writeFileSync("docs/benchmarks/grounding-2026-10-18/isolated-delivery.json", JSON.stringify({
+  writeFileSync(process.argv.find(a => a.startsWith("--report="))?.slice(9) ?? "/tmp/contentos-isolated-delivery.json", JSON.stringify({
     recordedAt: new Date().toISOString(), paidCalls: 0, productionWrites: 0,
     limitations: ["Real isolated Neon transactions, synthetic fixtures and mechanical mock review certificates; not live AI validation.",
       "Timings include local processing and warm isolated database network latency, but no model latency. Not production performance."],

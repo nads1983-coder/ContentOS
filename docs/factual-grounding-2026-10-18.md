@@ -1,5 +1,7 @@
 # Server-side factual grounding
 
+Latest local implementation: [contextual classification correction](classification-correction-2026-10-18.md). Four unchanged captured disagreements now pass; nine independent assertions remain negative regressions. Four packs complete offline correction/full revalidation (999 initial and 999 final units), isolated persistence and browser recovery. 479 full-suite passes, one skip. No new paid calls; live release gate remains NO-GO. Counts below are historical.
+
 Latest outcome: [staged live validation](staged-live-validation-2026-10-18.md) completed a draft and first review without a timeout, but the deterministic validator refused the batch. No pack completed. The GBP4 campaign is closed and cleaned up; contextual certificate/claim classification is the next local correction. Historical implementation and campaign evidence below remains unchanged in scope.
 
 Status: implemented and locally tested; **live release gate failed** in the subsequently authorized [controlled benchmark](controlled-grounding-benchmark-2026-10-18.md). Six drafts completed; the first candidate review ended uncertain at the shared deadline and stopped the campaign. No candidate pack completed grounding. PR #3 stays draft. The original implementation made no paid calls; the separate authorized campaign is now closed and its temporary Preview/access removed. Production and customer data remain unchanged.
