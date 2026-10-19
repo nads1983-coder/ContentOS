@@ -1,5 +1,7 @@
 # Premium Studio integration: protected Preview review
 
+Final review and the narrowed one-call approval proposal are in [final readiness](premium-studio-final-readiness-2026-10-19.md). That report supersedes the broader provider-test suggestion below; existing evidence is retained unchanged.
+
 ## Scope and baseline
 
 - Verified current production: commit `6517cc23cffa9e34dec684bc035d17a5a3b69dea`, deployment `dpl_7ym1m4JGGr51sbnR9YsMm9wuD8ij`, project `content-os`.
