@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { contentTypes } from "@/lib/content-config";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { usesLifetimeCredits } from "@/lib/lifetime-access";
 import { normalizePlanId, normalizeSubscriptionStatus, planHasActiveEntitlement } from "@/lib/stripe-rest";
 import { currentUsageWindow, monthlyLimitForPlan } from "@/lib/usage";
 import { assertWorkspaceAccount, parseWorkspaceGeneration, profileArray } from "@/lib/workspace-contract";
@@ -79,6 +80,7 @@ function admitTextAttempt(data: Document, now: Date) {
 }
 
 export function effectiveGenerationPlan(data: UserProfile, now = new Date()): PlanId {
+  if (usesLifetimeCredits(data, now)) return "pro_studio";
   const profile = { ...data, plan: normalizePlanId(data.plan), subscription_status: normalizeSubscriptionStatus(data.subscription_status) };
   if (hasLifetimeEntitlement(profile)) return profile.plan;
   if (!planHasActiveEntitlement(profile.plan, profile.subscription_status)) return "free";
@@ -199,7 +201,7 @@ export function reserveGenerationInProfile(data: Document, userId: string, reque
   const { periodStart, periodEnd } = currentUsageWindow(now, hasLifetimeEntitlement(data) ? null : data.subscription_current_period_end);
   const used = usageInWindow(data, userId, periodStart, periodEnd);
   const pending = entries.filter(r => r.status === "reserved" && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
-  if (used.text + used.other + pending >= monthlyLimitForPlan(plan)) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
+  if (!usesLifetimeCredits(data, now) && used.text + used.other + pending >= monthlyLimitForPlan(plan)) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
   const attempts = admitTextAttempt(data, now);
   const reservation: Reservation = { requestId, fingerprint, plan, status: "reserved", createdAt: now.toISOString(), periodStart, periodEnd };
   const updated = { ...data, text_generation_attempts_json: attempts.recent, text_generation_daily_attempts_json: attempts.daily, generation_reservations_json: [...entries, reservation], generation_usage_json: { ...counters(data), [periodStart]: used.text } };

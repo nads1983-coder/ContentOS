@@ -19,6 +19,9 @@ import {
 } from "@/lib/image-generation-contract";
 import type { ImageGenerationInput, ImageGenerationResult } from "@/lib/image-generation-contract";
 import type { ImageAdmission } from "@/lib/image-generation-reservation";
+import { AICapacityError, quoteAI } from "@/lib/ai-cost";
+import type { CostQuote } from "@/lib/ai-cost";
+import { dispatchCommercial, settleCommercialUsage } from "@/lib/commercial-ledger";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -48,6 +51,12 @@ export async function POST(request: Request) {
   const headers = { "Cache-Control": "private, no-store", "X-Request-Id": input.requestId };
 
   let admission: ImageAdmission;
+  let quote: CostQuote | undefined;
+  const payload = {
+    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5", prompt: buildTextlessBackgroundPrompt(input),
+    n: 1, size: socialImageModelSize(input.format), quality: "high",
+    output_format: "png", background: "opaque", moderation: "auto"
+  };
   try {
     const profile = await getUserProfileForUser(user.id, user.email);
     if (!profile) return NextResponse.json({ error: "Create an account profile before generating images." }, { status: 403, headers });
@@ -65,8 +74,10 @@ export async function POST(request: Request) {
         // Stored entitlement is checked fail-closed by the reservation transaction.
       }
     }
-    admission = await reserveImageGeneration(user.id, input);
+    quote = process.env.OPENAI_API_KEY ? quoteAI("image", payload) : undefined;
+    admission = await reserveImageGeneration(user.id, input, quote);
   } catch (error) {
+    if (error instanceof AICapacityError) return NextResponse.json({ error: error.message, code: error.code, requestId: input.requestId }, { status: error.status, headers });
     if (error instanceof ImageGenerationError) return NextResponse.json({ error: error.message, code: error.code, requestId: input.requestId }, {
       status: error.status,
       headers: { ...headers, ...(error.retryAfterSeconds !== undefined ? { "Retry-After": String(error.retryAfterSeconds) } : {}) }
@@ -84,26 +95,26 @@ export async function POST(request: Request) {
     let warning: string | undefined;
     if (process.env.OPENAI_API_KEY) {
       try {
+        if (!quote) throw new AICapacityError("missing_cost_reservation");
+        await dispatchCommercial(user.id, input.requestId, quote);
         const started = Date.now();
         const response = await fetch("https://api.openai.com/v1/images/generations", {
           method: "POST", cache: "no-store", redirect: "error",
           signal: AbortSignal.any([request.signal, AbortSignal.timeout(IMAGE_LIMITS.providerMs)]),
           headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5", prompt: buildTextlessBackgroundPrompt(input),
-            n: 1, size: socialImageModelSize(input.format), quality: "high",
-            output_format: "png", background: "opaque", moderation: "auto"
-          })
+          body: JSON.stringify(payload)
         });
         // No automatic model/network retries: the provider may already have spent resources.
         if (response.ok) {
-          backgroundDataUrl = imageBackgroundFromResponse(await readImageJson(response, IMAGE_LIMITS.providerBytes, Math.max(1, IMAGE_LIMITS.providerMs - (Date.now() - started))));
+          const body = await readImageJson(response, IMAGE_LIMITS.providerBytes, Math.max(1, IMAGE_LIMITS.providerMs - (Date.now() - started)));
+          await settleCommercialUsage(user.id, input.requestId, quote, (body as { usage?: unknown })?.usage);
+          backgroundDataUrl = imageBackgroundFromResponse(body);
         } else {
           void response.body?.cancel().catch(() => {});
         }
-        if (!backgroundDataUrl) warning = "An AI background was not available. A template background was used. No image credit was used.";
+        if (!backgroundDataUrl) warning = "An AI background was not available. A template background was used. No successful image credit was recorded. An uncertain request may remain reserved until reviewed.";
       } catch {
-        warning = "The AI background request did not complete. A template background was used. No image credit was used.";
+        warning = "The AI background request did not complete. A template background was used. No successful image credit was recorded. An uncertain request may remain reserved until reviewed.";
       }
     } else {
       warning = "AI backgrounds are not configured. A template background was used. No image credit was used.";
@@ -127,7 +138,7 @@ export async function POST(request: Request) {
       result = render();
     }
   } catch {
-    try { await failImageGeneration(user.id, input.requestId, admission.fingerprint); }
+    try { await failImageGeneration(user.id, input.requestId, admission.fingerprint, quote); }
     catch { console.warn("[image] reservation release unavailable"); }
     return NextResponse.json({
       error: "Image generation failed. No successful image credit was recorded.", code: "image_generation_failed", requestId: input.requestId
@@ -135,7 +146,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const completed = await completeImageGeneration(user.id, input.requestId, admission.fingerprint, result);
+    const completed = await completeImageGeneration(user.id, input.requestId, admission.fingerprint, result, quote);
     return NextResponse.json(completed, { headers });
   } catch {
     // A commit may have succeeded despite a lost acknowledgement. Never release

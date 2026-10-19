@@ -18,6 +18,9 @@ import type { GenerationInput } from "@/lib/generation-contract";
 import { GenerationReservationError } from "@/lib/generation-reservation";
 import type { GenerationAdmission } from "@/lib/generation-reservation";
 import { completeTextGeneration, failTextGeneration, reserveTextGeneration } from "@/lib/repository";
+import { AICapacityError, quoteAI } from "@/lib/ai-cost";
+import type { CostQuote } from "@/lib/ai-cost";
+import { dispatchCommercial, settleCommercialUsage } from "@/lib/commercial-ledger";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -77,11 +80,20 @@ export async function POST(nextRequest: NextRequest) {
   // Older clients can omit requestId; new clients retain it across a logical retry.
   const requestId = request.requestId ?? crypto.randomUUID();
   const headers = { "X-Request-Id": requestId };
+  const payload = {
+    model: fixture ? "gpt-4.1" : process.env.OPENAI_MODEL ?? "gpt-5.2",
+    instructions: buildInstructions(), input: buildStudioInput(request),
+    max_output_tokens: GENERATION_LIMITS.maxOutputTokens,
+    text: { format: { type: "json_schema" as const, name: "social_content_generation", strict: true, schema: productionOutputSchema } }
+  };
+  let quote: CostQuote | undefined;
   let admission: GenerationAdmission;
   try {
-    admission = await reserveTextGeneration(user.id, requestId, request);
+    quote = quoteAI("text", payload);
+    admission = await reserveTextGeneration(user.id, requestId, request, quote);
   } catch (error) {
     report("failure");
+    if (error instanceof AICapacityError) return NextResponse.json({ error: error.message, code: error.code, requestId }, { status: error.status, headers });
     if (error instanceof GenerationReservationError) {
       return NextResponse.json({ error: error.message, code: error.code, requestId }, {
         status: error.status,
@@ -104,22 +116,11 @@ export async function POST(nextRequest: NextRequest) {
       maxRetries: GENERATION_LIMITS.maxRetries,
       logLevel: "off"
     });
-    const response = fixture ? previewTextResponse(request) : await client!.responses.create({
-      model: process.env.OPENAI_MODEL ?? "gpt-5.2",
-      instructions: buildInstructions(),
-      input: buildStudioInput(request),
-      max_output_tokens: GENERATION_LIMITS.maxOutputTokens,
-      text: {
-        format: {
-          type: "json_schema",
-          name: "social_content_generation",
-          strict: true,
-          schema: productionOutputSchema
-        }
-      }
-    }, {
+    if (quote) await dispatchCommercial(user.id, requestId, quote);
+    const response = fixture ? previewTextResponse(request) : await client!.responses.create(payload, {
       signal: AbortSignal.any([nextRequest.signal, AbortSignal.timeout(GENERATION_LIMITS.timeoutMs)])
     });
+    if (quote) await settleCommercialUsage(user.id, requestId, quote, fixture ? { input_tokens: 0, output_tokens: 0 } : response.usage);
     for (const key of ["input_tokens", "output_tokens", "total_tokens"] as const) {
       const count = response.usage?.[key];
       if (typeof count === "number" && Number.isSafeInteger(count) && count >= 0) providerTokens[key] = count;
@@ -129,7 +130,7 @@ export async function POST(nextRequest: NextRequest) {
   } catch (error) {
     // Only complete, validated packs may enter history or successful usage accounting.
     try {
-      await failTextGeneration(user.id, requestId, admission.fingerprint);
+      await failTextGeneration(user.id, requestId, admission.fingerprint, quote);
     } catch (reservationError) {
       logGenerationFailure(reservationError, "reservation_failure");
     }
@@ -150,7 +151,7 @@ export async function POST(nextRequest: NextRequest) {
   }
 
   try {
-    const completed = await completeTextGeneration(user.id, requestId, admission.fingerprint, result);
+    const completed = await completeTextGeneration(user.id, requestId, admission.fingerprint, result, quote);
     report("success", completed.sections.length);
     return NextResponse.json(completed, { headers });
   } catch (error) {

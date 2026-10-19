@@ -77,7 +77,8 @@ test("provider rejection, timeout, malformed response and URL-only output fall b
     assert.equal(first.response.status, 200);
     assert.equal(first.body.creditCharged, false);
     assert.match(first.body.image, /^data:image\/svg\+xml/);
-    assert.match(first.body.warning, /No image credit was used/);
+    assert.match(first.body.warning, /No successful image credit was recorded/);
+    assert.match(first.body.warning, /uncertain request may remain reserved/);
     assert.equal(creditCount(h), 0);
     assert.equal(h.data.usage_events_json, undefined);
     assert.equal(h.data.image_generation_attempts_json.count, 1);

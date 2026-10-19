@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
 import { effectiveGenerationPlan } from "@/lib/generation-reservation";
+import { usesLifetimeCredits } from "@/lib/lifetime-access";
 import { currentUsageWindow } from "@/lib/usage";
 import { profileArray } from "@/lib/workspace-contract";
 import {
@@ -186,7 +187,7 @@ export function reserveImageInProfile(data: Document, userId: string, input: Ima
   const { periodStart, periodEnd } = currentUsageWindow(now, hasLifetimeEntitlement(data) ? null : data.subscription_current_period_end);
   const used = usedInWindow(data, userId, periodStart, periodEnd);
   const reservedInWindow = pending.filter(entry => Date.parse(entry.createdAt) >= Date.parse(periodStart) && Date.parse(entry.createdAt) < Date.parse(periodEnd)).length;
-  if (used + reservedInWindow >= IMAGE_LIMITS.monthlyCredits) throw new ImageGenerationError("You have used this month's Pro Studio image credits.", 429, "image_quota_exceeded");
+  if (!usesLifetimeCredits(data, now) && used + reservedInWindow >= IMAGE_LIMITS.monthlyCredits) throw new ImageGenerationError("You have used this month's Pro Studio image credits.", 429, "image_quota_exceeded");
   ledger.entries.push({
     requestId: request.requestId, fingerprint, status: "reserved", createdAt: now.toISOString(),
     periodStart, periodEnd, style: request.style, format: request.format
