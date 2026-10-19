@@ -31,7 +31,19 @@ No schema migration is required. Workspace writes update only their explicit pro
 
 Preview fixture mode fails closed unless Vercel environment is Preview and the database endpoint, branch and database name match the pre-existing isolated Neon branch. Production database connections are refused on Preview. Only pre-seeded `example.invalid` review accounts may authenticate; sign-up/reset/email flows are disabled there. OpenAI, Stripe and Resend keys must be absent. Authentication, server-side account binding, plan checks, reservations and usage accounting still run. Fixture data never qualifies as live provider evidence.
 
-Vercel SSO protection must remain enabled. No real checkout, email or paid AI call is permitted. Review credentials are stored privately outside Git; the Preview is not public access to cloned customer records. Remote deployment evidence will be added after its build and protected checks complete.
+Vercel SSO protection remains enabled. No real checkout, email or paid AI call is permitted. Review credentials are stored privately outside Git; the Preview is not public access to cloned customer records.
+
+### Verified remote deployment
+
+- [Protected Preview](https://content-5z2e94um5-nads1983-9570s-projects.vercel.app/studio), deployment `dpl_34PFtDpCEYxD3YabrQ68q46kCBJ6`, **READY**, Preview target.
+- Deployed code/report commit: `586a3c9b4e410d7e6b0a7ff003f408193935bb87`. Subsequent changes to this report only do not change the reviewed application build.
+- [Draft integration PR #4](https://github.com/nads1983-coder/ContentOS/pull/4). PR #3 remains unchanged and unmerged.
+- Remote production build and TypeScript passed. Local final webpack build also passed after the dependency patch.
+- Unauthenticated `/studio`: HTTP 302 to Vercel SSO. Existing short-lived project authentication was used for browser checks without disabling protection.
+- Full `tests/premium-browser.mjs` passed against the deployed Preview, including actual authenticated generation/refinement routes with fixture transport, exactly-once Neon usage/history, failure recovery, editing/undo/export, decoded template image, account switching and independent-device hydration at 1440/768/390px. Zero browser errors; zero live AI calls.
+- Separate remote denial checks: anonymous workspace and generation return 401; signup, reset and non-synthetic login return 403. No account or mail created by those checks.
+- Runtime error query returned three PostgreSQL SSL-mode forward-compatibility warnings emitted to stderr (classified by Vercel as error logs), not application exceptions. The installed driver currently treats `require` as `verify-full`; choose explicit certificate verification before a future driver major upgrade. No unexpected application exception was observed in the queried window.
+- Final read-only production identity is still `6517cc23cffa9e34dec684bc035d17a5a3b69dea` / `dpl_7ym1m4JGGr51sbnR9YsMm9wuD8ij`. Stripe FOUNDING100 is ACTIVE, 13 of 100 redemptions used, 87 currently available. These are Stripe capacity figures, not a reconciled customer count. No Stripe mutation occurred.
 
 ## Production approval and rollback (not executed)
 
@@ -44,3 +56,5 @@ Vercel SSO protection must remain enabled. No real checkout, email or paid AI ca
 ## Limits and next decision
 
 Mocked transport proves integration, not writing quality or live provider success. No real Stripe payments or email delivery were tested. Provider-backed text/refinement/image compatibility and owner acceptance are required before production approval. No production, pricing, Founder promotion or customer-data changes were made.
+
+**PASS - PREMIUM STUDIO READY FOR CONTROLLED LIVE ACCEPTANCE.** Phase 1 ends here. Owner review and separate, explicit paid-provider/production authorisations remain required.
