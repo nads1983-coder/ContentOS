@@ -3,7 +3,10 @@
 import type { Draft, GenerationResult, StudioStore } from "@/types/content";
 import { cleanPlainText } from "@/lib/text-normalize";
 
-const STORAGE_KEY = "social-content-os:v1";
+// Legacy unscoped data is retained, but cannot safely be assigned to an account.
+export function storageKey(accountId?: string) {
+  return `social-content-os:v2:${accountId ? `account:${accountId}` : "guest"}`;
+}
 const emptyStore: StudioStore = {
   version: 1,
   recent: [],
@@ -64,13 +67,13 @@ function cleanDraft(draft: Draft): Draft {
   };
 }
 
-export function readStore(): StudioStore {
+export function readStore(accountId?: string): StudioStore {
   if (typeof window === "undefined") {
     return emptyStore;
   }
 
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(storageKey(accountId));
     if (!raw) {
       return emptyStore;
     }
@@ -91,14 +94,14 @@ export function readStore(): StudioStore {
   }
 }
 
-export function writeStore(store: StudioStore) {
+export function writeStore(store: StudioStore, accountId?: string): boolean {
   if (typeof window === "undefined") {
-    return;
+    return false;
   }
 
   try {
     window.localStorage.setItem(
-      STORAGE_KEY,
+      storageKey(accountId),
       JSON.stringify({
         ...store,
         recent: store.recent.map(cleanGenerationResult).slice(0, 20),
@@ -106,8 +109,9 @@ export function writeStore(store: StudioStore) {
         drafts: store.drafts.map(cleanDraft).slice(0, 20)
       })
     );
+    return true;
   } catch {
-    // Some embedded or private browsing contexts disable localStorage.
+    return false;
   }
 }
 
