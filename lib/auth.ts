@@ -1,6 +1,7 @@
 import "server-only";
 import { headers } from "next/headers";
 import { getEnv } from "@/lib/env";
+import { isPreviewAccount, previewFixturesEnabled } from "@/lib/preview-fixtures";
 export type AuthUser = { id: string; email: string };
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
@@ -9,6 +10,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     const { auth } = await import("@/lib/auth-config");
     const session = await auth.api.getSession({ headers: requestHeaders });
     if (!session || session.user.disabled || !session.user.emailVerified) return null;
+    if (previewFixturesEnabled() && !isPreviewAccount(session.user.email)) return null;
     return { id: session.user.id, email: session.user.email };
   } catch { console.error("[auth] session lookup unavailable"); return null; }
 }

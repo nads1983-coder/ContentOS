@@ -1,5 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+import vm from "node:vm";
+import ts from "typescript";
+import * as founderOfferModule from "../lib/founder-offer.ts";
 
 import {
   authenticatedFounderDestination,
@@ -657,4 +662,148 @@ test("lifetime access survives later subscription cancellation events after chec
 
   assert.equal(await handleFounderSubscriptionEvent({ subscriptionId: "sub_test" }, serviceDeps(repo, stripe, entitlements)), true);
   assert.equal(entitlements.length, 1);
+});
+
+// Execute the production Stripe adapter with an isolated HTTP transport, not live Stripe.
+function customerRecoveryTransport(options = {}) {
+  const requests = [], sessions = new Map(), byKey = new Map();
+  const env = { appUrl: "https://test.invalid", stripeSecretKey: "synthetic-not-a-key",
+    stripeProCreatorPriceId: "price_creator_test", stripeProStudioPriceId: "price_studio_test",
+    stripeFounderCouponId: options.configuredCouponId ?? "promo_founder_100" };
+  const module = { exports: {} }, require = createRequire(import.meta.url);
+  const code = ts.transpileModule(readFileSync(new URL("../lib/stripe-rest.ts", import.meta.url), "utf8"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 }
+  }).outputText;
+  const fetch = async (url, init) => {
+    const path = new URL(url).pathname, body = new URLSearchParams(init.body);
+    requests.push({ path, method: init.method, body, key: init.headers["Idempotency-Key"] });
+    if (path.startsWith("/v1/customers/")) {
+      if (options.customerThrows) throw new Error("Synthetic connection failure");
+      if (options.customerStatus) return Response.json({ error: { message: "Synthetic customer lookup refused" } }, { status: options.customerStatus });
+      return Response.json(options.customer ?? { id: "cus_deleted_test", deleted: true });
+    }
+    if (path === "/v1/promotion_codes") return Response.json({ data: [{ ...activeFounding100,
+      times_redeemed: options.exhausted ? 100 : 12 }] });
+    if (path === "/v1/checkout/sessions" && init.method === "POST") {
+      if (options.checkoutThrows) throw new Error("Synthetic uncertain checkout");
+      if (body.get("customer") === "cus_deleted_test") {
+        return Response.json({ error: { message: "No such customer: synthetic deleted reference" } }, { status: 400 });
+      }
+      const key = init.headers["Idempotency-Key"];
+      if (byKey.has(key)) {
+        assert.equal(byKey.get(key).body, body.toString(), "idempotency payload must stay stable");
+        return Response.json(byKey.get(key).session);
+      }
+      const session = { ...openSession(`cs_recovered_${sessions.size + 1}`),
+        ...(options.nonzero ? { amount_total: 100 } : {}),
+        ...(options.wrongPromotion ? { discounts: [{ promotion_code: "promo_wrong" }] } : {}) };
+      sessions.set(session.id, session); byKey.set(key, { body: body.toString(), session });
+      return Response.json(session);
+    }
+    const id = path.split("/")[4];
+    if (path.endsWith("/expire")) { sessions.get(id).status = "expired"; return Response.json(sessions.get(id)); }
+    if (sessions.has(id)) return Response.json(sessions.get(id));
+    throw new Error("Unexpected synthetic Stripe request");
+  };
+  vm.runInNewContext(code, { module, exports: module.exports, require: name => {
+    if (name === "@/lib/env") return { getEnv: () => env, isStripeConfigured: () => true };
+    if (name === "@/lib/founder-offer") return founderOfferModule;
+    return require(name);
+  }, fetch, URL, URLSearchParams, AbortSignal, Buffer, console: { error() {}, log() {} } });
+  const api = module.exports;
+  return { api, requests, sessions, stripe: {
+    resolvePromotionCode: api.getFounderOfferAvailability,
+    createCheckoutSession: i => api.createCheckoutSession({ plan: "pro_creator", userId: i.userId,
+      email: i.email, stripeCustomerId: i.stripeCustomerId, founderOffer: true,
+      founderPromotionCodeId: i.promotionCodeId, idempotencyKey: i.idempotencyKey }),
+    retrieveCheckoutSession: api.retrieveCheckoutSession, expireCheckoutSession: api.expireCheckoutSession,
+    scheduleCancellation: async () => { throw new Error("No live activation in this transport test"); }
+  } };
+}
+const deletedCustomerInput = { ...checkoutInput, stripeCustomerId: "cus_deleted_test" };
+
+test("deleted Stripe customer recovers to authenticated email with exact Founder discount and stable claim key", async () => {
+  const t = customerRecoveryTransport(), repo = createMemoryRepository();
+  const result = await startFounderCheckout(deletedCustomerInput, serviceDeps(repo, t.stripe));
+  assert.ok(result.url);
+  const post = t.requests.find(r => r.method === "POST");
+  assert.equal(post.body.has("customer"), false);
+  assert.equal(post.body.get("customer_email"), checkoutInput.email);
+  assert.equal(post.body.get("client_reference_id"), checkoutInput.userId);
+  assert.equal(post.body.get("metadata[user_id]"), checkoutInput.userId);
+  assert.equal(post.body.get("discounts[0][promotion_code]"), "promo_founder_100");
+  assert.equal(post.body.has("discounts[0][coupon]"), false);
+  assert.equal(post.body.has("allow_promotion_codes"), false);
+  assert.equal(post.key, repo.claims[0].attemptKey);
+  assert.equal(repo.claims[0].status, "open");
+  assert.equal(repo.claims[0].amountTotal, 0);
+  const before = t.requests.length;
+  await startFounderCheckout(deletedCustomerInput, serviceDeps(repo, t.stripe));
+  assert.ok(t.requests.slice(before).every(r => r.method === "GET" && r.path.includes("checkout/sessions")));
+  assert.equal(t.sessions.size, 1);
+});
+
+test("deleted-customer concurrency and crash recovery reuse one idempotent session", async () => {
+  for (const crash of [false, true]) {
+    const t = customerRecoveryTransport(), repo = createMemoryRepository({ saveOpenFailures: crash ? 1 : 0 });
+    const run = () => startFounderCheckout(deletedCustomerInput, serviceDeps(repo, t.stripe));
+    if (crash) await assert.rejects(run());
+    await Promise.all([run(), run()]);
+    assert.equal(repo.claims.length, 1);
+    assert.equal(repo.claims[0].status, "open");
+    assert.equal(t.sessions.size, 1);
+    assert.equal(new Set(t.requests.filter(r => r.method === "POST").map(r => r.key)).size, 1);
+  }
+});
+
+test("valid customers are retained and ordinary paid checkout behaviour is unchanged", async () => {
+  const t = customerRecoveryTransport({ customer: { id: "cus_valid_test", email: checkoutInput.email } });
+  await startFounderCheckout({ ...checkoutInput, stripeCustomerId: "cus_valid_test" }, serviceDeps(createMemoryRepository(), t.stripe));
+  assert.equal(t.requests.find(r => r.method === "POST").body.get("customer"), "cus_valid_test");
+  const paid = customerRecoveryTransport();
+  await paid.api.createCheckoutSession({ plan: "pro_creator", stripeCustomerId: "cus_paid_test" });
+  assert.equal(paid.requests.length, 1);
+  assert.equal(paid.requests[0].body.get("customer"), "cus_paid_test");
+  assert.equal(paid.requests[0].body.get("allow_promotion_codes"), "true");
+});
+
+test("customer lookup failures or mismatched identities never fall back or create Checkout", async () => {
+  for (const opts of [{ customerThrows: true }, ...[401, 403, 404, 429, 500].map(customerStatus => ({ customerStatus })),
+    { customer: { id: "cus_other_test", deleted: true } }]) {
+    const t = customerRecoveryTransport(opts);
+    await assert.rejects(startFounderCheckout(deletedCustomerInput, serviceDeps(createMemoryRepository(), t.stripe)));
+    assert.equal(t.requests.filter(r => r.method === "POST").length, 0);
+  }
+});
+
+test("deleted customer recovery requires authenticated account, email and coordinated claim key", async () => {
+  for (const missing of ["userId", "email", "idempotencyKey"]) {
+    const t = customerRecoveryTransport();
+    await assert.rejects(t.api.createCheckoutSession({ plan: "pro_creator", founderOffer: true,
+      founderPromotionCodeId: "promo_founder_100", stripeCustomerId: "cus_deleted_test",
+      userId: "user_test", email: "test@example.invalid", idempotencyKey: "attempt_test", [missing]: "" }));
+    assert.equal(t.requests.filter(r => r.method === "POST").length, 0);
+  }
+});
+
+test("customer recovery does not bypass exhausted offers, configuration mismatch, existing Founder or paid access", async () => {
+  for (const opts of [{ exhausted: true }, { configuredCouponId: "coupon_not_a_promotion" }]) {
+    const t = customerRecoveryTransport(opts);
+    await assert.rejects(startFounderCheckout(deletedCustomerInput, serviceDeps(createMemoryRepository(), t.stripe)));
+    assert.equal(t.requests.filter(r => r.method === "POST").length, 0);
+  }
+  for (const gate of ["alreadyEntitled", "alreadyPaid"]) {
+    const t = customerRecoveryTransport();
+    await assert.rejects(startFounderCheckout({ ...deletedCustomerInput, [gate]: true }, serviceDeps(createMemoryRepository(), t.stripe)));
+    assert.equal(t.requests.length, 0);
+  }
+});
+
+test("wrong promotion or nonzero recovered sessions are refused and expired; uncertain POST never retries", async () => {
+  for (const opts of [{ nonzero: true }, { wrongPromotion: true }, { checkoutThrows: true }]) {
+    const t = customerRecoveryTransport(opts);
+    await assert.rejects(startFounderCheckout(deletedCustomerInput, serviceDeps(createMemoryRepository(), t.stripe)));
+    assert.equal(t.requests.filter(r => r.path === "/v1/checkout/sessions" && r.method === "POST").length, 1);
+    if (!opts.checkoutThrows) assert.ok([...t.sessions.values()].every(s => s.status === "expired"));
+  }
 });

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@/components/analytics";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
+import { previewFixturesEnabled } from "@/lib/preview-fixtures";
 
 const nadineAnalyticsSiteId = process.env.NEXT_PUBLIC_NADINE_ANALYTICS_SITE_ID;
 const nadineAnalyticsTrackingKey = process.env.NEXT_PUBLIC_NADINE_ANALYTICS_TRACKING_KEY;
@@ -67,7 +68,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#050509"
 };
 
@@ -79,6 +79,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        {previewFixturesEnabled() ? <aside role="status" className="border-b border-gold/40 bg-ink px-4 py-2 text-center text-sm text-bone">Protected Preview: synthetic accounts and simulated AI only. No payments or emails.</aside> : null}
         {children}
         {nadineAnalyticsSiteId && nadineAnalyticsTrackingKey ? (
           <Analytics siteId={nadineAnalyticsSiteId} trackingKey={nadineAnalyticsTrackingKey} endpoint={nadineAnalyticsEndpoint} />
