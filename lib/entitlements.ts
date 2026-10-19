@@ -2,6 +2,14 @@ import type { UserProfile } from "@/types/saas";
 
 export const MANUAL_LIFETIME_ENTITLEMENT_SOURCE = "manual_lifetime_upgrade_cousin";
 export const FOUNDER_OFFER_ENTITLEMENT_SOURCE = "founder_offer";
+export const OWNER_COMPLIMENTARY_ENTITLEMENT_SOURCE = "owner_complimentary_lifetime";
+
+export function hasOwnerComplimentaryEntitlement(profile: UserProfile | null | undefined) {
+  return Boolean(profile &&
+    profile.entitlement_source === OWNER_COMPLIMENTARY_ENTITLEMENT_SOURCE &&
+    profile.plan === "pro_studio" && profile.subscription_status === "active" &&
+    !profile.subscription_current_period_end);
+}
 
 export function hasManualLifetimeEntitlement(profile: UserProfile | null | undefined) {
   return Boolean(
@@ -14,7 +22,7 @@ export function hasManualLifetimeEntitlement(profile: UserProfile | null | undef
 }
 
 export function hasLifetimeEntitlement(profile: UserProfile | null | undefined) {
-  if (hasManualLifetimeEntitlement(profile)) {
+  if (hasManualLifetimeEntitlement(profile) || hasOwnerComplimentaryEntitlement(profile)) {
     return true;
   }
 

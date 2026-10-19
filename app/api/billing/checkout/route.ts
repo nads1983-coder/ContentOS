@@ -28,6 +28,7 @@ import {
 } from "@/lib/founder-checkout-service";
 import { getUserProfileForUser, syncUserSubscriptionState, updateSubscriptionStatus } from "@/lib/repository";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { FOUNDER_OFFER_RETIRED, FOUNDER_RETIRED_MESSAGE } from "@/lib/founder-retirement";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -36,11 +37,15 @@ export async function POST(request: Request) {
   const rejected = rejectUnsafeWrite(request);
   if (rejected) return rejected;
 
-  const user = await getCurrentUser();
   const { plan, founderOffer } = (await request.json()) as {
     plan?: BillingPlan;
     founderOffer?: boolean;
   };
+
+  if (founderOffer && FOUNDER_OFFER_RETIRED) {
+    return NextResponse.json({ error: FOUNDER_RETIRED_MESSAGE, redirectUrl: "/founder" }, { status: 410 });
+  }
+  const user = await getCurrentUser();
 
   if (!plan || !["pro_creator", "pro_studio"].includes(plan)) {
     return NextResponse.json({ error: "Invalid plan." }, { status: 400 });

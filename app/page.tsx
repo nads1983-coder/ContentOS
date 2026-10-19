@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
-import { FoundingOffer } from "@/components/founding-offer";
 import { pageMetadata } from "@/lib/metadata";
 import { pricingPlans } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site";
@@ -410,11 +409,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <FoundingOffer
-          isLoggedIn={false}
-          currentPlan="free"
-        />
 
         <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl">

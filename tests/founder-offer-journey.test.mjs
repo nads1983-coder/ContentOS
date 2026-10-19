@@ -708,6 +708,8 @@ function customerRecoveryTransport(options = {}) {
   vm.runInNewContext(code, { module, exports: module.exports, require: name => {
     if (name === "@/lib/env") return { getEnv: () => env, isStripeConfigured: () => true };
     if (name === "@/lib/founder-offer") return founderOfferModule;
+    // These historical acquisition fixtures retain coverage of pre-retirement claims.
+    if (name === "@/lib/founder-retirement") return { FOUNDER_OFFER_RETIRED: false };
     return require(name);
   }, fetch, URL, URLSearchParams, AbortSignal, Buffer, console: { error() {}, log() {} } });
   const api = module.exports;

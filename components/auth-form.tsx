@@ -34,6 +34,11 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
+      if (initialFounderOffer || getPendingFounderOffer()) {
+        clearPendingCheckout();
+        window.location.replace("/founder");
+        return;
+      }
       setPendingPlan(getPendingCheckout());
       setPendingFounderOffer(initialFounderOffer || getPendingFounderOffer());
     }, 0);
@@ -41,8 +46,9 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
   }, [initialFounderOffer]);
 
   async function continueToCheckout() {
-    if (founderFlow) {
-      window.location.href = "/founder/checkout";
+    if (founderFlow || getPendingFounderOffer()) {
+      clearPendingCheckout();
+      window.location.href = "/founder";
       return;
     }
 

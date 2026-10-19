@@ -31,6 +31,7 @@ export default async function SignupPage({
   const params = await searchParams;
   const plan = parseBillingPlan(params?.plan);
   const founderOffer = parseFounderOffer(params?.founder);
+  if (founderOffer) redirect("/founder");
 
   if (user) {
     redirect(authenticatedFounderDestination(founderOffer));

@@ -1,11 +1,15 @@
 import "server-only";
 import { founderLoginCallbackUrl } from "@/lib/founder-offer";
+import { FOUNDER_OFFER_RETIRED, FOUNDER_RETIRED_MESSAGE } from "@/lib/founder-retirement";
 import { isPreviewAccount, previewFixturesEnabled } from "@/lib/preview-fixtures";
 // Preserve existing UI endpoints while using Better Auth's HTTP handler, including its CSRF and atomic rate limiter.
 export async function authBridge(request: Request, action: "login" | "signup" | "logout" | "reset" | "confirm") {
   try {
     const { auth } = await import("@/lib/auth-config");
     const input = action === "logout" ? {} : await request.json();
+    if (input.founderOffer && FOUNDER_OFFER_RETIRED) {
+      return Response.json({ error: FOUNDER_RETIRED_MESSAGE }, { status: 410 });
+    }
     const email = typeof input.email === "string" ? input.email.trim().toLowerCase() : "";
     if (previewFixturesEnabled() && (action !== "logout" && (action !== "login" || !isPreviewAccount(email)))) {
       return Response.json({ error: "This protected Preview accepts only its synthetic review accounts. Registration and email delivery are disabled." }, { status: 403 });

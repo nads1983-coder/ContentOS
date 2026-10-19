@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { getEnv, isStripeConfigured } from "@/lib/env";
+import { FOUNDER_OFFER_RETIRED, FOUNDER_RETIRED_MESSAGE } from "@/lib/founder-retirement";
 import {
   FOUNDER_PROMOTION_CODE,
   founderCheckoutDiscountParams,
@@ -123,6 +124,7 @@ function stripePriceId(plan: BillingPlan) {
 }
 
 export async function getFounderOfferAvailability() {
+  if (FOUNDER_OFFER_RETIRED) throw new FounderCheckoutError(FOUNDER_RETIRED_MESSAGE);
   const env = getEnv();
   const result = await stripeGet<StripeList<StripePromotionCode>>(
     "promotion_codes",
@@ -547,6 +549,7 @@ export async function createCheckoutSession(input: {
   founderPromotionCodeId?: string;
   idempotencyKey?: string;
 }) {
+  if (input.founderOffer && FOUNDER_OFFER_RETIRED) throw new FounderCheckoutError(FOUNDER_RETIRED_MESSAGE);
   const price = stripePriceId(input.plan);
 
   if (!price) {
