@@ -169,3 +169,56 @@ No paid provider calls, real payments, new services, API keys or credit purchase
 are part of this work. Codex monetary usage and the owner's overall GBP60 budget
 cannot be accurately measured or enforced by this repository; no claim is made
 that those charges are capped by the AI spending ledger.
+
+## Executed verification
+
+19 October 2026, application commit `b98d4b4def01275a93408ef7cf42d44c8debd16a`:
+
+- `npm test`: 202 passed, zero failures.
+- `npm run typecheck`, `npm run lint`, `npm run build -- --webpack`,
+  `git diff --check`: passed. The protected Vercel build also passed.
+- `npm audit --omit=dev --audit-level=high`: zero production vulnerabilities.
+- `tests/commercial-ledger-isolated.mjs`: 14 scenarios passed on the existing
+  isolated Neon branch, using only synthetic account records. Includes
+  independent-instance concurrency, sublimits, global exhaustion, exactly-once
+  replay and history, non-renewing credits, uncertain calls, DB rollback,
+  London DST/month transfer, durable warnings, suspension on invalid provider
+  usage, mocked one-time payment/refund/dispute processing, and least-privilege
+  runtime grants. Both actual AI routes were executed with mocked providers.
+- `tests/owner-entitlement-isolated.mjs`: concurrent billing events preserve the
+  synthetic permanent owner entitlement and unrelated profile fields.
+- `tests/commercial-preview-browser.mjs`: protected SSO, disabled purchase,
+  Lifetime login/balances, admin-data refusal, real server-side cap exhaustion
+  without a reservation, restored capacity, 14-format fixture delivery, replay,
+  persisted history and responsive checks all passed.
+- Existing `tests/premium-browser.mjs`: generation/refinement fixtures, edit,
+  undo, text export, save, failure recovery, actual template-image rendering,
+  independent-device retrieval and stale-account refusal all passed.
+- Both browser suites used 1440px desktop, 768px tablet and 390px mobile widths;
+  no horizontal overflow or JavaScript exceptions. Representative screenshots
+  were visually inspected. Private reports/screenshots are outside Git.
+- No real OpenAI calls, Stripe payments or customer communications were made.
+  Mocked delivery is not evidence of a new live AI or payment test.
+
+Protected review URL:
+https://content-kktqrq2tk-nads1983-9570s-projects.vercel.app/pricing
+
+Deployment `dpl_B6qC4NoBTv4aYeB8ge2rEv39FGWt`, READY, Vercel Authentication
+enabled. Isolated database explicitly configured; OpenAI/Stripe/Resend
+credentials blank. Draft PR: https://github.com/nads1983-coder/ContentOS/pull/5
+Branch: `feat/lifetime-access-cost-controls`.
+
+After these checks, a read-only deployment lookup confirmed production is still
+`21ff2b8bcaf7420e3f0b22204060f1f2c859c0fc`, deployment
+`dpl_ARA1dZsFsQydFfsxCKXu8D3mZHDs`, READY. No commercial migration or commercial
+code was deployed to production. Founder retirement and complimentary owner
+Premium remain the only separately authorised production changes from this task.
+
+Verdict: cost-control Preview is ready for review, **not ready to sell Lifetime**.
+The material commercial blocker is a coherent capacity/recovery/refund policy
+under the fixed GBP30 shared cap. The production payment adapter and signed
+webhook connection also remain intentionally unwired while checkout is disabled;
+they need focused implementation/validation against the subsequently approved
+price, not merely a flag change. Do not describe this as a completed live £49
+purchase journey. No further budget, paid benchmark or broad redesign is needed
+to review the current proposal.
