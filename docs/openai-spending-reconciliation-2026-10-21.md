@@ -1,5 +1,9 @@
 # OpenAI opening-spend reconciliation: 21 October 2026
 
+> Historical 13:41 UTC snapshot. The [14:14 UTC closure update](financial-release-closure-2026-10-21.md)
+> resolves the three legacy reservations using newly recovered runtime logs and
+> minute-level provider usage. Do not continue treating those charges as unknown.
+
 ## Verdict
 
 **BLOCKED - OPENING EXPENDITURE UNVERIFIED.** Read-only reconciliation completed
