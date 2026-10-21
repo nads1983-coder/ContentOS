@@ -84,6 +84,17 @@ test("long article and brand preferences produce a bounded image excerpt without
   assert.deepEqual(h.state.calls[1], h.state.calls[0]);
 });
 
+test("image title does not append a second platform heading and caption hashtags stay intact", async () => {
+  const caption = "A useful announcement. #ContentOS #ProductivityTools";
+  const h = harness({ result: { source: caption }, imageSection: {
+    id: "section1", title: "LinkedIn Announcement Post", platform: "LinkedIn", type: "linkedin"
+  } });
+  await h.action();
+  assert.equal(h.state.calls[0].body.brandContext.contentTopic, "LinkedIn Announcement Post");
+  assert.equal(h.state.calls[0].body.outputText, caption);
+  assert.equal(h.context.result.source, caption);
+});
+
 test("image UI double-click is guarded synchronously and terminal failure permits next explicit attempt", async () => {
   const h = harness();
   let release;

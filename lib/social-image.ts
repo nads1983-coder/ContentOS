@@ -15,7 +15,6 @@ export type SocialPosterContent = {
   headline: string;
   body: string;
   cta: string;
-  hashtags: string[];
   footer: string;
   template: SocialImageTemplate;
   warning?: string;
@@ -85,6 +84,7 @@ function decodeEntities(value: string) {
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
+    .replace(/&#(?:0*35|x0*23);/gi, "#")
     .replace(/&#39;/g, "'");
 }
 
@@ -113,7 +113,7 @@ function cleanText(value: string, maxLength = 2200) {
 }
 
 function stripLabels(value: string) {
-  return value.replace(/^(hook|headline|caption|body|post|cta|hashtags?)\s*:\s*/i, "").trim();
+  return value.replace(/^(hook|headline|caption|body|post|cta|call to action|hashtags?)\s*:\s*/i, "").trim();
 }
 
 function sentenceCase(value: string) {
@@ -121,19 +121,14 @@ function sentenceCase(value: string) {
   return cleaned ? `${cleaned.charAt(0).toUpperCase()}${cleaned.slice(1)}` : "";
 }
 
-function extractHashtags(text: string) {
-  const matches = text.match(/#[\p{L}\p{N}_]+/gu) ?? [];
-  return Array.from(new Set(matches)).slice(0, 5);
-}
-
-function removeHashtagLines(text: string) {
-  return text
-    .split("\n")
-    .filter((line) => !/^\s*(#[\p{L}\p{N}_]+\s*)+$/u.test(line.trim()))
-    .join("\n")
-    .replace(/#[\p{L}\p{N}_]+/gu, "")
+// Image-only copy: never change the original caption or its copy/export text.
+function cleanImageText(value: string, maxLength = 2200) {
+  return cleanText(value)
+    .replace(/[#＃][\p{L}\p{M}\p{N}_]+/gu, "")
+    .replace(/^\s*hashtags?\s*:\s*$/gim, "")
     .replace(/[ \t]{2,}/g, " ")
-    .trim();
+    .trim()
+    .slice(0, maxLength);
 }
 
 function firstUsefulLine(lines: string[]) {
@@ -182,7 +177,7 @@ function platformTemplate(input: BuildPosterInput): SocialImageTemplate {
 
 export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterContent {
   const cleaned = cleanText(input.outputText);
-  const withoutHashtags = removeHashtagLines(cleaned);
+  const withoutHashtags = cleanImageText(input.outputText);
   const paragraphs = withoutHashtags
     .split(/\n{2,}/)
     .map((item) => item.replace(/\n/g, " ").trim())
@@ -192,24 +187,22 @@ export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterC
     .map((line) => line.trim())
     .filter(Boolean);
 
-  const hookLine = firstUsefulLine(lines) ?? paragraphs[0] ?? input.contentType ?? "Create clearer content";
+  const hookLine = firstUsefulLine(lines) ?? paragraphs[0] ?? (cleanImageText(input.contentType) || "Create clearer content");
   const ctaLine = lines.find((line) => /^(cta|call to action)\s*:/i.test(line)) ?? "";
-  const brandName = cleanText(input.brandContext.brandName ?? "", 64);
+  const brandName = cleanImageText(input.brandContext.brandName ?? "", 64);
   const footer = brandName || "ContentOS";
   const template = platformTemplate(input);
-  const topic = cleanText(input.brandContext.contentTopic ?? "", 120);
+  const topic = cleanImageText(input.brandContext.contentTopic ?? "", 120);
   const headline = truncateAtWord(sentenceCase(topic || hookLine), input.format === "vertical" ? 96 : 82);
   const bodySource = paragraphs.find((item) => !item.includes(hookLine) && item.length > 24) ?? paragraphs[1] ?? paragraphs[0] ?? "";
   const body = truncateAtWord(stripLabels(bodySource), input.format === "vertical" ? 190 : input.format === "portrait" ? 205 : 170);
-  const cta = truncateAtWord(stripLabels(ctaLine || input.brandContext.contentGoal || ""), 90);
-  const hashtags = extractHashtags(cleaned);
+  const cta = truncateAtWord(stripLabels(ctaLine), 90);
   const warning = cleaned.length > 900 ? "Long source content was condensed for image readability." : undefined;
 
   return {
     headline: headline || "Create clearer content from one idea",
     body: body && body !== headline ? body : "Turn one clear idea into structured, platform-ready content without losing your point of view.",
     cta,
-    hashtags,
     footer,
     template,
     warning
@@ -217,12 +210,15 @@ export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterC
 }
 
 export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
-  const audience = cleanText(input.brandContext.audience ?? "", 180);
-  const offer = cleanText(input.brandContext.offer ?? "", 180);
-  const styleNotes = cleanText(input.brandContext.writingStyle ?? "", 160);
-  const colors = cleanText(input.brandContext.brandColors ?? "deep black, royal purple, refined gold, warm off-white", 180);
-  const visualStyle = cleanText(input.brandContext.visualStyle ?? input.style, 180);
-  const topic = cleanText(input.brandContext.contentTopic ?? input.contentType ?? input.outputText, 180);
+  const audience = cleanImageText(input.brandContext.audience ?? "", 180);
+  const offer = cleanImageText(input.brandContext.offer ?? "", 180);
+  const styleNotes = cleanImageText(input.brandContext.writingStyle ?? "", 160);
+  // Keep hexadecimal palette values without passing hash-prefixed text to the model.
+  const palette = cleanText(input.brandContext.brandColors ?? "deep black, royal purple, refined gold, warm off-white")
+    .replace(/#([a-f0-9]{6}|[a-f0-9]{3})(?![\p{L}\p{N}_])/giu, "hex $1");
+  const colors = cleanImageText(palette, 180);
+  const visualStyle = cleanImageText(input.brandContext.visualStyle ?? input.style, 180);
+  const topic = cleanImageText(input.brandContext.contentTopic ?? input.contentType ?? input.outputText, 180);
   const template = platformTemplate(input).replace(/_/g, " ");
 
   return [
@@ -234,7 +230,7 @@ export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
     `Visual style: ${visualStyle}.`,
     `Brand palette direction: ${colors}.`,
     `Canvas orientation: ${input.format}.`,
-    `Platform context: ${cleanText(input.platform || "social media", 80)}.`,
+    `Platform context: ${cleanImageText(input.platform || "social media", 80)}.`,
     `Content topic mood: ${topic}.`,
     audience ? `Audience mood: ${audience}.` : "",
     offer ? `Commercial context: ${offer}.` : "",
@@ -255,7 +251,8 @@ function xmlEscape(value: string) {
 }
 
 function wrapText(value: string, maxChars: number, maxLines: number) {
-  const words = cleanText(value, 1000).split(/\s+/).filter(Boolean);
+  const words = cleanImageText(value, 1000).split(/\s+/).filter(Boolean)
+    .flatMap((word) => word.match(new RegExp(`.{1,${maxChars}}`, "gu")) ?? []);
   const lines: string[] = [];
   let current = "";
 
@@ -311,22 +308,33 @@ export function renderSocialPosterSvg(input: RenderPosterInput) {
   const isLandscape = input.format === "landscape";
   const isVertical = input.format === "vertical";
   const isPortrait = input.format === "portrait";
-  const headlineSize = input.content.template === "clean_creator"
+  let headlineSize = input.content.template === "clean_creator"
     ? Math.round(width * (isLandscape ? 0.055 : 0.073))
     : Math.round(width * (isLandscape ? 0.056 : isVertical ? 0.078 : 0.086));
-  const bodySize = Math.round(width * (isLandscape ? 0.026 : 0.033));
+  let bodySize = Math.round(width * (isLandscape ? 0.026 : 0.033));
   const smallSize = Math.round(width * (isLandscape ? 0.019 : 0.024));
-  const headlineLines = wrapText(input.content.headline, isLandscape ? 30 : 18, isVertical ? 5 : 4);
+  const headlineLines = wrapText(input.content.headline, isLandscape ? 30 : 16, isVertical ? 5 : 4);
   const bodyLines = wrapText(input.content.body, isLandscape ? 64 : 38, isVertical ? 4 : isPortrait ? 5 : 4);
   const ctaLines = input.content.cta ? wrapText(input.content.cta, isLandscape ? 62 : 42, 2) : [];
-  const hashtagLine = input.content.hashtags.join(" ");
-  const hashtagLines = hashtagLine ? wrapText(hashtagLine, isLandscape ? 70 : 42, 2) : [];
   const headlineY = isLandscape ? Math.round(height * 0.24) : isVertical ? Math.round(height * 0.24) : Math.round(height * 0.26);
-  const headlineLineHeight = Math.round(headlineSize * 1.04);
-  const bodyY = headlineY + headlineLines.length * headlineLineHeight + Math.round(height * 0.075);
-  const bodyLineHeight = Math.round(bodySize * 1.42);
-  const ctaY = bodyY + bodyLines.length * bodyLineHeight + Math.round(height * 0.06);
+  let headlineLineHeight = Math.round(headlineSize * 1.04);
+  let bodyY = headlineY + headlineLines.length * headlineLineHeight + Math.round(height * 0.075);
+  let bodyLineHeight = Math.round(bodySize * 1.42);
+  let ctaY = bodyY + bodyLines.length * bodyLineHeight + Math.round(height * 0.06);
   const footerY = height - Math.round(height * 0.09);
+  // Reserve a clear footer zone even for the longest allowed headline/body/CTA.
+  const lastBaseline = ctaLines.length
+    ? ctaY + (ctaLines.length - 1) * Math.round(bodySize * 1.3)
+    : bodyY + Math.max(0, bodyLines.length - 1) * bodyLineHeight;
+  const scale = Math.min(1, (footerY - smallSize * 3 - headlineY) / (lastBaseline + bodySize * 0.3 - headlineY));
+  headlineSize *= scale;
+  bodySize *= scale;
+  headlineLineHeight *= scale;
+  bodyLineHeight *= scale;
+  bodyY = headlineY + (bodyY - headlineY) * scale;
+  ctaY = headlineY + (ctaY - headlineY) * scale;
+  const footer = truncateAtWord(cleanImageText(input.content.footer), 32);
+  const showBrandFooter = footer.replace(/\s+/g, "").toLowerCase() !== "contentos";
   const bgId = `bg-${input.content.template}`;
   const background = input.backgroundDataUrl
     ? `<image href="${xmlEscape(input.backgroundDataUrl)}" x="0" y="0" width="${width}" height="${height}" preserveAspectRatio="xMidYMid slice"/>`
@@ -334,12 +342,11 @@ export function renderSocialPosterSvg(input: RenderPosterInput) {
   const overlayOpacity = input.content.template === "clean_creator" ? "0.70" : "0.76";
   const headlineColor = input.content.template === "dark_editorial" ? "#f2df9f" : "#f7f1df";
   const bodyColor = "#f6f0e3";
-  const mutedColor = "#c8bed3";
 
   return {
     size: label,
     mimeType: "image/svg+xml",
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${xmlEscape(input.content.headline)}">
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${xmlEscape(cleanImageText(input.content.headline))}">
       ${background}
       <rect width="${width}" height="${height}" fill="#050409" opacity="${overlayOpacity}"/>
       <rect x="${margin * 0.55}" y="${margin * 0.55}" width="${width - margin * 1.1}" height="${height - margin * 1.1}" rx="${Math.round(width * 0.035)}" fill="none" stroke="#ffffff" stroke-opacity="0.11" stroke-width="2"/>
@@ -354,9 +361,8 @@ export function renderSocialPosterSvg(input: RenderPosterInput) {
         ${tspans(bodyLines, margin, bodyY, bodyLineHeight)}
       </text>
       ${ctaLines.length ? `<text fill="#d9b95f" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="${Math.round(bodySize * 0.86)}" font-weight="800">${tspans(ctaLines, margin, ctaY, Math.round(bodySize * 1.3))}</text>` : ""}
-      ${hashtagLines.length ? `<text fill="${mutedColor}" opacity="0.9" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="${smallSize}" font-weight="650">${tspans(hashtagLines, margin, footerY - Math.round(smallSize * 2.2), Math.round(smallSize * 1.35))}</text>` : ""}
       <line x1="${margin}" y1="${footerY - Math.round(smallSize * 1.45)}" x2="${margin + contentWidth}" y2="${footerY - Math.round(smallSize * 1.45)}" stroke="#ffffff" stroke-opacity="0.12" stroke-width="2"/>
-      <text x="${margin}" y="${footerY}" fill="#f7f1df" opacity="0.92" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="${smallSize}" font-weight="800">${xmlEscape(input.content.footer)}</text>
+      ${showBrandFooter ? `<text x="${margin}" y="${footerY}" fill="#f7f1df" opacity="0.92" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="${smallSize}" font-weight="800">${xmlEscape(footer)}</text>` : ""}
       <text x="${width - margin}" y="${footerY}" text-anchor="end" fill="#d9b95f" opacity="0.9" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="${smallSize}" font-weight="800">ContentOS</text>
     </svg>`
   };

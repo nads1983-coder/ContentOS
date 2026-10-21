@@ -1004,7 +1004,7 @@ export function StudioShell({
           writingStyle: excerpt(writingStyle, 180), contentGoal: excerpt(contentGoal, 180),
           brandColors: excerpt(imageBrandColors, 180),
           visualStyle: excerpt(imageVisualStyle, 180),
-          contentTopic: excerpt(`${section.title} ${labelForContentType(section.type)}`, 180)
+          contentTopic: excerpt(section.title || labelForContentType(section.type), 180)
         }
       };
       const fingerprint = JSON.stringify({ accountId, ...payload });
