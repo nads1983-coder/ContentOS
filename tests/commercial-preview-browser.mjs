@@ -25,7 +25,7 @@ const tokenHeaders={...headers,origin:base,"X-ContentOS-Account":user.id};
 try {
   const unauthenticated=await fetch(base+"/pricing",{redirect:"manual"});assert.ok([302,307,401,403].includes(unauthenticated.status));
   checks.push("SSO blocks unauthenticated public access");
-  await page.goto(base+"/pricing");await page.getByRole("heading",{name:"Pro Studio",exact:true}).waitFor();
+  await page.goto(base+"/pricing");await page.getByRole("heading",{name:/^Pro Studio, /}).waitFor();
   assert.doesNotMatch(await page.locator("body").innerText(), /Lifetime Access|£49|one-time text credits/);
   for(const width of [1440,768,390]){
     await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);

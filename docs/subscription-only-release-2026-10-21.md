@@ -2,6 +2,18 @@
 
 ## Scope and current status
 
+**READY FOR OWNER-AUTHORISED SUBSCRIPTION-ONLY RELEASE**, subject to the
+opening-spend reconciliation and explicit production approval below.
+
+Application commit: `e60d8a1d442892a9dbee6f9f5b5efbc54fae7c50`.
+Subsequent release-evidence commit changes only this report and a browser-test
+selector, not deployed application code.
+
+Protected Preview: https://content-d4mdh4vt4-nads1983-9570s-projects.vercel.app/pricing
+(`dpl_UZbDtauhDsU4ych6VooG7mBktsCE`, READY, Vercel Authentication). It uses
+only the existing isolated Neon branch and synthetic accounts/providers. Paid
+AI, Stripe and email credentials are absent. It must not be promoted to production.
+
 The owner cancelled the proposed GBP49 Lifetime Access membership. PR #5 now
 contains shared AI spending controls, not a new commercial product. Existing
 monthly/annual Stripe prices and billing intervals are unchanged. No new
@@ -71,8 +83,21 @@ subscribers, Founder and owner accounts alike; editing/saving/export remain usab
   persistence, mocked image success/failure, and restrictive runtime grants.
 - Isolated owner entitlement: six concurrent cancellation/past-due writes leave
   the complete synthetic profile, historical identifiers, history and usage intact.
-- Lint and production webpack build passed. Initial typecheck found stale Next
-  generated declarations for removed routes; rebuilding regenerates those types.
+- Typecheck, lint, production webpack build and `git diff --check` passed.
+  Initial typecheck found stale Next generated declarations for removed routes;
+  rebuilding regenerated them and the standalone typecheck then passed.
+- Production dependency audit: zero vulnerabilities. Dependencies are unchanged;
+  previously documented development-only advisories are not silently waived.
+- Protected Preview browser checks passed at1440/768/390: anonymous access
+  blocked by SSO, removed Lifetime checkout404, recurring pricing and subscriber
+  dashboard, private budget dashboard denied to ordinary accounts, capacity503
+  before reservation, restored capacity14-format mock delivery, durable once-only
+  spend row, duplicate replay and cloud history. Zero page errors or overflow.
+  Initial browser locator expected a heading without its existing price suffix;
+  the selector was corrected, with no application change, and the suite passed.
+- Pricing, Studio/dashboard components, pricing definitions, quota functions and
+  entitlement helpers now match production byte-for-byte. Existing broader
+  editing/undo/export/multi-device evidence is retained for these unchanged paths.
 - No real AI calls, Stripe payments, customer subscription changes or production
   writes. Mock provider results do not prove fresh live-provider performance.
 
