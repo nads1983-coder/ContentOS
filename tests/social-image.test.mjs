@@ -5,6 +5,7 @@ import { loadTs, createImageHarness, imageInput, PNG } from "./image-test-helper
 const { buildSocialPosterContent, buildTextlessBackgroundPrompt, renderSocialPosterSvg } = loadTs("lib/social-image.ts");
 const textNormalize = loadTs("lib/text-normalize.ts");
 const outputFormat = loadTs("lib/output-format.ts", { "./text-normalize": textNormalize });
+const { formatSectionImageText } = outputFormat;
 const { buildSectionCopyText } = loadTs("lib/copy.ts", { "./text-normalize": textNormalize, "./output-format": outputFormat });
 const tags = "#ContentOS #ProductivityTools #CreatorEconomy #ContentCreation";
 const section = {
@@ -30,8 +31,43 @@ test("supplied LinkedIn announcement keeps caption hashtags but never overlays t
   assert.doesNotMatch(visibleText(svg), hashtag);
   assert.equal((visibleText(svg).match(/ContentOS/g) ?? []).length, 1);
   assert.doesNotMatch(visibleText(svg), /Content OS/);
+  assert.doesNotMatch(visibleText(svg), /LINKEDIN GRAPHIC|AUTHORITY QUOTE/);
   for (const tag of tags.split(" ")) assert.ok(buildSectionCopyText(section).includes(tag));
   assert.deepEqual(input, original);
+});
+
+test("actual formatted copy preserves platform keywords while image copy excludes metadata blocks", () => {
+  const keywords = { id: "keywords", type: "platformHashtags", title: "Platform Hashtags", platform: "All",
+    body: "Platform-specific hashtag sets for this content angle.",
+    items: ["LinkedIn: #ContentOS #ProductivityTools", "YouTube Shorts: content os, workflow upgrade, creator software"] };
+  const original = structuredClone(keywords);
+  assert.match(buildSectionCopyText(keywords), /#ContentOS/);
+  assert.match(buildSectionCopyText(keywords), /creator software/);
+  assert.equal(formatSectionImageText(keywords), "");
+  const post = { ...section, items: [] };
+  assert.match(formatSectionImageText(post), /We listened to your needs/);
+  assert.doesNotMatch(formatSectionImageText(post), /#ContentOS/);
+  assert.match(buildSectionCopyText(post), /#ContentOS/);
+  const video = { ...post, type: "youtubeShorts", body: "Title: A useful update\nDescription: Plan your creative work.",
+    items: ["Keywords: workflow upgrade, creator software"] };
+  assert.match(buildSectionCopyText(video), /creator software/);
+  assert.doesNotMatch(formatSectionImageText(video), /creator software|workflow upgrade/);
+  assert.match(formatSectionImageText(video), /Plan your creative work/);
+  assert.deepEqual(keywords, original);
+});
+
+test("server rejects hashtag cards before any reservation, provider call or credit charge", async () => {
+  for (const contentType of ["platformHashtags", "Platform Hashtags", " PLATFORM-HASHTAGS "]) {
+    const h = createImageHarness();
+    const result = await h.post(imageInput({ contentType, outputText: "content os contentos workflow upgrade productivity tools creator software" }));
+    assert.equal(result.response.status, 400);
+    assert.equal(result.body.code, "invalid_image_request");
+    assert.match(result.body.error, /Choose a post or caption/);
+    assert.equal(h.calls.includes("provider"), false);
+    assert.equal(h.calls.includes("reserve"), false);
+    assert.equal(h.data.image_generation_reservations_json, undefined);
+    assert.equal(h.data.image_generation_usage_json, undefined);
+  }
 });
 
 test("every platform sanitises inline, labelled, Unicode and encoded hashtags in all image context fields", () => {

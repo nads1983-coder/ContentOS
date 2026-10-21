@@ -48,7 +48,8 @@ import {
   buildSectionCopyText,
   copyPlainText
 } from "@/lib/copy";
-import { formatOutputSection, OutputBlock } from "@/lib/output-format";
+import { formatOutputSection, formatSectionImageText, OutputBlock } from "@/lib/output-format";
+import { isImageContentType } from "@/lib/image-generation-contract";
 import { cleanPlainText } from "@/lib/text-normalize";
 import {
   ctaModes,
@@ -980,6 +981,11 @@ export function StudioShell({
       return;
     }
 
+    if (!isImageContentType(section.type)) {
+      setImageError("Hashtag and keyword sets are caption text. Choose a post or caption to create an image.");
+      return;
+    }
+
     if (!isProStudio) {
       setImageError("Image generation is available on Pro Studio.");
       return;
@@ -992,7 +998,7 @@ export function StudioShell({
     try {
       // The image uses a bounded excerpt; the original section and preferences stay intact.
       const excerpt = (value: string, limit: number) => value.trim().slice(0, limit);
-      const outputText = excerpt(buildSectionCopyText(section, { sourceText: result.source }), 2600);
+      const outputText = excerpt(formatSectionImageText(section, result.source), 2600);
       const payload = {
         outputText,
         platform: excerpt(section.platform, 80),
@@ -1150,6 +1156,7 @@ export function StudioShell({
               onFilterChange={setActiveFilter}
               onCopySection={copySection}
               onOpenImagePanel={(section) => {
+                if (!isImageContentType(section.type)) return;
                 setImageSection(section);
                 setImageError("");
               }}
@@ -1990,7 +1997,7 @@ function OutputCard({
           {section.revisionSource && <p className="mt-1 text-xs text-muted">{section.revisionSource === "manual" ? "Manually edited" : "AI refined"}</p>}
         </div>
         <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0 sm:flex-wrap">
-          <button
+          {isImageContentType(section.type) && <button
             type="button"
             onClick={onGenerateImage}
             className={clsx(
@@ -2002,7 +2009,7 @@ function OutputCard({
           >
             {canGenerateImage ? <Wand2 size={15} /> : <Lock size={15} />}
             Generate Image
-          </button>
+          </button>}
           <button
             type="button"
             onClick={onCopy}

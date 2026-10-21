@@ -488,3 +488,10 @@ export function formattedOutputToPlainText(output: FormattedOutput) {
 export function formatSectionPlainText(section: GeneratedSection, source?: string) {
   return formattedOutputToPlainText(formatOutputSection(section, source));
 }
+
+export function formatSectionImageText(section: GeneratedSection, source?: string) {
+  const output = formatOutputSection(section, source);
+  return formattedOutputToPlainText({
+    blocks: output.blocks.filter((block) => block.kind !== "hashtags" && block.kind !== "tags" && block.kind !== "platform")
+  });
+}

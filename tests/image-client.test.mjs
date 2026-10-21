@@ -5,6 +5,7 @@ import { randomUUID } from "node:crypto";
 import { URL } from "node:url";
 import ts from "typescript";
 import { loadTs } from "./image-test-helpers.mjs";
+const { isImageContentType } = loadTs("lib/image-generation-contract.ts");
 
 const source = readFileSync(new URL("../components/studio-shell.tsx", import.meta.url), "utf8");
 const ast = ts.createSourceFile("studio-shell.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -26,6 +27,7 @@ function harness(overrides = {}) {
     imageStyle: "premium", imageFormat: "square", brandName: "", audience: "", offer: "", writingStyle: "", contentGoal: "",
     imageBrandColors: "", imageVisualStyle: "", crypto: { randomUUID },
     buildSectionCopyText: (_section, options) => options.sourceText, labelForContentType: () => "LinkedIn Post",
+    formatSectionImageText: (_section, source) => source, isImageContentType,
     setImagePending: value => { state.pending = value; }, setImageError: value => state.errors.push(value),
     setGeneratedImages: updater => { state.images = updater(state.images); },
     fetch: async (_url, options) => {
@@ -93,6 +95,15 @@ test("image title does not append a second platform heading and caption hashtags
   assert.equal(h.state.calls[0].body.brandContext.contentTopic, "LinkedIn Announcement Post");
   assert.equal(h.state.calls[0].body.outputText, caption);
   assert.equal(h.context.result.source, caption);
+});
+
+test("hashtag cards cannot start an image request, including stale open image panels", async () => {
+  const h = harness({ imageSection: { id: "tags", type: "platformHashtags", title: "Platform Hashtags", platform: "All" } });
+  await h.action();
+  assert.equal(h.state.calls.length, 0);
+  assert.equal(h.state.pending, false);
+  assert.equal(h.context.imageRequestAttempt.current, null);
+  assert.match(h.state.errors[0], /Choose a post or caption/);
 });
 
 test("image UI double-click is guarded synchronously and terminal failure permits next explicit attempt", async () => {

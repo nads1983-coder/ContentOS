@@ -2,6 +2,10 @@ import type { SocialImageFormat, SocialImageStyle, SocialImageTemplate } from "@
 
 export const IMAGE_STYLES = ["minimal", "premium", "corporate", "bold", "dark", "modern"] as const;
 export const IMAGE_FORMATS = ["square", "landscape", "portrait", "vertical"] as const;
+
+export function isImageContentType(contentType: string): boolean {
+  return contentType.replace(/[\s_-]/g, "").toLowerCase() !== "platformhashtags";
+}
 export const IMAGE_LIMITS = {
   monthlyCredits: 100,
   requestBytes: 64_000,
@@ -71,10 +75,14 @@ export function normalizeImageRequest(value: unknown): ImageGenerationInput {
   if (!isImageRecord(value)) throw new ImageGenerationError("Invalid image request.");
   const brand = value.brandContext ?? {};
   if (!isImageRecord(brand)) throw new ImageGenerationError("Invalid brand context.");
+  const contentType = text(value.contentType, 80);
+  if (!isImageContentType(contentType)) {
+    throw new ImageGenerationError("Hashtag and keyword sets are caption text. Choose a post or caption to create an image.", 400, "non_visual_content");
+  }
   return {
     requestId: validateImageRequestId(value.requestId),
     outputText: text(value.outputText, 2600, true),
-    platform: text(value.platform, 80), contentType: text(value.contentType, 80),
+    platform: text(value.platform, 80), contentType,
     style: option(value.style, IMAGE_STYLES, "premium"),
     format: option(value.format, IMAGE_FORMATS, "square"),
     brandContext: {

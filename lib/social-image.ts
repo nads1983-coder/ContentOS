@@ -351,9 +351,6 @@ export function renderSocialPosterSvg(input: RenderPosterInput) {
       <rect width="${width}" height="${height}" fill="#050409" opacity="${overlayOpacity}"/>
       <rect x="${margin * 0.55}" y="${margin * 0.55}" width="${width - margin * 1.1}" height="${height - margin * 1.1}" rx="${Math.round(width * 0.035)}" fill="none" stroke="#ffffff" stroke-opacity="0.11" stroke-width="2"/>
       <circle cx="${width - margin}" cy="${margin}" r="${Math.round(width * 0.16)}" fill="#7c3aed" opacity="0.13"/>
-      <text x="${margin}" y="${Math.round(margin * 0.95)}" fill="#d9b95f" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="${smallSize}" font-weight="800" letter-spacing="${Math.max(2, Math.round(width * 0.006))}">
-        ${xmlEscape(input.content.template.replace(/_/g, " ").toUpperCase())}
-      </text>
       <text fill="${headlineColor}" font-family="Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="${headlineSize}" font-weight="900" letter-spacing="0">
         ${tspans(headlineLines, margin, headlineY, headlineLineHeight)}
       </text>
