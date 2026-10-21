@@ -39,7 +39,12 @@ test("new Lifetime membership remains separate from recurring, owner and Founder
   assert.equal(usesLifetimeCredits({...member,lifetime_access:{...member.lifetime_access,status:"revoked"}}),false);
 });
 test("Lifetime checkout remains refused before authentication or any Stripe interaction",async()=>{
-  const {POST}=loadTs("app/api/billing/lifetime-checkout/route.ts",{"next/server":{NextResponse:Response},"@/lib/request-security":{rejectUnsafeWrite:()=>null}});
+  const {POST}=loadTs("app/api/billing/lifetime-checkout/route.ts",{
+    "server-only":{},"next/server":{NextResponse:Response},"@/lib/request-security":{rejectUnsafeWrite:()=>null},
+    "@/lib/auth":{getCurrentUser:()=>assert.fail("Disabled checkout must not authenticate")},
+    "@/lib/lifetime-payment":{prepareLifetimePurchase:()=>assert.fail("Disabled checkout must not create a purchase")},
+    "@/lib/lifetime-stripe":{lifetimeStripeProvider:{}},"@/lib/lifetime-capacity":{}
+  });
   const response=await POST(new Request("https://test.invalid/api/billing/lifetime-checkout",{method:"POST",body:JSON.stringify({price:1,credits:100000})}));
   assert.equal(response.status,409); assert.equal((await response.json()).code,"lifetime_not_activated");
 });
