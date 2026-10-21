@@ -1,7 +1,9 @@
 # Financial release closure: 21 October 2026
 
-**BLOCKED - EXACT OWNER ACTION REQUIRED.** Read-only evidence checked at
-14:14:39 UTC / 15:14:39 BST. No application changes or paid provider calls.
+**BLOCKED - IMAGE COST POLICY MISMATCH AND OPENING EXPOSURE.** Financial evidence
+checked at 14:14 UTC; configuration/project-scope follow-up at 14:31 UTC on
+21 October. The owner-authorized configuration-only Preview completed and was
+removed. No application changes, production changes or paid provider calls.
 
 ## Resolved historical reservations
 
@@ -70,38 +72,102 @@ Text: inherited `gpt-4.1`, verified by the retained server-side preflight/actual
 response and unchanged shared production/Preview environment metadata. The
 historical GPT-5.2 review pipeline is not the current production generator.
 
-Image: `OPENAI_IMAGE_MODEL` exists but is a sensitive setting. Authorized connector
-access was refused; authenticated CLI metadata succeeded, but the supported
-single-variable read still returned a masked value. No credential was exported.
-Local configuration records contain no usable model value; the owner also has no
-record. **The `gpt-image-1.5` code fallback is not proof of the active override.**
+The authorized configuration-only Preview returned `gpt-4.1` and **`gpt-image-1`**
+at 14:27:22.498 UTC. Both model variables are single unchanged settings shared by
+production and Preview, with no branch override. No explicit OpenAI project setting
+was present. The probe read only model names/project metadata, not the API key;
+its function overrode provider, database, email and Stripe credential values with
+empty strings and contained no network/database client. No project settings changed.
 
-Official [GPT-4.1](https://developers.openai.com/api/docs/models/gpt-4.1) and
-[GPT Image 1.5](https://developers.openai.com/api/docs/models/gpt-image-1.5) prices
-were rechecked and still match the candidate policy. Candidate maxima remain
-GBP0.547431 text and GBP0.360576 image. The image maximum is applicable only after
-confirming the actual model matches. Unknown models fail before provider dispatch.
-Pricing review expires 19 November; model deprecation is documented, not bypassed.
+Preview `dpl_4P7tLAbwAH3jz5nrGYC2DR5rRyjh` reached READY with Vercel Authentication.
+Anonymous access redirected to authentication (302); authenticated CLI access
+returned the allowlisted configuration. Complete build/deployment logs are retained
+privately. The deployment was deleted and its endpoint subsequently returned 404.
+No new bypass credential was created; existing SSO protection was not altered.
 
-## Shortest remaining owner action
+**Material compatibility finding:** `lib/ai-cost.ts` admits only `gpt-image-1.5`.
+An offline execution of the actual pricing function with the observed
+`gpt-image-1` rejects with `unreviewed_provider_payload` before dispatch. Deploying
+this candidate unchanged would disable images. Do not replace the production model
+or merely add its name to the allowlist: its output rate is different.
 
-1. Authorize one temporary, SSO-protected **configuration-only** Preview check in
-   the existing Vercel project. It must inherit the same unchanged model settings,
-   return only the two model names to an authenticated operator, make no OpenAI,
-   Stripe or customer-database calls, export no secrets, and be removed afterward.
-   This is a non-chargeable provider check, not an AI benchmark or production
-   deployment. It has NOT been created under this read-only instruction.
-2. Identify whether other apps dispatch through the same OpenAI project and
-   authorize/arrange a controlled cutover interval with no untracked dispatch,
-   or supply their pending-request evidence and finite cost bounds. Refresh costs
-   and match outstanding requests during that interval; retain the uncertainty
-   hold until resolved. This is the missing scope/exposure evidence, not a request
-   to recover the now-reconciled three historical outcomes.
+Official [GPT-4.1](https://developers.openai.com/api/docs/models/gpt-4.1) pricing
+still supports the text policy. Official
+[GPT Image 1](https://developers.openai.com/api/docs/models/gpt-image-1) pricing
+is USD5/M text-input tokens and USD40/M image-output tokens, versus the candidate's
+USD32/M output rate for Image 1.5. The published high-quality rectangular output
+price is USD0.25. Under the existing 20,096 input/6,250 output bounds, the *proposed*
+Image 1 reservation would be GBP0.420576, not GBP0.360576. This calculation is not
+an implemented policy or approval to change models. Pricing review expires
+19 November; the provider marks Image 1 deprecated, so availability also needs a
+documented review before release. No paid probe was made.
+
+## Other applications and project scope
+
+The accessible Personal organization exposes one selectable Default project. Its
+identifier matches the earlier provider exports; exact identifiers and key tracking
+metadata remain in private evidence. All 40 recorded October text requests in the
+export belong to one key labelled **LeadWithNadine Content Machine**, including the
+matched GetContentOS calls. This establishes GetContentOS usage in that project,
+but a key label is not proof that every call originated in the similarly named app.
+
+| Application or credential | Verified evidence | Sharing conclusion |
+| --- | --- | --- |
+| GetContentOS | Matched provider usage in Default project; production/Preview model settings confirmed. | Uses Default project; exclusivity is not established. |
+| TaskPilot AI | Active key with this label in Default project; dashboard shows USD0.00 and last use 11 October. Current Vercel env metadata has no OpenAI credential/model/project; deployed source requires both `AI_ENABLED=true` and a key. Retained Preview config says AI disabled. | Named credential shares Default project, but no evidence current Vercel deployment dispatches chargeable AI. Other/local use of that key cannot be excluded. |
+| GorlLead | Live `gorllead.com` is Sites-hosted; latest saved version is 40. Live env revision 22 lists 24 variables, none for OpenAI/provider models/projects. Available local generation module validates supplied content without provider transport. | No shared OpenAI credential found in accessible hosted configuration. External ChatGPT/automation/backend activity is not established by that inspection. |
+| LeadWithNadine | Production/Preview OpenAI credential exists; no explicit project/org setting; secret is masked. | Deployed credential-to-project binding unverified. Similar key names are not sufficient proof. |
+| 100SecurityPrompts | Production/Preview OpenAI credential exists; no explicit project/org setting; secret is masked. | Deployed credential-to-project binding unverified. |
+| Other visible Vercel projects | Fire Risk Experts, Zapbooked, Nadine Analytics, Clean Start Calculator and Business Sorted have no matching provider variables in returned project metadata. | No positive evidence of sharing; not proof against every integration or external host. |
+
+Default project also has active keys labelled Codex, Clear Draft, SEO Publisher,
+nadinepierre.com Articles, All Website Key 2 and All Websites. Only the Content
+Machine key has nonzero recorded October spend. Rounded USD0.00 key displays do
+not establish the absence of pending requests; the detailed export remains the
+financial source. No keys, secret prefixes/suffixes or customer data are published
+here. No credential was revealed, compared by secret value, exported or changed.
+
+**Protection scope:** after a compatible release, the atomic GBP30 ledger can
+bound admitted GetContentOS requests. It does not debit requests from other apps,
+stale deployments, direct key use or scripts that bypass that ledger. Shared
+provider billing therefore is not protected by the application cap as a whole.
+The cap is not deployed yet. Including the organization subtotal once in the
+opening balance avoids understating known history but cannot bound future outside
+dispatch or arbitrary billing delays.
+
+Recommend a dedicated project and app-scoped credential for each independently
+operated application, starting with GetContentOS, with separate provider-level
+limits and application reservations. This is a recommendation only: no projects,
+keys, permissions or billing controls were changed. Current
+[OpenAI spend-limit documentation](https://developers.openai.com/api/docs/guides/spend-limits)
+distinguishes alerts from optional enforced hard limits, and notes enforcement
+delay can cause slight overshoot. No existing enforced limit was verified here;
+do not represent a dashboard budget alert as a hard ceiling. Separation improves
+attribution but does not alone guarantee a strict GBP30 total.
+
+## Exact remaining decisions
+
+1. Authorize the focused candidate-only cost-policy correction for the existing
+   `gpt-image-1` model, with model-specific settlement, conservative bounds and
+   offline tests. No production model/credential change or paid call is needed.
+   This financial-inspection task did not modify application code.
+2. Before cutover, establish deployed key/project provenance for LeadWithNadine
+   and 100SecurityPrompts through a non-secret configuration record or separately
+   authorized read-only runtime verification. If provenance cannot be recovered,
+   conservatively include those potential sources in an owner-approved dispatch
+   pause/drain interval. Also account for direct/shared-key automation. Refresh
+   provider costs, reconcile pending calls and retain finite uncertainty holds.
+   No final opening amount is claimed until this is done. Project separation is
+   optional and requires separate authorization; it is not silently performed.
+3. Separately approve the verified migration/opening amount and production
+   deployment. The procedure below remains gated, not permission to execute it.
 
 ## Exact deployment configuration and procedure (not executed)
 
-Use application candidate `70a8a570b6c9a39cca284506b9684df0a570d1db` plus documentation
-updates only. Keep the current synthetic Preview out of production.
+Application candidate `70a8a570b6c9a39cca284506b9684df0a570d1db` is **not ready for
+unchanged deployment** because of the confirmed image-policy mismatch. Record and
+validate the focused corrected candidate before this procedure. Keep the current
+synthetic Preview out of production.
 
 After separate owner production approval and a recoverable schema backup:
 
@@ -155,6 +221,12 @@ pause generation for subscribers, existing Founders and the complimentary owner.
 New checks: four runtime responses matched to three provider minute buckets;
 cached-aware legacy costs; refreshed organization subtotal; zero new retained
 reservations; unchanged production deployment; supported masked-config reads;
-private hashes and immutable audit; documentation whitespace validation. Prior
+private hashes and immutable audit; documentation whitespace validation. The
+configuration follow-up adds seven probe safety assertions, authenticated read,
+anonymous denial/deletion404, nine-project metadata inspection, live GorlLead env
+metadata and deployed TaskPilot source inspection. Two offline actual-model
+assertions confirm text acceptance and reproduce the image rejection; four
+existing cost-policy tests pass. These tests do not resolve the incompatibility.
+Prior
 201 automated tests, 12 isolated scenarios and build/browser evidence remain
 applicable to unchanged application code and were not needlessly rerun.

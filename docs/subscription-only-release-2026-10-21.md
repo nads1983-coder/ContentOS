@@ -4,8 +4,10 @@
 
 **BLOCKED - EXACT OWNER ACTION REQUIRED.** The application checks below remain
 valid. The [financial closure update](financial-release-closure-2026-10-21.md)
-resolves all three legacy reservations. A secure image-model observation and
-bounded shared-project cutover exposure remain outstanding. No production approval
+resolves all three legacy reservations. The authorized configuration-only Preview
+confirmed `gpt-image-1`, which this candidate currently rejects: a focused
+cost-policy correction and bounded shared-project cutover exposure remain
+outstanding. The temporary probe was deleted. No production approval
 or deployment is implied by the earlier conditional technical readiness.
 
 Application commit: `e60d8a1d442892a9dbee6f9f5b5efbc54fae7c50`.
@@ -128,8 +130,9 @@ subscribers, Founder and owner accounts alike; editing/saving/export remain usab
    lacks the cap; reconcile all intervening spend before restoring guarded service.
    Never reset budgets, delete history, alter subscriptions or reactivate Founder.
 
-Remaining production dependencies: confirmation of the production image-model
-override and a finite cutover allowance for unreported/shared-project activity,
+Remaining production dependencies: correct and validate cost accounting for the
+confirmed `gpt-image-1` override, and a finite cutover allowance for
+unreported/shared-project activity,
 then explicit migration/opening-balance/deployment approval. The three historical
 reservations are financially reconciled and require no extra charge. PR #5 remains
 unmerged. Raw financial evidence is stored privately outside Git.
