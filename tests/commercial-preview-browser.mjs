@@ -9,7 +9,7 @@ assert.equal(process.env.CONTENTOS_ISOLATED_BRANCH,"br-divine-term-b2rihbxv");
 assert.ok(new URL(process.env.DATABASE_URL).hostname.startsWith("ep-proud-field-b291xbnc"));
 for(const key of ["OPENAI_API_KEY","STRIPE_SECRET_KEY","RESEND_API_KEY"])assert.ok(!process.env[key]);
 const {users}=JSON.parse(readFileSync(process.env.PREVIEW_ACCOUNTS_FILE,"utf8"));
-const user=users.find(u=>u.plan==="free");assert.match(user.email,/^premium-preview-.*@example\.invalid$/);
+const user=users.find(u=>u.plan==="pro_studio");assert.match(user.email,/^premium-preview-.*@example\.invalid$/);
 const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href);
 const browser=await chromium.launch({headless:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000}});
@@ -25,20 +25,20 @@ const tokenHeaders={...headers,origin:base,"X-ContentOS-Account":user.id};
 try {
   const unauthenticated=await fetch(base+"/pricing",{redirect:"manual"});assert.ok([302,307,401,403].includes(unauthenticated.status));
   checks.push("SSO blocks unauthenticated public access");
-  await page.goto(base+"/pricing");await page.getByRole("heading",{name:/Lifetime Access/}).waitFor();
-  assert.equal(await page.getByRole("button",{name:"Not available yet"}).isDisabled(),true);
+  await page.goto(base+"/pricing");await page.getByRole("heading",{name:"Pro Studio",exact:true}).waitFor();
+  assert.doesNotMatch(await page.locator("body").innerText(), /Lifetime Access|£49|one-time text credits/);
   for(const width of [1440,768,390]){
     await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
     await page.screenshot({path:`${out}/pricing-${width}.png`});
   }
-  assert.equal((await context.request.post(base+"/api/billing/lifetime-checkout",{headers:tokenHeaders,data:{}})).status(),409);
-  checks.push("proposed GBP49 12/4 pricing is responsive; checkout refuses server-side");
+  assert.equal((await context.request.post(base+"/api/billing/lifetime-checkout",{headers:tokenHeaders,data:{}})).status(),404);
+  checks.push("subscription pricing is responsive; removed Lifetime checkout returns 404");
   await page.goto(base+"/login");await page.getByLabel("Email",{exact:true}).fill(user.email);await page.getByLabel("Password",{exact:true}).fill(user.password);
   await page.getByRole("button",{name:"Log in",exact:true}).click();await page.waitForURL("**/dashboard");
-  assert.match(await page.locator("body").innerText(),/Lifetime Access/);
-  assert.match(await page.locator("body").innerText(),/Credits do not renew/);
+  assert.match(await page.locator("body").innerText(),/Pro Studio/);
+  assert.doesNotMatch(await page.locator("body").innerText(),/Lifetime Access|Credits do not renew/);
   const admin=await context.request.get(base+"/admin/ai-budget",{headers});assert.equal(admin.status(),404);
-  checks.push("synthetic Lifetime login/dashboard shows non-renewing credits; private financial dashboard refuses ordinary member");
+  checks.push("synthetic subscriber login/dashboard shows recurring allowance; private financial dashboard refuses ordinary member");
   const initial=Number((await pool.query("SELECT count(*) AS n FROM contentos_app.ai_spend_requests WHERE account_id=$1",[user.id])).rows[0].n);
   const types=loadTs("lib/content-config.ts").contentTypes.map(t=>t.id);
   const body={source:"Synthetic Preview stationery notebook with a plain blue cover. No measured outcomes. No CTA.",selectedTypes:types,requestId:crypto.randomUUID()};

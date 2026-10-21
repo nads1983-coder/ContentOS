@@ -140,7 +140,7 @@ export async function getFounderOfferAvailability() {
   });
 }
 
-export async function stripeRequest<T>(path: string, body: URLSearchParams, options: { idempotencyKey?: string } = {}) {
+async function stripeRequest<T>(path: string, body: URLSearchParams, options: { idempotencyKey?: string } = {}) {
   const env = getEnv();
 
   if (!isStripeConfigured()) {
@@ -174,7 +174,7 @@ export async function stripeRequest<T>(path: string, body: URLSearchParams, opti
   return data;
 }
 
-export async function stripeGet<T>(path: string, query?: URLSearchParams) {
+async function stripeGet<T>(path: string, query?: URLSearchParams) {
   const env = getEnv();
 
   if (!isStripeConfigured()) {

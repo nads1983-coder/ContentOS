@@ -25,7 +25,7 @@ function array<T>(value: unknown): T[] {
   return [];
 }
 function profile(d: Document): UserProfile {
-  return { id: d.id, email: d.email, full_name: d.full_name ?? undefined, plan: normalizePlanId(d.plan), subscription_status: normalizeSubscriptionStatus(d.subscription_status), stripe_customer_id: d.stripe_customer_id ?? undefined, stripe_subscription_id: d.stripe_subscription_id ?? undefined, stripe_checkout_session_id: d.stripe_checkout_session_id ?? undefined, subscription_current_period_end: d.subscription_current_period_end ?? null, subscription_cancel_at_period_end: d.subscription_cancel_at_period_end ?? false, subscription_canceled_at: d.subscription_canceled_at ?? null, entitlement_source: d.entitlement_source ?? null, amount_paid: d.amount_paid ?? null, lifetime_access: d.lifetime_access };
+  return { id: d.id, email: d.email, full_name: d.full_name ?? undefined, plan: normalizePlanId(d.plan), subscription_status: normalizeSubscriptionStatus(d.subscription_status), stripe_customer_id: d.stripe_customer_id ?? undefined, stripe_subscription_id: d.stripe_subscription_id ?? undefined, stripe_checkout_session_id: d.stripe_checkout_session_id ?? undefined, subscription_current_period_end: d.subscription_current_period_end ?? null, subscription_cancel_at_period_end: d.subscription_cancel_at_period_end ?? false, subscription_canceled_at: d.subscription_canceled_at ?? null, entitlement_source: d.entitlement_source ?? null, amount_paid: d.amount_paid ?? null };
 }
 // Readers do not need replay bodies or terminal IDs. Never use this projection
 // as the basis for a write: mutate() must re-read the complete locked document.

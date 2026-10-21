@@ -4,10 +4,9 @@ import { getPool } from "@/lib/db/client";
 import { AICapacityError, COST_POLICY, usageCost } from "@/lib/ai-cost";
 import type { CostQuote } from "@/lib/ai-cost";
 import type { UserProfile } from "@/types/saas";
-import { lifetimeAccess, usesLifetimeCredits } from "@/lib/lifetime-access";
 export type CommercialDocument = UserProfile & Record<string, unknown>;
 export type Mutation<T> = (data: CommercialDocument) => { data: CommercialDocument; result: T };
-// Shared transaction lock coordinates every admission/settlement and payment mutation.
+// Shared transaction lock coordinates every admission/settlement and profile mutation.
 // No provider/network operation is allowed inside this callback.
 export async function commercialTransaction<T>(fn: (client: PoolClient) => Promise<T>) {
   const client = await getPool().connect();
@@ -40,18 +39,9 @@ export async function reserveCommercial<T extends { status: string }>(id: string
     if (previous.rowCount) throw new AICapacityError("provider_attempt_already_exists");
     const global = Number((await client.query("SELECT COALESCE(sum(accounted_microgbp),0) AS used FROM contentos_app.ai_spend_requests WHERE month=$1", [month])).rows[0].used) + (month === configuration.starts_month ? Number(configuration.opening_microgbp) : 0);
     if (global + quote.maximum > COST_POLICY.monthly) throw new AICapacityError("global_capacity_exhausted");
-    const lifetime = usesLifetimeCredits(data) ? lifetimeAccess(data) : null;
-    if (lifetime) {
-      const totals = (await client.query(`SELECT COALESCE(sum(accounted_microgbp),0) AS total,
-        COALESCE(sum(accounted_microgbp) FILTER (WHERE kind=$2),0) AS category,
-        count(*) FILTER (WHERE kind=$2 AND (delivered OR state IN ('reserved','dispatched','uncertain'))) AS credits
-        FROM contentos_app.ai_spend_requests WHERE account_id=$1 AND lifetime`, [id, quote.kind])).rows[0];
-      if (Number(totals.credits) >= (quote.kind === "text" ? lifetime.textCredits : lifetime.imageCredits)) throw new AICapacityError("lifetime_credits_exhausted", "No unused AI credits remain for this action. You can still edit, save and export your content.");
-      if (Number(totals.total) + quote.maximum > COST_POLICY.lifetime || Number(totals.category) + quote.maximum > COST_POLICY[quote.kind]) throw new AICapacityError("lifetime_capacity_exhausted");
-    }
     await client.query(`INSERT INTO contentos_app.ai_spend_requests
-      (account_id,kind,request_id,fingerprint,month,quote,reserved_microgbp,accounted_microgbp,lifetime,state)
-      VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7,$7,$8,'reserved')`, [id, quote.kind, requestId, quote.hash, month, JSON.stringify(quote), quote.maximum, Boolean(lifetime)]);
+      (account_id,kind,request_id,fingerprint,month,quote,reserved_microgbp,accounted_microgbp,state)
+      VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7,$7,'reserved')`, [id, quote.kind, requestId, quote.hash, month, JSON.stringify(quote), quote.maximum]);
     for (const threshold of [20_000_000,25_000_000]) if (global + quote.maximum >= threshold) {
       await client.query("INSERT INTO contentos_app.ai_budget_alerts(month,threshold_microgbp) VALUES ($1,$2) ON CONFLICT DO NOTHING", [month,threshold]);
     }
@@ -103,12 +93,4 @@ export async function finishCommercial<T>(id: string, requestId: string, quote: 
     await c.query("UPDATE contentos_app.ai_spend_requests SET state=$4,accounted_microgbp=$5,delivered=delivered OR $6,updated_at=now() WHERE account_id=$1 AND kind=$2 AND request_id=$3", [id,quote.kind,requestId,state,state === "released" ? 0 : row.accounted_microgbp,delivered]);
     await writeProfile(c,id,changed.data); return changed.result;
   });
-}
-export async function getLifetimeBalance(id: string) {
-  const data = (await getPool().query("SELECT data FROM contentos_app.profiles WHERE id=$1", [id])).rows[0]?.data;
-  const membership = data && lifetimeAccess(data);
-  if (!membership) return null;
-  const rows = (await getPool().query("SELECT kind,count(*) AS used FROM contentos_app.ai_spend_requests WHERE account_id=$1 AND lifetime AND (delivered OR state IN ('reserved','dispatched','uncertain')) GROUP BY kind",[id])).rows;
-  const used = Object.fromEntries(rows.map(r => [r.kind,Number(r.used)]));
-  return { text: Math.max(0,membership.textCredits-(used.text??0)), image: Math.max(0,membership.imageCredits-(used.image??0)), renews: false as const };
 }

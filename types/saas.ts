@@ -23,7 +23,6 @@ export type BrandProfile = {
 };
 
 export type UserProfile = {
-  lifetime_access?: import("@/lib/lifetime-access").LifetimeAccess;
   id: string;
   email: string;
   full_name?: string;
@@ -43,8 +42,6 @@ export type UserProfile = {
 };
 
 export type UsageSummary = {
-  nonRenewing?: boolean;
-  imageCreditsRemaining?: number;
   plan: PlanId;
   used: number;
   limit: number;

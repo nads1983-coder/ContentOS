@@ -27,9 +27,6 @@ import {
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
-import { usesLifetimeCredits } from "@/lib/lifetime-access";
-import { getLifetimeBalance } from "@/lib/commercial-ledger";
-import { COST_POLICY } from "@/lib/ai-cost";
 import type { GenerationResult } from "@/types/content";
 
 export const dynamic = "force-dynamic";
@@ -195,9 +192,7 @@ export default async function DashboardPage() {
       console.warn("Dashboard brand profile fetch failed");
     }
   }
-  const lifetime = Boolean(profile && usesLifetimeCredits(profile));
-  const balance = lifetime ? await getLifetimeBalance(profileUserId) : null;
-  const plan = lifetime ? "pro_studio" : normalizePlanId(profile?.plan);
+  const plan = normalizePlanId(profile?.plan);
   const status = normalizeSubscriptionStatus(profile?.subscription_status);
   const hasLifetimeAccess = hasLifetimeEntitlement(profile);
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
@@ -216,7 +211,7 @@ export default async function DashboardPage() {
     }
   }
 
-  const usage = lifetime ? { ...buildUsageSummary(plan,0), limit: COST_POLICY.textCredits, used: COST_POLICY.textCredits-(balance?.text??0), remaining: balance?.text??0 } : buildUsageSummary(plan, monthlyUsageCount, profile?.subscription_current_period_end);
+  const usage = buildUsageSummary(plan, monthlyUsageCount, profile?.subscription_current_period_end);
   let recent: GenerationResult[] = [];
   let historyUnavailable = false;
   if (isDatabaseConfigured()) {
@@ -246,7 +241,7 @@ export default async function DashboardPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
               Current plan
             </p>
-            <h2 className="mt-3 text-2xl font-semibold text-bone">{lifetime ? "Lifetime Access" : planLabels[plan]}</h2>
+            <h2 className="mt-3 text-2xl font-semibold text-bone">{planLabels[plan]}</h2>
             <p className="mt-2 text-sm text-muted">
               Status: {profile?.subscription_cancel_at_period_end && hasActiveSubscription
                 ? `${status} / canceling at period end`
@@ -288,12 +283,12 @@ export default async function DashboardPage() {
             </p>
             <h2 className="mt-3 text-2xl font-semibold">{usage.used} / {usage.limit}</h2>
             <p className="mt-2 text-sm text-muted">
-              {lifetime ? `${usage.remaining} one-time text credits and ${balance?.image??0} one-time image credits available. Reserved or uncertain requests remain held until reconciled.` : usage.plan === "free"
+              {usage.plan === "free"
                 ? `${usage.used} of ${usage.limit} free generations used. ${usage.remaining} free generations remaining.`
                 : `${usage.used} of ${usage.limit} monthly generations used. ${usage.remaining} monthly generations remaining.`}
             </p>
             <p className="mt-2 text-sm text-muted">
-              {lifetime ? "Credits do not renew. A pack, refinement or regeneration uses one text credit. Editing, saving and export remain available." : `Monthly generations reset on ${new Date(usage.periodEnd).toLocaleDateString()}.`}
+              Monthly generations reset on {new Date(usage.periodEnd).toLocaleDateString()}.
             </p>
           </article>
 

@@ -1,8 +1,8 @@
 # Lifetime Access and AI cost controls
 
-Current follow-up: [21 October commercial release report](commercial-release-2026-10-21.md).
-It supersedes the adapter/wiring and approval gaps described in this original
-19 October preparation record. Historical evidence below is retained.
+Cancelled proposal: the owner has withdrawn the GBP49 product. Current release:
+[Subscription-only safeguards](subscription-only-release-2026-10-21.md).
+Historical evidence below is retained, not a product offer or activation plan.
 
 Status: protected Preview preparation only. The GBP49 checkout is deliberately
 disabled in code. No live Stripe price, purchase, paid AI test, or production

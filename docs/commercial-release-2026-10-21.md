@@ -1,5 +1,11 @@
 # Commercial release candidate: 21 October 2026
 
+> SUPERSEDED: the owner cancelled the proposed GBP49 Lifetime product on
+> 21 October 2026. Its code, purchase route, credits and proposed tables have
+> been removed from PR #5. This document is historical evidence, NOT an active
+> offer, deployment instruction or approval request. Use
+> [Subscription-only release](subscription-only-release-2026-10-21.md) instead.
+
 ## Verdict
 
 **BLOCKED — opening provider spend and customer commitments are not reconciled.**

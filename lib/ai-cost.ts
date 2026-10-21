@@ -2,8 +2,7 @@ import { createHash } from "node:crypto";
 
 export const COST_POLICY = {
   version: "2026-10-19-v1", expires: "2026-11-19T00:00:00Z",
-  monthly: 30_000_000, lifetime: 10_000_000, text: 8_000_000, image: 2_000_000,
-  textCredits: 12, imageCredits: 4, textBytes: 128_000, imageBytes: 16_000
+  monthly: 30_000_000, textBytes: 128_000, imageBytes: 16_000
 } as const;
 export class AICapacityError extends Error {
   readonly status = 503;

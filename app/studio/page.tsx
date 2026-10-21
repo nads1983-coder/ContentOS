@@ -15,9 +15,6 @@ import { getMonthlyUsageCount, getUserProfileForUser, syncUserSubscriptionState 
 import { buildUsageSummary } from "@/lib/usage";
 import type { PlanId, UsageSummary, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
-import { usesLifetimeCredits } from "@/lib/lifetime-access";
-import { getLifetimeBalance } from "@/lib/commercial-ledger";
-import { COST_POLICY } from "@/lib/ai-cost";
 
 export const dynamic = "force-dynamic";
 
@@ -39,10 +36,6 @@ async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promi
   }
 
   try {
-    if (usesLifetimeCredits(profile)) {
-      const balance = await getLifetimeBalance(profile.id);
-      return { ...buildUsageSummary("pro_studio", 0), used: COST_POLICY.textCredits - (balance?.text ?? 0), limit: COST_POLICY.textCredits, remaining: balance?.text ?? 0, nonRenewing: true, imageCreditsRemaining: balance?.image ?? 0 };
-    }
     const used = await getMonthlyUsageCount({
       userId: profile.id,
       periodEnd: profile.subscription_current_period_end
@@ -51,7 +44,6 @@ async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promi
     return buildUsageSummary(plan, used, profile.subscription_current_period_end);
   } catch {
     console.warn("Studio usage fetch failed");
-    if (usesLifetimeCredits(profile)) return { ...buildUsageSummary("pro_studio", 0), limit: COST_POLICY.textCredits, used: COST_POLICY.textCredits, remaining: 0, nonRenewing: true, imageCreditsRemaining: 0 };
     return buildUsageSummary(plan, 0, profile.subscription_current_period_end);
   }
 }
@@ -117,7 +109,6 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
 
   const plan = normalizePlanId(profile.plan);
   const status = normalizeSubscriptionStatus(profile.subscription_status);
-  if (usesLifetimeCredits(profile)) return { plan: "pro_studio", accountId: user.id, authenticated: true, usage: await usageForProfile(profile, "pro_studio") };
   return {
     plan: planHasActiveEntitlement(plan, status) ? plan : "free",
     accountId: user.id,

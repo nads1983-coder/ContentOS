@@ -2,7 +2,6 @@ import { CheckoutButton } from "@/components/billing-buttons";
 import { pageMetadata } from "@/lib/metadata";
 import { pricingPlans } from "@/lib/pricing";
 import { PublicPage } from "@/components/public-page";
-import { previewFixturesEnabled } from "@/lib/preview-fixtures";
 
 export const metadata = pageMetadata({
   title: "ContentOS Pricing | Simple Pricing for Creators and Teams",
@@ -63,15 +62,6 @@ export default function PricingPage() {
           </div>
         ))}
       </section>
-      {previewFixturesEnabled() ? (
-        <section className="border-t border-white/10 py-6">
-          <h2 className="text-xl font-semibold text-bone">Lifetime Access · £49 once</h2>
-          <p className="mt-3">Pay once for ongoing access to your GetContentOS Studio. No recurring membership charge.</p>
-          <p className="mt-3">Proposed allowance: 12 text credits and 4 image credits, issued once. A text credit covers one content pack, refinement or regeneration. Credits do not renew. Editing, saving and export remain available after credits are used.</p>
-          <p className="mt-3 text-sm text-muted">Not available to purchase. Includes a £10 provider-cost allowance (£8 text, £2 images), subject to shared monthly capacity and failure accounting. Existing subscriptions are unchanged. <a href="/lifetime-terms" className="underline">Read the proposed Lifetime terms</a>.</p>
-          <button type="button" disabled className="mt-4 rounded border border-white/20 px-4 py-2 text-muted">Not available yet</button>
-        </section>
-      ) : null}
       <p className="text-center text-sm text-muted">
         Simple pricing. No hidden fees. Cancel anytime.
       </p>

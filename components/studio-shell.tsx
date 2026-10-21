@@ -728,9 +728,7 @@ export function StudioShell({
     return () => window.clearTimeout(timeout);
   }, [hasMounted, isPending, result.id, visibleSections.length]);
 
-  const usage = initialUsage?.nonRenewing ? {
-    ...initialUsage, used: usageUsed, remaining: Math.max(0, initialUsage.limit - usageUsed)
-  } : buildUsageSummary(
+  const usage = buildUsageSummary(
     plan,
     authenticated ? usageUsed : anonymousUsed,
     initialUsage?.periodEnd
@@ -769,7 +767,7 @@ export function StudioShell({
     if (usage.remaining <= 0) {
       setError(
         isPro
-          ? usage.nonRenewing ? "No unused text credits remain. Editing, saving and export are still available." : "You have used this month's generation allowance."
+          ? "You have used this month's generation allowance."
           : "You have used the free generation limit. Upgrade to Pro to keep generating."
       );
       return;
@@ -2722,15 +2720,14 @@ function UsageSummaryCard({ plan, usage }: { plan: PlanId; usage: UsageSummary }
   return (
     <section className="rounded-xl border border-gold/25 bg-gold/[0.07] p-3 sm:rounded">
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-goldSoft">
-        {usage.nonRenewing ? "Lifetime Access" : labelForPlan(plan)}
+        {labelForPlan(plan)}
       </p>
       <p className="mt-2 text-lg font-semibold text-bone">
         {usage.used} / {usage.limit} used
       </p>
       <p className="mt-1 text-xs text-muted">
-        {usage.remaining} {usage.nonRenewing ? "one-time text credits remaining" : "remaining"}
+        {usage.remaining} remaining
       </p>
-      {usage.nonRenewing ? <p className="mt-2 text-xs text-muted">{usage.imageCreditsRemaining} image credits available at page load. Credits never renew. A pack, refinement or regeneration uses one text credit. Editing, saving and export remain available.</p> : null}
     </section>
   );
 }
