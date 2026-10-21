@@ -68,7 +68,7 @@ export default function PricingPage() {
           <h2 className="text-xl font-semibold text-bone">Lifetime Access · £49 once</h2>
           <p className="mt-3">Pay once for ongoing access to your GetContentOS Studio. No recurring membership charge.</p>
           <p className="mt-3">Proposed allowance: 12 text credits and 4 image credits, issued once. A text credit covers one content pack, refinement or regeneration. Credits do not renew. Editing, saving and export remain available after credits are used.</p>
-          <p className="mt-3 text-sm text-muted">Not available to purchase. Allowances and service-capacity terms are pending owner approval. Existing subscriptions are unchanged.</p>
+          <p className="mt-3 text-sm text-muted">Not available to purchase. Includes a £10 provider-cost allowance (£8 text, £2 images), subject to shared monthly capacity and failure accounting. Existing subscriptions are unchanged. <a href="/lifetime-terms" className="underline">Read the proposed Lifetime terms</a>.</p>
           <button type="button" disabled className="mt-4 rounded border border-white/20 px-4 py-2 text-muted">Not available yet</button>
         </section>
       ) : null}

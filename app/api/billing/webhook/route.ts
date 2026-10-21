@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { handleLifetimeStripeEvent, type LifetimeEvent } from "@/lib/lifetime-stripe";
+import { LifetimePaymentRejected } from "@/lib/lifetime-payment";
 import {
   expireCheckoutSession,
   retrieveCheckoutSession,
@@ -61,7 +63,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
   }
 
-  const event = JSON.parse(payload) as StripeWebhookEvent;
+  let event: StripeWebhookEvent & LifetimeEvent;
+  try {
+    event = JSON.parse(payload);
+    if(!event?.type || !event.data?.object) throw new Error("Invalid event");
+  } catch {
+    return NextResponse.json({error:"Invalid event."},{status:400});
+  }
+  try {
+    if(await handleLifetimeStripeEvent(event)) return NextResponse.json({received:true});
+  } catch(error) {
+    if(error instanceof LifetimePaymentRejected) {
+      console.warn("[Lifetime] Permanently refused invalid payment evidence");
+      return NextResponse.json({received:true});
+    }
+    console.error("[Lifetime] Retryable payment processing failure");
+    return NextResponse.json({error:"Payment processing failed."},{status:500});
+  }
   const object = event.data.object;
 
   if (event.type === "checkout.session.completed") {

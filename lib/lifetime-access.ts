@@ -14,3 +14,4 @@ export function usesLifetimeCredits(data: UserProfile, now = new Date()) {
 
 // Deliberately not an environment toggle: enable only in an owner-reviewed release.
 export const LIFETIME_CHECKOUT_ENABLED = false;
+export const LIFETIME_INITIAL_SALES_LIMIT = 0;
