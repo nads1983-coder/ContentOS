@@ -61,7 +61,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
   }
 
-  const event = JSON.parse(payload) as StripeWebhookEvent;
+  let event: StripeWebhookEvent;
+  try {
+    event = JSON.parse(payload);
+    if(!event?.type || !event.data?.object) throw new Error("Invalid event");
+  } catch {
+    return NextResponse.json({error:"Invalid event."},{status:400});
+  }
   const object = event.data.object;
 
   if (event.type === "checkout.session.completed") {

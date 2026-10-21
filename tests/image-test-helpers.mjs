@@ -84,6 +84,8 @@ export function createImageHarness(options = {}) {
     }
   };
   const mocks = {
+    // Budget/transaction integration is exercised against isolated Neon separately.
+    "@/lib/commercial-ledger": { dispatchCommercial: async () => {}, settleCommercialUsage: async () => {} },
     "server-only": {}, "drizzle-orm": { sql, eq: (column, value) => column === "email" ? { email: value } : value },
     "@/lib/db/client": { getDb: () => db }, "@/lib/db/app-schema": { profiles: { id: "id", email: "email", data: sql.raw('"profiles"."data"') } },
     "@/lib/request-security": { rejectUnsafeWrite: () => options.unsafe ? Response.json({ error: "Unsafe" }, { status: 403 }) : null },
@@ -93,7 +95,7 @@ export function createImageHarness(options = {}) {
     "next/server": { NextResponse: Response }
   };
   const runtime = {
-    process: { env: options.noKey ? {} : { OPENAI_API_KEY: "offline-test-placeholder" } },
+    process: { env: options.noKey ? {} : { OPENAI_API_KEY: "offline-test-placeholder", ...(options.model ? { OPENAI_IMAGE_MODEL: options.model } : {}) } },
     console: { warn: (...args) => warnings.push(args) },
     fetch: async (url, init) => {
       calls.push("provider");
@@ -114,21 +116,21 @@ export function createImageHarness(options = {}) {
     reserveImageGeneration: async (...args) => {
       calls.push("reserve");
       if (h.fault === "reserve-before") failCommit = true;
-      const value = await actual.reserveImageGeneration(...args);
+      const value = await actual.reserveImageGeneration(...args.slice(0,2));
       if (h.fault === "reserve-after") throw new Error("Reservation acknowledgement lost");
       return value;
     },
     completeImageGeneration: async (...args) => {
       calls.push("complete");
       if (h.fault === "complete-before") failCommit = true;
-      const value = await actual.completeImageGeneration(...args);
+      const value = await actual.completeImageGeneration(...args.slice(0,4));
       if (h.fault === "complete-after") throw new Error("Completion acknowledgement lost");
       return value;
     },
     failImageGeneration: async (...args) => {
       calls.push("fail");
       if (h.fault === "fail-before") failCommit = true;
-      return actual.failImageGeneration(...args);
+      return actual.failImageGeneration(...args.slice(0,3));
     }
   };
   if (options.renderError) {

@@ -752,25 +752,14 @@ export function verifyStripeSignature(payload: string, signatureHeader: string |
     return false;
   }
 
-  const parts = Object.fromEntries(
-    signatureHeader.split(",").map((part) => {
-      const [key, value] = part.split("=");
-      return [key, value];
-    })
-  );
-
-  if (!parts.t || !parts.v1) {
-    return false;
-  }
-
-  const signedPayload = `${parts.t}.${payload}`;
+  const parts = signatureHeader.split(",").map(part => part.trim().split("="));
+  const timestamps=parts.filter(([key])=>key==="t");
+  const timestamp=timestamps[0]?.[1];
+  if(timestamps.length!==1 || !timestamp || !/^\d+$/.test(timestamp) || Math.abs(Date.now()/1000-Number(timestamp))>300) return false;
+  const signedPayload = `${timestamp}.${payload}`;
   const expected = createHmac("sha256", secret).update(signedPayload).digest("hex");
-  const actual = Buffer.from(parts.v1, "hex");
   const expectedBuffer = Buffer.from(expected, "hex");
-
-  if (actual.length !== expectedBuffer.length) {
-    return false;
-  }
-
-  return timingSafeEqual(actual, expectedBuffer);
+  // Accept overlapping signing secrets during Stripe rotation; reject malformed signatures.
+  return parts.filter(([key])=>key==="v1").some(([,value])=>
+    /^[a-f0-9]{64}$/i.test(value??"") && timingSafeEqual(Buffer.from(value,"hex"),expectedBuffer));
 }

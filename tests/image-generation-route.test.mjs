@@ -8,6 +8,30 @@ const creditCount = h => Object.values(h.data.image_generation_usage_json ?? {})
 const different = n => imageInput({ requestId: requestId(n), outputText: `Distinct original source ${n}` });
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 
+test("replacement default image model preserves payload, rendering and exactly-once usage", async () => {
+  for (const [format, size] of [["square", "1024x1024"], ["landscape", "1536x1024"], ["portrait", "1024x1536"], ["vertical", "1024x1536"]]) {
+    const h = createImageHarness({ provider: async (_url, init) => {
+      const payload = JSON.parse(init.body);
+      assert.equal(payload.model, "gpt-image-2.5-flare-2026-09-08");
+      assert.equal(payload.size, size);
+      assert.equal(payload.quality, "high");
+      assert.equal(payload.output_format, "png");
+      assert.equal(payload.background, "opaque");
+      assert.equal(payload.moderation, "auto");
+      return Response.json({ data: [{ b64_json: PNG }], usage: { input_tokens: 100, output_tokens: 6240 } });
+    } });
+    const input = imageInput({ format });
+    const first = await h.post(input);
+    assert.equal(first.response.status, 200);
+    assert.equal(first.body.creditCharged, true);
+    assert.match(decodeURIComponent(first.body.image), /data:image\/png;base64,/);
+    assert.deepEqual((await h.post(input)).body, first.body);
+    assert.equal(count(h, "provider"), 1);
+    assert.equal(creditCount(h), 1);
+    assert.equal(h.data.usage_events_json.length, 1);
+  }
+});
+
 test("image auth and account ownership reject before reading body or touching storage", async () => {
   for (const [options, account, status] of [[{ anonymous: true }, null, 401], [{}, null, 409], [{}, "", 409], [{}, "stale-account", 409]]) {
     const h = createImageHarness(options), result = await h.post(undefined, { account, rawBody: "{" });
@@ -77,7 +101,8 @@ test("provider rejection, timeout, malformed response and URL-only output fall b
     assert.equal(first.response.status, 200);
     assert.equal(first.body.creditCharged, false);
     assert.match(first.body.image, /^data:image\/svg\+xml/);
-    assert.match(first.body.warning, /No image credit was used/);
+    assert.match(first.body.warning, /No successful image credit was recorded/);
+    assert.match(first.body.warning, /uncertain request may remain reserved/);
     assert.equal(creditCount(h), 0);
     assert.equal(h.data.usage_events_json, undefined);
     assert.equal(h.data.image_generation_attempts_json.count, 1);

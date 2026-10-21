@@ -49,6 +49,7 @@ async function routeFixture(options = {}) {
   const errors = [];
   const gateCalls = [];
   const route = loadTs("app/api/generate/route.ts", {
+    "@/lib/commercial-ledger": { dispatchCommercial: async () => {}, settleCommercialUsage: async () => {} },
     "@/lib/request-security": { rejectUnsafeWrite: () => options.unsafe ? Response.json({ error: "Unsafe origin." }, { status: 403 }) : null },
     "@/lib/auth": { getCurrentUser: async () => options.anonymous ? null : { id: "user-test", email: "test@example.invalid" } },
     "@/lib/backend": { isDatabaseConfigured: () => { gateCalls.push("database_config"); return !options.noDatabase; } },
@@ -96,7 +97,9 @@ async function routeFixture(options = {}) {
     }
   });
   const previous = process.env.OPENAI_API_KEY;
+  const previousModel = process.env.OPENAI_MODEL;
   try {
+    process.env.OPENAI_MODEL = "gpt-4.1";
     if (options.noKey) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = "offline-placeholder-not-a-real-key";
     const headers = new Headers();
@@ -107,6 +110,8 @@ async function routeFixture(options = {}) {
     const response = await route.POST(incoming);
     return { response, body: await response.json(), calls, clientOptions, providerInput, analytics, errors, gateCalls, bodyRead: incoming.bodyUsed };
   } finally {
+    if (previousModel === undefined) delete process.env.OPENAI_MODEL;
+    else process.env.OPENAI_MODEL = previousModel;
     if (previous === undefined) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = previous;
   }

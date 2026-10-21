@@ -2,6 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { eq, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
+import type { CostQuote } from "@/lib/ai-cost";
 import { profiles } from "@/lib/db/app-schema";
 import { normalizePlanId, normalizeSubscriptionStatus } from "@/lib/stripe-rest";
 import { currentUsageWindow } from "@/lib/usage";
@@ -54,13 +55,16 @@ export async function saveWorkspace(userId: string, input: unknown) {
   return mutate(userId, data => updateWorkspaceProfile(data, userId, input));
 }
 // Each operation commits before returning; provider/network work belongs between reserve and complete.
-export async function reserveTextGeneration(userId: string, requestId: string, request: GenerateRequest) {
+export async function reserveTextGeneration(userId: string, requestId: string, request: GenerateRequest, quote?: CostQuote) {
+  if (quote) return (await import("@/lib/commercial-ledger")).reserveCommercial(userId, requestId, quote, data => reserveGenerationInProfile(data, userId, requestId, request));
   return mutate(userId, data => reserveGenerationInProfile(data, userId, requestId, request));
 }
-export async function completeTextGeneration(userId: string, requestId: string, fingerprint: string, result: GenerationResult) {
+export async function completeTextGeneration(userId: string, requestId: string, fingerprint: string, result: GenerationResult, quote?: CostQuote) {
+  if (quote) return (await import("@/lib/commercial-ledger")).finishCommercial(userId, requestId, quote, true, data => completeGenerationInProfile(data, userId, requestId, fingerprint, result));
   return mutate(userId, data => completeGenerationInProfile(data, userId, requestId, fingerprint, result));
 }
-export async function failTextGeneration(userId: string, requestId: string, fingerprint: string) {
+export async function failTextGeneration(userId: string, requestId: string, fingerprint: string, quote?: CostQuote) {
+  if (quote) return (await import("@/lib/commercial-ledger")).finishCommercial(userId, requestId, quote, false, data => failGenerationInProfile(data, userId, requestId, fingerprint));
   return mutate(userId, data => failGenerationInProfile(data, userId, requestId, fingerprint));
 }
 // Only trusted server billing code may look up an email. User access always uses the session ID.
@@ -176,15 +180,18 @@ export async function syncUserSubscriptionState(input: {
   return (await updateSubscriptionStatus(input))[0] ?? null;
 }
 
-export async function reserveImageGeneration(userId: string, input: import("@/lib/image-generation-contract").ImageGenerationInput) {
+export async function reserveImageGeneration(userId: string, input: import("@/lib/image-generation-contract").ImageGenerationInput, quote?: CostQuote) {
   const { reserveImageInProfile } = await import("@/lib/image-generation-reservation");
+  if (quote) return (await import("@/lib/commercial-ledger")).reserveCommercial(userId, input.requestId, quote, data => reserveImageInProfile(data, userId, input));
   return mutate(userId, data => reserveImageInProfile(data, userId, input));
 }
-export async function completeImageGeneration(userId: string, requestId: string, fingerprint: string, result: import("@/lib/image-generation-contract").ImageGenerationResult) {
+export async function completeImageGeneration(userId: string, requestId: string, fingerprint: string, result: import("@/lib/image-generation-contract").ImageGenerationResult, quote?: CostQuote) {
   const { completeImageInProfile } = await import("@/lib/image-generation-reservation");
+  if (quote) return (await import("@/lib/commercial-ledger")).finishCommercial(userId, requestId, quote, result.creditCharged, data => completeImageInProfile(data, userId, requestId, fingerprint, result));
   return mutate(userId, data => completeImageInProfile(data, userId, requestId, fingerprint, result));
 }
-export async function failImageGeneration(userId: string, requestId: string, fingerprint: string) {
+export async function failImageGeneration(userId: string, requestId: string, fingerprint: string, quote?: CostQuote) {
   const { failImageInProfile } = await import("@/lib/image-generation-reservation");
+  if (quote) return (await import("@/lib/commercial-ledger")).finishCommercial(userId, requestId, quote, false, data => failImageInProfile(data, userId, requestId, fingerprint));
   return mutate(userId, data => failImageInProfile(data, userId, requestId, fingerprint));
 }
