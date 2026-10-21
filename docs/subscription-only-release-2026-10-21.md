@@ -2,8 +2,10 @@
 
 ## Scope and current status
 
-**READY FOR OWNER-AUTHORISED SUBSCRIPTION-ONLY RELEASE**, subject to the
-opening-spend reconciliation and explicit production approval below.
+**BLOCKED - OPENING EXPENDITURE UNVERIFIED.** The application checks below remain
+valid, but the [financial reconciliation](openai-spending-reconciliation-2026-10-21.md)
+has not established a complete cutover opening balance. No production approval
+or deployment is implied by the earlier conditional technical readiness.
 
 Application commit: `e60d8a1d442892a9dbee6f9f5b5efbc54fae7c50`.
 Subsequent release-evidence commit changes only this report and a browser-test
@@ -125,5 +127,7 @@ subscribers, Founder and owner accounts alike; editing/saving/export remain usab
    lacks the cap; reconcile all intervening spend before restoring guarded service.
    Never reset budgets, delete history, alter subscriptions or reactivate Founder.
 
-Remaining production dependency: evidenced opening spend plus explicit migration
-and deployment approval. PR #5 remains unmerged; no production action is implied.
+Remaining production dependencies: reconciliation of three legacy unresolved
+reservations and the billing tail, confirmation of the production image-model
+override, then explicit migration/opening-balance/deployment approval. PR #5
+remains unmerged. Raw financial evidence is stored privately outside Git.
