@@ -5,12 +5,49 @@ const { quoteAI, usageCost, COST_POLICY, conservativeGBP } = loadTs("lib/ai-cost
 const date = new Date("2026-10-19T12:00:00Z");
 const text = { model: "gpt-4.1", input: "synthetic", max_output_tokens: 24000 };
 const image = { model: "gpt-image-1.5", prompt: "synthetic", n: 1, quality: "high", size: "1536x1024" };
+const productionImage = { ...image, model: "gpt-image-1", output_format: "png", background: "opaque", moderation: "auto" };
 test("integer worst-case bounds remain within the shared monthly policy", () => {
   const t = conservativeGBP((COST_POLICY.textBytes+4096)*2+24000*8);
   const i = conservativeGBP((COST_POLICY.imageBytes+4096)*5+6250*32);
   assert.equal(t,547431); assert.equal(i,360576);
   assert.equal(COST_POLICY.monthly,30_000_000);
   assert.ok(t<COST_POLICY.monthly); assert.ok(i<COST_POLICY.monthly);
+});
+test("production image configuration reserves and settles the same model-specific price", () => {
+  for (const size of ["1024x1024", "1024x1536", "1536x1024"]) {
+    const q = quoteAI("image", { ...productionImage, size }, date);
+    assert.equal(q.maximum, conservativeGBP(q.inputBound * 5 + 6250 * 40));
+    assert.equal(usageCost(q, { input_tokens: 100, output_tokens: 6240 }), 300120);
+    assert.equal(usageCost(q, { input_tokens: q.inputBound, output_tokens: 6250 }), q.maximum);
+    assert.equal(usageCost(q, {}), null);
+    assert.throws(() => usageCost(q, { input_tokens: 100, output_tokens: 6251 }));
+    assert.throws(() => usageCost(q, { input_tokens: 100, output_tokens: 10, input_tokens_details: { image_tokens: 1 } }));
+  }
+  const full = { ...productionImage, prompt: "" };
+  full.prompt = "x".repeat(COST_POLICY.imageBytes - Buffer.byteLength(JSON.stringify(full)));
+  const q = quoteAI("image", full, date);
+  assert.equal(q.inputBound, 20096);
+  assert.equal(q.maximum, 420576);
+  assert.throws(() => quoteAI("image", { ...full, prompt: full.prompt + "x" }, date));
+  const previous = quoteAI("image", image, date);
+  assert.equal(usageCost(previous, { input_tokens: 100, output_tokens: 6240 }), 240216);
+  assert.equal(usageCost({ ...previous, version: "2026-10-19-v1" }, { input_tokens: 100, output_tokens: 6240 }), 240216);
+  assert.throws(() => usageCost({ ...q, model: "unreviewed" }, { input_tokens: 100, output_tokens: 10 }));
+});
+test("production image policy refuses unbounded or unreviewed parameters", () => {
+  for (const patch of [
+    { model: "gpt-image-2" }, { n: 2 }, { n: "1" }, { quality: "auto" }, { size: "auto" },
+    { prompt: {} }, { prompt: " " }, { image: "input" }, { mask: "input" },
+    { stream: true }, { partial_images: 3 }, { tools: [] }, { background: "transparent" },
+    { output_format: "jpeg" }, { moderation: "low" }
+  ]) assert.throws(() => quoteAI("image", { ...productionImage, ...patch }, date), e => e.code === "unreviewed_provider_payload");
+});
+test("published Image 1 shutdown stops new reservations without blocking settlement or text", () => {
+  const q = quoteAI("image", productionImage, new Date("2026-10-22T23:59:59Z"));
+  assert.throws(() => quoteAI("image", productionImage, new Date("2026-10-23T00:00:00Z")), e => e.code === "pricing_review_required");
+  assert.equal(usageCost(q, { input_tokens: 100, output_tokens: 6240 }), 300120);
+  assert.ok(quoteAI("text", text, new Date("2026-10-23T00:00:00Z")));
+  assert.ok(quoteAI("image", image, new Date("2026-10-23T00:00:00Z")));
 });
 test("full serialized payload including schema is priced; UTF-8 bytes are not character counts", () => {
   const q = quoteAI("text",{...text,instructions:"é".repeat(1000)},date);

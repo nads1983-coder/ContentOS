@@ -12,7 +12,7 @@ const directUrl=new URL(process.env.DATABASE_URL);
 directUrl.hostname=directUrl.hostname.replace("-pooler","");
 const pool=new Pool({connectionString:directUrl.href,max:8});
 const mocks={"server-only":{},"@/lib/db/client":{getPool:()=>pool,getDb:()=>drizzle(pool)}};
-const runtime={process:{env:{OPENAI_API_KEY:"isolated-mock-not-a-key",OPENAI_MODEL:"gpt-4.1"}}};
+const runtime={process:{env:{OPENAI_API_KEY:"isolated-mock-not-a-key",OPENAI_MODEL:"gpt-4.1",OPENAI_IMAGE_MODEL:"gpt-image-1"}}};
 const cache=new Map();
 const cost=loadTs("lib/ai-cost.ts",mocks,cache,runtime);
 const ledger=loadTs("lib/commercial-ledger.ts",mocks,cache,runtime);
@@ -20,7 +20,7 @@ const repository=loadTs("lib/postgres-repository.ts",mocks,cache,runtime);
 const ids=[],prefix=`commercial-test-${randomUUID()}`;
 let configBefore;
 const q=cost.quoteAI("text",{model:"gpt-4.1",input:"synthetic",max_output_tokens:24000});
-const qi=cost.quoteAI("image",{model:"gpt-image-1.5",prompt:"synthetic",n:1,quality:"high",size:"1536x1024"});
+const qi=cost.quoteAI("image",{model:"gpt-image-1",prompt:"synthetic",n:1,quality:"high",size:"1536x1024"});
 const reserve=(id,key,quote=q)=>ledger.reserveCommercial(id,key,quote,data=>({data:{...data,last_synthetic_reservation:key},result:{status:"reserved"}}));
 const finish=(id,key,quote=q,delivered=false)=>ledger.finishCommercial(id,key,quote,delivered,data=>({data,result:null}));
 const row=async(id,key)=> (await pool.query("SELECT * FROM contentos_app.ai_spend_requests WHERE account_id=$1 AND request_id=$2",[id,key])).rows[0];
@@ -57,12 +57,12 @@ try {
     } finally {await c.query("ROLLBACK");c.release();}
   });
   await check("cross-instance concurrent final global reservation admits exactly one",async()=>{
-    const a=await account(),b=await account();await opening(30_000_000-q.maximum);
+    const a=await account(),b=await account();await opening(30_000_000-qi.maximum);
     const other=loadTs("lib/commercial-ledger.ts",mocks,new Map(),runtime);
-    const results=await Promise.allSettled([reserve(a,"last-a"),other.reserveCommercial(b,"last-b",q,data=>({data,result:{status:"reserved"}}))]);
+    const results=await Promise.allSettled([reserve(a,"last-a",qi),other.reserveCommercial(b,"last-b",qi,data=>({data,result:{status:"reserved"}}))]);
     assert.equal(results.filter(r=>r.status==="fulfilled").length,1);
     const admitted=results[0].status==="fulfilled"?a:b,key=admitted===a?"last-a":"last-b";
-    await finish(admitted,key);assert.equal((await row(admitted,key)).accounted_microgbp,"0");await opening();
+    await finish(admitted,key,qi);assert.equal((await row(admitted,key)).accounted_microgbp,"0");await opening();
   });
   await check("lost dispatch acknowledgement retains full cost and rejects duplicate dispatch across instances",async()=>{
     const a=await account();await reserve(a,"lost-call");await ledger.dispatchCommercial(a,"lost-call",q);
@@ -134,10 +134,11 @@ try {
       "@/lib/auth":{getCurrentUser:async()=>({id:a,email:`${a}@example.invalid`})},
       "@/lib/backend":{isDatabaseConfigured:()=>true},"@/lib/env":{isStripeConfigured:()=>false},
       "@/lib/request-security":{rejectUnsafeWrite:()=>null}
-    },new Map(),{...runtime,fetch:async()=>{calls++;if(fail)throw new Error("Synthetic provider uncertainty");return Response.json({data:[{b64_json:PNG}],usage:{input_tokens:100,output_tokens:100}});}});
+    },new Map(),{...runtime,fetch:async(_url,init)=>{assert.equal(JSON.parse(init.body).model,"gpt-image-1");calls++;if(fail)throw new Error("Synthetic provider uncertainty");return Response.json({data:[{b64_json:PNG}],usage:{input_tokens:100,output_tokens:100}});}});
     const send=body=>route.POST(new Request("https://test.invalid/api/generate-image",{method:"POST",headers:{"X-ContentOS-Account":a},body:JSON.stringify(body)}));
     const body=imageInput({requestId:randomUUID()});assert.equal((await send(body)).status,200);assert.equal((await send(body)).status,200);assert.equal(calls,1);
     assert.equal((await row(a,body.requestId)).delivered,true);
+    assert.equal(Number((await row(a,body.requestId)).accounted_microgbp),5400);
     fail=true;const failed=imageInput({requestId:randomUUID(),outputText:"Another isolated synthetic draft for a provider uncertainty check."});
     const response=await send(failed);assert.equal(response.status,200);assert.equal((await response.json()).creditCharged,false);
     const state=await row(a,failed.requestId);assert.equal(state.state,"uncertain");assert.equal(Number(state.accounted_microgbp),Number(state.reserved_microgbp));

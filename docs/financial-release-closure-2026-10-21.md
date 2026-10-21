@@ -1,5 +1,10 @@
 # Financial release closure: 21 October 2026
 
+**Later follow-up:** the targeted image pricing defect below is now fixed and
+tested. See [final compatibility and cutover report](final-image-compatibility-2026-10-21.md)
+for current status, the provider's 23 October Image 1 shutdown and final billing
+requirements. The following preserves the earlier inspection evidence.
+
 **BLOCKED - IMAGE COST POLICY MISMATCH AND OPENING EXPOSURE.** Financial evidence
 checked at 14:14 UTC; configuration/project-scope follow-up at 14:31 UTC on
 21 October. The owner-authorized configuration-only Preview completed and was

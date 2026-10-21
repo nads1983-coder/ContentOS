@@ -95,7 +95,7 @@ export function createImageHarness(options = {}) {
     "next/server": { NextResponse: Response }
   };
   const runtime = {
-    process: { env: options.noKey ? {} : { OPENAI_API_KEY: "offline-test-placeholder" } },
+    process: { env: options.noKey ? {} : { OPENAI_API_KEY: "offline-test-placeholder", ...(options.model ? { OPENAI_IMAGE_MODEL: options.model } : {}) } },
     console: { warn: (...args) => warnings.push(args) },
     fetch: async (url, init) => {
       calls.push("provider");

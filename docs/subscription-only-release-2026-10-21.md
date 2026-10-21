@@ -2,6 +2,11 @@
 
 ## Scope and current status
 
+**Latest:** [Final image compatibility and cutover report](final-image-compatibility-2026-10-21.md).
+The image-policy mismatch described below is resolved; final cutover expenditure
+and the provider's 23 October Image 1 shutdown require owner action. Earlier
+technical evidence is retained below.
+
 **BLOCKED - EXACT OWNER ACTION REQUIRED.** The application checks below remain
 valid. The [financial closure update](financial-release-closure-2026-10-21.md)
 resolves all three legacy reservations. The authorized configuration-only Preview
