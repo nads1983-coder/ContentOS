@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto";
 
 export const COST_POLICY = {
-  version: "2026-10-21-v2", expires: "2026-11-19T00:00:00Z",
+  version: "2026-10-21-v3", expires: "2026-11-19T00:00:00Z",
   monthly: 30_000_000, textBytes: 128_000, imageBytes: 16_000
 } as const;
+export const DEFAULT_IMAGE_MODEL = "gpt-image-2.5-flare-2026-09-08";
 export class AICapacityError extends Error {
   readonly status = 503;
   constructor(public readonly code: string, message = "AI generation capacity is temporarily unavailable. Your saved content and unused credits are unchanged.") {
@@ -12,6 +13,7 @@ export class AICapacityError extends Error {
 }
 export type CostQuote = { version: string; kind: "text" | "image"; model: string; hash: string; inputBound: number; outputBound: number; maximum: number };
 function imageOutputRate(model: string): number {
+  if (model === DEFAULT_IMAGE_MODEL || model === "gpt-image-2.5-flare") return 30;
   if (model === "gpt-image-1") return 40;
   if (model === "gpt-image-1.5") return 32;
   throw new AICapacityError("unreviewed_provider_payload");
@@ -43,7 +45,8 @@ export function quoteAI(kind: CostQuote["kind"], payload: Record<string, unknown
         (payload.output_format !== undefined && payload.output_format !== "png") ||
         (payload.background !== undefined && payload.background !== "opaque") ||
         (payload.moderation !== undefined && payload.moderation !== "auto")) throw new AICapacityError("unreviewed_provider_payload");
-    // Both reviewed models use at most 6,240 high-quality output tokens; round up.
+    // Legacy maximum 6,240; Flare's official calculator estimates 1,756 square /
+    // 1,372 portrait or landscape. Retain the larger reserve as a safety margin.
     outputBound = 6250; usd = inputBound * 5 + outputBound * outputRate;
   }
   return { version: COST_POLICY.version, kind, model, hash: createHash("sha256").update(serialized).digest("hex"), inputBound, outputBound, maximum: conservativeGBP(usd) };

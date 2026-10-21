@@ -8,11 +8,11 @@ const creditCount = h => Object.values(h.data.image_generation_usage_json ?? {})
 const different = n => imageInput({ requestId: requestId(n), outputText: `Distinct original source ${n}` });
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 
-test("production image model preserves payload, rendering and exactly-once usage", async () => {
+test("replacement default image model preserves payload, rendering and exactly-once usage", async () => {
   for (const [format, size] of [["square", "1024x1024"], ["landscape", "1536x1024"], ["portrait", "1024x1536"], ["vertical", "1024x1536"]]) {
-    const h = createImageHarness({ model: "gpt-image-1", provider: async (_url, init) => {
+    const h = createImageHarness({ provider: async (_url, init) => {
       const payload = JSON.parse(init.body);
-      assert.equal(payload.model, "gpt-image-1");
+      assert.equal(payload.model, "gpt-image-2.5-flare-2026-09-08");
       assert.equal(payload.size, size);
       assert.equal(payload.quality, "high");
       assert.equal(payload.output_format, "png");

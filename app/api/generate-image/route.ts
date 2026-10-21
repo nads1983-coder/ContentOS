@@ -19,7 +19,7 @@ import {
 } from "@/lib/image-generation-contract";
 import type { ImageGenerationInput, ImageGenerationResult } from "@/lib/image-generation-contract";
 import type { ImageAdmission } from "@/lib/image-generation-reservation";
-import { AICapacityError, quoteAI } from "@/lib/ai-cost";
+import { AICapacityError, DEFAULT_IMAGE_MODEL, quoteAI } from "@/lib/ai-cost";
 import type { CostQuote } from "@/lib/ai-cost";
 import { dispatchCommercial, settleCommercialUsage } from "@/lib/commercial-ledger";
 
@@ -53,7 +53,7 @@ export async function POST(request: Request) {
   let admission: ImageAdmission;
   let quote: CostQuote | undefined;
   const payload = {
-    model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5", prompt: buildTextlessBackgroundPrompt(input),
+    model: process.env.OPENAI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL, prompt: buildTextlessBackgroundPrompt(input),
     n: 1, size: socialImageModelSize(input.format), quality: "high",
     output_format: "png", background: "opaque", moderation: "auto"
   };

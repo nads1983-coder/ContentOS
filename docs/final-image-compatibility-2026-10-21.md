@@ -1,5 +1,8 @@
 # Final subscription-only image compatibility correction
 
+Superseded for release decisions by [final production preparation](final-production-preparation-2026-10-21.md),
+which adds the approved Flare replacement, fresh billing exports and recovery point.
+
 ## Verdict
 
 The code compatibility defect is resolved. **BLOCKED - external model availability
