@@ -37,7 +37,7 @@ function harness(overrides = {}) {
       state.calls.push({ body: JSON.parse(options.body), headers: options.headers });
       if (state.wait) await state.wait;
       if (state.throwNetwork) throw new Error("Network response lost");
-      return { ok: state.response.ok, json: async () => state.response.data };
+      return { ok: state.response.ok, status: state.response.status, json: async () => state.response.data };
     }
   };
   Object.assign(context, overrides);
@@ -123,6 +123,17 @@ test("image UI double-click is guarded synchronously and terminal failure permit
   h.state.wait = null;
   await h.action();
   assert.notEqual(h.state.calls[1].body.requestId, h.state.calls[0].body.requestId);
+});
+
+test("gateway object errors show a readable message and retain the recovery request ID", async () => {
+  const h = harness();
+  h.state.response = { ok: false, status: 403, data: { error: { code: "403", message: "Forbidden" } } };
+  await h.action();
+  assert.match(h.state.errors.at(-1), /environment is blocking image generation/);
+  assert.doesNotMatch(h.state.errors.at(-1), /object Object/);
+  await h.action();
+  assert.deepEqual(h.state.calls[0], h.state.calls[1]);
+  assert.deepEqual(h.state.images, {});
 });
 
 test("image UI discards success and failure results after an account switch", async () => {

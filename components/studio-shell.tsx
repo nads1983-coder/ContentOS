@@ -1066,7 +1066,7 @@ export function StudioShell({
         creditCharged?: boolean;
         warning?: string;
         createdAt?: string;
-        error?: string;
+        error?: unknown;
         code?: string;
       };
       if (activeAccount.current !== accountId) return;
@@ -1075,7 +1075,9 @@ export function StudioShell({
         // Only terminal failures permit a fresh ID on the next explicit click.
         // Pending, network errors and uncertain saves must keep the original ID.
         if (data.code === "request_failed" || data.code === "request_expired") imageRequestAttempt.current = null;
-        throw new Error(data.error ?? "Image generation failed. Try again.");
+        throw new Error(typeof data.error === "string" ? data.error : response.status === 403
+          ? "This environment is blocking image generation. Your content is unchanged."
+          : "Image generation could not be confirmed. Your content is unchanged; retrying checks the same request.");
       }
 
       imageRequestAttempt.current = null;

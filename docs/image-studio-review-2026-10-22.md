@@ -4,7 +4,7 @@
 
 Based on released main `81f8bfeb7f1b94d16f14030e2ce9d782bf60851c`.
 Feature branch: `feat/brand-aligned-image-studio`. Production is unchanged.
-No database migration, new dependency, service, credential, billing change or paid AI call.
+No database migration, new dependency, service, production credential change, billing change or paid AI call. Review-only synthetic accounts and a Preview-only session-signing secret use existing isolated infrastructure.
 
 - Auto selects typography, imagery or mixed composition using bounded local rules.
 - Image creates full-frame imagery without a mandatory caption/branding overlay.
@@ -32,15 +32,21 @@ Text rendering and local edits cost GBP0 in provider usage. Image/mixed modes us
 
 ## Executed verification
 
-- `npm test`: **226 passed**, including account/session isolation, billing/Founder/owner protections, image quota/races/replay/failures and commercial-cost tests.
-- Final targeted image/client/route suite: **39 passed** after the typography and image-failure edge-case changes.
+- `npm test`: **227 passed**, including account/session isolation, billing/Founder/owner protections, image quota/races/replay/failures and commercial-cost tests.
+- Final targeted image/client/route suite: **40 passed**, including readable gateway rejections that preserve recovery request IDs.
 - `npm run typecheck`: passed.
 - `npm run lint`: passed.
 - `npm run build`: passed; no test fixture route in the production build.
 - `git diff --check`: passed.
 - `npm audit --omit=dev`: **0 production advisories**. Existing development-tool advisories were not changed by this dependency-free feature.
 - Local browser checks: **1440, 768 and 390 px**, four modes, edit/apply/undo, PNG download, IndexedDB reload and a second isolated account. **0 page exceptions**, no horizontal overflow. Four mocked application requests, three mocked imagery responses, **0 paid calls**. All external browser requests were blocked by the test harness.
-- No live customer accounts, provider requests or Stripe transactions were used. Database behavior is exercised through the actual route/repository code with locked mocked persistence; no new live Neon test is claimed.
+- No live customer accounts, provider requests or Stripe transactions were used. Nine real isolated-Neon concurrency, last-credit, replay, account-isolation and recovery checks passed. The integration command exited 1 during cleanup: the runtime role correctly lacks DELETE permission; eight synthetic profiles remain only in the existing isolated branch. No grants were broadened and no production rows were touched.
+
+## Protected Preview
+
+The feature Preview uses branch-specific isolated Neon configuration and synthetic review accounts. OpenAI, Stripe and mail credentials are disabled. SSO remains enabled. Real Better Auth login and session lookup succeeded. The authenticated image POST was refused by the existing project firewall before application execution: `Block AI dispatch on noncanonical deployments` denies `/api/generate` and `/api/generate-image` outside `getcontentos.co` to protect older uncapped deployments.
+
+No firewall change was made without approval. The PR records the latest Preview verification and any narrowly authorised exception. Until that deployed route check passes, do not call the hosted generation workflow verified. All four modes passed local browser tests with mocked transport. Gateway object errors now display a readable refusal rather than `[object Object]`.
 
 Evidence: [desktop](image-studio-evidence/studio-1440.png), [mobile](image-studio-evidence/studio-390.png), [exported text design](image-studio-evidence/text-design.png), [browser results](image-studio-evidence/result.json).
 
