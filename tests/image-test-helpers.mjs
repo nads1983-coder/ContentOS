@@ -38,7 +38,7 @@ export function createImageHarness(options = {}) {
   rows.set("other-user", profile({ id: "other-user" }));
   let queue = Promise.resolve(), failCommit = false;
   const h = {
-    calls, warnings, reads, rows, fault: options.fault, userId: options.anonymous ? null : "user-test",
+    calls, warnings, reads, rows, commercial: [], fault: options.fault, userId: options.anonymous ? null : "user-test",
     provider: options.provider ?? (async () => Response.json({ data: [{ b64_json: PNG }] })),
     get data() { return rows.get("user-test"); },
     set data(value) { rows.set("user-test", value); }
@@ -85,7 +85,7 @@ export function createImageHarness(options = {}) {
   };
   const mocks = {
     // Budget/transaction integration is exercised against isolated Neon separately.
-    "@/lib/commercial-ledger": { dispatchCommercial: async () => {}, settleCommercialUsage: async () => {} },
+    "@/lib/commercial-ledger": { dispatchCommercial: async () => { h.commercial.push("dispatch"); }, settleCommercialUsage: async () => { h.commercial.push("settle"); } },
     "server-only": {}, "drizzle-orm": { sql, eq: (column, value) => column === "email" ? { email: value } : value },
     "@/lib/db/client": { getDb: () => db }, "@/lib/db/app-schema": { profiles: { id: "id", email: "email", data: sql.raw('"profiles"."data"') } },
     "@/lib/request-security": { rejectUnsafeWrite: () => options.unsafe ? Response.json({ error: "Unsafe" }, { status: 403 }) : null },

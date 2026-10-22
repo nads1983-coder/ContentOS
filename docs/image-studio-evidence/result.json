@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "modes": 4,
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "mockedRequests": 4,
+  "mockedProviderCalls": 3,
+  "paidCalls": 0,
+  "editing": true,
+  "undo": true,
+  "pngExport": true,
+  "deviceReload": true,
+  "accountIsolation": true,
+  "pageErrors": []
+}

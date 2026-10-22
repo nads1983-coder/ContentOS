@@ -1,3 +1,6 @@
+import { renderDesignSvg } from "@/lib/image-design";
+import type { ImageMode, ImageDesign } from "@/lib/image-design";
+
 export type SocialImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";
 export type SocialImageFormat = "square" | "landscape" | "portrait" | "vertical";
 export type SocialImageTemplate =
@@ -21,6 +24,7 @@ export type SocialPosterContent = {
 };
 
 type BrandContext = {
+  industry?: string;
   brandName?: string;
   audience?: string;
   offer?: string;
@@ -31,7 +35,9 @@ type BrandContext = {
   contentTopic?: string;
 };
 
-type BuildPosterInput = {
+export type BuildPosterInput = {
+  mode?: ImageMode;
+  creativeInstructions?: string;
   outputText: string;
   platform: string;
   contentType: string;
@@ -41,6 +47,7 @@ type BuildPosterInput = {
 };
 
 type RenderPosterInput = {
+  design?: ImageDesign;
   content: SocialPosterContent;
   style: SocialImageStyle;
   format: SocialImageFormat;
@@ -303,6 +310,7 @@ function fallbackBackground(id: string, template: SocialImageTemplate) {
 
 export function renderSocialPosterSvg(input: RenderPosterInput) {
   const { width, height, label } = socialImageCanvasSize(input.format);
+  if (input.design) return { size: label, mimeType: "image/svg+xml", svg: renderDesignSvg(input.design, width, height, input.backgroundDataUrl) };
   const margin = Math.round(width * 0.08);
   const contentWidth = width - margin * 2;
   const isLandscape = input.format === "landscape";

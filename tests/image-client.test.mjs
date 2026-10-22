@@ -6,6 +6,7 @@ import { URL } from "node:url";
 import ts from "typescript";
 import { loadTs } from "./image-test-helpers.mjs";
 const { isImageContentType } = loadTs("lib/image-generation-contract.ts");
+const { boundDeviceImages } = loadTs("lib/image-device-store.ts");
 
 const source = readFileSync(new URL("../components/studio-shell.tsx", import.meta.url), "utf8");
 const ast = ts.createSourceFile("studio-shell.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -19,15 +20,17 @@ assert.ok(fn, "Use the actual image action from StudioShell");
 const compiled = ts.transpileModule(fn, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
 
 function harness(overrides = {}) {
-  const state = { calls: [], errors: [], images: {}, pending: false, response: { ok: true, data: { image: "data:image/svg+xml,test", creditCharged: true } } };
+  const state = { calls: [], errors: [], images: {}, pending: false, response: { ok: true, data: { image: "data:image/svg+xml;charset=utf-8,%3Csvg%3E", creditCharged: true } } };
   const context = {
     imageSection: { id: "section1", title: "Original title", platform: "LinkedIn", type: "linkedin" },
     imageInFlight: { current: false }, imageRequestAttempt: { current: null }, activeAccount: { current: "account1" },
     accountId: "account1", isProStudio: true, result: { source: "Original user source" },
     imageStyle: "premium", imageFormat: "square", brandName: "", audience: "", offer: "", writingStyle: "", contentGoal: "",
     imageBrandColors: "", imageVisualStyle: "", crypto: { randomUUID },
+    imageMode: "auto", imageInstructions: "", imageSource: overrides.result?.source ?? "Original user source", imageIndustry: "", imagePlatform: "",
     buildSectionCopyText: (_section, options) => options.sourceText, labelForContentType: () => "LinkedIn Post",
     formatSectionImageText: (_section, source) => source, isImageContentType,
+    boundDeviceImages,
     setImagePending: value => { state.pending = value; }, setImageError: value => state.errors.push(value),
     setGeneratedImages: updater => { state.images = updater(state.images); },
     fetch: async (_url, options) => {
@@ -53,7 +56,7 @@ test("image UI sends account header and UUID; ambiguous saves and network errors
   await h.action();
   assert.deepEqual(h.state.calls[1], first);
   h.state.throwNetwork = false;
-  h.state.response = { ok: true, data: { image: "data:image/svg+xml,test", creditCharged: false } };
+  h.state.response = { ok: true, data: { image: "data:image/svg+xml;charset=utf-8,%3Csvg%3E", creditCharged: false } };
   await h.action();
   assert.deepEqual(h.state.calls[2], first);
   assert.equal(h.context.imageRequestAttempt.current, null);
