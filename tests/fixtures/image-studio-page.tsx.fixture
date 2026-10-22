@@ -1,0 +1,6 @@
+import { StudioShell } from "@/components/studio-shell";
+import { buildUsageSummary } from "@/lib/usage";
+export default async function Page({searchParams}: {searchParams: Promise<{account?: string}>}) {
+  const {account} = await searchParams;
+  return <StudioShell initialPlan="pro_studio" accountId={account === "two" ? "image-test-two" : "image-test-account"} authenticated initialUsage={buildUsageSummary("pro_studio",0)} />;
+}

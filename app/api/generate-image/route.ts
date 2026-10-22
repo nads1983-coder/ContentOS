@@ -22,6 +22,7 @@ import type { ImageAdmission } from "@/lib/image-generation-reservation";
 import { AICapacityError, DEFAULT_IMAGE_MODEL, quoteAI } from "@/lib/ai-cost";
 import type { CostQuote } from "@/lib/ai-cost";
 import { dispatchCommercial, settleCommercialUsage } from "@/lib/commercial-ledger";
+import { buildCreativeBrief } from "@/lib/image-design";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -52,8 +53,13 @@ export async function POST(request: Request) {
 
   let admission: ImageAdmission;
   let quote: CostQuote | undefined;
+  const brief = buildCreativeBrief(input);
+  if (input.mode !== undefined && brief.design.mode !== "image" && !brief.design.headline && !brief.design.body) {
+    return NextResponse.json({ error: "Add the words for your graphic in Content, or specify Headline: in your instructions.", code: "missing_visual_copy" }, { status: 400, headers });
+  }
+  const needsProvider = input.mode === undefined || brief.design.mode !== "text";
   const payload = {
-    model: process.env.OPENAI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL, prompt: buildTextlessBackgroundPrompt(input),
+    model: process.env.OPENAI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL, prompt: input.mode === undefined ? buildTextlessBackgroundPrompt(input) : brief.prompt,
     n: 1, size: socialImageModelSize(input.format), quality: "high",
     output_format: "png", background: "opaque", moderation: "auto"
   };
@@ -74,7 +80,7 @@ export async function POST(request: Request) {
         // Stored entitlement is checked fail-closed by the reservation transaction.
       }
     }
-    quote = process.env.OPENAI_API_KEY ? quoteAI("image", payload) : undefined;
+    quote = needsProvider && process.env.OPENAI_API_KEY ? quoteAI("image", payload) : undefined;
     admission = await reserveImageGeneration(user.id, input, quote);
   } catch (error) {
     if (error instanceof AICapacityError) return NextResponse.json({ error: error.message, code: error.code, requestId: input.requestId }, { status: error.status, headers });
@@ -93,7 +99,7 @@ export async function POST(request: Request) {
     const content = buildSocialPosterContent(input);
     let backgroundDataUrl: string | undefined;
     let warning: string | undefined;
-    if (process.env.OPENAI_API_KEY) {
+    if (needsProvider && process.env.OPENAI_API_KEY) {
       try {
         if (!quote) throw new AICapacityError("missing_cost_reservation");
         await dispatchCommercial(user.id, input.requestId, quote);
@@ -116,13 +122,16 @@ export async function POST(request: Request) {
       } catch {
         warning = "The AI background request did not complete. A template background was used. No successful image credit was recorded. An uncertain request may remain reserved until reviewed.";
       }
-    } else {
+    } else if (needsProvider) {
       warning = "AI backgrounds are not configured. A template background was used. No image credit was used.";
     }
     if (request.signal.aborted) throw new Error("Image request cancelled.");
+    if (brief.design.mode === "image" && !backgroundDataUrl) throw new Error("Original imagery unavailable; no blank image is delivered.");
     const render = (): ImageGenerationResult => {
-      const rendered = renderSocialPosterSvg({ content, style: input.style, format: input.format, backgroundDataUrl });
+      const design = input.mode === undefined ? undefined : { ...brief.design, ...(!backgroundDataUrl ? { mode: "text" as const } : {}) };
+      const rendered = renderSocialPosterSvg({ content, design, style: input.style, format: input.format, backgroundDataUrl });
       return validateImageResult({
+        ...(design ? { design } : {}),
         image: svgToDataUrl(rendered.svg), mimeType: rendered.mimeType, size: rendered.size,
         style: input.style, format: input.format, template: content.template,
         imageCreditsLimit: IMAGE_LIMITS.monthlyCredits, creditCharged: Boolean(backgroundDataUrl),
@@ -133,6 +142,7 @@ export async function POST(request: Request) {
     try { result = render(); }
     catch (error) {
       if (!backgroundDataUrl || !(error instanceof ImageGenerationError) || error.code !== "image_result_too_large") throw error;
+      if (input.mode !== undefined && brief.design.mode === "image") throw error;
       backgroundDataUrl = undefined;
       warning = "The AI background was too large to save safely. A template background was used. No image credit was used.";
       result = render();

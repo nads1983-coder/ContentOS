@@ -1,4 +1,6 @@
 import type { SocialImageFormat, SocialImageStyle, SocialImageTemplate } from "@/lib/social-image";
+import { IMAGE_MODES, normaliseDesign, imageCopy } from "@/lib/image-design";
+import type { ImageMode, ImageDesign } from "@/lib/image-design";
 
 export const IMAGE_STYLES = ["minimal", "premium", "corporate", "bold", "dark", "modern"] as const;
 export const IMAGE_FORMATS = ["square", "landscape", "portrait", "vertical"] as const;
@@ -24,6 +26,8 @@ export class ImageGenerationError extends Error {
 }
 
 export type ImageGenerationInput = {
+  mode?: ImageMode;
+  creativeInstructions?: string;
   requestId: string;
   outputText: string;
   platform: string;
@@ -31,12 +35,14 @@ export type ImageGenerationInput = {
   style: SocialImageStyle;
   format: SocialImageFormat;
   brandContext: {
+    industry?: string;
     brandName: string; audience: string; offer: string; writingStyle: string;
     contentGoal: string; brandColors: string; visualStyle: string; contentTopic: string;
   };
 };
 
 export type ImageGenerationResult = {
+  design?: ImageDesign;
   image: string;
   mimeType: "image/svg+xml";
   size: string;
@@ -79,13 +85,20 @@ export function normalizeImageRequest(value: unknown): ImageGenerationInput {
   if (!isImageContentType(contentType)) {
     throw new ImageGenerationError("Hashtag and keyword sets are caption text. Choose a post or caption to create an image.", 400, "non_visual_content");
   }
+  if (value.mode !== undefined && !imageCopy(text(value.outputText, 2600, true)).trim()) {
+    throw new ImageGenerationError("Add a message or visual idea, not just hashtags or keywords.");
+  }
   return {
     requestId: validateImageRequestId(value.requestId),
+    // Omitted fields stay omitted so pre-upgrade request fingerprints still replay.
+    ...(value.mode !== undefined ? { mode: option(value.mode, IMAGE_MODES, "auto") } : {}),
+    ...(value.creativeInstructions !== undefined ? { creativeInstructions: text(value.creativeInstructions, 600) } : {}),
     outputText: text(value.outputText, 2600, true),
     platform: text(value.platform, 80), contentType,
     style: option(value.style, IMAGE_STYLES, "premium"),
     format: option(value.format, IMAGE_FORMATS, "square"),
     brandContext: {
+      ...(brand.industry !== undefined ? { industry: text(brand.industry, 180) } : {}),
       brandName: text(brand.brandName, 140), audience: text(brand.audience, 220),
       offer: text(brand.offer, 220), writingStyle: text(brand.writingStyle, 180),
       contentGoal: text(brand.contentGoal, 180), brandColors: text(brand.brandColors, 180),
@@ -152,6 +165,7 @@ export function validateImageResult(value: unknown): ImageGenerationResult {
     throw new ImageGenerationError("Invalid image result.", 502, "invalid_image_result");
   }
   const result: ImageGenerationResult = {
+    ...(value.design !== undefined ? { design: normaliseDesign(value.design) } : {}),
     image: value.image, mimeType: "image/svg+xml", size: value.size as string,
     style: value.style as SocialImageStyle, format: value.format as SocialImageFormat,
     template: value.template as SocialImageTemplate, imageCreditsLimit: IMAGE_LIMITS.monthlyCredits,

@@ -9,6 +9,7 @@ import {
 } from "@/lib/image-generation-contract";
 import type { ImageGenerationInput, ImageGenerationResult } from "@/lib/image-generation-contract";
 import type { UserProfile } from "@/types/saas";
+import { buildCreativeBrief } from "@/lib/image-design";
 
 export const IMAGE_RETENTION = {
   replayMs: 24 * 60 * 60 * 1000,
@@ -29,6 +30,7 @@ type Reservation = {
   createdAt: string; periodStart: string; periodEnd: string;
   style: ImageGenerationInput["style"]; format: ImageGenerationInput["format"];
   completedAt?: string; result?: ImageGenerationResult;
+  deterministic?: boolean;
 };
 type Tombstone = { fingerprint: string; status: "completed" | "failed" | "expired" };
 type Ledger = { entries: Reservation[]; tombstones: Record<string, Tombstone> };
@@ -185,11 +187,13 @@ export function reserveImageInProfile(data: Document, userId: string, input: Ima
   }
   const { periodStart, periodEnd } = currentUsageWindow(now, hasLifetimeEntitlement(data) ? null : data.subscription_current_period_end);
   const used = usedInWindow(data, userId, periodStart, periodEnd);
-  const reservedInWindow = pending.filter(entry => Date.parse(entry.createdAt) >= Date.parse(periodStart) && Date.parse(entry.createdAt) < Date.parse(periodEnd)).length;
-  if (used + reservedInWindow >= IMAGE_LIMITS.monthlyCredits) throw new ImageGenerationError("You have used this month's Pro Studio image credits.", 429, "image_quota_exceeded");
+  const deterministic = input.mode !== undefined && buildCreativeBrief(request).design.mode === "text";
+  const reservedInWindow = pending.filter(entry => !entry.deterministic && Date.parse(entry.createdAt) >= Date.parse(periodStart) && Date.parse(entry.createdAt) < Date.parse(periodEnd)).length;
+  if (!deterministic && used + reservedInWindow >= IMAGE_LIMITS.monthlyCredits) throw new ImageGenerationError("You have used this month's Pro Studio image credits.", 429, "image_quota_exceeded");
   ledger.entries.push({
     requestId: request.requestId, fingerprint, status: "reserved", createdAt: now.toISOString(),
-    periodStart, periodEnd, style: request.style, format: request.format
+    periodStart, periodEnd, style: request.style, format: request.format,
+    ...(deterministic ? { deterministic: true } : {})
   });
   return {
     data: {
@@ -209,6 +213,7 @@ export function completeImageInProfile(data: Document, userId: string, requestId
   if (!entry || entry.fingerprint !== fingerprint) throw new ImageGenerationError("Image reservation does not match.", 409, "reservation_mismatch");
   if (entry.status === "completed") return { data: withLedger(data, ledger), result: validateImageResult(entry.result) };
   const clean = validateImageResult(result);
+  if (entry.deterministic && clean.creditCharged) throw new ImageGenerationError("Text-only designs cannot consume image credits.", 502, "invalid_image_result");
   if (clean.style !== entry.style || clean.format !== entry.format) throw new ImageGenerationError("Image result does not match the reserved format.", 502, "invalid_image_result");
   const used = usedInWindow(data, userId, entry.periodStart, entry.periodEnd);
   const completed: Reservation = { ...entry, status: "completed", completedAt: now.toISOString(), result: clean };

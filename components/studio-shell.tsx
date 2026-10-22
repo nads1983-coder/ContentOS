@@ -50,6 +50,11 @@ import {
 } from "@/lib/copy";
 import { formatOutputSection, formatSectionImageText, OutputBlock } from "@/lib/output-format";
 import { isImageContentType } from "@/lib/image-generation-contract";
+import { IMAGE_MODES, backgroundFromDesignImage, buildCreativeBrief, normaliseDesign } from "@/lib/image-design";
+import type { ImageMode, ImageDesign } from "@/lib/image-design";
+import { buildSocialPosterContent, renderSocialPosterSvg, svgToDataUrl } from "@/lib/social-image";
+import { boundDeviceImages, readDeviceImages, saveDeviceImages } from "@/lib/image-device-store";
+import { ImageDesignEditor } from "@/components/image-design-editor";
 import { cleanPlainText } from "@/lib/text-normalize";
 import {
   ctaModes,
@@ -317,6 +322,7 @@ type ImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "moder
 type ImageFormat = "square" | "landscape" | "portrait" | "vertical";
 
 type GeneratedImage = {
+  design?: ImageDesign;
   image: string;
   mimeType?: string;
   size: string;
@@ -519,11 +525,24 @@ export function StudioShell({
   const [imageSection, setImageSection] = useState<GeneratedSection | null>(null);
   const [imageStyle, setImageStyle] = useState<ImageStyle>("premium");
   const [imageFormat, setImageFormat] = useState<ImageFormat>("square");
-  const [imageBrandColors, setImageBrandColors] = useState("Deep black, royal purple, refined gold, warm off-white");
-  const [imageVisualStyle, setImageVisualStyle] = useState("Premium dark SaaS editorial, clean depth, modern creator/business aesthetic");
+  const [imageMode, setImageMode] = useState<ImageMode>("auto");
+  const [imageInstructions, setImageInstructions] = useState("");
+  const [imageSource, setImageSource] = useState("");
+  const [imageIndustry, setImageIndustry] = useState("");
+  const [imagePlatform, setImagePlatform] = useState("LinkedIn");
+  const [imageBrandColors, setImageBrandColors] = useState("");
+  const [imageVisualStyle, setImageVisualStyle] = useState("");
   const [imagePending, setImagePending] = useState(false);
   const [imageError, setImageError] = useState("");
   const [generatedImages, setGeneratedImages] = useState<Record<string, GeneratedImage>>({});
+  const [imageStorageAccount, setImageStorageAccount] = useState<string | null>(null);
+  const imageUndo = useRef<GeneratedImage | null>(null);
+  useEffect(() => {
+    if (!accountId || imageStorageAccount !== accountId || !authenticated) return;
+    void saveDeviceImages(accountId, generatedImages).catch(() => {
+      if (activeAccount.current === accountId) setImageError("Device storage is unavailable. Download your design to keep it.");
+    });
+  }, [generatedImages, imageStorageAccount, accountId, authenticated]);
   const outputWorkspaceRef = useRef<HTMLElement | null>(null);
   const pendingAutoScrollIdRef = useRef("");
   const lastAutoScrolledIdRef = useRef("");
@@ -543,6 +562,12 @@ export function StudioShell({
       setGeneratedImages({});
       setImageSection(null);
       setImageError("");
+      setImageStorageAccount(null);
+      setImageSource(""); setImageInstructions(""); setImageIndustry("");
+      setImageBrandColors(""); setImageVisualStyle(""); imageUndo.current = null;
+      if (accountId && authenticated) void readDeviceImages<GeneratedImage>(accountId).then(images => {
+        if (!canceled) { setGeneratedImages(current => ({ ...images, ...current })); setImageStorageAccount(accountId); }
+      }).catch(() => { if (!canceled) setImageError("Device designs could not be loaded. Downloads remain available."); });
       retryIntent.current = null;
       const nextStore = readStore(accountId);
       let storedTone: ToneId | null = null;
@@ -998,14 +1023,17 @@ export function StudioShell({
     try {
       // The image uses a bounded excerpt; the original section and preferences stay intact.
       const excerpt = (value: string, limit: number) => value.trim().slice(0, limit);
-      const outputText = excerpt(formatSectionImageText(section, result.source), 2600);
+      const outputText = excerpt(imageSource || imageInstructions, 2600);
       const payload = {
         outputText,
-        platform: excerpt(section.platform, 80),
+        mode: imageMode,
+        creativeInstructions: excerpt(imageInstructions, 600),
+        platform: excerpt(imagePlatform || section.platform, 80),
         contentType: excerpt(labelForContentType(section.type), 80),
         style: imageStyle,
         format: imageFormat,
         brandContext: {
+          industry: excerpt(imageIndustry, 180),
           brandName: excerpt(brandName, 140), audience: excerpt(audience, 220), offer: excerpt(offer, 220),
           writingStyle: excerpt(writingStyle, 180), contentGoal: excerpt(contentGoal, 180),
           brandColors: excerpt(imageBrandColors, 180),
@@ -1027,6 +1055,7 @@ export function StudioShell({
         body: JSON.stringify({ ...payload, requestId: attempt.id })
       });
       const data = (await response.json()) as {
+        design?: ImageDesign;
         image?: string;
         mimeType?: string;
         size?: string;
@@ -1037,7 +1066,7 @@ export function StudioShell({
         creditCharged?: boolean;
         warning?: string;
         createdAt?: string;
-        error?: string;
+        error?: unknown;
         code?: string;
       };
       if (activeAccount.current !== accountId) return;
@@ -1046,15 +1075,18 @@ export function StudioShell({
         // Only terminal failures permit a fresh ID on the next explicit click.
         // Pending, network errors and uncertain saves must keep the original ID.
         if (data.code === "request_failed" || data.code === "request_expired") imageRequestAttempt.current = null;
-        throw new Error(data.error ?? "Image generation failed. Try again.");
+        throw new Error(typeof data.error === "string" ? data.error : response.status === 403
+          ? "This environment is blocking image generation. Your content is unchanged."
+          : "Image generation could not be confirmed. Your content is unchanged; retrying checks the same request.");
       }
 
       imageRequestAttempt.current = null;
       const generatedImage = data.image;
 
-      setGeneratedImages((current) => ({
+      setGeneratedImages((current) => boundDeviceImages({
         ...current,
         [section.id]: {
+          design: data.design,
           image: generatedImage,
           mimeType: data.mimeType,
           size: data.size ?? "",
@@ -1078,6 +1110,17 @@ export function StudioShell({
     }
   }
 
+  function editImage(design: ImageDesign) {
+    if (!imageSection || imagePending || !accountId || activeAccount.current !== accountId) return;
+    const current = generatedImages[imageSection.id];
+    if (!current?.design) return;
+    imageUndo.current = current;
+    const input = { outputText: "", platform: imagePlatform, contentType: "", style: current.style, format: current.format, brandContext: {} };
+    const clean = normaliseDesign(design);
+    const rendered = renderSocialPosterSvg({ ...input, design: clean, content: buildSocialPosterContent(input), backgroundDataUrl: backgroundFromDesignImage(current.image) });
+    setGeneratedImages(images => ({ ...images, [imageSection.id]: { ...current, design: clean, image: svgToDataUrl(rendered.svg), createdAt: new Date().toISOString() } }));
+  }
+
   return (
     <main className="premium-studio min-h-screen w-full overflow-x-hidden pb-28 text-bone lg:pb-0">
       <TopBar
@@ -1091,6 +1134,14 @@ export function StudioShell({
         <DesktopRail onNavigate={handleRailAction} />
 
         <div className="w-full min-w-0 overflow-hidden space-y-4">
+          <div className="flex justify-end">
+            <button type="button" onClick={() => {
+              setImageSection({ id: `visual-${crypto.randomUUID()}`, type: "linkedin", title: "Original visual", platform: "LinkedIn", body: "", items: [] });
+              setImageSource(""); setImageError(""); imageUndo.current = null;
+            }} className="flex min-h-11 items-center gap-2 rounded border border-white/15 px-4 text-sm hover:border-violet">
+              <Wand2 size={16} /> Image Studio
+            </button>
+          </div>
           <section className="block w-full min-w-0 space-y-6 xl:grid xl:grid-cols-[minmax(20rem,0.8fr)_minmax(28rem,1.2fr)] xl:items-start xl:gap-8 xl:space-y-0">
             <StudioComposer
               id="composer"
@@ -1158,6 +1209,8 @@ export function StudioShell({
               onOpenImagePanel={(section) => {
                 if (!isImageContentType(section.type)) return;
                 setImageSection(section);
+                setImageSource(formatSectionImageText(section, result.source).slice(0, 2600));
+                setImagePlatform(section.platform); imageUndo.current = null;
                 setImageError("");
               }}
               onRegenerate={() => generateContent()}
@@ -1261,6 +1314,16 @@ export function StudioShell({
       </div>
 
       <ImageGenerationPanel
+        studio={{ mode: imageMode, instructions: imageInstructions, source: imageSource, industry: imageIndustry, platform: imagePlatform,
+          onMode: setImageMode, onInstructions: setImageInstructions, onSource: setImageSource, onIndustry: setImageIndustry, onPlatform: setImagePlatform,
+          onEdit: editImage, onUndo: () => {
+            if (!imageSection || !imageUndo.current || imagePending) return;
+            const previous = imageUndo.current; imageUndo.current = null;
+            setGeneratedImages(images => ({ ...images, [imageSection.id]: previous }));
+          }, canUndo: Boolean(imageUndo.current), saved: generatedImages, onOpenSaved: (id: string) => {
+            setImageSection({ id, type: "linkedin", title: "Saved visual", platform: imagePlatform, body: "", items: [] });
+            imageUndo.current = null;
+          } }}
         section={imageSection}
         plan={plan}
         style={imageStyle}
@@ -2212,7 +2275,15 @@ function OutputBlockLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+type ImageStudioControls = {
+  mode: ImageMode; instructions: string; source: string; industry: string; platform: string;
+  onMode: (mode: ImageMode) => void; onInstructions: (value: string) => void;
+  onSource: (value: string) => void; onIndustry: (value: string) => void; onPlatform: (value: string) => void;
+  onEdit: (design: ImageDesign) => void; onUndo: () => void; canUndo: boolean;
+  saved: Record<string, GeneratedImage>; onOpenSaved: (id: string) => void;
+};
 function ImageGenerationPanel({
+  studio,
   section,
   plan,
   style,
@@ -2229,6 +2300,7 @@ function ImageGenerationPanel({
   onVisualStyleChange,
   onGenerate
 }: {
+  studio: ImageStudioControls;
   section: GeneratedSection | null;
   plan: PlanId;
   style: ImageStyle;
@@ -2254,23 +2326,22 @@ function ImageGenerationPanel({
   }, [section]);
 
   const isProStudio = plan === "pro_studio";
+  const selectedMode = buildCreativeBrief({ mode: studio.mode, creativeInstructions: studio.instructions, outputText: studio.source,
+    platform: studio.platform, contentType: section?.type ?? "", style, format, brandContext: { visualStyle, brandColors } }).design.mode;
 
   return (
     <dialog ref={dialogRef} aria-labelledby="image-generation-title" onCancel={onClose} onClose={onClose}
-      className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-y-auto overscroll-contain rounded border border-white/10 bg-coal p-4 text-bone shadow-violet backdrop:bg-black/70 backdrop:backdrop-blur-sm sm:p-5"
+      className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-5xl overflow-y-auto overscroll-contain rounded border border-white/10 bg-coal p-4 text-bone shadow-violet backdrop:bg-black/70 backdrop:backdrop-blur-sm sm:p-5"
     >
       {section ? <div className="min-w-0">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
-              Image generation
+              {studio.platform}
             </p>
             <h2 id="image-generation-title" className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
-              Generate Visual
+              Image Studio
             </h2>
-            <p className="mt-2 text-sm leading-6 text-muted">
-              Create a branded social graphic from this {section.platform} output. Text is rendered separately for cleaner, publication-ready results.
-            </p>
           </div>
           <button
             type="button"
@@ -2302,35 +2373,30 @@ function ImageGenerationPanel({
             </div>
           </div>
         ) : (
-          <>
-            <div className="mt-5 grid gap-4">
-              <div className="rounded border border-gold/30 bg-gold/[0.08] p-3 text-xs leading-5 text-goldSoft">
-                AI is used for the background only. ContentOS renders every visible word with controlled typography, wrapping, and safe margins.
+          <div className="mt-5 grid items-start gap-6 md:grid-cols-2">
+            <div className="grid min-w-0 gap-4">
+              <div role="group" aria-label="Visual mode" className="grid grid-cols-4 gap-1 rounded border border-white/15 p-1">
+                {IMAGE_MODES.map(mode => <button key={mode} type="button" aria-pressed={studio.mode === mode} disabled={isPending}
+                  onClick={() => studio.onMode(mode)} className={clsx("min-h-11 rounded px-1 text-sm", studio.mode === mode ? "bg-violet text-white" : "text-muted hover:bg-white/10")}>
+                  {{ auto: "Auto", image: "Image", text: "Text", mixed: "Text + Image" }[mode]}
+                </button>)}
               </div>
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-                  Style
-                </p>
-                <div className="grid gap-2 sm:grid-cols-3">
-                  {imageStyles.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => onStyleChange(item.id)}
-                      disabled={isPending}
-                      aria-pressed={style === item.id}
-                      className={clsx(
-                        "min-h-11 rounded border px-3 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60",
-                        style === item.id
-                          ? "border-gold/70 bg-gold/10 text-bone"
-                          : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
-                      )}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
+              <p aria-live="polite" className="text-xs text-muted">{selectedMode === "text" ? "Text design · No AI image credit" : `${selectedMode === "mixed" ? "Text + Image" : "Image"} · 1 AI image credit on success`}</p>
+              <label className="grid gap-2 text-sm">Content
+                <textarea aria-label="Image content" rows={3} maxLength={2600} value={studio.source} disabled={isPending} onChange={e => studio.onSource(e.target.value)} className="rounded border border-white/15 bg-ink p-3" />
+              </label>
+              <label className="grid gap-2 text-sm">Creative instructions
+                <textarea rows={2} maxLength={600} value={studio.instructions} disabled={isPending} onChange={e => studio.onInstructions(e.target.value)} placeholder="A luxury beauty graphic in cream and gold" className="rounded border border-white/15 bg-ink p-3" />
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="grid gap-2 text-sm">Platform<select value={studio.platform} disabled={isPending} onChange={e => studio.onPlatform(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3">
+                  {[...new Set([studio.platform, "LinkedIn", "Instagram", "Facebook", "TikTok", "YouTube", "X", "Pinterest", "Blog"])].map(p => <option key={p}>{p}</option>)}
+                </select></label>
+                <label className="grid gap-2 text-sm">Industry / niche<input value={studio.industry} maxLength={180} disabled={isPending} onChange={e => studio.onIndustry(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3" /></label>
               </div>
+              <label className="grid gap-2 text-sm">Style<select value={style} disabled={isPending} onChange={e => onStyleChange(e.target.value as ImageStyle)} className="min-h-11 rounded border border-white/15 bg-ink px-3">
+                {imageStyles.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
+              </select></label>
 
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
@@ -2369,7 +2435,7 @@ function ImageGenerationPanel({
                     disabled={isPending}
                     onChange={(event) => onBrandColorsChange(event.target.value)}
                     className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
-                    placeholder="Deep black, violet, gold, off-white"
+                    placeholder="White, teal or #ffffff, #087e83"
                   />
                 </label>
                 <label className="grid gap-2">
@@ -2382,12 +2448,13 @@ function ImageGenerationPanel({
                     disabled={isPending}
                     onChange={(event) => onVisualStyleChange(event.target.value)}
                     className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
-                    placeholder="Premium SaaS editorial, clean depth"
+                    placeholder="Editorial photography, hand-drawn illustration"
                   />
                 </label>
               </div>
             </div>
 
+            <div className="min-w-0 md:sticky md:top-0">
             {error ? (
               <div role="alert" className="mt-4 rounded border border-gold/40 bg-gold/10 p-3 text-sm leading-6 text-bone">
                 {error}
@@ -2395,11 +2462,11 @@ function ImageGenerationPanel({
             ) : null}
 
             {image ? (
-              <div className="mt-5 rounded border border-white/10 bg-white/[0.035] p-3">
+              <div>
                 <img
                   src={image.image}
                   alt={`Generated visual for ${section.title}`}
-                  className="max-h-[68vh] w-full rounded border border-white/10 object-contain"
+                  className="max-h-[55vh] w-full rounded border border-white/10 object-contain"
                 />
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   <button
@@ -2421,11 +2488,10 @@ function ImageGenerationPanel({
                   </button>
                 </div>
                 <div className="mt-3 flex flex-col gap-1 text-xs leading-5 text-muted sm:flex-row sm:items-center sm:justify-between">
-                  <span>
-                    {image.template ? `${image.template.replace(/_/g, " ")} template` : "Template-rendered"} · {image.size || image.format}
-                  </span>
-                  <span>Clean text overlay</span>
+                  <span>{image.size || image.format}</span>
+                  <span>Saved on this device</span>
                 </div>
+                {image.design && image.design.mode !== "image" ? <ImageDesignEditor key={`${section.id}:${image.createdAt}`} design={image.design} disabled={isPending} canUndo={studio.canUndo} onApply={studio.onEdit} onUndo={studio.onUndo} /> : null}
                 {image.warning ? (
                   <p className="mt-2 text-xs leading-5 text-goldSoft">{image.warning}</p>
                 ) : null}
@@ -2436,14 +2502,19 @@ function ImageGenerationPanel({
               <button
                 type="button"
                 onClick={onGenerate}
-                disabled={isPending}
+                disabled={isPending || !(studio.source.trim() || studio.instructions.trim())}
                 className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted"
               >
                 {isPending ? <Loader2 className="animate-spin" size={17} /> : <Wand2 size={17} />}
                 {isPending ? "Generating visual..." : "Generate visual"}
               </button>
             ) : null}
-          </>
+            {Object.keys(studio.saved).length > 0 ? <div className="mt-5 border-t border-white/10 pt-3">
+              <h3 className="text-sm text-muted">Recent designs on this device</h3>
+              <div className="mt-2 grid grid-cols-4 gap-2">{Object.entries(studio.saved).slice(-8).map(([id, saved]) => <button key={id} type="button" disabled={isPending} aria-label={`Open saved design ${saved.design?.headline || id}`} onClick={() => studio.onOpenSaved(id)} className="aspect-square overflow-hidden rounded border border-white/15 hover:border-violet"><img src={saved.image} alt="" className="h-full w-full object-contain" /></button>)}</div>
+            </div> : null}
+            </div>
+          </div>
         )}
       </div> : null}
     </dialog>
