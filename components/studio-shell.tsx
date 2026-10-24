@@ -1597,7 +1597,7 @@ function OutputPanel({
             {result.title}
           </h2>
           <p className="mt-3 break-words text-sm leading-6 text-muted sm:mt-2">{result.summary}</p>
-          {result.id !== "sample" ? <p className="mt-2 text-xs text-muted">AI draft · Not independently fact-checked</p> : null}
+          {result.id !== "sample" ? <p className="mt-2 text-xs text-muted">{result.sections.every(s => s.review?.status === "ready_to_review" && s.revisionSource !== "manual") ? "Ready to review" : "Needs confirmation"} · Not independently fact-checked</p> : null}
         </div>
         <button
           type="button"
@@ -2106,6 +2106,10 @@ function OutputCard({
         </div>
       </div>
 
+      <div className="mb-3 text-sm" role="status">
+        <p className={section.review?.status === "ready_to_review" && section.revisionSource !== "manual" ? "text-muted" : "font-semibold text-goldSoft"}>{section.review?.status === "ready_to_review" && section.revisionSource !== "manual" ? "Ready to review" : "Needs confirmation"}</p>
+        {(section.review?.notes ?? []).map(note => <p key={note} className="mt-1 text-xs leading-5 text-muted">{note}</p>)}
+      </div>
       {editing ? <div className="grid gap-3">
         <label className="grid gap-2 text-sm">Body<textarea aria-label={`Edit ${section.title} body`} rows={10} maxLength={20000} value={draft.body} onChange={e => setDraft({ ...draft, body: e.target.value })} className="w-full rounded border border-white/20 bg-ink p-3 leading-7" /></label>
         <label className="grid gap-2 text-sm">Items, one per line<textarea rows={4} maxLength={20000} value={draft.items.join("\n")} onChange={e => setDraft({ ...draft, items: e.target.value.split("\n") })} className="w-full rounded border border-white/20 bg-ink p-3" /></label>

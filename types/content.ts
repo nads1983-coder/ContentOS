@@ -59,6 +59,11 @@ export type FilterId =
   | "repurpose"
   | "saved";
 
+export type PublicationReview = {
+  status: "ready_to_review" | "needs_confirmation";
+  notes: string[];
+};
+
 export type GeneratedSection = {
   id: string;
   type: ContentTypeId;
@@ -68,6 +73,7 @@ export type GeneratedSection = {
   items: string[];
   cta?: string;
   revisionSource?: "manual" | "refined";
+  review?: PublicationReview;
 };
 
 export type GenerationResult = {

@@ -227,6 +227,27 @@ test("simple creation and bounded custom refinement use the same guarded provide
   }
 });
 
+test("final captured draft omits unprovided channel history, persists review status once and never retries the provider", async () => {
+  const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
+  const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-final-acceptance-instagram.json"), "utf8"));
+  for (const refinement of [undefined, { action: "custom", instructions: "Make it warmer.", section: captured.sections[0] }]) {
+    const h = statefulReservationHarness();
+    const body = { ...original.request, refinement, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+    const providerResponse = { status: "completed", output_text: JSON.stringify(captured), usage: { input_tokens: 2725, output_tokens: 242, total_tokens: 2967 } };
+    const result = await routeFixture({ ...h, body, providerResponse });
+    assert.equal(result.response.status, 200);
+    assert.equal(result.body.sections[0].review.status, "needs_confirmation");
+    assert.doesNotMatch(result.body.sections[0].body, /newsletter/);
+    assert.deepEqual(h.state.generation_history_json[0].payload.sections, result.body.sections);
+    assert.equal(h.state.usage_events_json.length, 1);
+    assert.deepEqual(result.financialCalls, ["dispatch", "settle"]);
+    const replay = await routeFixture({ ...h, body, providerResponse });
+    assert.equal(replay.response.status, 200); assert.deepEqual(replay.body, result.body);
+    assert.deepEqual(replay.calls, []); assert.deepEqual(replay.financialCalls, []);
+    assert.equal(h.completions, 1); assert.equal(h.state.usage_events_json.length, 1);
+  }
+});
+
 test("route rejects unsafe/unauthenticated/invalid/unconfigured requests before admission", async () => {
   for (const [options, status] of [[{ unsafe: true }, 403], [{ anonymous: true }, 401],
     [{ body: { source: "bad" } }, 400], [{ noDatabase: true }, 503], [{ noKey: true }, 503]]) {

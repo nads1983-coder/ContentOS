@@ -35,7 +35,7 @@ async function newContext() {
         const input = normalizeGenerationRequest(req.postDataJSON()); payloads.push(input);
         const reserved = reserveGenerationInProfile(row, id, input.requestId, input); rows.set(id, reserved.data);
         if (reserved.result.status === "replay") return route.fulfill({ json: reserved.result.result });
-        const output = parseGenerationOutput(JSON.stringify({ title: "Community milestone", summary: "Synthetic provider response, not live AI evidence.", sections: input.selectedTypes.map(type => ({ id: type, type, title: `Draft - ${type}`, platform: type, body: input.refinement ? "A shorter milestone update for our community. Thank you for being here." : "Gorl Lead has reached 1,000 subscribers. Our giveaway announcement is taking shape. [CONFIRM: prize, date and eligibility]", items: ["#GorlLead"], cta: "" })) }), input);
+        const output = parseGenerationOutput(JSON.stringify({ title: "Community milestone", summary: "Synthetic provider response, not live AI evidence.", sections: input.selectedTypes.map(type => ({ id: type, type, title: `Draft - ${type}`, platform: type, body: input.refinement ? "A shorter milestone update for our community. Thank you for being here." : "Gorl Lead has reached 1,000 subscribers. Our giveaway announcement is taking shape. Whether you've been with us since the first newsletter or just signed up, this one's for you.\n[CONFIRM: prize, date and eligibility]", items: ["#GorlLead"], cta: "" })) }), input);
         const completed = completeGenerationInProfile(rows.get(id), id, input.requestId, reserved.result.fingerprint, output); rows.set(id, completed.data);
         return route.fulfill({ json: completed.result });
       }
@@ -60,7 +60,9 @@ try {
   await page.getByLabel("Where will you publish it?").selectOption("instagram");
   await create.click();
   await page.locator("#outputs article").waitFor();
-  assert.equal(await page.getByText("AI draft · Not independently fact-checked", { exact: true }).isVisible(), true);
+  assert.equal(await page.getByText("Needs confirmation · Not independently fact-checked", { exact: true }).isVisible(), true);
+  assert.equal(await page.getByText("Unconfirmed channel or publication history was omitted. Confirm those details before adding them.", { exact: true }).isVisible(), true);
+  assert.doesNotMatch(await page.locator("#outputs article").innerText(),/since the first newsletter/);
   assert.deepEqual(payloads[0].selectedTypes, ["instagram"]);
   assert.equal(payloads[0].automaticSettings.length, 5);
   stage = "brand and explicit controls";
@@ -92,10 +94,19 @@ try {
   await card.getByLabel("What would you like to change?").fill("Make it shorter.");
   await card.getByRole("button", { name: "Apply change" }).click();
   await card.getByText("AI refined", { exact: true }).waitFor();
+  assert.equal(await card.getByText("Ready to review", { exact: true }).isVisible(), true);
   assert.equal(payloads.at(-1).refinement.action, "custom"); assert.equal(payloads.at(-1).refinement.instructions, "Make it shorter.");
   assert.equal(await page.locator("#outputs article").count(), 14);
+  await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: base });
+  await card.getByRole("button", { name: "Copy", exact: true }).click();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  assert.match(copied, /A shorter milestone update/);
+  assert.doesNotMatch(copied, /since the first newsletter|Ready to review/);
   const download = page.waitForEvent("download"); await page.getByRole("button", { name: "Download .txt" }).click();
-  assert.match((await download).suggestedFilename(), /\.txt$/);
+  const exported = await download; assert.match(exported.suggestedFilename(), /\.txt$/);
+  await exported.saveAs(`${dir}/pack.txt`);
+  const exportText = await readFile(`${dir}/pack.txt`, "utf8");
+  assert.doesNotMatch(exportText, /since the first newsletter/); assert.match(exportText, /\[CONFIRM:/);
   await page.getByRole("button", { name: "Save all", exact: true }).click();
   stage = "failure recovery and cloud preferences";
   const bodyBefore = await card.innerText(); failNext = true;
@@ -105,12 +116,14 @@ try {
   const saved = workspaceFromProfile(rows.get("image-test-account"), "image-test-account");
   assert.equal(saved.preferences.brandColors, "Cream, gold"); assert.equal(saved.preferences.length, "short");
   assert.ok(saved.store.saved.length > 0);
+  assert.ok(saved.store.saved.some(pack=>pack.sections.some(s=>s.review?.status==='needs_confirmation')));
   assert.equal(rows.get("image-test-account").usage_events_json.filter(e => e.event_type === "text_generation").length, 4);
   stage = "responsive";
   await page.getByText("Advanced Options (Optional)", { exact: true }).click();
   for (const width of [1440, 768, 390]) {
     await page.setViewportSize({ width, height: 1000 }); await page.screenshot({ path: `${dir}/text-${width}.png` });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+    await card.scrollIntoViewIfNeeded(); await page.screenshot({path:`${dir}/output-${width}.png`});
   }
   stage = "independent device and account isolation";
   const second = await newContext(), device = await second.newPage();

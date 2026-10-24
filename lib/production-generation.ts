@@ -35,7 +35,7 @@ function withoutHashtags(value: string) {
 
 function hasMeaningfulCaption(value: string) {
   const withoutTags = withoutHashtags(value);
-  return withoutTags.split(/\s+/).filter(Boolean).length >= 7;
+  return /[\p{L}\p{N}]/u.test(withoutTags);
 }
 
 function fallbackCaptionFromSource(source: string, type: ContentTypeId) {

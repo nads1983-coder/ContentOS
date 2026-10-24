@@ -79,6 +79,11 @@ export function parseWorkspaceGeneration(value: unknown): GenerationResult {
         id: text(section.id, 160), type: choice(section.type, contentTypes),
         title: text(section.title, 1000), platform: text(section.platform, 160), body: text(section.body, 32000),
         items: list(section.items, 100, entry => text(entry)),
+        ...(section.review !== undefined ? { review: (() => {
+          const review = object(section.review);
+          if (review.status !== "ready_to_review" && review.status !== "needs_confirmation") throw new Error("Invalid review status");
+          return { status: review.status, notes: list(review.notes, 10, note => text(note, 500)) };
+        })() } : {}),
         ...(section.cta !== undefined ? { cta: text(section.cta) } : {}),
         ...(section.revisionSource === "manual" || section.revisionSource === "refined" ? { revisionSource: section.revisionSource } : {})
       };

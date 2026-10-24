@@ -81,11 +81,19 @@ try {
     try{
       await c.query('BEGIN');const original=(await c.query('SELECT data FROM contentos_app.profiles FOR UPDATE')).rows[0].data;
       const snapshot=workspaceFromProfile(original,configs[0].user.id);
+      const {normalizeGenerationRequest,parseGenerationOutput}=loadTs('lib/generation-contract.ts');
+      const captured=JSON.parse(readFileSync(new URL('fixtures/pr7-final-acceptance-instagram.json',import.meta.url)));
+      const fixture=JSON.parse(readFileSync(new URL('fixtures/pr7-captured-instagram.json',import.meta.url)));
+      const reviewed=parseGenerationOutput(JSON.stringify(captured),normalizeGenerationRequest(fixture.request));
+      snapshot.store.recent.unshift(reviewed);
       const patch={revision:snapshot.revision,store:snapshot.store,preferences:{...snapshot.preferences,brandName:'Synthetic QA isolation'}};
       const next=updateWorkspaceProfile(original,configs[0].user.id,patch);
       assert.equal((await c.query('UPDATE contentos_app.profiles SET data=$1::jsonb',[JSON.stringify(next.data)])).rowCount,1);
       const saved=(await c.query('SELECT data FROM contentos_app.profiles')).rows[0].data;
       assert.equal(workspaceFromProfile(saved,configs[0].user.id).preferences.brandName,'Synthetic QA isolation');
+      const restored=workspaceFromProfile(saved,configs[0].user.id).store.recent.find(r=>r.id===reviewed.id);
+      assert.deepEqual(restored.sections[0].review,reviewed.sections[0].review);
+      assert.doesNotMatch(restored.sections[0].body,/first newsletter/);
       assert.throws(()=>updateWorkspaceProfile(saved,configs[0].user.id,patch));await c.query('ROLLBACK');
       assert.deepEqual((await c.query('SELECT data FROM contentos_app.profiles')).rows[0].data,original);
       assert.deepEqual((await pools[1].query('SELECT data FROM contentos_app.profiles')).rows[0].data,otherBefore);

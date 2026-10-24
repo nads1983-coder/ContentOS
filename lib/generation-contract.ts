@@ -3,6 +3,7 @@ import { contentTypes, ctaModes, defaultSelectedTypes, presetTopics, sharpnessMo
 import { cleanPlainText } from "@/lib/text-normalize";
 import { hasUnsupportedBusinessFacts } from "@/lib/business-facts";
 import { applyContentQuality } from "@/lib/content-quality";
+import { preparePublication, attachPublicationReview } from "@/lib/publication-safety";
 import type { ContentTypeId, GenerateRequest, GeneratedSection, GenerationResult } from "@/types/content";
 
 export const REFINEMENT_ACTIONS = {
@@ -215,9 +216,12 @@ function hasForbiddenCta(result: GenerationResult, request: GenerationInput) {
 export function parseGenerationOutput(text: string, request: GenerationInput): GenerationResult {
   if (typeof text !== "string" || text.length > GENERATION_LIMITS.outputCharacters) throw new GenerationOutputError("Invalid output size.");
   try {
-    // Inspect before caption fallbacks or CTA removal can hide a rejected assertion.
-    if (hasUnsupportedBusinessFacts(JSON.parse(text), request)) throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged.");
-    const result = applyContentQuality(parseProductionGeneration(text, request), request);
+    // Inspect before fallbacks/cleanup; only explicitly bounded omissions are safe.
+    const raw = JSON.parse(text);
+    let prepared;
+    try { prepared = preparePublication(raw, request); }
+    catch { throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged."); }
+    const result = attachPublicationReview(applyContentQuality(parseProductionGeneration(JSON.stringify(prepared.value), request), request), prepared.omitted);
     if (result.sections.length !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.type)).size !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.id)).size !== result.sections.length ||
