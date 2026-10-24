@@ -1,5 +1,6 @@
 import { renderDesignSvg } from "@/lib/image-design";
 import type { ImageMode, ImageDesign } from "@/lib/image-design";
+import { brandContextScope, styleContext } from "@/lib/brand-context";
 
 export type SocialImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";
 export type SocialImageFormat = "square" | "landscape" | "portrait" | "vertical";
@@ -197,7 +198,8 @@ export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterC
 
   const hookLine = firstUsefulLine(lines) ?? paragraphs[0] ?? (cleanImageText(input.contentType) || "Create clearer content");
   const ctaLine = lines.find((line) => /^(cta|call to action)\s*:/i.test(line)) ?? "";
-  const brandName = cleanImageText(input.brandContext.brandName ?? "", 64);
+  const scope = brandContextScope({ source: input.outputText, brandName: input.brandContext.brandName, refinement: { instructions: input.creativeInstructions } });
+  const brandName = scope.identity ? cleanImageText(input.brandContext.brandName ?? "", 64) : "";
   const footer = brandName || "ContentOS";
   const template = platformTemplate(input);
   const topic = cleanImageText(input.brandContext.contentTopic ?? "", 120);
@@ -218,14 +220,16 @@ export function buildSocialPosterContent(input: BuildPosterInput): SocialPosterC
 }
 
 export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
-  const audience = cleanImageText(input.brandContext.audience ?? "", 180);
-  const offer = cleanImageText(input.brandContext.offer ?? "", 180);
-  const styleNotes = cleanImageText(input.brandContext.writingStyle ?? "", 160);
+  const brand = input.brandContext;
+  const scope = brandContextScope({ source: input.outputText, brandName: brand.brandName, refinement: { instructions: input.creativeInstructions } });
+  const audience = scope.identity ? cleanImageText(brand.audience ?? "", 180) : "";
+  const offer = scope.savedFacts ? cleanImageText(brand.offer ?? "", 180) : "";
+  const styleNotes = cleanImageText(styleContext(brand.writingStyle ?? "", brand.brandName ?? "", scope.identity), 160);
   // Keep hexadecimal palette values without passing hash-prefixed text to the model.
   const palette = cleanText(input.brandContext.brandColors ?? "deep black, royal purple, refined gold, warm off-white")
     .replace(/#([a-f0-9]{6}|[a-f0-9]{3})(?![\p{L}\p{N}_])/giu, "hex $1");
   const colors = cleanImageText(palette, 180);
-  const visualStyle = cleanImageText(input.brandContext.visualStyle ?? input.style, 180);
+  const visualStyle = cleanImageText(styleContext(brand.visualStyle ?? input.style, brand.brandName ?? "", scope.identity), 180);
   const topic = cleanImageText(input.brandContext.contentTopic ?? input.contentType ?? input.outputText, 180);
   const template = platformTemplate(input).replace(/_/g, " ");
 
@@ -233,6 +237,7 @@ export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
     `Create a premium textless background for a ${template} social media visual.`,
     "CRITICAL: no text, no letters, no typography, no words, no captions, no hashtags, no logos, no symbols, no signage, no UI screenshots.",
     "The image must be a professional background only; all visible text will be rendered later by the app.",
+    "Saved aesthetics do not authorise unrelated branding, products or promotions. Follow the current subject.",
     "Use clean negative space in the central text-safe area, subtle depth, crisp lighting, editorial composition, and modern SaaS polish.",
     "No stock-photo clichés, no low-detail gradients, no cheap clipart, no fake product screenshots, no distorted interface elements.",
     `Visual style: ${visualStyle}.`,

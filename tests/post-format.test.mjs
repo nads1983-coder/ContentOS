@@ -83,7 +83,8 @@ test("ambiguous saved preferences never authorize promotions, terms, deadlines o
   }
   const fact = "Entries close Friday.";
   assert.equal(parse(section({ body: fact, items: [], cta: "" }), { source: fact }).sections[0].body, fact);
-  assert.equal(parse(section({ body: fact, items: [], cta: "" }), { offer: fact }).sections[0].body, fact);
+  assert.throws(() => parse(section({ body: fact, items: [], cta: "" }), { offer: fact }), GenerationGroundingError);
+  assert.equal(parse(section({ body: fact, items: [], cta: "" }), { offer: fact, source: "Use the confirmed offer." }).sections[0].body, fact);
   assert.throws(() => parse(section({ body: fact, items: [], cta: "" }), { writingStyle: fact }), GenerationGroundingError);
 });
 

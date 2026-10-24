@@ -1,6 +1,7 @@
 import type { GenerateRequest } from "@/types/content";
 import { channelClaims, channelEvidence, milestoneEvidence, promotionEvidence, subjectText, sourceEvidence } from "@/lib/claim-evidence";
-import { plainPostText } from "@/lib/post-format";
+import { plainPostText, socialHashtag } from "@/lib/post-format";
+import { brandContextScope, mentionsBrand } from "@/lib/brand-context";
 
 // A bounded backstop for recognizable high-risk claims, not a semantic fact checker.
 // Requiring source wording here deliberately favours refusal over guessed entailment.
@@ -16,8 +17,9 @@ const highRiskClaims = [
   /\b(?:guaranteed|money.back|lifetime warranty|risk.free|guarantee(?:s|d)? (?:you|results|success))\b/i,
   /\b(?:includes?|features?|comes with)\s+(?:\d|a |an |built.in|unlimited)/i,
   /\b(?:giveaway|prize|winner|entries|eligibility)\b[^.!?\n]{0,80}\b(?:closes?|ends?|receives?|wins?|eligible|only|worth|deadline)\b/i,
-  /\b(?:enter|join|hosting|running|holding|launching)\s+(?:our |the |a |this )?(?:giveaway|competition|contest)\b/i,
+  /\b(?:enter|join|hosting|running|holding|launching)\s+(?:our |the |a |this )?(?:our business(?:'s)? )?(?:giveaway|competition|contest)\b/i,
   /\b(?:our|the|this)\s+(?:giveaway|competition|contest|sale|offer)\s+(?:is|starts?|ends?|runs?|closes?|opens?)\b/i,
+  /\b(?:our|my|free|new|exclusive)\s+(?:giveaway|competition|contest|discount|promotion)\b/i,
   /(?:^|[.!?:]\s*)(?:win|enter to win)\s+(?:a\b|an\b|\d|[$£€])|\b(?:chance to win|entry deadline|entries (?:are|open|close)|free shipping|\d+\s*%\s*off)\b|\b(?:comment|follow|tag|like|share|subscribe|sign up)\b[^.!?\n]{0,80}\b(?:to enter|for entry)\b/i,
   /\bonly\s+[^.!?\n]{1,80}\b(?:eligible|can enter|may enter)\b/i,
   /\b(?:partnered with|in partnership with|endorsed by|trusted by)\b/i
@@ -29,7 +31,7 @@ const datedEvent = /\b(?:today|yesterday|tonight|this (?:morning|week|month|year
 const eventClaim = /\b(?:hit|reached|crossed|achieved|celebrating|launched|opened|started|founded|closed|sold|won|turns?|anniversary)\b/i;
 const milestone = /\b(\d[\d,]*(?:\.\d+)?\s*[km]?)\s+(?:(?:newsletter|email list|podcast|youtube channel|blog)\s+)?(subscribers?|followers?|customers?|members?|sales|orders?)\b/gi;
 
-type ClaimCategory = "high_risk" | "purpose" | "commitment" | "timing" | "milestone" | "channel";
+type ClaimCategory = "high_risk" | "purpose" | "commitment" | "timing" | "milestone" | "channel" | "unrelated_brand";
 export type GroundingDecision = {
   field: string;
   text: string;
@@ -61,6 +63,7 @@ function record(value: unknown): Record<string, unknown> {
 }
 
 export function reviewBusinessFacts(value: unknown, request: GenerateRequest): GroundingDecision[] {
+  const scope = brandContextScope(request);
   // Voice, audience, goals and the previous AI asset are not evidence. Saved offer
   // text is user-supplied context, not independently verified business information.
   const evidence = sourceEvidence(request).map(fact => ({ ...fact, text: normalize(fact.text).replace(/[.!?]+$/, "") }));
@@ -78,6 +81,11 @@ export function reviewBusinessFacts(value: unknown, request: GenerateRequest): G
     const base = { field: String(path), text: sentence };
     // Only an entire labelled placeholder is exempt, never adjacent assertions.
     if (/^\[CONFIRM:\s*[^\]\n[]+\][.!?]?$/.test(sentence)) return { ...base, classification: "confirmation_required" };
+    // Hashtags are independently filtered by topic. Prose is refused rather than
+    // deleting a brand name and silently changing the subject of a factual claim.
+    if (!scope.identity && request.brandName && mentionsBrand(sentence.replace(socialHashtag, ""), request.brandName)) {
+      return { ...base, category: "unrelated_brand", classification: "unsupported" };
+    }
     const claimCategory = classify(sentence) ?? (channelClaims(sentence, request).length ? "channel" : undefined);
     const claim = normalize(sentence).replace(/[.!?]+$/, "");
     // Whole source sentences, not substring matches: "Do not say X" and "not X"

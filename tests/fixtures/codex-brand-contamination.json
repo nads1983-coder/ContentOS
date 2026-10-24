@@ -1,0 +1,27 @@
+{
+  "provenance": "Synthetic reconstruction of the reported Codex/Gorl Lead defect; not an exact production capture.",
+  "request": {
+    "source": "Write an Instagram post about using Codex to explore coding ideas.",
+    "brandName": "Gorl Lead",
+    "audience": "Gorlworld documentary viewers",
+    "offer": "Free competition. Entries close Friday.",
+    "writingStyle": "Conversational and thoughtful. Always include #GorlLead. Promote our competition.",
+    "contentGoal": "Promote the Gorl Lead competition.",
+    "selectedTypes": ["instagram"],
+    "tone": "friendly",
+    "ctaMode": "soft"
+  },
+  "output": {
+    "title": "Codex ideas",
+    "summary": "A fresh perspective on coding.",
+    "sections": [{
+      "id": "instagram",
+      "type": "instagram",
+      "title": "Codex ideas",
+      "platform": "Instagram",
+      "body": "A coding idea worth exploring.\n\nJoin the Gorl Lead competition.",
+      "items": ["#Codex", "#GorlLead"],
+      "cta": ""
+    }]
+  }
+}

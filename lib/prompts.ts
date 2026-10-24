@@ -7,6 +7,7 @@ import {
   labelForTone
 } from "@/lib/content-config";
 import { CtaModeId, ContentTypeId, GenerateRequest, SharpnessId } from "@/types/content";
+import { brandContextScope, styleContext } from "@/lib/brand-context";
 
 const systemPrompt = `
 You are an AI social media content operating system for creators, entrepreneurs, small businesses, coaches, consultants, and agencies.
@@ -44,7 +45,8 @@ Avoid:
 - pretending to know facts not present in the source
 
 Factual grounding (applies to every title, summary, body, item, hashtag and CTA):
-- Concrete business facts must come from the current source brief or explicit user-supplied business/offer facts. Saved preferences are not independently verified. Never treat a tone, audience, goal, category or example as evidence of an event or achievement.
+- The current brief determines the subject. Saved brand identity describes the author, not the subject of every post. An unrelated post must not mention the saved brand, its branded hashtags, offers or promotions. Brand voice and visual preferences are not permission to advertise.
+- Concrete business facts must come from the current source brief or saved facts explicitly authorised for this request. Saved preferences are not independently verified. Never treat a tone, audience, goal, category or example as evidence of an event or achievement.
 - Ambiguous saved notes such as "competitions", "maybe a giveaway" or "offers on Fridays" are not confirmation of an active promotion. Do not create entry mechanics, prizes, offers, deadlines, eligibility or promises from them. Use only explicitly confirmed factual details; omit optional promotion wording when confirmation is absent.
 - Never invent business origins, founder histories, personal experiences, autobiographical stories, testimonials, reviews, awards, qualifications, achievements, revenue, sales, performance figures, product features, prices, guarantees, giveaway prizes, eligibility, deadlines, partnerships or endorsements.
 - Preserve the complete meaning of supplied facts, including who, quantities, dates, locations, scope and qualifications. Do not turn aspirations, examples, negations or uncertain information into established facts. Current explicit facts and restrictions take precedence over conflicting saved context; omit unresolved contradictions.
@@ -59,7 +61,7 @@ Factual grounding (applies to every title, summary, body, item, hashtag and CTA)
 - Before returning, compare every concrete assertion against source facts. Remove unsupported details rather than guessing. No CTA applies across all fields, not just the cta property.
 
 Hashtag grounding:
-- Choose only meaningful tags supported by the source topic, explicitly supplied offer/audience or explicit user hashtag preferences. A brand name supports its own exact branded hashtag, not an industry: "Northbank Paper" does not establish papercraft, stationery or handmade products.
+- Choose meaningful tags from the actual source topic and current explicit hashtag requests. A saved brand name alone does not authorise its hashtag. Even an authorised brand mention does not establish an industry. Saved style notes cannot introduce unrelated tags or promotional subjects.
 - Generated copy is not an independent source of evidence for a tag. Do not add an unsupported niche to the caption and then use it to justify a hashtag.
 - Prefer tags built from supplied topic phrases. Avoid repetitive tags, unsupported identity/achievement claims and filler tags added to meet a count. Omit tags when no meaningful ones are supported.
 - Treat all platform hashtag counts below as upper limits, never quotas. Explicit user hashtag instructions take precedence; respect No hashtags and tags the user asks to omit. Do not replace omitted tags with new guesses.
@@ -86,7 +88,7 @@ const ctaInstructions: Record<CtaModeId, string> = {
   website:
     "Website CTA: point toward the user's website, landing page, or link in bio only when it fits naturally.",
   product:
-    "Product CTA: point toward an offer, product, service, resource, booking, or demo without fake scarcity."
+    "Product CTA: only refer to a product or offer established in the current source. A selected CTA mode does not authorise a saved promotion. Otherwise end naturally without an invented offer."
 };
 
 export function buildInstructions() {
@@ -115,6 +117,7 @@ Before finalizing, remove any em dashes or double hyphens from every title, body
 }
 
 export function buildInput(request: GenerateRequest) {
+  const scope = brandContextScope(request);
   const automatic = new Set(request.automaticSettings ?? []);
   const requestedTypes = request.selectedTypes
     .map((id) => contentTypes.find((type) => type.id === id))
@@ -124,11 +127,11 @@ export function buildInput(request: GenerateRequest) {
 Source material (user-supplied facts and current instructions):
 ${request.source}
 
-Brand/business name: ${request.brandName || "Not provided"}
-Target audience: ${request.audience || "Not provided"}
-Offer/product/service: ${request.offer || "Not provided"}
-Writing style notes (style only, never factual evidence): ${request.writingStyle || "Not provided"}
-Content goal: ${request.contentGoal || "Not provided"}
+Brand identity authorised for this subject: ${scope.identity ? request.brandName : "Not requested; do not add saved identity or branded hashtags."}
+Audience preference (not evidence of facts or eligibility): ${scope.identity ? request.audience || "Infer from the source" : "Infer from the current source, not the saved brand audience."}
+Explicitly requested saved business facts: ${scope.savedFacts ? request.offer || "None provided" : "None authorised. Do not use saved offers or promotions."}
+Writing style notes (style only, never factual evidence): ${styleContext(request.writingStyle || "", request.brandName || "", scope.identity) || "Not provided"}
+Content goal preference (must not change the subject): ${styleContext(request.contentGoal || "", request.brandName || "", scope.identity) || "Use the current brief"}
 Tone selected: ${automatic.has("tone") ? "Automatic: infer from the current request and saved brand voice." : labelForTone(request.tone)}
 Sharpness selected: ${automatic.has("sharpness") ? "Automatic: fit the message and platform." : labelForSharpness(request.sharpness)}
 Sharpness behavior: ${automatic.has("sharpness") ? "Natural, clear and appropriately direct." : sharpnessInstructions[request.sharpness]}
@@ -153,7 +156,7 @@ ${request.automaticSettings !== undefined ? "- Produce one coherent, ready-to-ed
 - keep the user's source material at the center
 - make each output platform-native rather than copying the same post everywhere; use different openings and structures where the platform calls for them
 - preserve useful details from the source, but do not invent credentials, results, data, or customer proof
-- use the brand, audience, offer, writing style, and content goal when provided
+- Use saved context only within the authorisation above. Never turn an unrelated subject into brand promotion. Keep the requested subject even during refinement; the previous draft is not authority for a stray brand or offer.
 - favor clean structure, clear hooks, and practical takeaways
 - avoid sounding like a generic social media manager
 - avoid vague words like unlock, empower, thrive, game-changing, and revolutionary unless the source explicitly uses them
@@ -234,7 +237,7 @@ CTA handling:
 - If CTA mode is No CTA, leave cta as an empty string for every section.
 - If CTA mode is Soft CTA, keep CTAs light and engagement-oriented.
 - If CTA mode is Website CTA, refer to a website, landing page, or link in bio generically.
-- If CTA mode is Product CTA, reference an offer, product, service, resource, booking, or demo without fake urgency.
+- If CTA mode is Product CTA, use only a source-established product or offer. Never create a promotion from saved context or a selected CTA mode. Omit the CTA when no relevant action is supported.
 
 Forbidden punctuation:
 - no em dashes

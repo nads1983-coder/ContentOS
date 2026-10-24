@@ -39,8 +39,10 @@ await page.route("**/*",async route=>{
 try{
   await page.setViewportSize({width:1440,height:1100});
   await page.goto(`${base}/image-studio-test`);
+  await page.getByLabel("Where will you publish it?").selectOption("instagram");
   await page.getByRole("button",{name:"Image Studio",exact:true}).click();
   const dialog=page.getByRole("dialog");
+  assert.equal(await dialog.getByText("Instagram",{exact:true}).first().textContent(),"Instagram");
   assert.equal(await dialog.locator("summary").evaluate(el=>el.parentElement.open),false);
   assert.equal(await dialog.evaluate(el=>el.contains(document.activeElement)),true);
   await page.keyboard.press("Shift+Tab");
@@ -52,6 +54,9 @@ try{
   assert.equal(await dialog.isVisible(),false);
   await page.getByRole("button",{name:"Image Studio",exact:true}).click();
   await dialog.locator("summary").filter({hasText:"Advanced Options (Optional)"}).click();
+  assert.equal(await dialog.getByLabel("Image platform",{exact:true}).inputValue(),"Instagram");
+  await dialog.getByLabel("Image platform",{exact:true}).selectOption("Pinterest");
+  assert.equal(await dialog.locator("p").first().textContent(),"Pinterest");
   await dialog.getByLabel("Image content").fill("A quiet ritual.\n\nMake space for a slower morning. #Beauty #Care");
   await dialog.getByLabel("What image would you like?").fill("A luxury beauty graphic using cream and gold.\nHeadline: A quiet ritual");
   await dialog.getByLabel("Image type",{exact:true}).selectOption("graphic");
@@ -66,6 +71,7 @@ try{
   await dialog.getByRole("button",{name:"Download PNG"}).waitFor();
   assert.equal(h.calls.filter(c=>c==="provider").length,0);
   assert.equal(payloads[0].mode,"text");assert.match(payloads[0].outputText,/#Beauty/);
+  assert.equal(payloads[0].platform,"Pinterest");assert.equal(payloads[0].contentType,"Pinterest");
   assert.deepEqual(payloads[0].appearance,{type:"graphic",style:"luxury",colours:["#176d51","#ffffff"]});
   await dialog.getByLabel("Headline",{exact:true}).fill("Space to slow down");
   await dialog.getByRole("button",{name:"Apply edits",exact:true}).click();
@@ -103,6 +109,7 @@ try{
   await page.getByRole("button",{name:"Image Studio",exact:true}).click();
   await page.getByRole("button",{name:/Open saved design/}).first().click();
   await page.getByRole("button",{name:"Download PNG"}).waitFor();
+  assert.equal(await dialog.locator("p").first().textContent(),"Pinterest","Saved designs restore their actual platform, not the composer default");
   assert.equal(payloads.length,before,"Restoring a saved design must never call the provider");
   h.userId="image-test-two";h.rows.set(h.userId,profile({id:h.userId}));
   await page.goto(`${base}/image-studio-test?account=two`);

@@ -38,10 +38,11 @@ test("explicit palette and creative direction override saved preferences; no inv
     brandContext: { brandName: "Mira", industry: "Beauty", audience: "Busy professionals", brandColors: "black, purple", visualStyle: "Corporate technology", writingStyle: "Warm and thoughtful" } }));
   assert.equal(brief.design.background, "#fff7e8"); assert.equal(brief.design.accent, "#b58a30");
   assert.equal(brief.design.font, "editorial"); assert.equal(brief.design.headline, "A quiet ritual");
-  assert.match(brief.prompt, /Beauty.*Busy professionals/); assert.match(brief.prompt, /Warm and thoughtful/);
+  assert.doesNotMatch(brief.prompt, /Busy professionals/); assert.match(brief.prompt, /Warm and thoughtful/);
   assert.match(brief.prompt, /Do not invent products/); assert.doesNotMatch(visible(renderDesignSvg(brief.design,1080,1080)), /ContentOS|discount|sale/i);
   for (const industry of ["Leadership coaching", "Architecture", "Food", "Education", "Technology"]) {
-    assert.ok(buildCreativeBrief(input({ brandContext: { industry } })).prompt.includes(industry));
+    assert.ok(!buildCreativeBrief(input({ brandContext: { industry } })).prompt.includes(`Industry: ${industry}`));
+    assert.ok(buildCreativeBrief(input({ creativeInstructions: "Promote Mira.", brandContext: { brandName: "Mira", industry } })).prompt.includes(`Industry: ${industry}`));
   }
 });
 

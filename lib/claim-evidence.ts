@@ -1,4 +1,5 @@
 import type { GenerateRequest } from "@/types/content";
+import { brandContextScope } from "@/lib/brand-context";
 
 export function factualText(value: string) {
   return value.normalize("NFKC").toLowerCase().replace(/[\u2018\u2019]/g, "'")
@@ -16,19 +17,27 @@ export function isConfirmedFact(text: string) {
   return !/\?|\b(?:maybe|might|could|would|possibly|potential|consider(?:ing)?|hope|wish|imagine|example|hypothetical|unconfirmed|tbc|tbd)\b|\b(?:planning to|plan to|not confirmed|to be confirmed|if we)\b/i.test(text);
 }
 export function sourceEvidence(request: GenerateRequest) {
-  return (["brief", "offer"] as const).flatMap(source => factualSentences(source === "brief" ? request.source : request.offer || "")
+  const scope = brandContextScope(request);
+  return (["brief", "offer"] as const).flatMap(source => factualSentences(source === "brief" ? request.source : scope.savedFacts ? request.offer || "" : "")
     .map((text, index) => ({ text: factualText(text), subject: subjectText(text, request), source, index }))
     .filter(fact => isConfirmedFact(fact.text)));
 }
 
 export function promotionEvidence(value: string, request: GenerateRequest) {
   const text = subjectText(value, request);
-  if (!/^(?:to celebrate this milestone, )?we(?:'re| are) (?:running|hosting|holding|launching) a giveaway$/.test(text)) return undefined;
+  const existence = text.match(/^(?:to celebrate this milestone, )?we(?:'re| are) (?:running|hosting|holding|launching) a (giveaway|competition|contest)$/);
+  // Describing the requested draft announcement adds no prize, deadline or entry
+  // commitment. Additional promotional terms must still match source evidence.
+  const announcementDraft = text.match(/^our (giveaway|competition|contest) announcement is taking shape$/);
+  const kind = (existence ?? announcementDraft)?.[1];
+  if (!kind) return undefined;
   const facts = sourceEvidence(request);
-  if (facts.some(f => f.source === "brief" && /\b(?:no|not|never|cancelled|canceled|don't)\b[^.!?]{0,80}\bgiveaway\b|\bgiveaway\b[^.!?]{0,80}\b(?:cancelled|canceled|not running)\b/.test(f.text))) return undefined;
+  const negative = new RegExp(`\\b(?:no|not|never|cancelled|canceled|don't)\\b[^.!?]{0,80}\\b${kind}\\b|\\b${kind}\\b[^.!?]{0,80}\\b(?:cancelled|canceled|not running)\\b`);
+  if (facts.some(f => f.source === "brief" && negative.test(f.text))) return undefined;
   if (text.startsWith("to celebrate") && !facts.some(f => /\b(?:reached|hit) \d[\d,]* (?:subscribers|followers|members)\b/.test(f.subject))) return undefined;
   // An explicit announcement instruction confirms existence, never terms.
-  return facts.find(f => f.source === "brief" && /(?:^|;\s*)announce (?:our|the|a) giveaway(?: on (?:instagram|linkedin))?$/.test(f.text));
+  const instruction = new RegExp(`(?:^|;\\s*)(?:announce|promote) (?:our|the|a|(?:the )?we(?:'s)?) ${kind}(?: on (?:instagram|linkedin))?$`);
+  return facts.find(f => f.source === "brief" && instruction.test(f.subject));
 }
 
 type Milestone = { amount: number; unit: string };

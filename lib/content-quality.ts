@@ -1,6 +1,7 @@
 import type { GenerationInput } from "@/lib/generation-contract";
 import type { GenerationResult } from "@/types/content";
 import { normalizePostSection, socialPostTypes } from "@/lib/post-format";
+import { brandContextScope } from "@/lib/brand-context";
 
 // A fragment inside a URL or identifier is not a social hashtag.
 const tagPattern = /(?<![\p{L}\p{N}_/=?&.%:-])#[\p{L}\p{N}_]+/gu;
@@ -14,30 +15,31 @@ function hashtagChoice(value: string): boolean | undefined {
 }
 
 function allowedTags(request: GenerationInput) {
+  const scope = brandContextScope(request);
   const current = [request.source, request.refinement?.instructions ?? ""].join("\n");
   const enabled = hashtagChoice(request.refinement?.instructions ?? "") ?? hashtagChoice(request.source) ?? hashtagChoice(request.writingStyle ?? "") ?? true;
   const allowed = new Set<string>();
-  // Brand name can support its exact branded tag, not an inferred industry.
-  if (request.brandName) allowed.add(compact(request.brandName));
+  if (scope.identity && request.brandName) allowed.add(compact(request.brandName));
   const brandPattern = request.brandName ? new RegExp(`(?<![\\p{L}\\p{N}])${request.brandName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\p{L}\\p{N}])`, "giu") : null;
-  for (const text of [request.source, request.offer ?? "", request.audience ?? ""]) {
+  for (const text of [request.source, scope.savedFacts ? request.offer ?? "" : "", scope.identity ? request.audience ?? "" : ""]) {
     const topic = brandPattern ? text.replace(brandPattern, "") : text;
     const words = topic.normalize("NFKC").toLowerCase().replace(/(\d),(?=\d{3}\b)/g, "$1").match(/[\p{L}\p{N}]+/gu) ?? [];
     for (let i = 0; i < words.length; i++) {
       for (let length = 1; length <= 4 && i + length <= words.length; length++) allowed.add(words.slice(i, i + length).join(""));
     }
   }
-  const preferences = `${request.writingStyle}\n${current}`;
+  // Saved hashtag preferences may restrict relevant tags, not add unrelated ones.
   const denied = new Set<string>();
-  for (const instruction of preferences.split(/[.!?\n]/)) {
+  for (const [preferences, explicit] of [[request.writingStyle ?? "", false], [current, true]] as const) for (const instruction of preferences.split(/[.!?\n]/)) {
     const negative = /\b(?:no|avoid|exclude|omit|remove|without|do not use|don't use)\b/i.test(instruction);
     for (const tag of tags(instruction)) {
       const key = compact(tag);
       if (negative) denied.add(key);
-      else { allowed.add(key); denied.delete(key); }
+      else { if (explicit) allowed.add(key); denied.delete(key); }
     }
   }
-  return (tag: string) => enabled && allowed.has(compact(tag)) && !denied.has(compact(tag));
+  return (tag: string) => enabled && allowed.has(compact(tag)) && !denied.has(compact(tag)) &&
+    (scope.identity || !request.brandName || compact(tag) !== compact(request.brandName));
 }
 
 function cleanFiller(value: string, request: GenerationInput) {

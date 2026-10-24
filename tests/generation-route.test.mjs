@@ -165,6 +165,47 @@ test("refinement factual failures also refuse delivery without a retry or succes
   assert.deepEqual(result.calls, ["reserve", "provider", "fail"]);
 });
 
+test("Codex brand contamination fails before persistence in generation and refinement; provider usage is retained", async () => {
+  const fixture = JSON.parse(readFileSync(resolve(root, "tests/fixtures/codex-brand-contamination.json"), "utf8"));
+  for (const refinement of [undefined, { action: "custom", instructions: "Make it warmer.", section: fixture.output.sections[0] }]) {
+    const h = statefulReservationHarness();
+    const body = { ...fixture.request, refinement, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+    const providerResponse = { status: "completed", output_text: JSON.stringify(fixture.output), usage: { input_tokens: 100, output_tokens: 60 } };
+    const result = await routeFixture({ ...h, body, providerResponse });
+    assert.equal(result.response.status, 502);
+    assert.equal(result.body.code, "unsupported_business_facts");
+    assert.deepEqual(result.financialCalls, ["dispatch", "settle"]);
+    assert.equal(result.clientOptions.maxRetries, 0);
+    assert.equal(h.completions, 0);
+    assert.equal(h.state.generation_history_json, undefined);
+    assert.equal(h.state.usage_events_json, undefined);
+    const replay = await routeFixture({ ...h, body, providerResponse });
+    assert.notEqual(replay.response.status, 200);
+    assert.deepEqual(replay.calls, []);
+    assert.deepEqual(replay.financialCalls, []);
+  }
+});
+
+test("subject-scoped caption persists once, strips unrelated tags and replays without another provider call", async () => {
+  const fixture = JSON.parse(readFileSync(resolve(root, "tests/fixtures/codex-brand-contamination.json"), "utf8"));
+  const h = statefulReservationHarness();
+  const body = { ...fixture.request, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+  const clean = structuredClone(fixture.output);
+  clean.sections[0].body = "A coding idea worth exploring.\n\nWhat would you try with Codex?";
+  const providerResponse = { status: "completed", output_text: JSON.stringify(clean), usage: { input_tokens: 100, output_tokens: 60 } };
+  const first = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(first.response.status, 200);
+  assert.doesNotMatch(first.providerInput.input, /Gorl.?Lead|Free competition|Entries close Friday/);
+  assert.deepEqual(first.body.sections[0].items, ["#Codex"]);
+  const replay = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(replay.response.status, 200);
+  assert.deepEqual(replay.calls, []);
+  assert.deepEqual(replay.financialCalls, []);
+  assert.equal(h.completions, 1);
+  assert.equal(h.state.usage_events_json.length, 1);
+  assert.equal(h.state.generation_history_json.length, 1);
+});
+
 test("latest live inventions fail both generation and refinement before persistence, while paid usage is retained", async () => {
   const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
   const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-instagram-quality-comparison.json"), "utf8"));
