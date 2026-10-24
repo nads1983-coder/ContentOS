@@ -28,7 +28,7 @@ const dir = process.env.TEST_ARTIFACT_DIR ?? "/tmp/contentos-post-format";
 await mkdir(dir, { recursive: true });
 const platform = hashtagScenario ? "linkedin" : "instagram";
 const originalCaption = pipelineFixture.mockProviderOutput.sections[0];
-const caption = pipelineScenario ? `${originalCaption.body}\n\n${originalCaption.cta}\n\n${pipelineFixture.expectedLinkedIn.join(" ")}` : hashtagScenario ? "One year of showing up.\n\nA moment to reflect.\n\nWhat keeps you showing up?\n\n#LinkedInGrowth #Consistency #PersonalBranding #ProfessionalGrowth" : brandScenario ? "A coding idea worth exploring.\n\nTry a fresh perspective with Codex.\n\nWhat would you build?\n\n#Codex #CodingIdeas" : "A little room to think.\n\nTry putting one idea on paper.\n\nWhat would you write?\n\n#Planning #Ideas";
+const caption = pipelineScenario ? `${originalCaption.body}\n\n${originalCaption.cta}\n\n${pipelineFixture.expectedLinkedIn.join(" ")}` : hashtagScenario ? "One year of showing up.\n\nA moment to reflect.\n\nWhat keeps you showing up?\n\n#LinkedInGrowth #Consistency #PersonalBranding #ProfessionalGrowth #ShowingUp" : brandScenario ? "A coding idea worth exploring.\n\nTry a fresh perspective with Codex.\n\nWhat would you build?\n\n#Codex #CodingIdeas #Coding #Programming #SoftwareDevelopment" : "A little room to think.\n\nTry putting one idea on paper.\n\nWhat would you write?\n\n#Planning #Ideas";
 const opening = pipelineScenario ? originalCaption.body.split("\n\n")[0] : hashtagScenario ? "One year of showing up." : brandScenario ? "A coding idea worth exploring." : "A little room to think.";
 const middle = pipelineScenario ? originalCaption.body.split("\n\n")[1] : hashtagScenario ? "A moment to reflect." : brandScenario ? "Try a fresh perspective with Codex." : "Try putting one idea on paper.";
 const cta = pipelineScenario ? originalCaption.cta : hashtagScenario ? "What keeps you showing up?" : brandScenario ? "What would you build?" : "What would you write?";
@@ -87,7 +87,7 @@ try {
     const sets = page.locator("#outputs article").nth(1);
     await sets.getByRole("button", { name: "Copy", exact: true }).click();
     const copiedSets = await page.evaluate(() => navigator.clipboard.readText());
-    assert.match(copiedSets, /LinkedIn:\n#LinkedInTips #ContentStrategy #SocialMediaMarketing #LinkedInGrowth/);
+    assert.equal(copiedSets, "No additional relevant hashtags beyond those in your posts.");
     assert.doesNotMatch(copiedSets, /#Hashtags\b|#GorlLead|#papercraft/);
   }
   if (brandScenario) {
@@ -130,7 +130,7 @@ try {
   const exportedText = await readFile(`${dir}/caption.txt`, "utf8");
   if (pipelineScenario) {
     assert.ok(exportedText.startsWith(refined + "\n\n"));
-    assert.match(exportedText, /LinkedIn:\n#LinkedInTips #ContentStrategy #SocialMediaMarketing #LinkedInGrowth/);
+    assert.ok(exportedText.endsWith("No additional relevant hashtags beyond those in your posts."));
     assert.doesNotMatch(exportedText, /#Hashtags\b|#GorlLead|#papercraft/);
   } else assert.equal(exportedText, refined);
   await page.waitForTimeout(1200);
@@ -138,7 +138,8 @@ try {
   assert.ok(restored.store.saved.length); assert.equal(restored.store.saved[0].sections[0].body, `One idea is enough to begin.\n\n${middle}`);
   if (pipelineScenario) {
     assert.deepEqual(restored.store.saved[0].sections[0].items, pipelineFixture.expectedLinkedIn);
-    assert.equal(restored.store.saved[0].sections[1].items[0], `LinkedIn: ${pipelineFixture.expectedLinkedIn.join(" ")}`);
+    assert.deepEqual(restored.store.saved[0].sections[1].items, []);
+    assert.equal(restored.store.saved[0].sections[1].body, "No additional relevant hashtags beyond those in your posts.");
   }
   if (brandScenario) assert.equal(restored.preferences.offer, "Free competition. Entries close Friday.", "Saved preferences are preserved, not rewritten by request scoping");
   stage = "responsive";

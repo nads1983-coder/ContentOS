@@ -119,7 +119,7 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "Platform Hashtags",
     shortLabel: "Hashtags",
     group: "hashtags",
-    prompt: "Labelled hashtag/keyword sets for LinkedIn, Instagram, TikTok, X, Facebook and YouTube Shorts, grounded in supplied subject matter. Zero is valid when unsupported; never infer a niche from the brand name."
+    prompt: "One set of five additional relevant hashtags, different from all caption hashtags and unique within this set. Caption tags remain independent and automatic. Use fewer if unsupported; never infer a niche from the brand name."
   }
 ];
 

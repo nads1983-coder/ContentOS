@@ -19,8 +19,8 @@ test("exact production question with additional Hashtags repairs empty caption a
   const result = run();
   assert.deepEqual(result.sections[0].items, fixture.expectedLinkedIn);
   assert.equal(result.sections[0].body, fixture.mockProviderOutput.sections[0].body);
-  assert.equal(result.sections[1].items.length, 6);
-  assert.equal(result.sections[1].items[0], `LinkedIn: ${fixture.expectedLinkedIn.join(" ")}`);
+  assert.equal(result.sections[1].items.length, 0);
+  assert.match(result.sections[1].body, /No additional relevant hashtags/);
   assert.doesNotMatch(JSON.stringify(result), /#(?:Hashtags|GorlLead|papercraft|FreeCompetition)\b/i);
   assert.equal(result.sections[1].review.status, "ready_to_review");
   assert.equal(JSON.stringify(fixture), original, "original evidence is immutable");
@@ -70,7 +70,7 @@ test("only a relevant subject authorizes social strategy candidates, not a selec
 
 test("all social platforms get bounded relevant sets; single format and all fourteen format routing remain valid", () => {
   const { contentTypes } = loadTs("lib/content-config.ts");
-  const max = { linkedin: 5, instagram: 5, tiktok: 5, facebook: 3, youtubeShorts: 3, twitter: 2 };
+  const max = { linkedin: 5, instagram: 5, tiktok: 5, facebook: 5, youtubeShorts: 5, twitter: 2 };
   for (const [type, maximum] of Object.entries(max)) {
     const raw = structuredClone(fixture.mockProviderOutput);
     Object.assign(raw.sections[0], { type, id: type, platform: type });
@@ -85,7 +85,7 @@ test("all social platforms get bounded relevant sets; single format and all four
   assert.equal(result.sections.length, 14);
   assert.doesNotMatch(JSON.stringify(result), /#Hashtags\b/);
   const only = run({ selectedTypes: ["platformHashtags"] }, { ...fixture.mockProviderOutput, sections: [fixture.mockProviderOutput.sections[1]] });
-  assert.equal(only.sections[0].items.length, 6);
+  assert.equal(only.sections[0].items.length, 5);
 });
 
 test("refinement retains requested subject tags without treating old unsupported tags as evidence", () => {
@@ -104,7 +104,7 @@ test("caption and separate sets survive display, clipboard serialization, save/r
   }
   const text = copy.buildGenerationCopyText(restored);
   assert.ok(copy.buildSectionCopyText(restored.sections[0]).endsWith(fixture.expectedLinkedIn.join(" ")));
-  assert.match(copy.buildSectionCopyText(restored.sections[1]), /LinkedIn:/);
+  assert.match(copy.buildSectionCopyText(restored.sections[1]), /No additional relevant hashtags/);
   let clipboard;
   const previous = Object.getOwnPropertyDescriptor(globalThis, "navigator");
   Object.defineProperty(globalThis, "navigator", { configurable: true, value: { clipboard: { writeText: async value => { clipboard = value; } } } });

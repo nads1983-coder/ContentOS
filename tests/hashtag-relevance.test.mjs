@@ -42,13 +42,16 @@ test("themes need source relationships, not platform choice, invented output, sa
     ["#Coding", "#Programming", "#SoftwareDevelopment"]);
 });
 
-test("all platform caps are preferences: keep fewer, never manufacture replacements, preserve explicit counts", () => {
-  const cases = { linkedin: 5, instagram: 5, tiktok: 5, facebook: 3, youtubeShorts: 3, twitter: 2, xThread: 2 };
+test("platform caps allow source-supported completion, sparse topics stay sparse, explicit counts win", () => {
+  const cases = { linkedin: 5, instagram: 5, tiktok: 5, facebook: 5, youtubeShorts: 5, twitter: 2, xThread: 2 };
   const items = ["#LinkedInPresence", ...relevant, "#ShowingUp", "#ProfessionalDevelopment"];
   for (const [type, max] of Object.entries(cases)) {
     assert.equal(quality(pack(section(type, items)), request()).sections[0].items.length, max, type);
-    assert.deepEqual(quality(pack(section(type, ["#Consistency"])), request()).sections[0].items, ["#Consistency"]);
-    assert.deepEqual(quality(pack(section(type, [])), request()).sections[0].items, []);
+    const completed=quality(pack(section(type, ["#Consistency"])), request()).sections[0].items;
+    assert.equal(completed[0],"#Consistency");
+    assert.equal(completed.length,type==='xThread'?1:max);
+    assert.equal(quality(pack(section(type, [])), request()).sections[0].items.length,type==='xThread'?0:max);
+    assert.deepEqual(quality(pack(section(type,["#Zelmora"])),request({source:'Write about Zelmora.'})).sections[0].items,['#Zelmora']);
     assert.equal(quality(pack(section(type, items)), request({ source: source + " Include 6 hashtags." })).sections[0].items.length, 6);
     assert.equal(quality(pack(section(type, items)), request({ source: source + " Include only 1 hashtag." })).sections[0].items.length, 1);
     assert.equal(quality(pack(section(type, items)), request({ source: source + " No hashtags." })).sections[0].items.length, 0);
@@ -58,18 +61,20 @@ test("all platform caps are preferences: keep fewer, never manufacture replaceme
 test("current preferences and refinement override defaults without allowing saved unrelated tags", () => {
   const refinement = { action: "custom", instructions: "Keep #Consistency. Exclude #PersonalBranding.", section: section() };
   assert.deepEqual(quality(pack(section()), request({ refinement, writingStyle: "No hashtags." })).sections[0].items,
-    ["#LinkedInGrowth", "#Consistency", "#ProfessionalGrowth"]);
+    ["#LinkedInGrowth", "#Consistency", "#ProfessionalGrowth", "#ShowingUp", "#LinkedInPresence"]);
   assert.deepEqual(quality(pack(section()), request({ refinement: { ...refinement, instructions: "No hashtags." } })).sections[0].items, []);
-  assert.deepEqual(quality(pack(section("linkedin", ["#Consistency"])), request({ writingStyle: "Avoid #Consistency." })).sections[0].items, []);
+  assert.ok(!quality(pack(section("linkedin", ["#Consistency"])), request({ writingStyle: "Avoid #Consistency." })).sections[0].items.includes('#Consistency'));
   assert.deepEqual(quality(pack(section("linkedin", ["#GorlLead"])), request({ source: "Promote Gorl Lead. Include #GorlLead." })).sections[0].items, ["#GorlLead"]);
   const added = quality(pack(section()), request({ source: "Share a reflection.", refinement: { ...refinement, instructions: "Focus on consistent LinkedIn activity." } }));
-  assert.deepEqual(added.sections[0].items, relevant);
+  assert.deepEqual(added.sections[0].items, [...relevant,'#ShowingUp']);
 });
 
 test("every format retains grounded themes and rejects unrelated identity; hashtag sets retain independent groups", () => {
   for (const { id } of contentTypes) {
     const result = quality(pack(section(id, ["#Consistency", "#GorlLead", "#papercraft"])), request());
-    assert.deepEqual(result.sections[0].items, ["#Consistency"], id);
+    assert.equal(result.sections[0].items[0], "#Consistency", id);
+    assert.doesNotMatch(result.sections[0].items.join(' '),/#GorlLead|#papercraft/);
+    assert.ok(result.sections[0].items.length<=5);
   }
   for (const type of ["platformHashtags", "repurposePack"]) {
     assert.deepEqual(quality(pack(section(type, ["LinkedIn: #Consistency #GorlLead", "Instagram: #Consistency #papercraft"])), request()).sections[0].items,
@@ -77,7 +82,7 @@ test("every format retains grounded themes and rejects unrelated identity; hasht
     const groups = ["LinkedIn", "Instagram", "TikTok", "Facebook", "YouTube Shorts", "X/Twitter"];
     const tags = ["#LinkedInPresence", ...relevant, "#ShowingUp"];
     const limited = quality(pack(section(type, groups.map(label => `${label}: ${tags.join(" ")}`))), request()).sections[0];
-    assert.deepEqual(limited.items.map(item => (item.match(/#/g) ?? []).length), [5, 5, 5, 3, 3, 2]);
+    assert.deepEqual(limited.items.map(item => (item.match(/#/g) ?? []).length), [5, 5, 5, 5, 5, 2]);
   }
 });
 
@@ -96,5 +101,5 @@ test("final display, clipboard serialization, workspace restore and export share
   yt.body = "A reflection. #Consistency";
   const rendered = buildSectionCopyText(yt);
   assert.equal((rendered.match(/#Consistency/g) ?? []).length, 1);
-  assert.ok(rendered.endsWith("#Consistency #PersonalBranding"));
+  assert.ok(rendered.endsWith(['#Consistency',...yt.items.filter(t=>t!=='#Consistency')].join(' ')));
 });

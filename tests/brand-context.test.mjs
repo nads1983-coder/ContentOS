@@ -21,7 +21,7 @@ test("reported Codex contamination fails, while the subject and creative hook su
   assert.throws(() => parse(JSON.stringify(fixture.output), req()), GenerationGroundingError);
   const result = check();
   assert.equal(result.sections[0].body, natural);
-  assert.deepEqual(result.sections[0].items, ["#Codex"]);
+  assert.deepEqual(result.sections[0].items, ["#Codex", "#Coding", "#Programming", "#SoftwareDevelopment"]);
   assert.doesNotMatch(JSON.stringify(result), /GorlLead|Gorl Lead|competition/i);
   assert.equal(JSON.stringify(fixture), before);
 });
@@ -86,14 +86,14 @@ test("refinement cannot authorize contamination from the previous draft or saved
   assert.throws(() => parse(JSON.stringify(fixture.output), req({ refinement })), GenerationGroundingError);
   assert.equal(check(natural, { refinement }).sections[0].body, natural);
   const explicit = { ...refinement, instructions: "Mention Gorl Lead. Include #GorlLead." };
-  assert.deepEqual(check("A fresh perspective from Gorl Lead.", { refinement: explicit }).sections[0].items, ["#Codex", "#GorlLead"]);
+  assert.deepEqual(check("A fresh perspective from Gorl Lead.", { refinement: explicit }).sections[0].items, ["#Codex", "#GorlLead", "#Coding", "#Programming", "#SoftwareDevelopment"]);
   assert.throws(() => check("Join the Gorl Lead competition.", { refinement: explicit }), GenerationGroundingError);
 });
 
 test("saved hashtag instructions cannot smuggle a brand or an unrelated promotion into subject tags", () => {
   const output = value();
   output.sections[0].items = ["#Codex", "#GorlLead", "#GorlLeadCompetition", "#FreeCompetition", "#DocumentaryViewers"];
-  assert.deepEqual(parse(JSON.stringify(output), req()).sections[0].items, ["#Codex"]);
+  assert.deepEqual(parse(JSON.stringify(output), req()).sections[0].items, ["#Codex", "#Coding", "#Programming", "#SoftwareDevelopment"]);
   assert.deepEqual(check(natural, { source: "Write about Codex. Include #GorlLead." }).sections[0].items, ["#Codex", "#GorlLead"]);
   assert.deepEqual(check(natural, { source: "Write about Codex. Avoid #GorlLead." }).sections[0].items, ["#Codex"]);
 });

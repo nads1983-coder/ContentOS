@@ -1,6 +1,6 @@
 import type { GenerateRequest, GeneratedSection } from "@/types/content";
 import { brandContextScope } from "@/lib/brand-context";
-import { conceptualHashtags } from "@/lib/hashtag-context";
+import { conceptualHashtags, hashtagMaximums } from "@/lib/hashtag-context";
 import { socialHashtag } from "@/lib/post-format";
 
 type HashtagRequest = GenerateRequest & { refinement?: { instructions?: string; section?: GeneratedSection } };
@@ -62,8 +62,14 @@ export function buildHashtagPolicy(request: HashtagRequest) {
     for (let i = 0; i < words.length; i++) for (let length = 1; length <= 4 && i + length <= words.length; length++) allowed.add(words.slice(i, i + length).join(""));
   }
   const topic = topicParts.join(" ");
+  // YouTube as the subject supports discovery themes, not claims about the
+  // author's channel, income or niche. Platform selection cannot activate these.
+  if (/\byoutube\b/i.test(topic)) for (const tag of ["YouTube", "OnlineVideo", "VideoContent", "VideoDiscovery", "DigitalMedia", "YouTubeVideos", "VideoSharing", "DigitalContent", "OnlineContent", "YouTubeCommunity"]) {
+    allowed.add(hashtagKey(tag)); concepts.add(`#${tag}`);
+  }
   const socialTopic = /\bhashtags?\b/i.test(topic) && /\b(?:posts?|posting|social|reach|engagement|work(?:ing)?|effectiveness|strategy|strategies)\b/i.test(topic);
-  const platforms = selected ? Object.keys(hashtagPlatforms).filter(isHashtagPlatform) : request.selectedTypes.filter(isHashtagPlatform);
+  const selectedPlatforms = request.selectedTypes.filter(isHashtagPlatform);
+  const platforms = selectedPlatforms.length ? selectedPlatforms : Object.keys(hashtagPlatforms).filter(isHashtagPlatform);
   for (const platform of platforms) if (socialTopic) for (const tag of socialThemes[platform]) allowed.add(hashtagKey(tag));
   for (const [preferences, isCurrent] of [[request.writingStyle ?? "", false], [current, true]] as const) for (const clause of preferences.split(/[.!?\n]/)) {
     const negative = /\b(?:no|avoid|exclude|omit|remove|without|do not use|don't use)\b/i.test(clause);
@@ -79,7 +85,11 @@ export function buildHashtagPolicy(request: HashtagRequest) {
     ...(socialTopic && platforms.includes(platform) ? socialThemes[platform].map(tag => `#${tag}`) : []), ...concepts, ...explicit
   ])].filter(accepts);
   const existingPreference = request.refinement?.section && hashtagTokens([request.refinement.section.body, ...request.refinement.section.items].join("\n")).some(accepts);
-  return { enabled, accepts, suggestions, platforms, requested: enabled && (selected || choice === true || Boolean(existingPreference)) };
+  const instructions = [request.refinement?.instructions, request.source, request.writingStyle].filter((v): v is string => Boolean(v));
+  const count = instructions.map(text => text.match(/\b(?:use|include|add|keep)\s+(?:up to\s+|only\s+|exactly\s+)?(\d{1,2})\s+hashtags?\b/i)).find(Boolean);
+  const explicitTags = instructions.some(text => text.split(/[.!?\n]/).some(clause => /\b(?:use|include|add|keep)\b/i.test(clause) && (/\ball\s+(?:the\s+)?hashtags?\b/i.test(clause) || hashtagTokens(clause).some(accepts))));
+  const limit = (type: string) => count ? Number(count[1]) : type === "platformHashtags" ? 5 : explicitTags ? Infinity : hashtagMaximums[type] ?? 5;
+  return { enabled, accepts, suggestions, platforms, limit, requested: enabled && (selected || choice === true || Boolean(existingPreference)) };
 }
 
 export function hashtagPromptContext(request: HashtagRequest) {
@@ -87,7 +97,8 @@ export function hashtagPromptContext(request: HashtagRequest) {
   if (!policy.enabled) return "Hashtag instruction: omit all hashtags, including the separate set, because an explicit no-hashtag preference applies.";
   return [
     `Hashtag instruction: ${policy.requested ? "meaningful suggestions explicitly requested" : "use relevant platform defaults when appropriate"}. Questions about hashtags not working are subjects, not omission instructions.`,
-    "The Hashtags format requests suggestions about the source subject; never use its format label as a tag. #Hashtags alone is not a useful output. Keep caption tags in items and label each separate platform set.",
+    "Every platform caption gets its own relevant tags automatically, whether or not Hashtags is selected. Keep them in items, grouped after one blank line below the post. Facebook, LinkedIn and YouTube allow up to five; never stop at one when several useful themes are supported. Do not pad sparse topics.",
+    "The optional Hashtags format is ONE set of five additional subject-relevant choices, distinct from the union of caption tags and unique within the set. Do not repeat platform-labelled caption sets or remove caption tags to supply it. Use fewer if five supported alternatives are unavailable. #Hashtags alone is not useful.",
     ...policy.platforms.map(platform => `${hashtagPlatforms[platform]} source-derived candidates (not business claims or mandatory quotas): ${policy.suggestions(platform).join(" ") || "choose meaningful tags supported by the actual subject; do not invent a niche"}`)
   ].join("\n");
 }

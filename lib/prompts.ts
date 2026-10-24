@@ -228,13 +228,13 @@ Repurposing workflow:
 - do not merge the repurposed assets into one dense paragraph
 
 Platform hashtag rules:
-- If Platform Hashtags are requested, create separate labeled sets for LinkedIn, Instagram, TikTok, X/Twitter, Facebook, and YouTube Shorts.
+- Give every platform caption its own relevant hashtags automatically. The optional Platform Hashtags output contains one set of five additional, unique choices not used in any caption. Do not repeat platform-labelled caption sets.
 - LinkedIn: prefer 3 to 5 relevant professional hashtags.
 - Instagram: prefer 3 to 5 relevant hashtags.
 - TikTok: prefer 3 to 5 relevant searchable hashtags.
 - X/Twitter: 0 to 2 tags, only if useful.
-- Facebook: prefer 1 to 3 relevant hashtags, restrained.
-- YouTube Shorts: prefer 2 to 3 relevant hashtags; plain search keywords are separate from hashtag counts.
+- Facebook: up to 5 relevant hashtags, grouped beneath the post after one blank line.
+- YouTube Shorts: up to 5 relevant hashtags beneath the description after one blank line; plain search keywords are separate from hashtag counts.
 - Avoid generic tags like #motivation, #success, and #inspiration unless the source makes them unusually relevant.
 
 CTA handling:
