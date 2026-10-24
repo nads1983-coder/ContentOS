@@ -1,5 +1,6 @@
 import type { GenerateRequest } from "@/types/content";
-import { channelClaims, channelEvidence, milestoneEvidence, subjectText } from "@/lib/claim-evidence";
+import { channelClaims, channelEvidence, milestoneEvidence, promotionEvidence, subjectText, sourceEvidence } from "@/lib/claim-evidence";
+import { plainPostText } from "@/lib/post-format";
 
 // A bounded backstop for recognizable high-risk claims, not a semantic fact checker.
 // Requiring source wording here deliberately favours refusal over guessed entailment.
@@ -15,6 +16,9 @@ const highRiskClaims = [
   /\b(?:guaranteed|money.back|lifetime warranty|risk.free|guarantee(?:s|d)? (?:you|results|success))\b/i,
   /\b(?:includes?|features?|comes with)\s+(?:\d|a |an |built.in|unlimited)/i,
   /\b(?:giveaway|prize|winner|entries|eligibility)\b[^.!?\n]{0,80}\b(?:closes?|ends?|receives?|wins?|eligible|only|worth|deadline)\b/i,
+  /\b(?:enter|join|hosting|running|holding|launching)\s+(?:our |the |a |this )?(?:giveaway|competition|contest)\b/i,
+  /\b(?:our|the|this)\s+(?:giveaway|competition|contest|sale|offer)\s+(?:is|starts?|ends?|runs?|closes?|opens?)\b/i,
+  /(?:^|[.!?:]\s*)(?:win|enter to win)\s+(?:a\b|an\b|\d|[$£€])|\b(?:chance to win|entry deadline|entries (?:are|open|close)|free shipping|\d+\s*%\s*off)\b|\b(?:comment|follow|tag|like|share|subscribe|sign up)\b[^.!?\n]{0,80}\b(?:to enter|for entry)\b/i,
   /\bonly\s+[^.!?\n]{1,80}\b(?:eligible|can enter|may enter)\b/i,
   /\b(?:partnered with|in partnership with|endorsed by|trusted by)\b/i
 ];
@@ -43,7 +47,7 @@ function category(text: string): ClaimCategory | undefined {
 }
 
 function normalize(value: string) {
-  return value.normalize("NFKC").toLowerCase().replace(/[\u2018\u2019]/g, "'")
+  return plainPostText(value).normalize("NFKC").toLowerCase().replace(/[\u2018\u2019]/g, "'")
     .replace(/[\u201c\u201d]/g, '"').replace(/\s*(?:[\u2013\u2014]|--+)\s*/g, ", ").replace(/\s+/g, " ").trim();
 }
 
@@ -59,8 +63,7 @@ function record(value: unknown): Record<string, unknown> {
 export function reviewBusinessFacts(value: unknown, request: GenerateRequest): GroundingDecision[] {
   // Voice, audience, goals and the previous AI asset are not evidence. Saved offer
   // text is user-supplied context, not independently verified business information.
-  const evidence = (["brief", "offer"] as const).flatMap(source =>
-    sentences(source === "brief" ? request.source : request.offer || "").map((text, index) => ({ text: normalize(text).replace(/[.!?]+$/, ""), source, index })));
+  const evidence = sourceEvidence(request).map(fact => ({ ...fact, text: normalize(fact.text).replace(/[.!?]+$/, "") }));
   const result = record(value);
   const sections = Array.isArray(result.sections) ? result.sections : [];
   const fields = [["title", result.title], ["summary", result.summary], ...sections.flatMap((value, index) => {
@@ -82,10 +85,12 @@ export function reviewBusinessFacts(value: unknown, request: GenerateRequest): G
     const supported = evidence.find(source => subjectText(source.text, request) === subjectText(claim, request) && !(source.source === "offer" && evidence.some(current =>
       current.source === "brief" && classify(current.text) === claimCategory && /\b(?:not|never|no longer|do not|don't)\b/.test(current.text))));
     if (supported) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: supported.source, index: supported.index } };
-    if (claimCategory === "milestone") {
+    if (claimCategory) {
       const fact = milestoneEvidence(sentence, String(path), request);
       if (fact) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: fact.source, index: fact.index } };
     }
+    const promotion = promotionEvidence(sentence, request);
+    if (promotion) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: promotion.source, index: promotion.index } };
     if (claimCategory === "channel" && channelEvidence(sentence, request)) return { ...base, category: claimCategory, classification: "source_supported" };
     // No recognized claim is NOT a verification certificate. The UI continues to
     // require editorial fact review; this bounded guard does not prove semantics.

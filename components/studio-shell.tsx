@@ -50,7 +50,7 @@ import {
   buildSectionCopyText,
   copyPlainText
 } from "@/lib/copy";
-import { formatOutputSection, formatSectionImageText, OutputBlock } from "@/lib/output-format";
+import { formatOutputSection, formatSectionPlainText, formatSectionImageText, OutputBlock } from "@/lib/output-format";
 import { isImageContentType } from "@/lib/image-generation-contract";
 import { IMAGE_MODES, backgroundFromDesignImage, buildCreativeBrief, normaliseDesign } from "@/lib/image-design";
 import type { ImageMode, ImageDesign } from "@/lib/image-design";
@@ -60,6 +60,7 @@ import { ImageDesignEditor } from "@/components/image-design-editor";
 import { ImageChoices } from "@/components/image-choices";
 import { DEFAULT_APPEARANCE, type ImageAppearance } from "@/lib/image-appearance";
 import { cleanPlainText } from "@/lib/text-normalize";
+import { plainPostText, socialPostTypes } from "@/lib/post-format";
 import {
   ctaModes,
   contentTypes,
@@ -459,7 +460,7 @@ function prefixSelectedLines(text: string, numbered: boolean) {
 }
 
 function formatFormatterPlainText(value: string) {
-  return cleanPlainText(value);
+  return plainPostText(value);
 }
 
 export function StudioShell({
@@ -2118,7 +2119,9 @@ function OutputCard({
           <button className="flex min-h-11 items-center gap-2 rounded bg-violet px-4 text-sm" onClick={() => { onEdit({ ...draft, items: draft.items.filter(Boolean) }); setEditing(false); }}><Check size={16} />Apply edits</button>
           <button className="min-h-11 px-3 text-sm text-muted" onClick={() => setEditing(false)}>Cancel</button>
         </div>
-      </div> : <PlatformOutputBlocks blocks={formattedOutput.blocks} />}
+      </div> : socialPostTypes.has(section.type)
+        ? <p data-testid="post-caption" className="whitespace-pre-wrap break-words text-[0.95rem] leading-7 text-bone/92">{formatSectionPlainText(section, sourceText)}</p>
+        : <PlatformOutputBlocks blocks={formattedOutput.blocks} />}
 
       {image ? (
         <div className="mt-4 rounded-xl border border-gold/30 bg-ink/55 p-3 sm:rounded">
@@ -2210,16 +2213,7 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
     return (
       <div className="min-w-0">
         <span className="sr-only">{block.label}</span>
-        <div className="flex flex-wrap gap-x-2 gap-y-1">
-          {block.lines.map((line) => (
-            <span
-              key={line}
-              className="max-w-full break-words text-sm text-muted"
-            >
-              {line}
-            </span>
-          ))}
-        </div>
+        <p className="whitespace-pre-wrap break-words text-sm text-muted">{block.lines.join(block.separator ?? " ")}</p>
       </div>
     );
   }
@@ -2245,7 +2239,7 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
         <span className="sr-only">{block.label}</span>
         <div className="mt-2 grid min-w-0 gap-2">
           {block.lines.map((line) => (
-            <p key={line} className="min-w-0 break-words text-[0.98rem] font-semibold leading-7 text-bone">
+            <p key={line} className="min-w-0 whitespace-pre-wrap break-words text-[0.98rem] font-semibold leading-7 text-bone">
               {line}
             </p>
           ))}

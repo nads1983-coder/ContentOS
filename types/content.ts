@@ -72,6 +72,7 @@ export type GeneratedSection = {
   body: string;
   items: string[];
   cta?: string;
+  hashtagLayout?: "inline" | "lines";
   revisionSource?: "manual" | "refined";
   review?: PublicationReview;
 };

@@ -79,6 +79,7 @@ export function parseWorkspaceGeneration(value: unknown): GenerationResult {
         id: text(section.id, 160), type: choice(section.type, contentTypes),
         title: text(section.title, 1000), platform: text(section.platform, 160), body: text(section.body, 32000),
         items: list(section.items, 100, entry => text(entry)),
+        ...(section.hashtagLayout !== undefined ? { hashtagLayout: choice(section.hashtagLayout, [{ id: "inline" }, { id: "lines" }] as const) } : {}),
         ...(section.review !== undefined ? { review: (() => {
           const review = object(section.review);
           if (review.status !== "ready_to_review" && review.status !== "needs_confirmation") throw new Error("Invalid review status");
