@@ -28,10 +28,10 @@ export function ImageChoices({ value, onChange, format, onFormat, disabled, bran
       <div className="mt-2 flex flex-wrap items-center gap-2">{value.colours.map((c, i) => <button type="button" key={c} title={`Remove ${c}`} aria-label={`Remove ${c}`} onClick={() => selectColour(c)} className="flex min-h-11 items-center gap-2 text-xs"><span className="h-5 w-5 rounded border border-white/30" style={{ backgroundColor: c }} />{i === 0 ? "Background" : "Accent"}: {c}</button>)}</div>
       <button type="button" onClick={() => onChange({ ...value, colours: [] })} className="min-h-11 text-sm text-muted underline underline-offset-4">{brandColors ? "Use saved brand colours" : "Automatic colours"}</button>
     </fieldset>
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-3">
       <label className="grid gap-2 text-sm">Style<select aria-label="Style" className={field} value={value.style} onChange={e => onChange({ ...value, style: e.target.value as ImageAppearance["style"] })}>{VISUAL_STYLES.map(s => <option key={s} value={s}>{s === "auto" ? "Automatic" : s[0].toUpperCase() + s.slice(1)}</option>)}</select></label>
       <label className="grid gap-2 text-sm">Format<select aria-label="Format" className={field} value={format} onChange={e => onFormat(e.target.value as SocialImageFormat)}>
-        <option value="square">Instagram square · 1:1</option><option value="portrait">Instagram portrait · 4:5</option><option value="vertical">Story / Reel · 9:16</option><option value="landscape">YouTube / LinkedIn · 16:9</option>
+        <option value="square">Square · 1080 × 1080</option><option value="portrait">Portrait · 1080 × 1350</option><option value="vertical">Story / Reel · 1080 × 1920</option><option value="landscape">Landscape · 1536 × 864</option>
       </select></label>
     </div>
   </fieldset>;

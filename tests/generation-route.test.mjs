@@ -165,6 +165,31 @@ test("refinement factual failures also refuse delivery without a retry or succes
   assert.deepEqual(result.calls, ["reserve", "provider", "fail"]);
 });
 
+test("latest live inventions fail both generation and refinement before persistence, while paid usage is retained", async () => {
+  const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
+  const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-instagram-quality-comparison.json"), "utf8"));
+  for (const refinement of [undefined, { action: "custom", instructions: "Make it more conversational.", section: captured.sections[0] }]) {
+    const h = statefulReservationHarness();
+    const body = { ...original.request, refinement, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+    const providerResponse = { status: "completed", output_text: JSON.stringify(captured), usage: { input_tokens: 2622, output_tokens: 190, total_tokens: 2812 } };
+    const result = await routeFixture({ ...h, body, providerResponse });
+    assert.equal(result.response.status, 502);
+    assert.equal(result.body.code, "unsupported_business_facts");
+    assert.deepEqual(result.calls, ["provider"]);
+    assert.deepEqual(result.financialCalls, ["dispatch", "settle"]);
+    assert.equal(result.clientOptions.maxRetries, 0);
+    assert.equal(h.completions, 0);
+    assert.equal(h.state.generation_history_json, undefined);
+    assert.equal(h.state.usage_events_json, undefined);
+    assert.equal(result.analytics[0].fields.output_tokens, 190);
+    assert.doesNotMatch(JSON.stringify(result.errors), /Northbank|creative process|coming soon/);
+    const replay = await routeFixture({ ...h, body, providerResponse });
+    assert.notEqual(replay.response.status, 200);
+    assert.deepEqual(replay.calls, []);
+    assert.deepEqual(replay.financialCalls, []);
+  }
+});
+
 test("captured quality cleanup is persisted once with provider accounting and safe duplicate replay", async () => {
   const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
   const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-instagram-quality-retest.json"), "utf8"));

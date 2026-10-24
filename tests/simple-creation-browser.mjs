@@ -35,7 +35,7 @@ async function newContext() {
         const input = normalizeGenerationRequest(req.postDataJSON()); payloads.push(input);
         const reserved = reserveGenerationInProfile(row, id, input.requestId, input); rows.set(id, reserved.data);
         if (reserved.result.status === "replay") return route.fulfill({ json: reserved.result.result });
-        const output = parseGenerationOutput(JSON.stringify({ title: "Community milestone", summary: "Synthetic provider response, not live AI evidence.", sections: input.selectedTypes.map(type => ({ id: type, type, title: `Draft - ${type}`, platform: type, body: input.refinement ? "A shorter milestone update for our community. Details will follow once confirmed." : "Gorl Lead has reached 1,000 subscribers. Our giveaway announcement is taking shape. [CONFIRM: prize, date and eligibility]", items: ["#GorlLead"], cta: "" })) }), input);
+        const output = parseGenerationOutput(JSON.stringify({ title: "Community milestone", summary: "Synthetic provider response, not live AI evidence.", sections: input.selectedTypes.map(type => ({ id: type, type, title: `Draft - ${type}`, platform: type, body: input.refinement ? "A shorter milestone update for our community. Thank you for being here." : "Gorl Lead has reached 1,000 subscribers. Our giveaway announcement is taking shape. [CONFIRM: prize, date and eligibility]", items: ["#GorlLead"], cta: "" })) }), input);
         const completed = completeGenerationInProfile(rows.get(id), id, input.requestId, reserved.result.fingerprint, output); rows.set(id, completed.data);
         return route.fulfill({ json: completed.result });
       }
@@ -60,6 +60,7 @@ try {
   await page.getByLabel("Where will you publish it?").selectOption("instagram");
   await create.click();
   await page.locator("#outputs article").waitFor();
+  assert.equal(await page.getByText("AI draft · Not independently fact-checked", { exact: true }).isVisible(), true);
   assert.deepEqual(payloads[0].selectedTypes, ["instagram"]);
   assert.equal(payloads[0].automaticSettings.length, 5);
   stage = "brand and explicit controls";

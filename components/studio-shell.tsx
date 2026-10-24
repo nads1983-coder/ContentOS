@@ -346,13 +346,6 @@ const imageStyles: Array<{ id: ImageStyle; label: string }> = [
   { id: "modern", label: "Modern" }
 ];
 
-const imageFormats: Array<{ id: ImageFormat; label: string; helper: string }> = [
-  { id: "square", label: "Square 1:1", helper: "1080 x 1080" },
-  { id: "portrait", label: "Instagram 4:5", helper: "1080 x 1350" },
-  { id: "vertical", label: "Shorts 9:16", helper: "1080 x 1920" },
-  { id: "landscape", label: "Blog / LinkedIn 16:9", helper: "1536 x 864" }
-];
-
 const formatterPlatforms: Array<{
   id: FormatterPlatform;
   label: string;
@@ -1604,6 +1597,7 @@ function OutputPanel({
             {result.title}
           </h2>
           <p className="mt-3 break-words text-sm leading-6 text-muted sm:mt-2">{result.summary}</p>
+          {result.id !== "sample" ? <p className="mt-2 text-xs text-muted">AI draft · Not independently fact-checked</p> : null}
         </div>
         <button
           type="button"
@@ -1719,9 +1713,7 @@ function GenerationSummary({ sections }: { sections: GeneratedSection[] }) {
 
   return (
     <div className="mt-4 rounded-xl border border-violet/30 bg-violet/[0.08] p-3 sm:rounded">
-      <p className="text-sm font-semibold text-bone">AI-generated draft</p>
-      <p className="mt-2 text-sm text-muted">Review facts, claims and permissions before publishing. This content is not independently fact-checked.</p>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {labels.map((label) => (
           <span
             key={label}
@@ -2438,32 +2430,6 @@ function ImageGenerationPanel({
               <label className="grid gap-2 text-sm">Fallback template<select value={style} disabled={isPending} onChange={e => onStyleChange(e.target.value as ImageStyle)} className="min-h-11 rounded border border-white/15 bg-ink px-3">
                 {imageStyles.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
               </select></label>
-
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">
-                  Format
-                </p>
-                <div className="grid gap-2 sm:grid-cols-3">
-                  {imageFormats.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => onFormatChange(item.id)}
-                      disabled={isPending}
-                      aria-pressed={format === item.id}
-                      className={clsx(
-                        "min-h-14 rounded border px-3 text-left transition disabled:cursor-wait disabled:opacity-60",
-                        format === item.id
-                          ? "border-gold/70 bg-gold/10 text-bone"
-                          : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/60"
-                      )}
-                    >
-                      <span className="block text-sm font-semibold">{item.label}</span>
-                      <span className="mt-1 block text-xs text-muted">{item.helper}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="grid gap-2">

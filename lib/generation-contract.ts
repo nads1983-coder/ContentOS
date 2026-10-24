@@ -202,6 +202,16 @@ function validateSection(value: unknown): GeneratedSection {
 
 
 export { productionOutputSchema } from "@/lib/production-generation";
+function hasForbiddenCta(result: GenerationResult, request: GenerationInput) {
+  const explicit = /(?:^|[.!?\n])\s*(?:no (?:cta|call to action)|(?:do not|don't) (?:add|include) (?:a )?(?:cta|call to action))\s*(?:[.!?\n]|$)/i;
+  const noCta = request.ctaMode === "none" && !request.automaticSettings?.includes("ctaMode") ||
+    explicit.test(request.source) || explicit.test(request.refinement?.instructions || "");
+  if (!noCta) return false;
+  const socialAction = /(?:^|[.!?\n:]|\bplease)\s*(?:follow (?:us|me|along)|(?:like|share|save) this (?:post|video|thread|carousel)|(?:click|tap) (?:the |our )?link|link in (?:our |my |the )?bio|(?:dm|message) (?:us|me)|(?:comment|subscribe|sign up|shop now|enter now)\b)/i;
+  return [result.title, result.summary, ...result.sections.flatMap(s => [s.title, s.body, ...s.items, s.cta || ""])]
+    .some(text => socialAction.test(text));
+}
+
 export function parseGenerationOutput(text: string, request: GenerationInput): GenerationResult {
   if (typeof text !== "string" || text.length > GENERATION_LIMITS.outputCharacters) throw new GenerationOutputError("Invalid output size.");
   try {
@@ -216,6 +226,7 @@ export function parseGenerationOutput(text: string, request: GenerationInput): G
     }
     if (new TextEncoder().encode(JSON.stringify(result)).byteLength > GENERATION_LIMITS.resultBytes) throw new Error("Output too large.");
     if (hasUnsupportedBusinessFacts(result, request)) throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged.");
+    if (hasForbiddenCta(result, request)) throw new GenerationOutputError("The response conflicts with No CTA.");
     return result;
   } catch (error) {
     if (error instanceof GenerationGroundingError) throw error;

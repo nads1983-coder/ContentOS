@@ -37,7 +37,8 @@ function shorten(value: string, max: number): string {
   return `${clipped.slice(0, Math.max(clipped.lastIndexOf(" "), Math.floor(max / 2)))}...`;
 }
 function directive(value: string, label: string): string | undefined {
-  return value.match(new RegExp(`(?:^|\\n)(?:${label})\\s*:\\s*([^\\n]+)`, "i"))?.[1]?.replace(/^["“]|["”]$/g, "");
+  const nextLabel = "headline|quote|support(?:ing text)?|brand(?: name)?";
+  return value.match(new RegExp(`(?:^|\\n|[.!?;]\\s+)\\s*(?:${label})\\s*:\\s*([^\\n]+?)(?=\\n|[.!?;]\\s+(?:${nextLabel})\\s*:|$)`, "i"))?.[1]?.replace(/^["“]|["”]$/g, "");
 }
 
 export function buildCreativeBrief(input: BuildPosterInput) {

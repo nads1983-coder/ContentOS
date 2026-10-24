@@ -60,7 +60,7 @@ test("source-grounded factual sentences and natural creative framing coexist on 
     assert.equal(result.sections[0].cta, "");
   }
   assert.doesNotThrow(() => check("Every big milestone deserves a moment.\n\nGet started with a fresh perspective."));
-  assert.doesNotThrow(() => check("We just crossed 1,000 subscribers!\n\nEvery big milestone deserves a moment."));
+  assert.doesNotThrow(() => check("We crossed 1,000 subscribers!\n\nEvery big milestone deserves a moment."));
 });
 
 test("all formats and all delivered fields receive the same guard", () => {

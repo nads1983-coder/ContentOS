@@ -18,7 +18,7 @@ const context=await browser.newContext({acceptDownloads:true});
 const page=await context.newPage();const errors=[];
 page.on("pageerror",e=>errors.push(e.message));
 const h=createImageHarness();h.userId="image-test-account";h.rows.set(h.userId,profile({id:h.userId}));
-const payloads=[];let revision=0;
+const payloads=[],responses=[];let revision=0;
 const snapshot=()=>({revision:String(revision),store:{drafts:[],recent:[],saved:[]},brandProfiles:[],preferences:{brandName:"Mira",audience:"Busy professionals",offer:"",writingStyle:"Warm, thoughtful",contentGoal:""}});
 await page.route("**/*",async route=>{
   const url=new URL(route.request().url());
@@ -30,6 +30,7 @@ await page.route("**/*",async route=>{
   if(url.pathname==="/api/generate-image"){
     const payload=route.request().postDataJSON();payloads.push(payload);
     const result=await h.post(payload,{account:route.request().headers()["x-contentos-account"]});
+    responses.push({status:result.response.status,code:result.body.code,error:result.body.error});
     return route.fulfill({status:result.response.status,json:result.body});
   }
   if(url.pathname.startsWith("/api/"))return route.fulfill({json:{}});
@@ -40,6 +41,16 @@ try{
   await page.goto(`${base}/image-studio-test`);
   await page.getByRole("button",{name:"Image Studio",exact:true}).click();
   const dialog=page.getByRole("dialog");
+  assert.equal(await dialog.locator("summary").evaluate(el=>el.parentElement.open),false);
+  assert.equal(await dialog.evaluate(el=>el.contains(document.activeElement)),true);
+  await page.keyboard.press("Shift+Tab");
+  // Native dialogs may yield to browser chrome, but never background controls.
+  assert.equal(await dialog.evaluate(el=>el.contains(document.activeElement)||document.activeElement===document.body),true);
+  await page.keyboard.press("Tab");
+  assert.equal(await dialog.evaluate(el=>el.contains(document.activeElement)),true,"Keyboard focus returns to the modal");
+  await page.keyboard.press("Escape");
+  assert.equal(await dialog.isVisible(),false);
+  await page.getByRole("button",{name:"Image Studio",exact:true}).click();
   await dialog.locator("summary").filter({hasText:"Advanced Options (Optional)"}).click();
   await dialog.getByLabel("Image content").fill("A quiet ritual.\n\nMake space for a slower morning. #Beauty #Care");
   await dialog.getByLabel("What image would you like?").fill("A luxury beauty graphic using cream and gold.\nHeadline: A quiet ritual");
@@ -64,6 +75,8 @@ try{
   const download=page.waitForEvent("download");await dialog.getByRole("button",{name:"Download PNG"}).click();
   const downloaded=await download;assert.match(downloaded.suggestedFilename(),/\.png$/);
   await downloaded.saveAs(`${artifacts}/text-design.png`);
+  const png=await readFile(`${artifacts}/text-design.png`);
+  assert.deepEqual([png.readUInt32BE(16),png.readUInt32BE(20)],[1080,1080]);
   for(const width of [1440,768,390]){
     await page.setViewportSize({width,height:1000});
     await dialog.screenshot({path:`${artifacts}/studio-${width}.png`});
@@ -91,10 +104,28 @@ try{
   await page.getByRole("button",{name:/Open saved design/}).first().click();
   await page.getByRole("button",{name:"Download PNG"}).waitFor();
   assert.equal(payloads.length,before,"Restoring a saved design must never call the provider");
+  h.userId="image-test-two";h.rows.set(h.userId,profile({id:h.userId}));
   await page.goto(`${base}/image-studio-test?account=two`);
   await page.getByRole("button",{name:"Image Studio",exact:true}).click();
   assert.equal(await page.getByRole("button",{name:/Open saved design/}).count(),0,"Different account cannot see device designs");
+  // Additional exports use the second synthetic account's own quota; never reset
+  // attempt history to evade the real six-attempt rolling protection.
+  await dialog.locator("summary").filter({hasText:"Advanced Options (Optional)"}).click();
+  await dialog.getByLabel("What image would you like?").fill("A simple graphic. Headline: Room for ideas");
+  await dialog.getByRole("button",{name:"Text",exact:true}).click();
+  for(const [format,width,height] of [["portrait",1080,1350],["vertical",1080,1920],["landscape",1536,864]]){
+    await dialog.getByLabel("Format",{exact:true}).selectOption(format);
+    await dialog.getByRole("button",{name:format==="portrait"?"Generate visual":"Regenerate image",exact:true}).click();
+    await page.waitForFunction(()=>!document.querySelector('dialog button[disabled] svg.animate-spin'));
+    await dialog.getByRole("button",{name:"Download PNG"}).waitFor();
+    const exported=page.waitForEvent("download");await dialog.getByRole("button",{name:"Download PNG"}).click();
+    const file=await exported;await file.saveAs(`${artifacts}/${format}.png`);
+    const bytes=await readFile(`${artifacts}/${format}.png`);
+    assert.deepEqual([bytes.readUInt32BE(16),bytes.readUInt32BE(20)],[width,height]);
+  }
+  assert.equal(h.calls.filter(c=>c==="provider").length,3,"All four Text design exports use no provider");
   assert.deepEqual(errors,[]);
-  const result={passed:true,modes:4,viewports:[1440,768,390],mockedRequests:payloads.length,mockedProviderCalls:3,paidCalls:0,editing:true,undo:true,pngExport:true,deviceReload:true,accountIsolation:true,pageErrors:errors};
+  const result={passed:true,modes:4,viewports:[1440,768,390],mockedRequests:payloads.length,mockedProviderCalls:3,paidCalls:0,editing:true,undo:true,pngExport:true,exactPngDimensions:4,keyboardModal:true,deviceReload:true,accountIsolation:true,pageErrors:errors};
   await writeFile(`${artifacts}/result.json`,JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
-}finally{await context.close();await browser.close();await rm(fixtureDirectory,{recursive:true});}
+}catch(error){await page.screenshot({path:`${artifacts}/failure.png`,fullPage:true}).catch(()=>{});console.error({responses,errors});throw error;}
+finally{await context.close();await browser.close();await rm(fixtureDirectory,{recursive:true});}

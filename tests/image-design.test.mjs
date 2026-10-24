@@ -18,6 +18,21 @@ test("Auto chooses text, visual storytelling or mixed without a briefing API", (
   assert.equal(buildCreativeBrief(input({ mode: "image", creativeInstructions: "Headline: Quiet confidence" })).design.mode, "mixed");
 });
 
+test("inline and multiline image text directives stay separate and do not render publisher instructions", () => {
+  for (const instructions of ["A simple graphic. Headline: Room for ideas", "A simple graphic.\nHeadline: Room for ideas"]) {
+    const brief = buildCreativeBrief(input({ mode: "text", outputText: instructions, creativeInstructions: instructions }));
+    assert.equal(brief.design.headline, "Room for ideas");
+    assert.equal(brief.design.body, "");
+  }
+  const instructions = "Cream and gold graphic. Headline: Room for ideas. Support: A quiet moment. Brand: Mira";
+  const brief = buildCreativeBrief(input({ mode: "text", outputText: instructions, creativeInstructions: instructions }));
+  assert.equal(brief.design.headline, "Room for ideas");
+  assert.equal(brief.design.body, "A quiet moment");
+  assert.equal(brief.design.brand, "Mira");
+  const notADirective = "Do not put a Headline: on this photograph.";
+  assert.equal(buildCreativeBrief(input({ mode: "image", outputText: notADirective, creativeInstructions: notADirective })).design.headline, "");
+});
+
 test("explicit palette and creative direction override saved preferences; no invented logo or offers", () => {
   const brief = buildCreativeBrief(input({ creativeInstructions: "A luxury beauty graphic using cream and gold.\nHeadline: A quiet ritual",
     brandContext: { brandName: "Mira", industry: "Beauty", audience: "Busy professionals", brandColors: "black, purple", visualStyle: "Corporate technology", writingStyle: "Warm and thoughtful" } }));
