@@ -12,9 +12,23 @@ export function subjectText(value: string, request: GenerateRequest) {
   return text.replace(/^our (?:business|company|brand)\b/, "we").replace(/^we has\b/, "we have");
 }
 export const factualSentences = (value: string) => value.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(Boolean);
+export function isConfirmedFact(text: string) {
+  return !/\?|\b(?:maybe|might|could|would|possibly|potential|consider(?:ing)?|hope|wish|imagine|example|hypothetical|unconfirmed|tbc|tbd)\b|\b(?:planning to|plan to|not confirmed|to be confirmed|if we)\b/i.test(text);
+}
 export function sourceEvidence(request: GenerateRequest) {
   return (["brief", "offer"] as const).flatMap(source => factualSentences(source === "brief" ? request.source : request.offer || "")
-    .map((text, index) => ({ text: factualText(text), subject: subjectText(text, request), source, index })));
+    .map((text, index) => ({ text: factualText(text), subject: subjectText(text, request), source, index }))
+    .filter(fact => isConfirmedFact(fact.text)));
+}
+
+export function promotionEvidence(value: string, request: GenerateRequest) {
+  const text = subjectText(value, request);
+  if (!/^(?:to celebrate this milestone, )?we(?:'re| are) (?:running|hosting|holding|launching) a giveaway$/.test(text)) return undefined;
+  const facts = sourceEvidence(request);
+  if (facts.some(f => f.source === "brief" && /\b(?:no|not|never|cancelled|canceled|don't)\b[^.!?]{0,80}\bgiveaway\b|\bgiveaway\b[^.!?]{0,80}\b(?:cancelled|canceled|not running)\b/.test(f.text))) return undefined;
+  if (text.startsWith("to celebrate") && !facts.some(f => /\b(?:reached|hit) \d[\d,]* (?:subscribers|followers|members)\b/.test(f.subject))) return undefined;
+  // An explicit announcement instruction confirms existence, never terms.
+  return facts.find(f => f.source === "brief" && /(?:^|;\s*)announce (?:our|the|a) giveaway(?: on (?:instagram|linkedin))?$/.test(f.text));
 }
 
 type Milestone = { amount: number; unit: string };

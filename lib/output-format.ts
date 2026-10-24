@@ -1,5 +1,6 @@
 import { cleanPlainText, normalizePlainTextLines } from "./text-normalize";
 import type { ContentTypeId, GeneratedSection } from "../types/content";
+import { normalizePostSection, socialHashtag } from "@/lib/post-format";
 
 export type OutputBlockKind =
   | "body"
@@ -19,13 +20,14 @@ export type OutputBlock = {
   label: string;
   kind: OutputBlockKind;
   lines: string[];
+  separator?: " " | "\n";
 };
 
 export type FormattedOutput = {
   blocks: OutputBlock[];
 };
 
-const hashtagPattern = /#[\p{L}\p{N}_]+/gu;
+const hashtagPattern = socialHashtag;
 
 function cleanDisplayText(value: unknown): string {
   if (typeof value === "string") {
@@ -107,29 +109,6 @@ function splitTagItem(value: string) {
     .filter(Boolean);
 }
 
-function countWords(value: string) {
-  return value.split(/\s+/).filter(Boolean).length;
-}
-
-function fallbackFromSource(source: string | undefined, type: ContentTypeId) {
-  const cleaned = cleanDisplayText(source)
-    .replace(hashtagPattern, "")
-    .split(/\n{2,}|\.\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .slice(0, type === "tiktok" ? 1 : 2)
-    .join(". ");
-
-  if (!cleaned) {
-    return type === "tiktok"
-      ? "A quick caption based on the source idea."
-      : "A practical caption based on the source idea.\n\nUse this as a cleaner starting point.";
-  }
-
-  const ending = /[.!?]$/.test(cleaned) ? "" : ".";
-  return type === "tiktok" ? `${cleaned}${ending}`.slice(0, 180) : `${cleaned}${ending}`;
-}
-
 function extractLabeledLine(lines: string[], labels: string[]) {
   const labelPattern = labels.map((label) => label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
   const pattern = new RegExp(`^(${labelPattern})\\s*[:\\-]\\s*(.+)$`, "i");
@@ -187,7 +166,7 @@ function compact(blocks: Array<OutputBlock | null>) {
   return blocks.filter((block): block is OutputBlock => Boolean(block));
 }
 
-function formatCaption(section: GeneratedSection, label: string, source?: string) {
+function formatCaption(section: GeneratedSection) {
   const body = baseBody(section);
   const items = baseItems(section);
   const cta = baseCta(section);
@@ -195,12 +174,9 @@ function formatCaption(section: GeneratedSection, label: string, source?: string
     ...extractHashtags([body]),
     ...items.filter((item) => isHashtagLine(item) || item.includes("#")).flatMap((item) => item.match(hashtagPattern) ?? [])
   ]);
-  const captionItems = items.filter((item) => !isHashtagLine(item) && !item.includes("#"));
+  const captionItems = items.map(removeHashtagTokens).filter(Boolean);
   const cleanedCaptionBody = removeHashtagTokens(removeHashtagOnlyLines(body));
-  const captionBody = countWords(cleanedCaptionBody) >= 7
-    ? cleanedCaptionBody
-    : fallbackFromSource(source, section.type);
-  const paragraphs = splitParagraphs(captionBody);
+  const paragraphs = splitParagraphs(cleanedCaptionBody);
   const hook = paragraphs.length > 1 ? paragraphs[0] : "";
   const bodyLines = paragraphs.length > 1 ? paragraphs.slice(1) : paragraphs;
 
@@ -450,10 +426,11 @@ function formatDefault(section: GeneratedSection) {
 }
 
 export function formatOutputSection(section: GeneratedSection, source?: string): FormattedOutput {
+  section = normalizePostSection(section);
   const formatters: Partial<Record<ContentTypeId, () => FormattedOutput>> = {
     linkedin: () => formatLinkedIn(section),
-    instagram: () => formatCaption(section, "Caption body", source),
-    tiktok: () => formatCaption(section, "Caption body", source),
+    instagram: () => formatCaption(section),
+    tiktok: () => formatCaption(section),
     twitter: () => formatTwitterPost(section),
     xThread: () => formatThread(section),
     facebook: () => formatFacebook(section),
@@ -463,11 +440,13 @@ export function formatOutputSection(section: GeneratedSection, source?: string):
     platformHashtags: () => formatPlatformHashtags(section)
   };
 
-  return formatters[section.type]?.() ?? formatDefault(section);
+  const output = formatters[section.type]?.() ?? formatDefault(section);
+  return { blocks: output.blocks.map(block => block.kind === "hashtags"
+    ? { ...block, separator: section.hashtagLayout === "lines" ? "\n" : " " } : block) };
 }
 
 function blockToPlainText(block: OutputBlock) {
-  const separator = block.kind === "hashtags" || block.kind === "tags" ? "\n" : "\n\n";
+  const separator = block.separator ?? (block.kind === "hashtags" || block.kind === "tags" ? " " : "\n\n");
   const body = cleanPlainText(block.lines.join(separator));
 
   if (!body) {

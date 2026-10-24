@@ -1,5 +1,6 @@
 import type { GenerationInput } from "@/lib/generation-contract";
 import type { GenerationResult } from "@/types/content";
+import { normalizePostSection, socialPostTypes } from "@/lib/post-format";
 
 // A fragment inside a URL or identifier is not a social hashtag.
 const tagPattern = /(?<![\p{L}\p{N}_/=?&.%:-])#[\p{L}\p{N}_]+/gu;
@@ -75,9 +76,30 @@ export function applyContentQuality(result: GenerationResult, request: Generatio
         const cleaned = clean(item, perItem ? new Set() : seen);
         return tags(item).length && /^[\w /-]+:\s*$/.test(cleaned) ? "" : cleaned;
       }).filter(Boolean);
-      return { ...section, title: clean(section.title), platform: clean(section.platform),
+      const formatted = normalizePostSection({ ...section, title: clean(section.title), platform: clean(section.platform),
         body: !body && !items.length && section.type === "platformHashtags" ? "No relevant hashtags supported by this brief." : body,
-        items, cta: clean(section.cta ?? "", perItem ? new Set() : seen) };
+        items, cta: clean(section.cta ?? "", perItem ? new Set() : seen) });
+      if (socialPostTypes.has(section.type)) {
+        const instructions = [request.refinement?.instructions, request.source, request.writingStyle].filter((text): text is string => Boolean(text));
+        const separateLines = /(?:one|each) hashtag (?:per|on (?:its|a) (?:separate|new)) line/i;
+        const inline = /hashtags? (?:on|in) (?:one|a single) line/i;
+        const layout = instructions.find(text => separateLines.test(text) || inline.test(text)) ?? "";
+        formatted.hashtagLayout = separateLines.test(layout) ? "lines" : "inline";
+        const limits: Record<string, number> = { instagram: 7, linkedin: 5, tiktok: 5, facebook: 3, twitter: 2 };
+        // Explicit tag requests can exceed editorial defaults; unsupported tags
+        // were already refused above. Never manufacture replacements to fill a quota.
+        const explicit = /\b(?:use|include|add|keep)\b[^.!?\n]{0,80}(?:\d+\s+hashtags?|all\s+(?:the\s+)?hashtags?|#[\p{L}\p{N}_]+)/iu.test(instructions.join("\n"));
+        const countRequest = instructions.map(text => text.match(/\b(?:use|include|add|keep)\s+(?:up to\s+|only\s+|exactly\s+)?(\d{1,2})\s+hashtags?\b/i)).find(Boolean);
+        if (!explicit || countRequest) {
+          const maximum = countRequest ? Number(countRequest[1]) : limits[section.type];
+          let count = 0;
+          const cap = (text: string) => text.replace(tagPattern, tag => ++count <= maximum ? tag : "").trim();
+          formatted.body = cap(formatted.body);
+          formatted.items = formatted.items.map(cap).filter(Boolean);
+          formatted.cta = cap(formatted.cta ?? "");
+        }
+      }
+      return formatted;
     })
   };
 }

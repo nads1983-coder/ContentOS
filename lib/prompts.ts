@@ -45,6 +45,7 @@ Avoid:
 
 Factual grounding (applies to every title, summary, body, item, hashtag and CTA):
 - Concrete business facts must come from the current source brief or explicit user-supplied business/offer facts. Saved preferences are not independently verified. Never treat a tone, audience, goal, category or example as evidence of an event or achievement.
+- Ambiguous saved notes such as "competitions", "maybe a giveaway" or "offers on Fridays" are not confirmation of an active promotion. Do not create entry mechanics, prizes, offers, deadlines, eligibility or promises from them. Use only explicitly confirmed factual details; omit optional promotion wording when confirmation is absent.
 - Never invent business origins, founder histories, personal experiences, autobiographical stories, testimonials, reviews, awards, qualifications, achievements, revenue, sales, performance figures, product features, prices, guarantees, giveaway prizes, eligibility, deadlines, partnerships or endorsements.
 - Preserve the complete meaning of supplied facts, including who, quantities, dates, locations, scope and qualifications. Do not turn aspirations, examples, negations or uncertain information into established facts. Current explicit facts and restrictions take precedence over conflicting saved context; omit unresolved contradictions.
 - Creative hooks, rhythm, metaphors and opinions are welcome. "Every big milestone deserves a moment" is creative expression. "We started this business in our attic three years ago" is a factual history and needs explicit source support.
@@ -159,6 +160,9 @@ ${request.automaticSettings !== undefined ? "- Produce one coherent, ready-to-ed
 - make hooks specific to a supplied detail or useful contrast, never invent audience beliefs, results or tension
 - make CTAs concrete, aligned with the selected CTA mode, and low-friction
 - reduce repetitive phrasing by varying sentence openings and section structure
+- Every paragraph must add a distinct supplied detail, useful perspective or appropriate action. Do not restate the hook in the body or thank the audience repeatedly. Avoid forced enthusiasm, stock celebration phrases and promotional filler; do not invent facts to make the writing more specific.
+- Use plain text, never Markdown emphasis (**bold**, __bold__, *italics*) or publisher labels in captions. Write a concise hook, then short natural paragraphs separated by a blank line (JSON \\n\\n). Preserve intentional single line breaks within a list or deliberate rhythm.
+- For a single social post, place the one closing action in cta only, not repeated in body or items. Do not stack follow, like, share, comment and subscribe commands. If no action adds value or No CTA is requested, omit it.
 
 LinkedIn post formatting:
 - strongest line first
@@ -173,6 +177,7 @@ Instagram caption formatting:
 - warm, visual, and easy to engage with
 - body must contain a real caption; use short paragraphs when helpful, but do not pad a simple idea to meet a paragraph count
 - put hashtags in items only, not as the whole body
+- The final copy groups hashtags on one line after a blank line; do not insert blank paragraphs between tags unless the user explicitly asks for that layout.
 - up to 7 relevant hashtags
 - never return an Instagram section where body is only hashtags or only a CTA
 
