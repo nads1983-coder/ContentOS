@@ -9,6 +9,7 @@ const { AbortSignal, Response } = globalThis;
 
 export const QA = Object.freeze({
   branch: 'br-divine-term-b2rihbxv', cap: 2_680_000, calls: 6,
+  database: 'contentos_pr7_qa', roles: Object.freeze(['pr7_qa_synthetic_a', 'pr7_qa_synthetic_b', 'pr7_qa_synthetic_c']),
   project: 'proj_cWmsh75EFvfVU0gLoqEoD3OV',
   textModel: 'gpt-4.1', imageModel: 'gpt-image-2.5-flare-2026-09-08',
   maxima: Object.freeze({ text: 547431, image: 345576 })
@@ -34,7 +35,8 @@ const { quoteAI, usageCost } = costModule.exports;
 export function validateEnvironment(env) {
   let url;
   try { url = new URL(env.DATABASE_URL); } catch { fail('isolated_database_required'); }
-  if (env.CONTENTOS_ISOLATED_BRANCH !== QA.branch || url.pathname !== '/contentos' ||
+  if (env.CONTENTOS_ISOLATED_BRANCH !== QA.branch || url.pathname !== '/' + QA.database ||
+      !QA.roles.includes(decodeURIComponent(url.username)) ||
       !['ep-proud-field-b291xbnc.c-6.eu-central-1.aws.neon.tech', 'ep-proud-field-b291xbnc-pooler.c-6.eu-central-1.aws.neon.tech'].includes(url.hostname)) fail('isolated_database_required');
   if (env.VERCEL || env.VERCEL_ENV || env.NODE_ENV === 'production' || process.env.VERCEL || process.env.VERCEL_ENV || process.env.NODE_ENV === 'production' ||
       !['mock', 'live'].includes(env.CONTENTOS_QA_MODE)) fail('local_qa_only');
@@ -141,11 +143,18 @@ export function createGate(store, { now = () => new Date() } = {}) {
 export function postgresStore(pool, env) {
   validateEnvironment(env);
   validateEnvironment({ ...env, DATABASE_URL: pool.options?.connectionString });
+  const role = decodeURIComponent(new URL(env.DATABASE_URL).username);
+  const verifyConnection = async client => {
+    const identity = (await client.query('SELECT current_database() AS db, session_user AS login, current_user AS role, contentos_pr7_qa.actor_id() AS actor')).rows[0];
+    if (identity?.db !== QA.database || identity.login !== role || identity.role !== role || !identity.actor) fail('qa_database_identity_mismatch');
+    return identity.actor;
+  };
   return {
     async create(c) {
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
+        if (await verifyConnection(client) !== c.account) fail('account_mismatch');
         const row = (await client.query("SELECT 1 FROM contentos_app.profiles WHERE id=$1 AND email=$2 AND data->>'premium_preview_fixture'='true'", [c.account, c.email])).rows[0];
         if (!row) fail('synthetic_profile_required');
         await client.query('INSERT INTO contentos_pr7_qa.campaigns(id,approval,document) VALUES($1,$2,$3::jsonb)', [c.id, c.approval, JSON.stringify(c)]);
@@ -157,6 +166,7 @@ export function postgresStore(pool, env) {
       const client = await pool.connect();
       try {
         await client.query('BEGIN');
+        await verifyConnection(client);
         const row = (await client.query('SELECT document FROM contentos_pr7_qa.campaigns WHERE id=$1 FOR UPDATE', [id])).rows[0];
         if (!row) fail('campaign_missing');
         const before = JSON.stringify(row.document), result = fn(row.document);

@@ -5,9 +5,10 @@ Setup and mocked verification only. No paid execution is authorised by this chan
 ## Scope
 
 - `scripts/qa/campaign.mjs` is an operator-only module, not imported by application code and not an HTTP endpoint.
-- `scripts/qa/schema.sql` is applied only to the existing isolated Neon branch `br-divine-term-b2rihbxv`, database `contentos`. It is deliberately outside production `drizzle/` migration discovery.
+- `scripts/qa/schema.sql` and `scripts/qa/isolation.sql` apply only to the EMPTY, synthetic-only database `contentos_pr7_qa` on existing temporary branch `br-divine-term-b2rihbxv`. They are deliberately outside production `drizzle/` migration discovery. The former database `contentos` is no longer an accepted QA target.
 - No application routes, UI, provider models, subscriptions, entitlements, customer quotas, GBP30 monthly controls or production migrations changed.
-- The isolated branch's runtime role can insert/select QA campaigns and update their document. It cannot create schema, delete audit rows or reset campaign reservations. Public access is revoked. These grants do not apply to the production branch.
+- Three dedicated SQL-created roles have no administrator memberships, inheritance, BYPASSRLS, schema ownership or DDL rights. Forced RLS binds each role to one synthetic account using `session_user` and an owner-only registry, not a caller-supplied setting. They can maintain only their own sessions, rate limits, profile data and campaign records. They cannot register accounts, change credentials, access billing/mail tables or reset/delete campaign audits. These grants do not apply to production.
+- Historical mock audits remain unchanged in the old database. No copied customer rows were imported into the new QA database. See `pr7-qa-database-isolation.md` for the current verification verdict and setup cleanup requirement; the earlier gate-only GO was not proof of database isolation.
 
 ## Accounting and recovery
 
@@ -28,7 +29,7 @@ Residual limitation: Unix file permissions are not a boundary against other proc
 ## Later live execution, only after separate approval
 
 1. Reverify the exact candidate, QA project restrictions, actual key expiry, current model pricing and payload bounds. Keep production/Preview credentials and customer data inaccessible.
-2. Use the existing isolated configuration but select local QA mode; do not load the Preview env wholesale, enable its real generation, weaken its firewall or start a public listener. Confirm all identities against the existing synthetic profile marker.
+2. Load only the account-specific private QA configuration from `/tmp/contentos-pr7-qa-private/actor-a.json` (or the explicitly selected synthetic actor). Never load the former Preview database credential. No public listener, Preview generation or firewall change is required. The gate rejects the legacy database and runtime role and verifies the authenticated database identity on each transaction.
 3. Create ONE manifest using the founder's unique paid-approval reference and three text/three image slots, bound to one synthetic account. Seal known payload hashes; dependent refinement can bind its exact payload at its first admission. Persist and reuse the returned campaign ID on restart. Do not manufacture a new approval reference to bypass a stop.
 4. Connect `guardedFetch` to the existing application's SDK/image transport inside the local test harness. The SDK receives a dummy key only; the real credential is owned by the guarded transport. Keep `maxRetries: 0`. Invoke existing application auth, request validation, usage and saving logic, not an alternate customer endpoint. Mock injection demonstrates the transport's safety but does not constitute completed live route testing.
 5. Dispatch one approved slot at a time. Independently assess each result and stop on unsafe output. There is no built-in live execution command, scheduler or automatic campaign restart in this change.
@@ -45,4 +46,4 @@ GBP2.68 is a hard application reservation limit, NOT a guaranteed provider invoi
 - Desktop/tablet/mobile interaction checks were not repeated: no UI, application route or styling files changed; earlier PR7 browser evidence remains applicable. This does not claim new live generation validation.
 - No paid OpenAI calls, Stripe operations, production changes, firewall modifications, Preview credential activation, merge or deployment.
 
-**GO FOR FOUNDER REVIEW OF CONTROLLED LIVE TESTING**, subject to the stated same-user isolation and invoice-limit qualifications. This is not permission to execute.
+The historical gate-only GO is superseded by the final database-isolation report. No paid permission has been granted or recorded.

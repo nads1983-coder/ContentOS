@@ -6,11 +6,12 @@ import { createGate, postgresStore, QA, validateEnvironment } from '../scripts/q
 const { console } = globalThis;
 
 // Only these existing private QA files are accepted. No real provider key is read.
-const config = JSON.parse(readFileSync('/tmp/contentos-simple-preview-env.json', 'utf8'));
+const { env: config, user } = JSON.parse(readFileSync('/tmp/contentos-pr7-qa-private/actor-a.json', 'utf8'));
 for (const key of ['OPENAI_API_KEY','STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','RESEND_API_KEY','NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY']) assert.ok(!config[key]);
 const env = { DATABASE_URL: config.DATABASE_URL, CONTENTOS_ISOLATED_BRANCH: config.CONTENTOS_ISOLATED_BRANCH, CONTENTOS_QA_MODE: 'mock' };
 validateEnvironment(env);
-const { users } = JSON.parse(readFileSync('/tmp/contentos-premium-private/simple-creation-accounts.json', 'utf8'));
+const otherConfig = JSON.parse(readFileSync('/tmp/contentos-pr7-qa-private/actor-b.json', 'utf8'));
+const users = [user, otherConfig.user];
 assert.ok(users.length >= 2 && users.every(u => /^premium-preview-[a-z0-9-]+@example\.invalid$/.test(u.email)));
 const pool = new Pool({ connectionString: env.DATABASE_URL, max: 4 });
 const store = postgresStore(pool, env), gate = createGate(store);
@@ -25,10 +26,8 @@ const digest = x => createHash('sha256').update(JSON.stringify(x)).digest('hex')
 let checks=0;
 const check=async(name,fn)=>{await fn();checks++;console.log(`PASS: ${name}`);};
 const snapshot=async()=>({
-  // Verify test-only profiles and the existing monthly controls are untouched.
-  profiles:(await pool.query('SELECT id,data FROM contentos_app.profiles WHERE id=ANY($1::text[]) ORDER BY id',[users.map(u=>u.id)])).rows,
-  budget:(await pool.query('SELECT * FROM contentos_app.ai_budget_configuration ORDER BY singleton')).rows,
-  spending:(await pool.query('SELECT count(*)::int AS count FROM contentos_app.ai_spend_requests')).rows
+  // QA owns no monthly ledger or billing tables; production is never connected.
+  profiles:(await pool.query('SELECT id,data FROM contentos_app.profiles ORDER BY id')).rows
 });
 try {
   const before=digest(await snapshot());
@@ -82,10 +81,20 @@ try {
     await assert.rejects(()=>pool.query("UPDATE contentos_pr7_qa.campaigns SET document=jsonb_set(document,'{reserved}','1') WHERE id=$1",[c.id]));
     assert.equal((await gate.inspect(c.id)).reserved,2679021);
   });
-  await check('runtime cannot delete audits or change schema; synthetic profiles and monthly ledger unchanged',async()=>{
-    const privileges=(await pool.query("SELECT has_table_privilege('contentos_runtime','contentos_pr7_qa.campaigns','DELETE') AS delete, has_schema_privilege('contentos_runtime','contentos_pr7_qa','CREATE') AS create")).rows[0];
+  await check('runtime cannot delete audits or change schema; synthetic profile unchanged',async()=>{
+    const privileges=(await pool.query("SELECT has_table_privilege(current_user,'contentos_pr7_qa.campaigns','DELETE') AS delete, has_schema_privilege(current_user,'contentos_pr7_qa','CREATE') AS create")).rows[0];
     assert.deepEqual(privileges,{delete:false,create:false});
     assert.equal(digest(await snapshot()),before);
+  });
+  await check('another database credential cannot read, mutate or claim this account campaign',async()=>{
+    const otherPool=new Pool({connectionString:otherConfig.env.DATABASE_URL,max:1});
+    try {
+      const other=createGate(postgresStore(otherPool,otherConfig.env));
+      await assert.rejects(()=>other.inspect(c.id),{code:'campaign_missing'});
+      await assert.rejects(()=>other.create(make()),{code:'campaign_creation_refused'});
+      assert.equal((await otherPool.query('UPDATE contentos_pr7_qa.campaigns SET document=document WHERE id=$1',[c.id])).rowCount,0);
+      assert.equal((await gate.inspect(c.id)).dispatches,6);
+    }finally{await otherPool.end();}
   });
   console.log(JSON.stringify({passed:checks,providerNetworkCalls:0,productionWrites:0,audit:'Mock-only campaigns retained in isolated QA schema'}));
 } finally {await pool.end();}

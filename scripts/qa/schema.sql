@@ -1,4 +1,10 @@
 -- QA ONLY: never add this file to production migration discovery.
+DO $$ BEGIN
+  IF current_database() <> 'contentos_pr7_qa' THEN
+    RAISE EXCEPTION 'Synthetic-only QA database required';
+  END IF;
+END $$;
+--> statement-breakpoint
 CREATE SCHEMA IF NOT EXISTS contentos_pr7_qa;
 --> statement-breakpoint
 REVOKE ALL ON SCHEMA contentos_pr7_qa FROM PUBLIC;
@@ -53,8 +59,8 @@ FOR EACH ROW EXECUTE FUNCTION contentos_pr7_qa.keep_audit();
 --> statement-breakpoint
 
 -- Only on the isolated branch. No privileges or schemas change in production.
-GRANT USAGE ON SCHEMA contentos_pr7_qa TO contentos_runtime;
+GRANT USAGE ON SCHEMA contentos_pr7_qa TO pr7_qa_synthetic_a, pr7_qa_synthetic_b, pr7_qa_synthetic_c;
 --> statement-breakpoint
-GRANT SELECT, INSERT ON contentos_pr7_qa.campaigns TO contentos_runtime;
+GRANT SELECT, INSERT ON contentos_pr7_qa.campaigns TO pr7_qa_synthetic_a, pr7_qa_synthetic_b, pr7_qa_synthetic_c;
 --> statement-breakpoint
-GRANT UPDATE(document) ON contentos_pr7_qa.campaigns TO contentos_runtime;
+GRANT UPDATE(document) ON contentos_pr7_qa.campaigns TO pr7_qa_synthetic_a, pr7_qa_synthetic_b, pr7_qa_synthetic_c;

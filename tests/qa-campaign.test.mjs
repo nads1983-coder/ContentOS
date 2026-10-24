@@ -10,7 +10,7 @@ import { createGate, manifest, QA, validateEnvironment, loadQaKey, guardedFetch 
 const { structuredClone, DOMException, Response } = globalThis;
 
 export const fixtureEnv = () => ({ CONTENTOS_QA_MODE: 'mock', CONTENTOS_ISOLATED_BRANCH: QA.branch,
-  DATABASE_URL: 'postgres://mock:mock@ep-proud-field-b291xbnc.c-6.eu-central-1.aws.neon.tech/contentos' });
+  DATABASE_URL: 'postgres://pr7_qa_synthetic_a:mock@ep-proud-field-b291xbnc.c-6.eu-central-1.aws.neon.tech/contentos_pr7_qa' });
 export const input = () => ({ approval: `mock-${randomUUID()}`, account: 'synthetic-qa', email: 'premium-preview-qa@example.invalid',
   expiresAt: new Date(Date.now() + 3600000).toISOString(),
   slots: ['text','text','text','image','image','image'].map((kind,i) => ({ id: `slot-${i}`, kind, reservation: QA.maxima[kind] })) });
@@ -98,6 +98,9 @@ test('QA expired and corrupted campaigns reject without dispatch',async()=>{
 });
 test('QA rejects production/Preview, other database hosts, ambient credentials and missing execution approval',async()=>{
   validateEnvironment(fixtureEnv());
+  for (const url of [fixtureEnv().DATABASE_URL.replace('contentos_pr7_qa','contentos'), fixtureEnv().DATABASE_URL.replace('pr7_qa_synthetic_a','contentos_runtime')]) {
+    assert.throws(()=>validateEnvironment({...fixtureEnv(),DATABASE_URL:url}),{code:'isolated_database_required'});
+  }
   for(const patch of [{VERCEL_ENV:'preview'},{VERCEL:'1'},{NODE_ENV:'production'},{CONTENTOS_QA_MODE:''},{CONTENTOS_ISOLATED_BRANCH:'production'},{OPENAI_API_KEY:'mock'},{STRIPE_SECRET_KEY:'mock'},{RESEND_API_KEY:'mock'},{DATABASE_URL:'postgres://mock@production.invalid/contentos'}]) {
     assert.throws(()=>validateEnvironment({...fixtureEnv(),...patch}));
   }
