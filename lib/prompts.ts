@@ -8,6 +8,7 @@ import {
 } from "@/lib/content-config";
 import { CtaModeId, ContentTypeId, GenerateRequest, SharpnessId } from "@/types/content";
 import { brandContextScope, styleContext } from "@/lib/brand-context";
+import { hashtagPromptContext } from "@/lib/hashtag-policy";
 
 const systemPrompt = `
 You are an AI social media content operating system for creators, entrepreneurs, small businesses, coaches, consultants, and agencies.
@@ -147,6 +148,8 @@ Category guidance: ${
 
 Generate these content outputs:
 ${requestedTypes.map((type) => `- ${type.id}: ${type.prompt}`).join("\n")}
+
+${hashtagPromptContext(request)}
 
 General quality rules:
 - Current instructions override saved brand preferences. Explicit creative controls override automatic defaults. Never override No CTA, factual restrictions or the customer's supplied facts.
