@@ -221,7 +221,10 @@ export function parseGenerationOutput(text: string, request: GenerationInput): G
     let prepared;
     try { prepared = preparePublication(raw, request); }
     catch { throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged."); }
-    const result = attachPublicationReview(applyContentQuality(parseProductionGeneration(JSON.stringify(prepared.value), request), request), prepared.omitted);
+    const parsed = parseProductionGeneration(JSON.stringify(prepared.value), request);
+    // Rebuilding a hashtag set must not conceal an instruction violation.
+    if (hasForbiddenCta(parsed, request)) throw new GenerationOutputError("The response conflicts with No CTA.");
+    const result = attachPublicationReview(applyContentQuality(parsed, request), prepared.omitted);
     if (result.sections.length !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.type)).size !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.id)).size !== result.sections.length ||

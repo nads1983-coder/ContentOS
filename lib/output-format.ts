@@ -21,6 +21,7 @@ export type OutputBlock = {
   kind: OutputBlockKind;
   lines: string[];
   separator?: " " | "\n";
+  includeLabel?: boolean;
 };
 
 export type FormattedOutput = {
@@ -406,6 +407,7 @@ function formatPlatformHashtags(section: GeneratedSection) {
       id: `tags-${set.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
       kind: "tags" as const,
       label: set.label,
+      includeLabel: true,
       lines: unique(set.lines.flatMap(splitTagItem))
     }))
   };
@@ -453,7 +455,7 @@ function blockToPlainText(block: OutputBlock) {
     return "";
   }
 
-  if (block.kind === "subject" || block.kind === "title" || block.kind === "preview" || block.kind === "platform") {
+  if (block.includeLabel || block.kind === "subject" || block.kind === "title" || block.kind === "preview" || block.kind === "platform") {
     return `${block.label}:\n${body}`;
   }
 

@@ -206,6 +206,31 @@ test("subject-scoped caption persists once, strips unrelated tags and replays wi
   assert.equal(h.state.generation_history_json.length, 1);
 });
 
+test("requested hashtag sets are completed before exactly-once persistence with one mocked provider dispatch", async () => {
+  const fixture = JSON.parse(readFileSync(resolve(root, "tests/fixtures/hashtag-effectiveness.json"), "utf8"));
+  const h = statefulReservationHarness();
+  const body = { ...fixture.request, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+  const providerResponse = { status: "completed", output_text: JSON.stringify(fixture.mockProviderOutput), usage: { input_tokens: 100, output_tokens: 60 } };
+  const first = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(first.response.status, 200);
+  assert.deepEqual(first.calls, ["provider"]);
+  assert.deepEqual(first.financialCalls, ["dispatch", "settle"]);
+  assert.deepEqual(first.body.sections[0].items, fixture.expectedLinkedIn);
+  assert.match(first.body.sections[1].items[0], /^LinkedIn: #LinkedInTips/);
+  assert.ok(first.providerInput.input.includes(fixture.request.source));
+  for (const tag of fixture.expectedLinkedIn) assert.ok(first.providerInput.input.includes(tag));
+  assert.doesNotMatch(first.providerInput.input, /#GorlLead|#papercraft|Entries close Friday/);
+  assert.equal(first.clientOptions.maxRetries, 0);
+  assert.deepEqual(h.state.generation_history_json[0].payload.sections, first.body.sections);
+  const replay = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(replay.response.status, 200);
+  assert.deepEqual(replay.calls, []);
+  assert.deepEqual(replay.financialCalls, []);
+  assert.equal(h.completions, 1);
+  assert.equal(h.state.usage_events_json.length, 1);
+  assert.equal(h.state.generation_history_json.length, 1);
+});
+
 test("latest live inventions fail both generation and refinement before persistence, while paid usage is retained", async () => {
   const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
   const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-instagram-quality-comparison.json"), "utf8"));

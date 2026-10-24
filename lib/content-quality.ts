@@ -1,50 +1,14 @@
 import type { GenerationInput } from "@/lib/generation-contract";
 import type { GenerationResult } from "@/types/content";
 import { normalizePostSection, socialPostTypes } from "@/lib/post-format";
-import { brandContextScope } from "@/lib/brand-context";
-import { conceptualHashtags, hashtagMaximums, labelledHashtagMaximum } from "@/lib/hashtag-context";
+import { hashtagMaximums, labelledHashtagMaximum } from "@/lib/hashtag-context";
+import { buildHashtagPolicy } from "@/lib/hashtag-policy";
+import { completeRequestedHashtags } from "@/lib/hashtag-output";
 
 // A fragment inside a URL or identifier is not a social hashtag.
 const tagPattern = /(?<![\p{L}\p{N}_/=?&.%:-])#[\p{L}\p{N}_]+/gu;
 const compact = (value: string) => value.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
 const tags = (value: string) => value.match(tagPattern) ?? [];
-
-function hashtagChoice(value: string): boolean | undefined {
-  if (/\b(?:no|without|omit|avoid|exclude|remove|do not (?:use|include|add)|don't (?:use|include|add))\s+hashtags?\b/i.test(value)) return false;
-  if (/\b(?:use|include|add|keep)\b[^.!?\n]{0,80}(?:#[\p{L}\p{N}_]+|\bhashtags?\b)/iu.test(value)) return true;
-  return undefined;
-}
-
-function allowedTags(request: GenerationInput) {
-  const scope = brandContextScope(request);
-  const current = [request.source, request.refinement?.instructions ?? ""].join("\n");
-  const enabled = hashtagChoice(request.refinement?.instructions ?? "") ?? hashtagChoice(request.source) ?? hashtagChoice(request.writingStyle ?? "") ?? true;
-  const allowed = new Set<string>();
-  if (scope.identity && request.brandName) allowed.add(compact(request.brandName));
-  const brandPattern = request.brandName ? new RegExp(`(?<![\\p{L}\\p{N}])${request.brandName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\p{L}\\p{N}])`, "giu") : null;
-  for (const text of [request.source, request.refinement?.instructions ?? "", scope.savedFacts ? request.offer ?? "" : "", scope.identity ? request.audience ?? "" : ""]) {
-    const topic = brandPattern ? text.replace(brandPattern, "") : text;
-    // Omission instructions are not positive topic evidence for new themes.
-    const positiveTopic = topic.split(/(?<=[.!?;])\s+|\n/).filter(clause => !/\b(?:no|not|without|omit|avoid|exclude|remove|don't)\b/i.test(clause)).join(" ");
-    for (const tag of conceptualHashtags(positiveTopic)) allowed.add(tag);
-    const words = topic.normalize("NFKC").toLowerCase().replace(/(\d),(?=\d{3}\b)/g, "$1").match(/[\p{L}\p{N}]+/gu) ?? [];
-    for (let i = 0; i < words.length; i++) {
-      for (let length = 1; length <= 4 && i + length <= words.length; length++) allowed.add(words.slice(i, i + length).join(""));
-    }
-  }
-  // Saved hashtag preferences may restrict relevant tags, not add unrelated ones.
-  const denied = new Set<string>();
-  for (const [preferences, explicit] of [[request.writingStyle ?? "", false], [current, true]] as const) for (const instruction of preferences.split(/[.!?\n]/)) {
-    const negative = /\b(?:no|avoid|exclude|omit|remove|without|do not use|don't use)\b/i.test(instruction);
-    for (const tag of tags(instruction)) {
-      const key = compact(tag);
-      if (negative) denied.add(key);
-      else { if (explicit) allowed.add(key); denied.delete(key); }
-    }
-  }
-  return (tag: string) => enabled && allowed.has(compact(tag)) && !denied.has(compact(tag)) &&
-    (scope.identity || !request.brandName || compact(tag) !== compact(request.brandName));
-}
 
 function cleanFiller(value: string, request: GenerationInput) {
   const original = value;
@@ -62,7 +26,8 @@ function cleanFiller(value: string, request: GenerationInput) {
 }
 
 export function applyContentQuality(result: GenerationResult, request: GenerationInput): GenerationResult {
-  const supported = allowedTags(request);
+  const supported = buildHashtagPolicy(request).accepts;
+  result = completeRequestedHashtags(result, request);
   const clean = (text: string, seen?: Set<string>) => cleanFiller(text, request).replace(tagPattern, tag => {
     const key = compact(tag);
     if (!supported(tag) || seen?.has(key)) return "";

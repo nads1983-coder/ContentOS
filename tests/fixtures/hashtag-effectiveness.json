@@ -1,0 +1,20 @@
+{
+  "evidence": "Exact user-supplied production brief and reported format selection. Brand fields and provider outputs below are synthetic regression inputs, not recovered raw provider evidence.",
+  "request": {
+    "source": "Why are hashtags not working on my posts?",
+    "selectedTypes": ["linkedin", "platformHashtags"],
+    "brandName": "Gorl Lead",
+    "audience": "Papercraft enthusiasts",
+    "offer": "Free competition. Entries close Friday.",
+    "writingStyle": "Natural and helpful. Use #GorlLead and #papercraft."
+  },
+  "mockProviderOutput": {
+    "title": "Making hashtags useful",
+    "summary": "A practical reflection on hashtag relevance.",
+    "sections": [
+      { "id": "linkedin", "type": "linkedin", "platform": "LinkedIn", "title": "Make the subject clear", "body": "A hashtag should help someone understand the subject.\n\nChoose themes that belong to the post, rather than chasing a count.", "items": [], "cta": "Which themes fit your next post?" },
+      { "id": "platformHashtags", "type": "platformHashtags", "platform": "General", "title": "Platform Hashtags", "body": "#Hashtags", "items": [], "cta": "" }
+    ]
+  },
+  "expectedLinkedIn": ["#LinkedInTips", "#ContentStrategy", "#SocialMediaMarketing", "#LinkedInGrowth"]
+}

@@ -12,7 +12,9 @@ const { workspaceFromProfile, updateWorkspaceProfile } = loadTs("lib/workspace-c
 const { normalizeGenerationRequest, parseGenerationOutput } = loadTs("lib/generation-contract.ts");
 const { reserveGenerationInProfile, completeGenerationInProfile } = loadTs("lib/generation-reservation.ts");
 const rows = new Map(["image-test-account", "image-test-two"].map(id => [id, { id, email: id + "@example.invalid", plan: "pro_studio", subscription_status: "active" }]));
-const hashtagScenario = process.env.TEST_HASHTAG_CONTEXT === "1";
+const pipelineScenario = process.env.TEST_HASHTAG_PIPELINE === "1";
+const pipelineFixture = JSON.parse(await readFile(new URL("fixtures/hashtag-effectiveness.json", import.meta.url), "utf8"));
+const hashtagScenario = process.env.TEST_HASHTAG_CONTEXT === "1" || pipelineScenario;
 const brandScenario = process.env.TEST_BRAND_CONTEXT === "1" || hashtagScenario;
 if (brandScenario) {
   const row = rows.get("image-test-account"), snapshot = workspaceFromProfile(row, row.id);
@@ -25,10 +27,11 @@ const browser = await chromium.launch({ headless: true, executablePath: process.
 const dir = process.env.TEST_ARTIFACT_DIR ?? "/tmp/contentos-post-format";
 await mkdir(dir, { recursive: true });
 const platform = hashtagScenario ? "linkedin" : "instagram";
-const caption = hashtagScenario ? "One year of showing up.\n\nA moment to reflect.\n\nWhat keeps you showing up?\n\n#LinkedInGrowth #Consistency #PersonalBranding #ProfessionalGrowth" : brandScenario ? "A coding idea worth exploring.\n\nTry a fresh perspective with Codex.\n\nWhat would you build?\n\n#Codex #CodingIdeas" : "A little room to think.\n\nTry putting one idea on paper.\n\nWhat would you write?\n\n#Planning #Ideas";
-const opening = hashtagScenario ? "One year of showing up." : brandScenario ? "A coding idea worth exploring." : "A little room to think.";
-const middle = hashtagScenario ? "A moment to reflect." : brandScenario ? "Try a fresh perspective with Codex." : "Try putting one idea on paper.";
-const cta = hashtagScenario ? "What keeps you showing up?" : brandScenario ? "What would you build?" : "What would you write?";
+const originalCaption = pipelineFixture.mockProviderOutput.sections[0];
+const caption = pipelineScenario ? `${originalCaption.body}\n\n${originalCaption.cta}\n\n${pipelineFixture.expectedLinkedIn.join(" ")}` : hashtagScenario ? "One year of showing up.\n\nA moment to reflect.\n\nWhat keeps you showing up?\n\n#LinkedInGrowth #Consistency #PersonalBranding #ProfessionalGrowth" : brandScenario ? "A coding idea worth exploring.\n\nTry a fresh perspective with Codex.\n\nWhat would you build?\n\n#Codex #CodingIdeas" : "A little room to think.\n\nTry putting one idea on paper.\n\nWhat would you write?\n\n#Planning #Ideas";
+const opening = pipelineScenario ? originalCaption.body.split("\n\n")[0] : hashtagScenario ? "One year of showing up." : brandScenario ? "A coding idea worth exploring." : "A little room to think.";
+const middle = pipelineScenario ? originalCaption.body.split("\n\n")[1] : hashtagScenario ? "A moment to reflect." : brandScenario ? "Try a fresh perspective with Codex." : "Try putting one idea on paper.";
+const cta = pipelineScenario ? originalCaption.cta : hashtagScenario ? "What keeps you showing up?" : brandScenario ? "What would you build?" : "What would you write?";
 async function newContext() {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
   await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: base });
@@ -47,9 +50,14 @@ async function newContext() {
         const input = normalizeGenerationRequest(req.postDataJSON()); requests.push(input);
         const reserved = reserveGenerationInProfile(row, id, input.requestId, input); rows.set(id, reserved.data);
         if (reserved.result.status === "replay") return route.fulfill({ json: reserved.result.result });
-        const output = parseGenerationOutput(JSON.stringify({ title: "Planning ideas", summary: "A starting point.", sections: [{ id: platform, type: platform, title: "Planning ideas", platform: hashtagScenario ? "LinkedIn" : "Instagram",
+        const raw = { title: "Planning ideas", summary: "A starting point.", sections: [{ id: platform, type: platform, title: "Planning ideas", platform: hashtagScenario ? "LinkedIn" : "Instagram",
           body: input.refinement ? `One idea is enough to begin.\n\n${middle}\n\n${cta}` : `**${opening}**\n\n${middle} ${middle}\n\n${cta}`,
-          items: hashtagScenario ? ["#LinkedInGrowth", "#Consistency", "#PersonalBranding", "#ProfessionalGrowth", "#GorlLead", "#papercraft"] : brandScenario ? ["#Codex", "#GorlLead", "#CodingIdeas", "#FreeCompetition"] : ["#Planning", "#Ideas", "#Planning"], cta }] }), input);
+          items: hashtagScenario ? ["#LinkedInGrowth", "#Consistency", "#PersonalBranding", "#ProfessionalGrowth", "#GorlLead", "#papercraft"] : brandScenario ? ["#Codex", "#GorlLead", "#CodingIdeas", "#FreeCompetition"] : ["#Planning", "#Ideas", "#Planning"], cta }] };
+        if (pipelineScenario) {
+          if (input.refinement) raw.sections[0].items = ["#Hashtags", "#GorlLead"];
+          else raw.sections = structuredClone(pipelineFixture.mockProviderOutput.sections);
+        }
+        const output = parseGenerationOutput(JSON.stringify(raw), input);
         const completed = completeGenerationInProfile(rows.get(id), id, input.requestId, reserved.result.fingerprint, output); rows.set(id, completed.data);
         return route.fulfill({ json: completed.result });
       }
@@ -63,11 +71,25 @@ try {
   context = await newContext(); page = await context.newPage(); page.on("pageerror", e => errors.push(e.message));
   await page.goto(base + "/image-studio-test");
   await page.getByRole("button", { name: "Create Content", exact: true }).waitFor();
-  await page.getByLabel("What would you like to create?").fill(hashtagScenario ? "Reflect on one year of consistent LinkedIn activity." : brandScenario ? "Write an Instagram post about using Codex to explore coding ideas." : "Share planning ideas on Instagram.");
+  await page.getByLabel("What would you like to create?").fill(pipelineScenario ? pipelineFixture.request.source : hashtagScenario ? "Reflect on one year of consistent LinkedIn activity." : brandScenario ? "Write an Instagram post about using Codex to explore coding ideas." : "Share planning ideas on Instagram.");
   await page.getByLabel("Where will you publish it?").selectOption(platform);
+  if (pipelineScenario) {
+    await page.getByText("Advanced Options (Optional)", { exact: true }).click();
+    await page.getByRole("checkbox", { name: "Hashtags", exact: true }).check();
+    await page.getByText("Advanced Options (Optional)", { exact: true }).click();
+  }
   await page.getByRole("button", { name: "Create Content", exact: true }).click();
   const card = page.locator("#outputs article").first(), post = card.getByTestId("post-caption");
   await post.waitFor(); assert.equal(await post.textContent(), caption);
+  if (pipelineScenario) {
+    assert.deepEqual(requests[0].selectedTypes, ["linkedin", "platformHashtags"]);
+    assert.equal(requests[0].source, pipelineFixture.request.source);
+    const sets = page.locator("#outputs article").nth(1);
+    await sets.getByRole("button", { name: "Copy", exact: true }).click();
+    const copiedSets = await page.evaluate(() => navigator.clipboard.readText());
+    assert.match(copiedSets, /LinkedIn:\n#LinkedInTips #ContentStrategy #SocialMediaMarketing #LinkedInGrowth/);
+    assert.doesNotMatch(copiedSets, /#Hashtags\b|#GorlLead|#papercraft/);
+  }
   if (brandScenario) {
     assert.equal(requests[0].brandName,"Gorl Lead");
     assert.doesNotMatch(await post.textContent(),/Gorl.?Lead|competition/i);
@@ -104,10 +126,20 @@ try {
   stage = "save export and restoration";
   await page.getByRole("button", { name: "Save all", exact: true }).click();
   const exported = page.waitForEvent("download"); await page.getByRole("button", { name: "Download .txt", exact: true }).click();
-  await (await exported).saveAs(`${dir}/caption.txt`); assert.equal(await readFile(`${dir}/caption.txt`, "utf8"), refined);
+  await (await exported).saveAs(`${dir}/caption.txt`);
+  const exportedText = await readFile(`${dir}/caption.txt`, "utf8");
+  if (pipelineScenario) {
+    assert.ok(exportedText.startsWith(refined + "\n\n"));
+    assert.match(exportedText, /LinkedIn:\n#LinkedInTips #ContentStrategy #SocialMediaMarketing #LinkedInGrowth/);
+    assert.doesNotMatch(exportedText, /#Hashtags\b|#GorlLead|#papercraft/);
+  } else assert.equal(exportedText, refined);
   await page.waitForTimeout(1200);
   const restored = workspaceFromProfile(rows.get("image-test-account"), "image-test-account");
   assert.ok(restored.store.saved.length); assert.equal(restored.store.saved[0].sections[0].body, `One idea is enough to begin.\n\n${middle}`);
+  if (pipelineScenario) {
+    assert.deepEqual(restored.store.saved[0].sections[0].items, pipelineFixture.expectedLinkedIn);
+    assert.equal(restored.store.saved[0].sections[1].items[0], `LinkedIn: ${pipelineFixture.expectedLinkedIn.join(" ")}`);
+  }
   if (brandScenario) assert.equal(restored.preferences.offer, "Free competition. Entries close Friday.", "Saved preferences are preserved, not rewritten by request scoping");
   stage = "responsive";
   for (const width of [1440, 768, 390]) {
@@ -129,7 +161,7 @@ try {
   assert.equal(await page.getByTestId("post-caption").count(), 0);
   assert.equal(rows.get("image-test-account").usage_events_json.filter(e => e.event_type === "text_generation").length, 2);
   assert.deepEqual(errors, []);
-  const report = { passed: true, brandScenario, paidCalls: 0, mockedGenerations: requests.length, clipboardAndOfflinePaste: true, actualInstagramPaste: "Not tested: offline-only scope", saving: "actual contract with mocked database", formatter: true, editUndoRefineExport: true, deviceRestore: true, accountIsolation: true, widths: [1440, 768, 390], pageErrors: errors };
+  const report = { passed: true, brandScenario, pipelineScenario, paidCalls: 0, mockedGenerations: requests.length, clipboardAndOfflinePaste: true, actualSocialPlatformPaste: "Not tested: offline-only scope", saving: "actual contract with mocked database", formatter: true, editUndoRefineExport: true, deviceRestore: true, accountIsolation: true, widths: [1440, 768, 390], pageErrors: errors };
   await writeFile(`${dir}/result.json`, JSON.stringify(report, null, 2)); console.log(report);
 } catch (error) { await page?.screenshot({ path: `${dir}/failure.png`, fullPage: true }).catch(() => {}); console.error({ stage, error: error.message }); throw error; }
 finally { await context?.close(); await browser.close(); await rm(fixture, { recursive: true }); }
