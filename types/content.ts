@@ -59,6 +59,11 @@ export type FilterId =
   | "repurpose"
   | "saved";
 
+export type PublicationReview = {
+  status: "ready_to_review" | "needs_confirmation";
+  notes: string[];
+};
+
 export type GeneratedSection = {
   id: string;
   type: ContentTypeId;
@@ -68,6 +73,7 @@ export type GeneratedSection = {
   items: string[];
   cta?: string;
   revisionSource?: "manual" | "refined";
+  review?: PublicationReview;
 };
 
 export type GenerationResult = {
@@ -85,6 +91,8 @@ export type GenerationResult = {
 };
 
 export type Draft = {
+  automaticSettings?: CreativeSetting[];
+  length?: "short" | "standard" | "detailed";
   id: string;
   updatedAt: string;
   title: string;
@@ -108,7 +116,9 @@ export type StudioStore = {
   drafts: Draft[];
 };
 
+export type CreativeSetting = "tone" | "sharpness" | "ctaMode" | "presetTopic" | "length";
 export type GenerateRequest = {
+  automaticSettings?: CreativeSetting[];
   source: string;
   brandName?: string;
   audience?: string;

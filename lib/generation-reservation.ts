@@ -103,7 +103,8 @@ export function generationFingerprint(request: GenerateRequest): string {
     offer: request.offer ?? "", writingStyle: request.writingStyle ?? "", contentGoal: request.contentGoal ?? "",
     tone: request.tone, sharpness: request.sharpness, ctaMode: request.ctaMode, presetTopic: request.presetTopic,
     selectedTypes: [...new Set(request.selectedTypes)].sort(), length: extended.length ?? "standard",
-    refinement: extended.refinement ? { action: extended.refinement.action, section: section ? { id: section.id, type: section.type, title: section.title, platform: section.platform, body: section.body, items: section.items, cta: section.cta ?? "" } : null } : null
+    ...(request.automaticSettings !== undefined ? { automaticSettings: [...request.automaticSettings].sort() } : {}),
+    refinement: extended.refinement ? { action: extended.refinement.action, ...(extended.refinement.instructions !== undefined ? { instructions: extended.refinement.instructions } : {}), section: section ? { id: section.id, type: section.type, title: section.title, platform: section.platform, body: section.body, items: section.items, cta: section.cta ?? "" } : null } : null
   };
   return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
 }

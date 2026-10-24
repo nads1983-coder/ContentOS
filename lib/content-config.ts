@@ -22,49 +22,49 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "LinkedIn Post",
     shortLabel: "LinkedIn",
     group: "linkedin",
-    prompt: "One polished LinkedIn post with a strong opening line, readable spacing, a clear point of view, and a practical ending."
+    prompt: "One LinkedIn post: open with the supplied point or useful contrast, develop a focused professional perspective in short paragraphs, and end practically. No invented professional experience."
   },
   {
     id: "instagram",
     label: "Instagram Caption",
     shortLabel: "Instagram",
     group: "instagram",
-    prompt: "Three Instagram captions with a scroll-stopping first line, mobile-friendly spacing, useful context, and up to seven relevant hashtags."
+    prompt: "Three Instagram caption alternatives: vary the angle using supplied details, use conversational mobile-friendly copy, and add only source-supported hashtags, up to seven. No stock backstory or forced motivational ending."
   },
   {
     id: "tiktok",
     label: "TikTok Caption",
     shortLabel: "TikTok",
     group: "tiktok",
-    prompt: "Three short TikTok captions with clear hooks, native-feeling language, and up to five relevant hashtags."
+    prompt: "Three short TikTok caption alternatives with distinct spoken-style hooks, minimal setup, and up to five source-supported tags. No forced slang or invented video events."
   },
   {
     id: "twitter",
     label: "X/Twitter Post",
     shortLabel: "X Post",
     group: "twitter",
-    prompt: "One concise X/Twitter post with a sharp idea, natural style, and a clean ending."
+    prompt: "One concise X/Twitter post expressing one clear idea with natural rhythm, minimal setup and zero to two supported hashtags. Do not compress away factual qualifications."
   },
   {
     id: "facebook",
     label: "Facebook Post",
     shortLabel: "Facebook",
     group: "facebook",
-    prompt: "One Facebook post that feels conversational, community-aware, and easy to respond to."
+    prompt: "One conversational Facebook post with enough source-grounded context to stand alone and an optional relevant question if CTA settings allow. Do not assume a shared community history."
   },
   {
     id: "youtubeShorts",
     label: "YouTube Shorts Caption",
     shortLabel: "YT Shorts",
     group: "youtube",
-    prompt: "One YouTube Shorts caption with a searchable title idea, short description, and relevant tags."
+    prompt: "One YouTube Shorts caption: a specific searchable title, concise source-grounded description and optional supported tags. Do not promise unseen footage or results."
   },
   {
     id: "xThread",
     label: "X Thread",
     shortLabel: "X Thread",
     group: "twitter",
-    prompt: "A concise X thread with a strong opener, 5 to 7 connected posts, and a final takeaway.",
+    prompt: "A concise X thread with a source-grounded opener, 5 to 7 connected numbered posts that advance distinct points, and a final takeaway. No invented evidence to fill posts.",
     paidOnly: true
   },
   {
@@ -72,7 +72,7 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "Short Video Script",
     shortLabel: "Video Script",
     group: "video",
-    prompt: "A short-form video script with a hook, spoken beats, on-screen text cues, and a simple close.",
+    prompt: "A short-form video script with a speakable hook, varied spoken beats, short on-screen cues and a natural close. Mark suggested staging as directions, not events that happened.",
     paidOnly: true
   },
   {
@@ -80,7 +80,7 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "Carousel Outline",
     shortLabel: "Carousel",
     group: "carousel",
-    prompt: "A carousel outline with slide-by-slide headlines, concise support points, and a clear final slide.",
+    prompt: "A carousel with an inviting cover, distinct source-grounded points on successive slides, concise support and a clear final slide. Avoid repeating the cover claim on every slide.",
     paidOnly: true
   },
   {
@@ -88,7 +88,7 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "Email/Newsletter Draft",
     shortLabel: "Email",
     group: "email",
-    prompt: "A concise email or newsletter draft based on the source, with subject line options and a clear CTA.",
+    prompt: "A concise email/newsletter with accurate subject-line options, a direct personal opening without invented familiarity, a useful body and a CTA only when allowed.",
     paidOnly: true
   },
   {
@@ -96,7 +96,7 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "Repurposing Pack",
     shortLabel: "Repurpose",
     group: "repurpose",
-    prompt: "Turn the source into a LinkedIn post, Instagram caption, TikTok caption, X post or thread, carousel outline, short video script, and email/newsletter draft.",
+    prompt: "Repurpose the same facts into labelled LinkedIn, Instagram, TikTok, X, carousel, short-video and email assets. Adapt opening, pacing and structure to each platform instead of copying the same caption.",
     paidOnly: true
   },
   {
@@ -104,14 +104,14 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "Hooks",
     shortLabel: "Hooks",
     group: "hooks",
-    prompt: "Eight platform-flexible hooks with clear stakes, curiosity, and no clickbait."
+    prompt: "Eight genuinely different hooks using supplied facts, useful contrasts, direct statements or relevant questions. No invented stakes, audience beliefs, statistics or clickbait."
   },
   {
     id: "ctas",
     label: "CTA Suggestions",
     shortLabel: "CTAs",
     group: "all",
-    prompt: "Five CTA options matched to the selected CTA mode and audience intent.",
+    prompt: "Five concise, distinct CTA options matched to the selected mode and supplied intent. Use feasible actions only; no invented links, giveaways or deadlines. No CTA means no action requests.",
     paidOnly: true
   },
   {
@@ -119,7 +119,7 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "Platform Hashtags",
     shortLabel: "Hashtags",
     group: "hashtags",
-    prompt: "Platform-appropriate hashtag or keyword sets for LinkedIn, Instagram, TikTok, X/Twitter, Facebook, and YouTube Shorts."
+    prompt: "Labelled hashtag/keyword sets for LinkedIn, Instagram, TikTok, X, Facebook and YouTube Shorts, grounded in supplied subject matter. Zero is valid when unsupported; never infer a niche from the brand name."
   }
 ];
 
@@ -273,7 +273,7 @@ export const presetTopics: Array<{
   {
     id: "storytelling",
     label: "Storytelling",
-    description: "Personal stories, customer moments, lessons learned, and narrative posts."
+    description: "Personal stories, customer moments and lessons only from supplied events; never invent a backstory."
   },
   {
     id: "thought-leadership",

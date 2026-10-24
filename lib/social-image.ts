@@ -36,6 +36,7 @@ type BrandContext = {
 };
 
 export type BuildPosterInput = {
+  appearance?: import("@/lib/image-appearance").ImageAppearance;
   mode?: ImageMode;
   creativeInstructions?: string;
   outputText: string;

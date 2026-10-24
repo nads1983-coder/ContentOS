@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { Pool } from "pg";
+import { validateImageIsolatedEnvironment } from "./image-isolated.mjs";
+import { loadTs } from "./image-test-helpers.mjs";
+validateImageIsolatedEnvironment(process.env);
+const { users: [account] } = JSON.parse(readFileSync(process.env.PREVIEW_ACCOUNTS_FILE, "utf8"));
+assert.match(account.email, /^premium-preview-[a-z0-9-]+@example\.invalid$/);
+const { updateWorkspaceProfile, workspaceFromProfile } = loadTs("lib/workspace-contract.ts");
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 1 });
+const client = await pool.connect();
+try {
+  await client.query("BEGIN");
+  const original = await client.query("SELECT data FROM contentos_app.profiles WHERE id=$1 AND email=$2 AND data->>'premium_preview_fixture'='true' FOR UPDATE", [account.id, account.email]);
+  assert.equal(original.rowCount, 1);
+  const data = original.rows[0].data, snapshot = workspaceFromProfile(data, account.id);
+  const preferences = { ...snapshot.preferences, brandName: "Synthetic studio", brandColors: "Cream, gold", visualStyle: "Luxury", length: "short", automaticSettings: ["tone", "length"] };
+  const next = updateWorkspaceProfile(data, account.id, { revision: snapshot.revision, store: snapshot.store, preferences });
+  await client.query("UPDATE contentos_app.profiles SET data=$2::jsonb WHERE id=$1 AND data->>'premium_preview_fixture'='true'", [account.id, JSON.stringify(next.data)]);
+  const read = (await client.query("SELECT data FROM contentos_app.profiles WHERE id=$1", [account.id])).rows[0].data;
+  assert.deepEqual(workspaceFromProfile(read, account.id).preferences, preferences);
+  assert.throws(() => workspaceFromProfile(read, "different-synthetic-account"), /unavailable/);
+  assert.throws(() => updateWorkspaceProfile(read, account.id, { revision: snapshot.revision, store: snapshot.store, preferences }), /Workspace changed/);
+  const { studio_state_json: ignored, ...untouched } = read;
+  const { studio_state_json: previous, ...expected } = data;
+  assert.deepEqual(untouched, expected);
+  await client.query("ROLLBACK");
+  const after = (await client.query("SELECT data FROM contentos_app.profiles WHERE id=$1", [account.id])).rows[0].data;
+  assert.deepEqual(after, data);
+  console.log(JSON.stringify({ passed: true, isolatedBranch: process.env.CONTENTOS_ISOLATED_BRANCH, preferenceRoundTrip: true, staleRevisionRejected: true, accountBinding: true, unrelatedFieldsPreserved: true, rollbackVerified: true, providerCalls: 0, productionWrites: 0 }));
+} finally { await client.query("ROLLBACK").catch(() => {}); client.release(); await pool.end(); }

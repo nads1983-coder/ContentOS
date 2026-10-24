@@ -37,13 +37,20 @@ function shorten(value: string, max: number): string {
   return `${clipped.slice(0, Math.max(clipped.lastIndexOf(" "), Math.floor(max / 2)))}...`;
 }
 function directive(value: string, label: string): string | undefined {
-  return value.match(new RegExp(`(?:^|\\n)(?:${label})\\s*:\\s*([^\\n]+)`, "i"))?.[1]?.replace(/^["“]|["”]$/g, "");
+  const nextLabel = "headline|quote|support(?:ing text)?|brand(?: name)?";
+  return value.match(new RegExp(`(?:^|\\n|[.!?;]\\s+)\\s*(?:${label})\\s*:\\s*([^\\n]+?)(?=\\n|[.!?;]\\s+(?:${nextLabel})\\s*:|$)`, "i"))?.[1]?.replace(/^["“]|["”]$/g, "");
 }
 
 export function buildCreativeBrief(input: BuildPosterInput) {
   const instructions = imageCopy(input.creativeInstructions ?? "", 600);
   const source = imageCopy(input.outputText, 1200), brand = input.brandContext;
-  const direction = instructions || imageCopy(brand.visualStyle ?? input.style, 180);
+  const appearance = input.appearance;
+  const visualType = appearance?.type !== "auto" && appearance?.type ? appearance.type :
+    /\b(?:graphic|poster|announcement card)\b/i.test(instructions) ? "graphic" :
+    /\b(?:illustration|illustrated|hand-drawn)\b/i.test(instructions) ? "illustration" :
+    /\b(?:photograph|photography|photo)\b/i.test(instructions) ? "photograph" : "auto";
+  const selectedStyle = appearance?.style && appearance.style !== "auto" ? appearance.style : "";
+  const direction = [instructions, selectedStyle ? `Selected style: ${selectedStyle}` : ""].filter(Boolean).join(". ") || imageCopy(brand.visualStyle ?? input.style, 180);
   const instructionOnly = Boolean(input.creativeInstructions?.trim()) && input.outputText.trim() === input.creativeInstructions?.trim();
   const modeHint = instructions || `${brand.visualStyle ?? ""} ${source}`;
   const noText = /\b(?:no text|without text|textless|image only)\b/i.test(instructions);
@@ -56,7 +63,7 @@ export function buildCreativeBrief(input: BuildPosterInput) {
   if (noText && requested !== "text") mode = "image";
   else if (mode === "image" && textRequested) mode = "mixed";
   const explicitPalette = palette(input.creativeInstructions ?? "");
-  const selected = explicitPalette.length ? explicitPalette : palette(brand.brandColors ?? "");
+  const selected = appearance?.colours.length ? appearance.colours : explicitPalette.length ? explicitPalette : palette(brand.brandColors ?? "");
   const paragraphs = source.split(/\n+/).map(s => s.trim()).filter(s => s && !/^(?:cta|call to action)\s*:/i.test(s));
   const headline = shorten(directive(instructions, "headline|quote") ?? (instructionOnly ? "" : paragraphs[0]?.split(/(?<=[.!?])\s+/)[0]) ?? "", 68);
   const supporting = directive(instructions, "support(?:ing text)?") ?? (instructionOnly ? "" : paragraphs.slice(1).find(s => !s.includes(headline))) ?? "";
@@ -66,14 +73,16 @@ export function buildCreativeBrief(input: BuildPosterInput) {
     mode, headline, body: shorten(supporting, 120), brand: shorten(directive(instructions, "brand(?: name)?") ?? brand.brandName ?? "", 36),
     background: selected[0] ?? defaults[0], accent: selected[1] ?? defaults[1],
     align: /\bcent(?:er|re)(?:d)?\b/i.test(instructions) ? "center" : "left",
-    font: /\b(?:luxury|elegant|serif|editorial)\b/i.test(direction) ? "editorial" : "sans"
+    font: /\b(?:luxury|elegant|serif|editorial)\b/i.test(selectedStyle || direction) ? "editorial" : "sans"
   };
   if (design.body === design.headline) design.body = "";
   return { design, source, direction, prompt: [
     "Create one original, conceptually relevant social visual. Do not reproduce a caption or a generic SaaS background.",
     `Content meaning (context, not text to draw): ${source}`,
     `Creative direction (takes precedence over saved preferences): ${direction}`,
-    `Saved visual preference: ${imageCopy(brand.visualStyle ?? "", 180)}`,
+    `Image type: ${visualType === "auto" ? "Infer from the description and source." : visualType}. ${visualType === "graphic" ? "Use graphic design, not photography or unrelated people." : visualType === "illustration" ? "Use an illustrated composition, not photography." : visualType === "photograph" ? "Use natural photography, not vector graphics." : ""}`,
+    "Selected type, style and palette override inferred or saved defaults. Other explicit description instructions must be respected. Do not add unrelated people or objects.",
+    `Saved visual preference (only when not overridden): ${imageCopy(brand.visualStyle ?? "", 180)}`,
     `Industry: ${imageCopy(brand.industry ?? "", 180)}. Audience: ${imageCopy(brand.audience ?? "", 220)}.`,
     `Brand personality and tone: ${imageCopy(brand.writingStyle ?? "", 180)}.`,
     `Palette: ${design.background.replace("#", "hex ")}, ${design.accent.replace("#", "hex ")}.`,

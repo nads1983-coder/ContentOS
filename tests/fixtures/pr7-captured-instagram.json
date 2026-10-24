@@ -1,0 +1,30 @@
+{
+  "request": {
+    "source": "Northbank Paper reached 1,000 subscribers; announce our giveaway on Instagram.",
+    "brandName": "Northbank Paper",
+    "audience": "Independent makers",
+    "offer": "",
+    "writingStyle": "Warm, plain English",
+    "contentGoal": "",
+    "tone": "friendly",
+    "sharpness": "balanced",
+    "ctaMode": "none",
+    "presetTopic": "none",
+    "selectedTypes": ["instagram"],
+    "length": "short",
+    "automaticSettings": ["tone", "sharpness", "ctaMode", "presetTopic", "length"]
+  },
+  "output": {
+    "title": "Northbank Paper 1K Subscribers Instagram Giveaway Announcement",
+    "summary": "Celebrating Northbank Paper's milestone of 1,000 subscribers with a warm giveaway announcement for independent makers on Instagram.",
+    "sections": [{
+      "id": "northbank-paper-1k-giveaway-ig-caption",
+      "type": "instagram",
+      "title": "Instagram Giveaway Caption",
+      "platform": "Instagram",
+      "body": "We just crossed 1,000 subscribers! \n\nNorthbank Paper started as a small idea in our attic, and now we’ve found our own community of independent makers. Every single one of you helped shape what we’ve become—thank you for reading, sharing, and supporting us.\n\nTo celebrate, we’re hosting a giveaway for our followers. It’s our way of saying thanks and keeping the handmade spirit alive. More details on how to enter coming soon!\n\nStay tuned, and let’s keep building something special together.",
+      "items": ["#northbankpaper", "#makerscommunity", "#smallbusinesslove", "#independentmakers", "#creativecommunity", "#giveawaytime", "#milestone"],
+      "cta": ""
+    }]
+  }
+}

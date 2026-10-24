@@ -48,8 +48,9 @@ async function routeFixture(options = {}) {
   const analytics = [];
   const errors = [];
   const gateCalls = [];
+  const financialCalls = [];
   const route = loadTs("app/api/generate/route.ts", {
-    "@/lib/commercial-ledger": { dispatchCommercial: async () => {}, settleCommercialUsage: async () => {} },
+    "@/lib/commercial-ledger": { dispatchCommercial: async () => { financialCalls.push("dispatch"); }, settleCommercialUsage: async () => { financialCalls.push("settle"); } },
     "@/lib/request-security": { rejectUnsafeWrite: () => options.unsafe ? Response.json({ error: "Unsafe origin." }, { status: 403 }) : null },
     "@/lib/auth": { getCurrentUser: async () => options.anonymous ? null : { id: "user-test", email: "test@example.invalid" } },
     "@/lib/backend": { isDatabaseConfigured: () => { gateCalls.push("database_config"); return !options.noDatabase; } },
@@ -108,7 +109,7 @@ async function routeFixture(options = {}) {
       method: "POST", headers, body: options.rawBody ?? JSON.stringify(options.body ?? { source, selectedTypes: ["linkedin"], requestId })
     });
     const response = await route.POST(incoming);
-    return { response, body: await response.json(), calls, clientOptions, providerInput, analytics, errors, gateCalls, bodyRead: incoming.bodyUsed };
+    return { response, body: await response.json(), calls, clientOptions, providerInput, analytics, errors, gateCalls, financialCalls, bodyRead: incoming.bodyUsed };
   } finally {
     if (previousModel === undefined) delete process.env.OPENAI_MODEL;
     else process.env.OPENAI_MODEL = previousModel;
@@ -127,6 +128,124 @@ test("route reserves before a bounded provider call and completes only validated
   assert.equal(clientOptions.timeout, 90_000);
   assert.equal(providerInput.max_output_tokens, 24_000);
   assert.equal(response.headers.get("X-Request-Id"), "a189b831-43ea-479c-89ab-e639734983ab");
+});
+
+test("captured factual failure refuses delivery, retains provider accounting and terminal request identity", async () => {
+  const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
+  const h = statefulReservationHarness();
+  const body = { ...captured.request, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+  const providerResponse = { status: "completed", output_text: JSON.stringify(captured.output), usage: { input_tokens: 1789, output_tokens: 266, total_tokens: 2055 } };
+  const result = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(result.response.status, 502);
+  assert.equal(result.body.code, "unsupported_business_facts");
+  assert.match(result.body.error, /existing draft is unchanged/);
+  assert.deepEqual(result.calls, ["provider"]);
+  assert.equal(result.clientOptions.maxRetries, 0);
+  assert.deepEqual(result.financialCalls, ["dispatch", "settle"]);
+  assert.equal(h.completions, 0);
+  assert.equal(h.failures, 1);
+  assert.equal(h.state.generation_history_json, undefined);
+  assert.equal(h.state.usage_events_json, undefined);
+  assert.equal(result.analytics[0].fields.output_tokens, 266);
+  assert.equal(result.errors[0].context.error_class, "unsupported_business_facts");
+  assert.ok(!JSON.stringify(result.errors).includes("attic"));
+  const repeated = await routeFixture({ ...h, body, providerResponse });
+  assert.deepEqual(repeated.calls, []);
+  assert.notEqual(repeated.response.status, 200);
+});
+
+test("refinement factual failures also refuse delivery without a retry or successful usage", async () => {
+  const invented = output(["linkedin"], { sections: [section("linkedin", { body: "We started this business in our attic three years ago." })] });
+  const result = await routeFixture({
+    body: { source, selectedTypes: ["linkedin"], refinement: { action: "custom", instructions: "Make it more personal.", section: section("linkedin") } },
+    providerResponse: { status: "completed", output_text: JSON.stringify(invented) }
+  });
+  assert.equal(result.response.status, 502);
+  assert.equal(result.body.code, "unsupported_business_facts");
+  assert.deepEqual(result.calls, ["reserve", "provider", "fail"]);
+});
+
+test("latest live inventions fail both generation and refinement before persistence, while paid usage is retained", async () => {
+  const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
+  const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-instagram-quality-comparison.json"), "utf8"));
+  for (const refinement of [undefined, { action: "custom", instructions: "Make it more conversational.", section: captured.sections[0] }]) {
+    const h = statefulReservationHarness();
+    const body = { ...original.request, refinement, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+    const providerResponse = { status: "completed", output_text: JSON.stringify(captured), usage: { input_tokens: 2622, output_tokens: 190, total_tokens: 2812 } };
+    const result = await routeFixture({ ...h, body, providerResponse });
+    assert.equal(result.response.status, 502);
+    assert.equal(result.body.code, "unsupported_business_facts");
+    assert.deepEqual(result.calls, ["provider"]);
+    assert.deepEqual(result.financialCalls, ["dispatch", "settle"]);
+    assert.equal(result.clientOptions.maxRetries, 0);
+    assert.equal(h.completions, 0);
+    assert.equal(h.state.generation_history_json, undefined);
+    assert.equal(h.state.usage_events_json, undefined);
+    assert.equal(result.analytics[0].fields.output_tokens, 190);
+    assert.doesNotMatch(JSON.stringify(result.errors), /Northbank|creative process|coming soon/);
+    const replay = await routeFixture({ ...h, body, providerResponse });
+    assert.notEqual(replay.response.status, 200);
+    assert.deepEqual(replay.calls, []);
+    assert.deepEqual(replay.financialCalls, []);
+  }
+});
+
+test("captured quality cleanup is persisted once with provider accounting and safe duplicate replay", async () => {
+  const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
+  const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-instagram-quality-retest.json"), "utf8"));
+  const h = statefulReservationHarness();
+  const body = { ...original.request, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+  const providerResponse = { status: "completed", output_text: JSON.stringify(captured), usage: { input_tokens: 2238, output_tokens: 264, total_tokens: 2502 } };
+  const result = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(result.response.status, 200);
+  assert.deepEqual(result.calls, ["provider"]);
+  assert.deepEqual(result.financialCalls, ["dispatch", "settle"]);
+  assert.equal(result.clientOptions.maxRetries, 0);
+  assert.ok(!JSON.stringify(result.body).includes("#papercraft"));
+  assert.ok(!result.body.sections[0].body.includes("creative journey deserves"));
+  assert.deepEqual(h.state.generation_history_json[0].payload.sections, result.body.sections);
+  assert.equal(h.state.usage_events_json.length, 1);
+  const repeated = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(repeated.response.status, 200);
+  assert.deepEqual(repeated.calls, []);
+  assert.deepEqual(repeated.financialCalls, []);
+  assert.equal(h.completions, 1);
+  assert.equal(h.state.generation_history_json.length, 1);
+  assert.equal(h.state.usage_events_json.length, 1);
+});
+
+test("simple creation and bounded custom refinement use the same guarded provider route", async () => {
+  for (const refinement of [undefined, { action: "custom", instructions: "Make it shorter and warmer.", section: section("linkedin") }]) {
+    const { response, calls, providerInput, clientOptions } = await routeFixture({ body: {
+      source, selectedTypes: ["linkedin"], automaticSettings: ["tone", "length"], refinement
+    } });
+    assert.equal(response.status, 200);
+    assert.deepEqual(calls, ["reserve", "provider", "complete"]);
+    assert.equal(clientOptions.maxRetries, 0);
+    assert.match(providerInput.input, /Tone selected: Automatic/);
+    if (refinement) assert.match(providerInput.input, /Requested change: Make it shorter and warmer\./);
+  }
+});
+
+test("final captured draft omits unprovided channel history, persists review status once and never retries the provider", async () => {
+  const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
+  const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-final-acceptance-instagram.json"), "utf8"));
+  for (const refinement of [undefined, { action: "custom", instructions: "Make it warmer.", section: captured.sections[0] }]) {
+    const h = statefulReservationHarness();
+    const body = { ...original.request, refinement, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+    const providerResponse = { status: "completed", output_text: JSON.stringify(captured), usage: { input_tokens: 2725, output_tokens: 242, total_tokens: 2967 } };
+    const result = await routeFixture({ ...h, body, providerResponse });
+    assert.equal(result.response.status, 200);
+    assert.equal(result.body.sections[0].review.status, "needs_confirmation");
+    assert.doesNotMatch(result.body.sections[0].body, /newsletter/);
+    assert.deepEqual(h.state.generation_history_json[0].payload.sections, result.body.sections);
+    assert.equal(h.state.usage_events_json.length, 1);
+    assert.deepEqual(result.financialCalls, ["dispatch", "settle"]);
+    const replay = await routeFixture({ ...h, body, providerResponse });
+    assert.equal(replay.response.status, 200); assert.deepEqual(replay.body, result.body);
+    assert.deepEqual(replay.calls, []); assert.deepEqual(replay.financialCalls, []);
+    assert.equal(h.completions, 1); assert.equal(h.state.usage_events_json.length, 1);
+  }
 });
 
 test("route rejects unsafe/unauthenticated/invalid/unconfigured requests before admission", async () => {

@@ -3,7 +3,7 @@ import type { BrandProfile } from "@/types/saas";
 import { contentTypes, tones, sharpnessModes, ctaModes, presetTopics } from "@/lib/content-config";
 
 export type WorkspacePreferences = Required<Pick<GenerateRequest, "brandName" | "audience" | "offer" | "writingStyle" | "contentGoal">> &
-  Partial<Pick<GenerateRequest, "tone" | "sharpness" | "ctaMode" | "presetTopic" | "selectedTypes">> & { brandProfileId?: string };
+  Partial<Pick<GenerateRequest, "tone" | "sharpness" | "ctaMode" | "presetTopic" | "selectedTypes" | "automaticSettings">> & { brandProfileId?: string; brandColors?: string; visualStyle?: string; length?: "short" | "standard" | "detailed" };
 export type WorkspaceSnapshot = {
   revision: number;
   store: StudioStore;
@@ -50,6 +50,15 @@ function list<T>(value: unknown, limit: number, parse: (v: unknown) => T): T[] {
   if (!Array.isArray(value) || value.length > limit) throw new WorkspaceError("Invalid workspace list.");
   return value.map(parse);
 }
+function creativePreferences(value: Record<string, unknown>) {
+  const result: Pick<WorkspacePreferences, "automaticSettings" | "length"> = {};
+  if (value.length !== undefined) result.length = choice(value.length, [{ id: "short" }, { id: "standard" }, { id: "detailed" }] as const);
+  if (value.automaticSettings !== undefined) {
+    result.automaticSettings = list(value.automaticSettings, 5, item => choice(item, ["tone", "sharpness", "ctaMode", "presetTopic", "length"].map(id => ({ id })))) as GenerateRequest["automaticSettings"];
+    if (new Set(result.automaticSettings).size !== result.automaticSettings!.length) throw new WorkspaceError("Duplicate automatic settings.");
+  }
+  return result;
+}
 function settings(value: Record<string, unknown>) {
   return {
     tone: choice(value.tone, tones),
@@ -70,6 +79,11 @@ export function parseWorkspaceGeneration(value: unknown): GenerationResult {
         id: text(section.id, 160), type: choice(section.type, contentTypes),
         title: text(section.title, 1000), platform: text(section.platform, 160), body: text(section.body, 32000),
         items: list(section.items, 100, entry => text(entry)),
+        ...(section.review !== undefined ? { review: (() => {
+          const review = object(section.review);
+          if (review.status !== "ready_to_review" && review.status !== "needs_confirmation") throw new Error("Invalid review status");
+          return { status: review.status, notes: list(review.notes, 10, note => text(note, 500)) };
+        })() } : {}),
         ...(section.cta !== undefined ? { cta: text(section.cta) } : {}),
         ...(section.revisionSource === "manual" || section.revisionSource === "refined" ? { revisionSource: section.revisionSource } : {})
       };
@@ -80,7 +94,7 @@ function draft(value: unknown): Draft {
   const v = object(value);
   const brand = Object.fromEntries((["brandName", "audience", "offer", "writingStyle", "contentGoal"] as const)
     .filter(key => v[key] !== undefined).map(key => [key, text(v[key], key === "writingStyle" ? 320 : key === "brandName" || key === "contentGoal" ? 180 : 240)]));
-  return { id: text(v.id, 160), updatedAt: timestamp(v.updatedAt), title: text(v.title, 1000), source: text(v.source), ...settings(v), ...brand };
+  return { id: text(v.id, 160), updatedAt: timestamp(v.updatedAt), title: text(v.title, 1000), source: text(v.source), ...settings(v), ...brand, ...creativePreferences(v) };
 }
 export function parseWorkspaceWrite(value: unknown): WorkspaceWriteInput {
   const v = object(value);
@@ -93,6 +107,9 @@ export function parseWorkspaceWrite(value: unknown): WorkspaceWriteInput {
     writingStyle: text(p.writingStyle, 320), contentGoal: text(p.contentGoal, 180)
   };
   if (p.brandProfileId !== undefined) preferences.brandProfileId = text(p.brandProfileId, 160);
+  if (p.brandColors !== undefined) preferences.brandColors = text(p.brandColors, 180);
+  if (p.visualStyle !== undefined) preferences.visualStyle = text(p.visualStyle, 180);
+  Object.assign(preferences, creativePreferences(p));
   if (p.tone !== undefined) preferences.tone = choice(p.tone, tones);
   if (p.sharpness !== undefined) preferences.sharpness = choice(p.sharpness, sharpnessModes);
   if (p.ctaMode !== undefined) preferences.ctaMode = choice(p.ctaMode, ctaModes);

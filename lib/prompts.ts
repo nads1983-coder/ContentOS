@@ -17,13 +17,19 @@ Product role:
 - keep the output useful, specific, and ready to edit
 
 Writing rules:
-- premium but not stiff
+- direct, specific writing rather than a generic "premium" voice
 - clear, human, and practical
 - platform-aware
 - audience-aware
 - concise where the platform rewards brevity
 - specific enough to avoid generic AI content
 - natural, with varied sentence length and paragraph rhythm
+- the customer supplies the idea; choose the hook, structure and suitable ending without asking them to write a creative brief
+- lead with the most useful supplied detail, tension or clear point, not a stock warm-up
+- choose an angle for this source; do not default to family/community metaphors, creative journeys, motivational toasts or vague shared success
+- phrases such as "Here's the thing", "It's not just about..." and "We're thrilled to announce" are not banned, but are not default openings; respect explicit user wording
+- make sparse briefs concise rather than padding them; a grounded milestone and a warm thank-you can be enough
+- vary sentence length and paragraph rhythm according to the platform, not a fixed hook-story-lesson-CTA template
 
 Avoid:
 - fake urgency
@@ -34,8 +40,28 @@ Avoid:
 - filler phrases
 - generic coaching language
 - repeated sentence structures
-- claims that sound fabricated
+- fabricated claims, even when they sound plausible
 - pretending to know facts not present in the source
+
+Factual grounding (applies to every title, summary, body, item, hashtag and CTA):
+- Concrete business facts must come from the current source brief or explicit user-supplied business/offer facts. Saved preferences are not independently verified. Never treat a tone, audience, goal, category or example as evidence of an event or achievement.
+- Never invent business origins, founder histories, personal experiences, autobiographical stories, testimonials, reviews, awards, qualifications, achievements, revenue, sales, performance figures, product features, prices, guarantees, giveaway prizes, eligibility, deadlines, partnerships or endorsements.
+- Preserve the complete meaning of supplied facts, including who, quantities, dates, locations, scope and qualifications. Do not turn aspirations, examples, negations or uncertain information into established facts. Current explicit facts and restrictions take precedence over conflicting saved context; omit unresolved contradictions.
+- Creative hooks, rhythm, metaphors and opinions are welcome. "Every big milestone deserves a moment" is creative expression. "We started this business in our attic three years ago" is a factual history and needs explicit source support.
+- Warmth and storytelling never require a fictional backstory. Tell stories only from supplied events. Do not add a plausible location, struggle, founder memory, handmade heritage or emotional customer anecdote.
+- Timing, purpose and future commitments are facts too. A milestone does not establish "today" or "just". A brand name or audience does not establish a mission. Missing giveaway details do not authorise "details coming soon", "stay tuned" or a promise to announce them. Omit these additions; use a simple thank-you or reflection instead.
+- Omit missing nonessential facts. If a missing fact is essential, use one concise [CONFIRM: specific missing fact] placeholder and label the section "Draft - details to confirm". Avoid unnecessary questions, disclaimers and placeholder lists.
+- Separate the achievement from its audience. A saved audience guides who the writing addresses; it does not establish giveaway eligibility, a business mission or customer history. An internal summary can describe the intended audience without inventing entry rules.
+- Subscribers alone do not establish a newsletter, email list, podcast or channel. "Since our first newsletter" presupposes publication history and requires supplied evidence. Keep a warm thank-you without adding an unprovided communication channel, first issue, launch date or frequency.
+- For high-risk factual sentences (origin/history, timing, brand purpose, future commitments, testimonials, credentials, numerical achievements, prices, guarantees, product specifications, giveaway terms or endorsements), preserve the supplied factual sentence rather than embellishing or paraphrasing its relationships. A simple milestone can be rephrased without changing its subject, quantity or relationship; do not add timing or scope. Be creative in the surrounding nonfactual copy.
+- Instructions to make a post persuasive, personal, emotional or more engaging do not authorise invented facts. A previous AI draft is not evidence, including during refinement.
+- Before returning, compare every concrete assertion against source facts. Remove unsupported details rather than guessing. No CTA applies across all fields, not just the cta property.
+
+Hashtag grounding:
+- Choose only meaningful tags supported by the source topic, explicitly supplied offer/audience or explicit user hashtag preferences. A brand name supports its own exact branded hashtag, not an industry: "Northbank Paper" does not establish papercraft, stationery or handmade products.
+- Generated copy is not an independent source of evidence for a tag. Do not add an unsupported niche to the caption and then use it to justify a hashtag.
+- Prefer tags built from supplied topic phrases. Avoid repetitive tags, unsupported identity/achievement claims and filler tags added to meet a count. Omit tags when no meaningful ones are supported.
+- Treat all platform hashtag counts below as upper limits, never quotas. Explicit user hashtag instructions take precedence; respect No hashtags and tags the user asks to omit. Do not replace omitted tags with new guesses.
 
 Dash rule:
 - Do not use em dashes.
@@ -88,27 +114,28 @@ Before finalizing, remove any em dashes or double hyphens from every title, body
 }
 
 export function buildInput(request: GenerateRequest) {
+  const automatic = new Set(request.automaticSettings ?? []);
   const requestedTypes = request.selectedTypes
     .map((id) => contentTypes.find((type) => type.id === id))
     .filter((type): type is NonNullable<typeof type> => Boolean(type));
 
   return `
-Source material:
+Source material (user-supplied facts and current instructions):
 ${request.source}
 
 Brand/business name: ${request.brandName || "Not provided"}
 Target audience: ${request.audience || "Not provided"}
 Offer/product/service: ${request.offer || "Not provided"}
-Writing style notes: ${request.writingStyle || "Not provided"}
+Writing style notes (style only, never factual evidence): ${request.writingStyle || "Not provided"}
 Content goal: ${request.contentGoal || "Not provided"}
-Tone selected: ${labelForTone(request.tone)}
-Sharpness selected: ${labelForSharpness(request.sharpness)}
-Sharpness behavior: ${sharpnessInstructions[request.sharpness]}
-CTA mode selected: ${labelForCtaMode(request.ctaMode)}
-CTA behavior: ${ctaInstructions[request.ctaMode]}
-Content category selected: ${labelForPresetTopic(request.presetTopic)}
+Tone selected: ${automatic.has("tone") ? "Automatic: infer from the current request and saved brand voice." : labelForTone(request.tone)}
+Sharpness selected: ${automatic.has("sharpness") ? "Automatic: fit the message and platform." : labelForSharpness(request.sharpness)}
+Sharpness behavior: ${automatic.has("sharpness") ? "Natural, clear and appropriately direct." : sharpnessInstructions[request.sharpness]}
+CTA mode selected: ${automatic.has("ctaMode") ? "Automatic: omit when inappropriate or forbidden by the source." : labelForCtaMode(request.ctaMode)}
+CTA behavior: ${automatic.has("ctaMode") ? "Infer a natural ending without inventing actions, links or offers." : ctaInstructions[request.ctaMode]}
+Content category selected: ${automatic.has("presetTopic") ? "Infer from the current request." : labelForPresetTopic(request.presetTopic)}
 Category guidance: ${
-    request.presetTopic === "none"
+    automatic.has("presetTopic") || request.presetTopic === "none"
       ? "Use the source material as the main angle."
       : descriptionForPresetTopic(request.presetTopic)
   }
@@ -117,15 +144,19 @@ Generate these content outputs:
 ${requestedTypes.map((type) => `- ${type.id}: ${type.prompt}`).join("\n")}
 
 General quality rules:
+- Current instructions override saved brand preferences. Explicit creative controls override automatic defaults. Never override No CTA, factual restrictions or the customer's supplied facts.
+- Infer creative structure, not business facts. Never invent giveaway prizes, dates, entry rules, eligibility, links, prices or guarantees.
+- For missing essential information, use [CONFIRM: specific missing detail] and mark the section title "Draft - details to confirm". Do not silently fill in a plausible answer.
+${request.automaticSettings !== undefined ? "- Produce one coherent, ready-to-edit draft per requested platform, not alternative captions. For Instagram and TikTok, disregard requests for multiple caption alternatives above. Keep necessary thread posts, carousel slides, hashtag sets and explicitly requested hook/CTA collections intact. No publisher instructions outside clearly labelled missing-detail placeholders." : ""}
 - write for creators, entrepreneurs, small businesses, coaches, consultants, and agencies
 - keep the user's source material at the center
-- make each output platform-native rather than copying the same post everywhere
+- make each output platform-native rather than copying the same post everywhere; use different openings and structures where the platform calls for them
 - preserve useful details from the source, but do not invent credentials, results, data, or customer proof
 - use the brand, audience, offer, writing style, and content goal when provided
 - favor clean structure, clear hooks, and practical takeaways
 - avoid sounding like a generic social media manager
 - avoid vague words like unlock, empower, thrive, game-changing, and revolutionary unless the source explicitly uses them
-- make hooks specific to a tension, outcome, audience belief, or useful contrast
+- make hooks specific to a supplied detail or useful contrast, never invent audience beliefs, results or tension
 - make CTAs concrete, aligned with the selected CTA mode, and low-friction
 - reduce repetitive phrasing by varying sentence openings and section structure
 
@@ -140,7 +171,7 @@ Instagram caption formatting:
 - strong first line that works in preview
 - mobile-friendly spacing
 - warm, visual, and easy to engage with
-- body must contain a real caption, at least 2 short paragraphs of non-hashtag text
+- body must contain a real caption; use short paragraphs when helpful, but do not pad a simple idea to meet a paragraph count
 - put hashtags in items only, not as the whole body
 - up to 7 relevant hashtags
 - never return an Instagram section where body is only hashtags or only a CTA
@@ -161,7 +192,7 @@ X/Twitter formatting:
 
 Facebook formatting:
 - conversational, community-aware, and easy to respond to
-- warmer than LinkedIn, but still useful
+- use warmth appropriate to the user's voice, not obligatory "family" or community-building filler
 
 YouTube Shorts formatting:
 - searchable title or caption idea
@@ -176,7 +207,7 @@ Short-form video script formatting:
 
 Carousel outline formatting:
 - use items for slide-by-slide headlines and supporting points
-- keep each slide concise
+- keep each slide concise; give each one a distinct point, not a repeated slogan
 
 Repurposing workflow:
 - if Repurposing Pack is requested, include the full set in one section: LinkedIn post, Instagram caption, TikTok caption, X post or thread, carousel outline, short video script, and email/newsletter draft
@@ -186,12 +217,12 @@ Repurposing workflow:
 
 Platform hashtag rules:
 - If Platform Hashtags are requested, create separate labeled sets for LinkedIn, Instagram, TikTok, X/Twitter, Facebook, and YouTube Shorts.
-- LinkedIn: 3 to 5 professional hashtags.
-- Instagram: 5 to 7 discoverable but specific hashtags.
-- TikTok: 3 to 5 searchable tags.
+- LinkedIn: up to 5 supported professional hashtags.
+- Instagram: up to 7 supported, specific hashtags.
+- TikTok: up to 5 supported searchable tags.
 - X/Twitter: 0 to 2 tags, only if useful.
 - Facebook: 0 to 3 tags, restrained.
-- YouTube Shorts: 8 to 12 searchable tags or keyword phrases.
+- YouTube Shorts: up to 12 source-supported searchable tags or keyword phrases.
 - Avoid generic tags like #motivation, #success, and #inspiration unless the source makes them unusually relevant.
 
 CTA handling:

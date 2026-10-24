@@ -1,9 +1,13 @@
 import { parseProductionGeneration } from "@/lib/production-generation";
 import { contentTypes, ctaModes, defaultSelectedTypes, presetTopics, sharpnessModes, tones } from "@/lib/content-config";
 import { cleanPlainText } from "@/lib/text-normalize";
+import { hasUnsupportedBusinessFacts } from "@/lib/business-facts";
+import { applyContentQuality } from "@/lib/content-quality";
+import { preparePublication, attachPublicationReview } from "@/lib/publication-safety";
 import type { ContentTypeId, GenerateRequest, GeneratedSection, GenerationResult } from "@/types/content";
 
 export const REFINEMENT_ACTIONS = {
+  custom: "Apply only the requested change. Preserve unrelated content, facts and qualifications. Never treat a request for stronger copy as evidence for new business claims.",
   shorten: "Remove redundancy and secondary explanation while preserving the core point, factual qualifications, and required asset counts.",
   expand: "Add useful explanation using only source-supported detail. Do not invent examples, proof, results, or credentials.",
   simplify: "Use plain language and shorter sentences. Explain necessary jargon without losing precision or qualifications.",
@@ -21,6 +25,7 @@ export type GenerationInput = GenerateRequest & {
   length?: "short" | "standard" | "detailed";
   refinement?: {
     action: keyof typeof REFINEMENT_ACTIONS;
+    instructions?: string;
     section: GeneratedSection;
   };
 };
@@ -37,6 +42,7 @@ export const GENERATION_LIMITS = {
 
 export class GenerationValidationError extends Error {}
 export class GenerationOutputError extends Error {}
+export class GenerationGroundingError extends GenerationOutputError {}
 
 function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -95,6 +101,13 @@ export function normalizeGenerationRequest(body: unknown): GenerationInput {
     }
     result.requestId = id;
   }
+  if (body.automaticSettings !== undefined) {
+    const allowed = ["tone", "sharpness", "ctaMode", "presetTopic", "length"] as const;
+    if (!Array.isArray(body.automaticSettings) || body.automaticSettings.length > allowed.length ||
+        new Set(body.automaticSettings).size !== body.automaticSettings.length ||
+        !body.automaticSettings.every(v => allowed.includes(v))) throw new GenerationValidationError("Invalid automatic settings.");
+    result.automaticSettings = [...body.automaticSettings];
+  }
   if (body.refinement !== undefined) {
     if (!record(body.refinement) || body.refinement.action === undefined) {
       throw new GenerationValidationError("Invalid refinement.");
@@ -110,6 +123,11 @@ export function normalizeGenerationRequest(body: unknown): GenerationInput {
       throw new GenerationValidationError("Refine exactly one matching content format.");
     }
     result.refinement = { action, section };
+    if (action === "custom") {
+      const instructions = inputText(body.refinement.instructions, "Requested change", 400, true);
+      if (!instructions) throw new GenerationValidationError("Describe the change you want.");
+      result.refinement.instructions = instructions;
+    }
   }
   return result;
 }
@@ -185,10 +203,25 @@ function validateSection(value: unknown): GeneratedSection {
 
 
 export { productionOutputSchema } from "@/lib/production-generation";
+function hasForbiddenCta(result: GenerationResult, request: GenerationInput) {
+  const explicit = /(?:^|[.!?\n])\s*(?:no (?:cta|call to action)|(?:do not|don't) (?:add|include) (?:a )?(?:cta|call to action))\s*(?:[.!?\n]|$)/i;
+  const noCta = request.ctaMode === "none" && !request.automaticSettings?.includes("ctaMode") ||
+    explicit.test(request.source) || explicit.test(request.refinement?.instructions || "");
+  if (!noCta) return false;
+  const socialAction = /(?:^|[.!?\n:]|\bplease)\s*(?:follow (?:us|me|along)|(?:like|share|save) this (?:post|video|thread|carousel)|(?:click|tap) (?:the |our )?link|link in (?:our |my |the )?bio|(?:dm|message) (?:us|me)|(?:comment|subscribe|sign up|shop now|enter now)\b)/i;
+  return [result.title, result.summary, ...result.sections.flatMap(s => [s.title, s.body, ...s.items, s.cta || ""])]
+    .some(text => socialAction.test(text));
+}
+
 export function parseGenerationOutput(text: string, request: GenerationInput): GenerationResult {
   if (typeof text !== "string" || text.length > GENERATION_LIMITS.outputCharacters) throw new GenerationOutputError("Invalid output size.");
   try {
-    const result = parseProductionGeneration(text, request);
+    // Inspect before fallbacks/cleanup; only explicitly bounded omissions are safe.
+    const raw = JSON.parse(text);
+    let prepared;
+    try { prepared = preparePublication(raw, request); }
+    catch { throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged."); }
+    const result = attachPublicationReview(applyContentQuality(parseProductionGeneration(JSON.stringify(prepared.value), request), request), prepared.omitted);
     if (result.sections.length !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.type)).size !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.id)).size !== result.sections.length ||
@@ -196,8 +229,11 @@ export function parseGenerationOutput(text: string, request: GenerationInput): G
       throw new Error("Missing or duplicate requested formats.");
     }
     if (new TextEncoder().encode(JSON.stringify(result)).byteLength > GENERATION_LIMITS.resultBytes) throw new Error("Output too large.");
+    if (hasUnsupportedBusinessFacts(result, request)) throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged.");
+    if (hasForbiddenCta(result, request)) throw new GenerationOutputError("The response conflicts with No CTA.");
     return result;
-  } catch {
+  } catch (error) {
+    if (error instanceof GenerationGroundingError) throw error;
     throw new GenerationOutputError("The AI response is incomplete or cannot be saved. Your draft is unchanged.");
   }
 }
