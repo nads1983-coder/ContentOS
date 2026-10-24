@@ -63,8 +63,9 @@ Factual grounding (applies to every title, summary, body, item, hashtag and CTA)
 Hashtag grounding:
 - Choose meaningful tags from the actual source topic and current explicit hashtag requests. A saved brand name alone does not authorise its hashtag. Even an authorised brand mention does not establish an industry. Saved style notes cannot introduce unrelated tags or promotional subjects.
 - Generated copy is not an independent source of evidence for a tag. Do not add an unsupported niche to the caption and then use it to justify a hashtag.
-- Prefer tags built from supplied topic phrases. Avoid repetitive tags, unsupported identity/achievement claims and filler tags added to meet a count. Omit tags when no meaningful ones are supported.
-- Treat all platform hashtag counts below as upper limits, never quotas. Explicit user hashtag instructions take precedence; respect No hashtags and tags the user asks to omit. Do not replace omitted tags with new guesses.
+- Choose relevant topic phrases, established synonyms and broader discovery themes supported by the actual subject, not only exact words from the brief. For example, consistent LinkedIn activity supports LinkedInGrowth, Consistency, PersonalBranding and ProfessionalGrowth as themes, not claims of measured results. Avoid unsupported niches, achievements, promotions and repetitive variations.
+- Prefer the platform ranges below when several genuinely relevant themes exist; these are editorial defaults, not mandatory quotas. Use fewer or none when context is insufficient, never filler. Explicit user hashtag instructions take precedence, including No hashtags and omitted tags.
+- Keep hashtags in items, grouped at the end of the final post, never in titles, summaries or the CTA. Do not require the user to request relevant tags manually.
 
 Dash rule:
 - Do not use em dashes.
@@ -181,7 +182,7 @@ Instagram caption formatting:
 - body must contain a real caption; use short paragraphs when helpful, but do not pad a simple idea to meet a paragraph count
 - put hashtags in items only, not as the whole body
 - The final copy groups hashtags on one line after a blank line; do not insert blank paragraphs between tags unless the user explicitly asks for that layout.
-- up to 7 relevant hashtags
+- prefer 3 to 5 relevant hashtags when supported
 - never return an Instagram section where body is only hashtags or only a CTA
 
 TikTok caption formatting:
@@ -189,7 +190,7 @@ TikTok caption formatting:
 - native, direct, and low filler
 - body must contain a short caption or hook in plain language, not just hashtags
 - put hashtags in items only
-- up to 5 relevant hashtags
+- prefer 3 to 5 relevant hashtags when supported
 - never return a TikTok section where body is only hashtags or only a CTA
 
 X/Twitter formatting:
@@ -225,12 +226,12 @@ Repurposing workflow:
 
 Platform hashtag rules:
 - If Platform Hashtags are requested, create separate labeled sets for LinkedIn, Instagram, TikTok, X/Twitter, Facebook, and YouTube Shorts.
-- LinkedIn: up to 5 supported professional hashtags.
-- Instagram: up to 7 supported, specific hashtags.
-- TikTok: up to 5 supported searchable tags.
+- LinkedIn: prefer 3 to 5 relevant professional hashtags.
+- Instagram: prefer 3 to 5 relevant hashtags.
+- TikTok: prefer 3 to 5 relevant searchable hashtags.
 - X/Twitter: 0 to 2 tags, only if useful.
-- Facebook: 0 to 3 tags, restrained.
-- YouTube Shorts: up to 12 source-supported searchable tags or keyword phrases.
+- Facebook: prefer 1 to 3 relevant hashtags, restrained.
+- YouTube Shorts: prefer 2 to 3 relevant hashtags; plain search keywords are separate from hashtag counts.
 - Avoid generic tags like #motivation, #success, and #inspiration unless the source makes them unusually relevant.
 
 CTA handling:

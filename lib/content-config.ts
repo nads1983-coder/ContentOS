@@ -29,7 +29,7 @@ export const contentTypes: ContentTypeConfig[] = [
     label: "Instagram Caption",
     shortLabel: "Instagram",
     group: "instagram",
-    prompt: "Three Instagram caption alternatives: vary the angle using supplied details, use conversational mobile-friendly copy, and add only source-supported hashtags, up to seven. No stock backstory or forced motivational ending."
+    prompt: "Three Instagram caption alternatives: vary the angle using supplied details, use conversational mobile-friendly copy, and prefer three to five genuinely relevant hashtags, including source-supported themes and synonyms. Use fewer when appropriate. No stock backstory or forced motivational ending."
   },
   {
     id: "tiktok",

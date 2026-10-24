@@ -70,7 +70,7 @@ test("default hashtag limits do not add filler or drop meaningful text accompany
   const items = Array.from({ length: 10 }, (_, i) => `#Topic${i}`);
   const source = "Share these topics: " + items.map(s => s.slice(1)).join(" ");
   const result = parse(section({ items }), { source });
-  assert.equal(result.sections[0].items.length, 7);
+  assert.equal(result.sections[0].items.length, 5);
   assert.equal(parse(section({ items }), { source: source + ". Include 10 hashtags." }).sections[0].items.length, 10);
   assert.equal(parse(section({ items }), { source: source + ". Include only 2 hashtags.", writingStyle: "Use 8 hashtags." }).sections[0].items.length, 2);
   assert.match(copy.buildSectionCopyText(section({ items: ["A small note about #Planning."] })), /A small note about/);

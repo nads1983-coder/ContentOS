@@ -12,7 +12,8 @@ const { workspaceFromProfile, updateWorkspaceProfile } = loadTs("lib/workspace-c
 const { normalizeGenerationRequest, parseGenerationOutput } = loadTs("lib/generation-contract.ts");
 const { reserveGenerationInProfile, completeGenerationInProfile } = loadTs("lib/generation-reservation.ts");
 const rows = new Map(["image-test-account", "image-test-two"].map(id => [id, { id, email: id + "@example.invalid", plan: "pro_studio", subscription_status: "active" }]));
-const brandScenario = process.env.TEST_BRAND_CONTEXT === "1";
+const hashtagScenario = process.env.TEST_HASHTAG_CONTEXT === "1";
+const brandScenario = process.env.TEST_BRAND_CONTEXT === "1" || hashtagScenario;
 if (brandScenario) {
   const row = rows.get("image-test-account"), snapshot = workspaceFromProfile(row, row.id);
   const { request } = JSON.parse(await readFile(new URL("fixtures/codex-brand-contamination.json", import.meta.url), "utf8"));
@@ -23,10 +24,11 @@ const errors = [], requests = [];
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH });
 const dir = process.env.TEST_ARTIFACT_DIR ?? "/tmp/contentos-post-format";
 await mkdir(dir, { recursive: true });
-const caption = brandScenario ? "A coding idea worth exploring.\n\nTry a fresh perspective with Codex.\n\nWhat would you build?\n\n#Codex #CodingIdeas" : "A little room to think.\n\nTry putting one idea on paper.\n\nWhat would you write?\n\n#Planning #Ideas";
-const opening = brandScenario ? "A coding idea worth exploring." : "A little room to think.";
-const middle = brandScenario ? "Try a fresh perspective with Codex." : "Try putting one idea on paper.";
-const cta = brandScenario ? "What would you build?" : "What would you write?";
+const platform = hashtagScenario ? "linkedin" : "instagram";
+const caption = hashtagScenario ? "One year of showing up.\n\nA moment to reflect.\n\nWhat keeps you showing up?\n\n#LinkedInGrowth #Consistency #PersonalBranding #ProfessionalGrowth" : brandScenario ? "A coding idea worth exploring.\n\nTry a fresh perspective with Codex.\n\nWhat would you build?\n\n#Codex #CodingIdeas" : "A little room to think.\n\nTry putting one idea on paper.\n\nWhat would you write?\n\n#Planning #Ideas";
+const opening = hashtagScenario ? "One year of showing up." : brandScenario ? "A coding idea worth exploring." : "A little room to think.";
+const middle = hashtagScenario ? "A moment to reflect." : brandScenario ? "Try a fresh perspective with Codex." : "Try putting one idea on paper.";
+const cta = hashtagScenario ? "What keeps you showing up?" : brandScenario ? "What would you build?" : "What would you write?";
 async function newContext() {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
   await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: base });
@@ -45,9 +47,9 @@ async function newContext() {
         const input = normalizeGenerationRequest(req.postDataJSON()); requests.push(input);
         const reserved = reserveGenerationInProfile(row, id, input.requestId, input); rows.set(id, reserved.data);
         if (reserved.result.status === "replay") return route.fulfill({ json: reserved.result.result });
-        const output = parseGenerationOutput(JSON.stringify({ title: "Planning ideas", summary: "A starting point.", sections: [{ id: "instagram", type: "instagram", title: "Planning ideas", platform: "Instagram",
+        const output = parseGenerationOutput(JSON.stringify({ title: "Planning ideas", summary: "A starting point.", sections: [{ id: platform, type: platform, title: "Planning ideas", platform: hashtagScenario ? "LinkedIn" : "Instagram",
           body: input.refinement ? `One idea is enough to begin.\n\n${middle}\n\n${cta}` : `**${opening}**\n\n${middle} ${middle}\n\n${cta}`,
-          items: brandScenario ? ["#Codex", "#GorlLead", "#CodingIdeas", "#FreeCompetition"] : ["#Planning", "#Ideas", "#Planning"], cta }] }), input);
+          items: hashtagScenario ? ["#LinkedInGrowth", "#Consistency", "#PersonalBranding", "#ProfessionalGrowth", "#GorlLead", "#papercraft"] : brandScenario ? ["#Codex", "#GorlLead", "#CodingIdeas", "#FreeCompetition"] : ["#Planning", "#Ideas", "#Planning"], cta }] }), input);
         const completed = completeGenerationInProfile(rows.get(id), id, input.requestId, reserved.result.fingerprint, output); rows.set(id, completed.data);
         return route.fulfill({ json: completed.result });
       }
@@ -61,8 +63,8 @@ try {
   context = await newContext(); page = await context.newPage(); page.on("pageerror", e => errors.push(e.message));
   await page.goto(base + "/image-studio-test");
   await page.getByRole("button", { name: "Create Content", exact: true }).waitFor();
-  await page.getByLabel("What would you like to create?").fill(brandScenario ? "Write an Instagram post about using Codex to explore coding ideas." : "Share planning ideas on Instagram.");
-  await page.getByLabel("Where will you publish it?").selectOption("instagram");
+  await page.getByLabel("What would you like to create?").fill(hashtagScenario ? "Reflect on one year of consistent LinkedIn activity." : brandScenario ? "Write an Instagram post about using Codex to explore coding ideas." : "Share planning ideas on Instagram.");
+  await page.getByLabel("Where will you publish it?").selectOption(platform);
   await page.getByRole("button", { name: "Create Content", exact: true }).click();
   const card = page.locator("#outputs article").first(), post = card.getByTestId("post-caption");
   await post.waitFor(); assert.equal(await post.textContent(), caption);
@@ -82,7 +84,7 @@ try {
   stage = "formatter preview copy and download";
   await page.getByText("Text formatter", { exact: true }).click();
   const formatter = page.locator("#formatter");
-  await formatter.getByRole("button", { name: "Instagram", exact: true }).click();
+  await formatter.getByRole("button", { name: hashtagScenario ? "LinkedIn" : "Instagram", exact: true }).click();
   await formatter.getByPlaceholder("Write or paste platform copy here.").fill(copied);
   assert.equal(await formatter.locator("p.whitespace-pre-wrap").textContent(), caption);
   await formatter.getByRole("button", { name: "Copy", exact: true }).click();
