@@ -28,7 +28,7 @@ Review branch: `feat/simple-creation`. Not a production deployment approval.
 - Brand profiles themselves are not rewritten by creation overrides. Workspace preferences are saved automatically. Existing profile fields remain supported; no logo upload or new brand-management service was introduced.
 - Image overlays can be edited locally and undone. Changing a generated scene requires an explicit regeneration and does not guarantee an exact local edit.
 - Preview must remain SSO protected, use only the existing isolated branch, and have OpenAI/Stripe/email credentials disabled. The production noncanonical-host firewall remains unchanged: generation routes may be blocked on Preview. Browser workflow evidence above is local/mocked, not a claim that the protected Preview makes AI calls.
-- Read-only `npm audit --omit=dev` reported five existing dependency advisories (four high, one critical), in Next.js and the Vercel OIDC/CLI-config/Zod dependency chain. The lockfile is unchanged from production. These require a separate scoped security assessment before production approval; do not treat passing UX tests as a clean dependency audit. No automatic major upgrades or downgrades were applied.
+- The original audit at `69a6a43` reported five affected package entries (four high, one critical). The scoped follow-up upgrades Next.js to 16.4.1 and overrides all Zod copies to 4.6.6. Both production-only and complete audits now report zero findings. See [security and live-test readiness](pr7-security-live-readiness.md) for exposure, regression evidence, build-environment limits and the remaining credential-access gate. Production has not received these patches.
 
 ## Release boundary
 
