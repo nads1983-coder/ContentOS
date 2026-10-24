@@ -165,6 +165,38 @@ test("refinement factual failures also refuse delivery without a retry or succes
   assert.deepEqual(result.calls, ["reserve", "provider", "fail"]);
 });
 
+test("a later rejected request preserves the earlier result and accounting; explicit retry and replay remain exactly once", async () => {
+  const h = statefulReservationHarness();
+  const first = await routeFixture({ ...h });
+  assert.equal(first.response.status, 200);
+  const history = structuredClone(h.state.generation_history_json);
+  const usage = structuredClone(h.state.usage_events_json);
+  const body = { source: "why is contentos.co not generating hashtags under posts like it was before?", selectedTypes: ["linkedin"], requestId: "b189b831-43ea-479c-89ab-e639734983ab" };
+  // Synthetic rejection response: the production failed body was not retained.
+  const invalid = output(["linkedin"], { sections: [section("linkedin", { body: "We started this business in our attic three years ago." })] });
+  const failure = await routeFixture({ ...h, body, providerResponse: { status: "completed", output_text: JSON.stringify(invalid), usage: { input_tokens: 100, output_tokens: 30 } } });
+  assert.equal(failure.body.code, "unsupported_business_facts");
+  assert.equal(failure.body.sections, undefined);
+  assert.deepEqual(failure.financialCalls, ["dispatch", "settle"]);
+  assert.deepEqual(h.state.generation_history_json, history);
+  assert.deepEqual(h.state.usage_events_json, usage);
+  const failedReplay = await routeFixture({ ...h, body });
+  assert.notEqual(failedReplay.response.status, 200);
+  assert.deepEqual(failedReplay.calls, []);
+  assert.deepEqual(failedReplay.financialCalls, []);
+  const retryBody = { ...body, requestId: "c189b831-43ea-479c-89ab-e639734983ab" };
+  const valid = { title: "Hashtag question", summary: "A question about caption hashtags.", sections: [section("linkedin", { body: "Why are caption hashtags missing?", items: [], cta: "" })] };
+  const retry = await routeFixture({ ...h, body: retryBody, providerResponse: { status: "completed", output_text: JSON.stringify(valid), usage: { input_tokens: 100, output_tokens: 30 } } });
+  assert.equal(retry.response.status, 200);
+  assert.equal(h.state.usage_events_json.length, 2);
+  assert.equal(h.state.generation_history_json.length, 2);
+  const replay = await routeFixture({ ...h, body: retryBody });
+  assert.deepEqual(replay.body, retry.body);
+  assert.deepEqual(replay.calls, []);
+  assert.deepEqual(replay.financialCalls, []);
+  assert.equal(h.state.usage_events_json.length, 2);
+});
+
 test("Codex brand contamination fails before persistence in generation and refinement; provider usage is retained", async () => {
   const fixture = JSON.parse(readFileSync(resolve(root, "tests/fixtures/codex-brand-contamination.json"), "utf8"));
   for (const refinement of [undefined, { action: "custom", instructions: "Make it warmer.", section: fixture.output.sections[0] }]) {
