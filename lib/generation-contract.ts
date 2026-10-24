@@ -27,6 +27,7 @@ export type GenerationInput = GenerateRequest & {
     action: keyof typeof REFINEMENT_ACTIONS;
     instructions?: string;
     section: GeneratedSection;
+    captionHashtags?: string[];
   };
 };
 
@@ -123,6 +124,12 @@ export function normalizeGenerationRequest(body: unknown): GenerationInput {
       throw new GenerationValidationError("Refine exactly one matching content format.");
     }
     result.refinement = { action, section };
+    if (body.refinement.captionHashtags !== undefined) {
+      const tags = body.refinement.captionHashtags;
+      if (!Array.isArray(tags) || tags.length > 200 || !tags.every(tag => typeof tag === "string" && /^#[\p{L}\p{N}_]{1,100}$/u.test(tag))) throw new GenerationValidationError("Invalid caption hashtag context.");
+      // Exclusion context only, never factual or topic authority.
+      result.refinement.captionHashtags = [...new Set(tags)];
+    }
     if (action === "custom") {
       const instructions = inputText(body.refinement.instructions, "Requested change", 400, true);
       if (!instructions) throw new GenerationValidationError("Describe the change you want.");

@@ -1,0 +1,15 @@
+{
+  "evidence": "User-supplied brief: Why I Love YouTube. PDF shows Facebook, X/Twitter, LinkedIn and Hashtags selected, each caption ending in #YouTube, with repeated #YouTube and #WhyILoveYouTube in the optional section. This fixture adds the separately requested YouTube caption. Prose/provider fields are synthetic, not recovered provider responses.",
+  "request": { "source": "Why I Love YouTube", "selectedTypes": ["facebook", "linkedin", "youtubeShorts", "platformHashtags"], "tone": "friendly", "ctaMode": "none", "writingStyle": "Casual" },
+  "mockProviderOutput": {
+    "title": "Why I Love YouTube", "summary": "A personal reflection on YouTube.",
+    "sections": [
+      { "id": "facebook", "type": "facebook", "platform": "Facebook", "title": "Why I Love YouTube", "body": "There is always another perspective to explore.\n\nThat is what I love about YouTube.", "items": ["#YouTube"], "cta": "" },
+      { "id": "linkedin", "type": "linkedin", "platform": "LinkedIn", "title": "Why I Love YouTube", "body": "A different perspective can be a welcome pause.\n\nThat is what I love about YouTube.", "items": ["#YouTube"], "cta": "" },
+      { "id": "youtubeShorts", "type": "youtubeShorts", "platform": "YouTube", "title": "Why I Love YouTube", "body": "Description: There is always another perspective to explore.\n\nThat is what I love about YouTube.", "items": ["#YouTube"], "cta": "" },
+      { "id": "platformHashtags", "type": "platformHashtags", "platform": "General", "title": "Additional Hashtags", "body": "", "items": ["#YouTube", "#WhyILoveYouTube", "#YouTube", "#YouTube"], "cta": "" }
+    ]
+  },
+  "captionTags": ["#YouTube", "#OnlineVideo", "#VideoContent", "#VideoDiscovery", "#DigitalMedia"],
+  "additionalTags": ["#WhyILoveYouTube", "#YouTubeVideos", "#VideoSharing", "#DigitalContent", "#OnlineContent"]
+}

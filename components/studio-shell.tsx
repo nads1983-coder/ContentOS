@@ -45,6 +45,7 @@ import type { WorkspaceSnapshot, WorkspacePreferences } from "@/lib/workspace-co
 import type { GenerationInput } from "@/lib/generation-contract";
 import type { CreativeSetting } from "@/types/content";
 import { REFINEMENT_ACTIONS } from "@/lib/generation-contract";
+import { captionHashtags, excludeCaptionHashtags } from "@/lib/hashtag-output";
 import {
   buildGenerationCopyText,
   buildSectionCopyText,
@@ -829,7 +830,7 @@ export function StudioShell({
       selectedTypes: refinement ? [refinement.section.type] : selectedTypes,
       length,
       automaticSettings,
-      ...(refinement ? { refinement: { action: Object.hasOwn(REFINEMENT_ACTIONS, refinement.action) ? refinement.action as NonNullable<GenerationInput["refinement"]>["action"] : "custom", ...(Object.hasOwn(REFINEMENT_ACTIONS, refinement.action) ? {} : { instructions: refinement.action }), section: refinement.section } } : {})
+      ...(refinement ? { refinement: { action: Object.hasOwn(REFINEMENT_ACTIONS, refinement.action) ? refinement.action as NonNullable<GenerationInput["refinement"]>["action"] : "custom", ...(Object.hasOwn(REFINEMENT_ACTIONS, refinement.action) ? {} : { instructions: refinement.action }), section: refinement.section, ...(refinement.section.type === "platformHashtags" ? { captionHashtags: captionHashtags(result) } : {}) } } : {})
     };
     const fingerprint = JSON.stringify(payload);
     retryIntent.current = { source: nextSource, refinement };
@@ -943,7 +944,7 @@ export function StudioShell({
 
   function editSection(section: GeneratedSection, revisionSource: "manual" | "refined" = "manual") {
     setUndoResults(current => [...current.slice(-19), result]);
-    const edited = { ...result, sections: result.sections.map(s => s.id === section.id ? { ...section, revisionSource } : s) };
+    const edited = excludeCaptionHashtags({ ...result, sections: result.sections.map(s => s.id === section.id ? { ...section, revisionSource } : s) });
     setResult(edited);
     persistStore({ ...addRecent(store, edited), saved: store.saved.map(s => s.id === edited.id ? edited : s) });
   }

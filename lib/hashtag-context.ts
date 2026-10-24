@@ -23,10 +23,10 @@ export function conceptualHashtags(source: string): string[] {
 }
 
 export const hashtagMaximums: Readonly<Record<string, number>> = {
-  linkedin: 5, instagram: 5, tiktok: 5, facebook: 3, youtubeShorts: 3, twitter: 2, xThread: 2
+  linkedin: 5, instagram: 5, tiktok: 5, facebook: 5, youtubeShorts: 5, twitter: 2, xThread: 2, platformHashtags: 5
 };
 
 export function labelledHashtagMaximum(line: string): number | undefined {
   const label = line.match(/^\s*(LinkedIn|Instagram|TikTok|Facebook|YouTube Shorts|X(?:\/Twitter)?|Twitter)\s*:/i)?.[1].toLowerCase();
-  return label ? ({ linkedin: 5, instagram: 5, tiktok: 5, facebook: 3, "youtube shorts": 3, x: 2, "x/twitter": 2, twitter: 2 } as Record<string, number>)[label] : undefined;
+  return label ? ({ linkedin: 5, instagram: 5, tiktok: 5, facebook: 5, "youtube shorts": 5, x: 2, "x/twitter": 2, twitter: 2 } as Record<string, number>)[label] : undefined;
 }

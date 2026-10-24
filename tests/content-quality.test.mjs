@@ -63,7 +63,8 @@ test("hashtag cleanup preserves URL fragments and non-tag identifiers", () => {
 
 test("deduplication spans caption and tags but does not delete independent platform sets or plain labels", () => {
   const section = check(["#northbankpaper", "#independentmakers", "Hook:"], {}, "One thousand subscribers: a moment to celebrate with #northbankpaper.");
-  assert.deepEqual(section.items, ["#independentmakers", "Hook:"]);
+  assert.deepEqual(section.items, ["Hook:", "#northbankpaper", "#independentmakers"]);
+  assert.doesNotMatch(section.body, /#northbankpaper/);
   const pack = quality(output("", ["Instagram: #northbankpaper #northbankpaper", "LinkedIn: #northbankpaper", "Facebook: #papercraft"], "platformHashtags"), request());
   assert.deepEqual(pack.sections[0].items, ["Instagram: #northbankpaper", "LinkedIn: #northbankpaper"]);
 });
@@ -96,7 +97,7 @@ test("refinement remains grounded while allowing explicit style and hashtag inst
   const refinement = { action: "custom", instructions: "Use #northbankpaper. Open with Here's the thing.", section: captured.sections[0] };
   const result = check(["#northbankpaper", "#papercraft"], { refinement }, "Here's the thing: One thousand subscribers. Thank you for being here.");
   assert.ok(result.body.startsWith("Here's the thing:"));
-  assert.deepEqual(result.items, ["#northbankpaper"]);
+  assert.deepEqual(result.items, ["#northbankpaper", "#independentmakers", "#1000subscribers"]);
   assert.throws(() => check([], { refinement }, fact), GenerationGroundingError);
   assert.equal(check([], { refinement, source: fact }, fact).body, fact);
 });

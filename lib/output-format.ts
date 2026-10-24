@@ -231,7 +231,7 @@ function splitPlatformSections(values: string[]) {
     .map((label) => label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
     .join("|");
   const pattern = new RegExp(
-    `^(?:#{1,3}\\s*)?(?:\\*\\*)?(${labelAlternates})(?:\\*\\*)?\\s*[:\\-]?\\s*(.*)$`,
+    `^(?:#{1,3}\\s+)?(?:\\*\\*)?(${labelAlternates})(?:\\*\\*)?(?=\\s|:|-|$)\\s*[:\\-]?\\s*(.*)$`,
     "i"
   );
   const inlinePattern = new RegExp(`\\s+(?=(${labelAlternates})\\s*[:\\-])`, "gi");
@@ -399,7 +399,11 @@ function formatPlatformHashtags(section: GeneratedSection) {
   ]);
 
   if (!platformSets.length) {
-    return formatDefault(section);
+    const tags = extractHashtags([baseBody(section), ...baseItems(section)]);
+    return { blocks: compact([
+      makeBlock("body", "Additional suggestions", splitParagraphs(removeHashtagTokens(baseBody(section)))),
+      makeBlock("hashtags", "Additional hashtags", tags)
+    ]) };
   }
 
   return {
