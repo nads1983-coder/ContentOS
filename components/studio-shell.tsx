@@ -327,6 +327,8 @@ type ImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "moder
 type ImageFormat = "square" | "landscape" | "portrait" | "vertical";
 
 type GeneratedImage = {
+  platform?: string;
+  contentType?: ContentTypeId;
   design?: ImageDesign;
   image: string;
   mimeType?: string;
@@ -1043,7 +1045,7 @@ export function StudioShell({
         creativeInstructions: excerpt(imageInstructions, 600),
         appearance: imageAppearance,
         platform: excerpt(imagePlatform || section.platform, 80),
-        contentType: excerpt(labelForContentType(section.type), 80),
+        contentType: excerpt(section.title === "Original visual" || section.title === "Saved visual" ? imagePlatform : labelForContentType(section.type), 80),
         style: imageStyle,
         format: imageFormat,
         brandContext: {
@@ -1100,6 +1102,8 @@ export function StudioShell({
       setGeneratedImages((current) => boundDeviceImages({
         ...current,
         [section.id]: {
+          platform: payload.platform,
+          contentType: section.type,
           design: data.design,
           image: generatedImage,
           mimeType: data.mimeType,
@@ -1150,7 +1154,10 @@ export function StudioShell({
         <div className="w-full min-w-0 overflow-hidden space-y-4">
           <div className="flex justify-end">
             <button type="button" onClick={() => {
-              setImageSection({ id: `visual-${crypto.randomUUID()}`, type: "linkedin", title: "Original visual", platform: "LinkedIn", body: "", items: [] });
+              const selected = selectedTypes.length === 1 && isImageContentType(selectedTypes[0]) ? contentTypes.find(type => type.id === selectedTypes[0]) : undefined;
+              const platform = filters.find(filter => filter.id === selected?.group)?.label ?? "General";
+              setImagePlatform(platform);
+              setImageSection({ id: `visual-${crypto.randomUUID()}`, type: selected?.id ?? "linkedin", title: "Original visual", platform, body: "", items: [] });
               setImageSource(""); setImageError(""); imageUndo.current = null;
             }} className="flex min-h-11 items-center gap-2 rounded border border-white/15 px-4 text-sm hover:border-violet">
               <Wand2 size={16} /> Image Studio
@@ -1342,7 +1349,10 @@ export function StudioShell({
             const previous = imageUndo.current; imageUndo.current = null;
             setGeneratedImages(images => ({ ...images, [imageSection.id]: previous }));
           }, canUndo: Boolean(imageUndo.current), saved: generatedImages, onOpenSaved: (id: string) => {
-            setImageSection({ id, type: "linkedin", title: "Saved visual", platform: imagePlatform, body: "", items: [] });
+            const saved = generatedImages[id];
+            const platform = saved?.platform ?? "General";
+            setImagePlatform(platform);
+            setImageSection({ id, type: saved?.contentType ?? "linkedin", title: "Saved visual", platform, body: "", items: [] });
             imageUndo.current = null;
           } }}
         section={imageSection}
@@ -2420,7 +2430,7 @@ function ImageGenerationPanel({
                 <textarea aria-label="Image content" rows={3} maxLength={2600} value={studio.source} disabled={isPending} onChange={e => studio.onSource(e.target.value)} className="rounded border border-white/15 bg-ink p-3" />
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <label className="grid gap-2 text-sm">Platform<select value={studio.platform} disabled={isPending} onChange={e => studio.onPlatform(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3">
+                <label className="grid gap-2 text-sm">Platform<select aria-label="Image platform" value={studio.platform} disabled={isPending} onChange={e => studio.onPlatform(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3">
                   {[...new Set([studio.platform, "LinkedIn", "Instagram", "Facebook", "TikTok", "YouTube", "X", "Pinterest", "Blog"])].map(p => <option key={p}>{p}</option>)}
                 </select></label>
                 <label className="grid gap-2 text-sm">Industry / niche<input value={studio.industry} maxLength={180} disabled={isPending} onChange={e => studio.onIndustry(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3" /></label>

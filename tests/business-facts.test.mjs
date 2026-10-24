@@ -92,8 +92,10 @@ test("labelled missing details stay labelled; placeholders cannot hide an adjace
   assert.throws(() => check("[CONFIRM: prize]\nWe started this business in our attic three years ago."), GenerationGroundingError);
 });
 
-test("user-supplied offer is evidence for an unchanged specification, not for extra guarantees", () => {
+test("explicitly requested saved offer supports an unchanged specification, not extra guarantees", () => {
   const offer = "The notebook includes a built-in calendar.";
-  assert.doesNotThrow(() => check(offer, { offer }));
-  assert.throws(() => check(`${offer} Our notebooks come with a lifetime warranty.`, { offer }), GenerationGroundingError);
+  assert.throws(() => check(offer, { offer }), GenerationGroundingError);
+  const context = { offer, source: "Use the saved product details." };
+  assert.doesNotThrow(() => check(offer, context));
+  assert.throws(() => check(`${offer} Our notebooks come with a lifetime warranty.`, context), GenerationGroundingError);
 });

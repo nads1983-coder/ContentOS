@@ -34,14 +34,15 @@ test("brand name alone and newly generated prose do not establish a niche", () =
   assert.deepEqual(check(["#papercraft", "#paper", "#northbankpaper"]).items, ["#northbankpaper"]);
   assert.deepEqual(check(["#paper"], { source: "Northbank Paper sells paper." }).items, ["#paper"]);
   assert.deepEqual(check(["#papercraft"], {}, "Paper craft is a creative way to explore new ideas.").items, []);
-  assert.deepEqual(check(["#papercraft"], { brandName: "Papercraft" }).items, ["#papercraft"]);
-  for (const extra of [{ source: "Share our papercraft ideas on Instagram." }, { offer: "Papercraft supplies" }, { audience: "Papercraft enthusiasts" }]) {
+  assert.deepEqual(check(["#papercraft"], { brandName: "Papercraft" }).items, []);
+  assert.deepEqual(check(["#papercraft"], { offer: "Papercraft supplies" }).items, []);
+  for (const extra of [{ source: "Share our papercraft ideas on Instagram." }, { audience: "Papercraft enthusiasts" }]) {
     assert.deepEqual(check(["#papercraft"], extra).items, ["#papercraft"]);
   }
 });
 
 test("explicit hashtag preferences and current overrides are respected", () => {
-  assert.deepEqual(check(["#papercraft"], { writingStyle: "Use #papercraft." }).items, ["#papercraft"]);
+  assert.deepEqual(check(["#papercraft"], { writingStyle: "Use #papercraft." }).items, []);
   assert.deepEqual(check(["#northbankpaper"], { source: "A milestone update. No hashtags." }).items, []);
   assert.deepEqual(check(["#northbankpaper"], { writingStyle: "No hashtags." }).items, []);
   assert.deepEqual(check(["#northbankpaper"], { writingStyle: "No hashtags.", source: "Use #northbankpaper for our milestone." }).items, ["#northbankpaper"]);

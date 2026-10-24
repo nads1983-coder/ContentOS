@@ -48,8 +48,9 @@ test("timing, purpose and commitments need supplied facts, not audience, prefere
 
 test("saved factual wording is usable, but a current explicit contradiction overrides it", () => {
   const offer = "Our mission is to support makers.";
-  assert.doesNotThrow(() => parseBody(offer, { offer }));
-  assert.throws(() => parseBody(offer, { offer, source: "Our mission is not to support makers. Announce a milestone instead." }), GenerationGroundingError);
+  assert.throws(() => parseBody(offer, { offer }), GenerationGroundingError);
+  assert.doesNotThrow(() => parseBody(offer, { offer, source: "Use the saved business facts." }));
+  assert.throws(() => parseBody(offer, { offer, source: "Use the saved business facts. Our mission is not to support makers. Announce a milestone instead." }), GenerationGroundingError);
 });
 
 test("typed milestone matching preserves entity, quantity, relationship, scope and uncertainty", () => {

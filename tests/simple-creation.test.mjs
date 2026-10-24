@@ -38,8 +38,8 @@ test("automatic orchestration omits conflicting defaults and explicit selections
   assert.match(manual, /Tone selected: Friendly/);
   assert.match(manual, /CTA behavior: No CTA/);
   assert.match(manual, /Preferred length: short/);
-  assert.match(manual, /Brand\/business name: Gorl Lead/);
-  assert.match(manual, /Target audience: Subscribers/);
+  assert.match(manual, /Brand identity authorised for this subject: Gorl Lead/);
+  assert.match(manual, /Audience preference \(not evidence of facts or eligibility\): Subscribers/);
   assert.notEqual(generationFingerprint(request()), generationFingerprint(request({ automaticSettings: [] })));
   for (const invalid of ["auto", ["budget"], ["tone", "tone"]]) assert.throws(() => request({ automaticSettings: invalid }), /automatic settings/);
 });

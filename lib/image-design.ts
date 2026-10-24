@@ -1,4 +1,5 @@
 import type { BuildPosterInput } from "@/lib/social-image";
+import { brandContextScope, styleContext } from "@/lib/brand-context";
 
 export const IMAGE_MODES = ["auto", "image", "text", "mixed"] as const;
 export type ImageMode = typeof IMAGE_MODES[number];
@@ -44,15 +45,17 @@ function directive(value: string, label: string): string | undefined {
 export function buildCreativeBrief(input: BuildPosterInput) {
   const instructions = imageCopy(input.creativeInstructions ?? "", 600);
   const source = imageCopy(input.outputText, 1200), brand = input.brandContext;
+  const scope = brandContextScope({ source: input.outputText, brandName: brand.brandName, refinement: { instructions: input.creativeInstructions } });
   const appearance = input.appearance;
   const visualType = appearance?.type !== "auto" && appearance?.type ? appearance.type :
     /\b(?:graphic|poster|announcement card)\b/i.test(instructions) ? "graphic" :
     /\b(?:illustration|illustrated|hand-drawn)\b/i.test(instructions) ? "illustration" :
     /\b(?:photograph|photography|photo)\b/i.test(instructions) ? "photograph" : "auto";
   const selectedStyle = appearance?.style && appearance.style !== "auto" ? appearance.style : "";
-  const direction = [instructions, selectedStyle ? `Selected style: ${selectedStyle}` : ""].filter(Boolean).join(". ") || imageCopy(brand.visualStyle ?? input.style, 180);
+  const savedVisual = styleContext(brand.visualStyle ?? input.style, brand.brandName ?? "", scope.identity);
+  const direction = [instructions, selectedStyle ? `Selected style: ${selectedStyle}` : ""].filter(Boolean).join(". ") || imageCopy(savedVisual, 180);
   const instructionOnly = Boolean(input.creativeInstructions?.trim()) && input.outputText.trim() === input.creativeInstructions?.trim();
-  const modeHint = instructions || `${brand.visualStyle ?? ""} ${source}`;
+  const modeHint = instructions || `${savedVisual} ${source}`;
   const noText = /\b(?:no text|without text|textless|image only)\b/i.test(instructions);
   const textRequested = /\b(?:headline|quote|typography|text only|text-only)\b/i.test(instructions);
   const requested = input.mode ?? "auto";
@@ -70,7 +73,7 @@ export function buildCreativeBrief(input: BuildPosterInput) {
   const defaults = { minimal: ["#ffffff", "#111116"], premium: ["#ffffff", "#245c4a"], corporate: ["#ffffff", "#2356bc"],
     bold: ["#f1d34f", "#111116"], dark: ["#111116", "#a88ee5"], modern: ["#ffffff", "#087e83"] }[input.style];
   const design: ImageDesign = {
-    mode, headline, body: shorten(supporting, 120), brand: shorten(directive(instructions, "brand(?: name)?") ?? brand.brandName ?? "", 36),
+    mode, headline, body: shorten(supporting, 120), brand: shorten(directive(instructions, "brand(?: name)?") ?? (scope.identity ? brand.brandName ?? "" : ""), 36),
     background: selected[0] ?? defaults[0], accent: selected[1] ?? defaults[1],
     align: /\bcent(?:er|re)(?:d)?\b/i.test(instructions) ? "center" : "left",
     font: /\b(?:luxury|elegant|serif|editorial)\b/i.test(selectedStyle || direction) ? "editorial" : "sans"
@@ -82,9 +85,10 @@ export function buildCreativeBrief(input: BuildPosterInput) {
     `Creative direction (takes precedence over saved preferences): ${direction}`,
     `Image type: ${visualType === "auto" ? "Infer from the description and source." : visualType}. ${visualType === "graphic" ? "Use graphic design, not photography or unrelated people." : visualType === "illustration" ? "Use an illustrated composition, not photography." : visualType === "photograph" ? "Use natural photography, not vector graphics." : ""}`,
     "Selected type, style and palette override inferred or saved defaults. Other explicit description instructions must be respected. Do not add unrelated people or objects.",
-    `Saved visual preference (only when not overridden): ${imageCopy(brand.visualStyle ?? "", 180)}`,
-    `Industry: ${imageCopy(brand.industry ?? "", 180)}. Audience: ${imageCopy(brand.audience ?? "", 220)}.`,
-    `Brand personality and tone: ${imageCopy(brand.writingStyle ?? "", 180)}.`,
+    `Saved visual preference (only when not overridden): ${imageCopy(savedVisual, 180)}`,
+    `Subject context: ${scope.identity ? `Industry: ${imageCopy(brand.industry ?? "", 180)}. Audience: ${imageCopy(brand.audience ?? "", 220)}.` : "Use the current description, not the saved brand industry or audience."}`,
+    `Style only: ${imageCopy(styleContext(brand.writingStyle ?? "", brand.brandName ?? "", scope.identity), 180)}.`,
+    "Saved colours and style are aesthetic preferences, not permission to add a brand, product, competition, offer or promotional subject.",
     `Palette: ${design.background.replace("#", "hex ")}, ${design.accent.replace("#", "hex ")}.`,
     `Platform: ${imageCopy(input.platform, 80)}. Orientation: ${input.format}.`,
     mode === "mixed" ? "Keep the subject in the upper half; the app adds a solid text panel in the lower half. Keep the focal point clear of that panel." : "Use a clear focal point and full-frame composition. Natural, well-lit subjects with meaningful context.",
