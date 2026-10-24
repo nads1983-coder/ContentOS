@@ -165,6 +165,30 @@ test("refinement factual failures also refuse delivery without a retry or succes
   assert.deepEqual(result.calls, ["reserve", "provider", "fail"]);
 });
 
+test("captured quality cleanup is persisted once with provider accounting and safe duplicate replay", async () => {
+  const original = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-captured-instagram.json"), "utf8"));
+  const captured = JSON.parse(readFileSync(resolve(root, "tests/fixtures/pr7-instagram-quality-retest.json"), "utf8"));
+  const h = statefulReservationHarness();
+  const body = { ...original.request, requestId: "a189b831-43ea-479c-89ab-e639734983ab" };
+  const providerResponse = { status: "completed", output_text: JSON.stringify(captured), usage: { input_tokens: 2238, output_tokens: 264, total_tokens: 2502 } };
+  const result = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(result.response.status, 200);
+  assert.deepEqual(result.calls, ["provider"]);
+  assert.deepEqual(result.financialCalls, ["dispatch", "settle"]);
+  assert.equal(result.clientOptions.maxRetries, 0);
+  assert.ok(!JSON.stringify(result.body).includes("#papercraft"));
+  assert.ok(!result.body.sections[0].body.includes("creative journey deserves"));
+  assert.deepEqual(h.state.generation_history_json[0].payload.sections, result.body.sections);
+  assert.equal(h.state.usage_events_json.length, 1);
+  const repeated = await routeFixture({ ...h, body, providerResponse });
+  assert.equal(repeated.response.status, 200);
+  assert.deepEqual(repeated.calls, []);
+  assert.deepEqual(repeated.financialCalls, []);
+  assert.equal(h.completions, 1);
+  assert.equal(h.state.generation_history_json.length, 1);
+  assert.equal(h.state.usage_events_json.length, 1);
+});
+
 test("simple creation and bounded custom refinement use the same guarded provider route", async () => {
   for (const refinement of [undefined, { action: "custom", instructions: "Make it shorter and warmer.", section: section("linkedin") }]) {
     const { response, calls, providerInput, clientOptions } = await routeFixture({ body: {

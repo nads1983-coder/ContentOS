@@ -2,6 +2,7 @@ import { parseProductionGeneration } from "@/lib/production-generation";
 import { contentTypes, ctaModes, defaultSelectedTypes, presetTopics, sharpnessModes, tones } from "@/lib/content-config";
 import { cleanPlainText } from "@/lib/text-normalize";
 import { hasUnsupportedBusinessFacts } from "@/lib/business-facts";
+import { applyContentQuality } from "@/lib/content-quality";
 import type { ContentTypeId, GenerateRequest, GeneratedSection, GenerationResult } from "@/types/content";
 
 export const REFINEMENT_ACTIONS = {
@@ -206,7 +207,7 @@ export function parseGenerationOutput(text: string, request: GenerationInput): G
   try {
     // Inspect before caption fallbacks or CTA removal can hide a rejected assertion.
     if (hasUnsupportedBusinessFacts(JSON.parse(text), request)) throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged.");
-    const result = parseProductionGeneration(text, request);
+    const result = applyContentQuality(parseProductionGeneration(text, request), request);
     if (result.sections.length !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.type)).size !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.id)).size !== result.sections.length ||
