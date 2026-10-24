@@ -43,6 +43,8 @@ import { StudioComposer } from "@/components/studio-composer";
 import { createWorkspaceWriter } from "@/lib/workspace-sync";
 import type { WorkspaceSnapshot, WorkspacePreferences } from "@/lib/workspace-contract";
 import type { GenerationInput } from "@/lib/generation-contract";
+import type { CreativeSetting } from "@/types/content";
+import { REFINEMENT_ACTIONS } from "@/lib/generation-contract";
 import {
   buildGenerationCopyText,
   buildSectionCopyText,
@@ -55,6 +57,8 @@ import type { ImageMode, ImageDesign } from "@/lib/image-design";
 import { buildSocialPosterContent, renderSocialPosterSvg, svgToDataUrl } from "@/lib/social-image";
 import { boundDeviceImages, readDeviceImages, saveDeviceImages } from "@/lib/image-device-store";
 import { ImageDesignEditor } from "@/components/image-design-editor";
+import { ImageChoices } from "@/components/image-choices";
+import { DEFAULT_APPEARANCE, type ImageAppearance } from "@/lib/image-appearance";
 import { cleanPlainText } from "@/lib/text-normalize";
 import {
   ctaModes,
@@ -478,7 +482,8 @@ export function StudioShell({
   accountId?: string;
   initialUsage?: UsageSummary;
 }) {
-  const [source, setSource] = useState(cleanPlainText(starterText));
+  const [source, setSource] = useState("");
+  const [automaticSettings, setAutomaticSettings] = useState<CreativeSetting[]>(["tone", "sharpness", "ctaMode", "presetTopic", "length"]);
   const [brandName, setBrandName] = useState("");
   const [audience, setAudience] = useState("");
   const [offer, setOffer] = useState("");
@@ -490,7 +495,7 @@ export function StudioShell({
   const [sharpness, setSharpness] = useState<SharpnessId>("balanced");
   const [ctaMode, setCtaMode] = useState<CtaModeId>("soft");
   const [presetTopic, setPresetTopic] = useState<PresetTopicId>("business");
-  const [selectedTypes, setSelectedTypes] = useState<ContentTypeId[]>(defaultSelectedTypes);
+  const [selectedTypes, setSelectedTypes] = useState<ContentTypeId[]>(["linkedin"]);
   const [activeFilter, setActiveFilter] = useState<FilterId>("all");
   const plan = initialPlan;
   const [brandProfiles, setBrandProfiles] = useState<BrandProfile[]>([]);
@@ -526,6 +531,7 @@ export function StudioShell({
   const [imageStyle, setImageStyle] = useState<ImageStyle>("premium");
   const [imageFormat, setImageFormat] = useState<ImageFormat>("square");
   const [imageMode, setImageMode] = useState<ImageMode>("auto");
+  const [imageAppearance, setImageAppearance] = useState<ImageAppearance>(DEFAULT_APPEARANCE);
   const [imageInstructions, setImageInstructions] = useState("");
   const [imageSource, setImageSource] = useState("");
   const [imageIndustry, setImageIndustry] = useState("");
@@ -565,6 +571,11 @@ export function StudioShell({
       setImageStorageAccount(null);
       setImageSource(""); setImageInstructions(""); setImageIndustry("");
       setImageBrandColors(""); setImageVisualStyle(""); imageUndo.current = null;
+      setImageAppearance(DEFAULT_APPEARANCE); setImageMode("auto");
+      setSource(""); setBrandName(""); setAudience(""); setOffer(""); setWritingStyle(""); setContentGoal("");
+      setTone("professional"); setSharpness("balanced"); setCtaMode("soft"); setPresetTopic("none"); setLength("standard");
+      setSelectedTypes(["linkedin"]); setResult(sampleResult); setUndoResults([]);
+      setAutomaticSettings(["tone", "sharpness", "ctaMode", "presetTopic", "length"]);
       if (accountId && authenticated) void readDeviceImages<GeneratedImage>(accountId).then(images => {
         if (!canceled) { setGeneratedImages(current => ({ ...images, ...current })); setImageStorageAccount(accountId); }
       }).catch(() => { if (!canceled) setImageError("Device designs could not be loaded. Downloads remain available."); });
@@ -580,6 +591,7 @@ export function StudioShell({
         setAudience(deviceDraft.audience ?? ""); setOffer(deviceDraft.offer ?? "");
         setWritingStyle(deviceDraft.writingStyle ?? ""); setContentGoal(deviceDraft.contentGoal ?? "");
         setTone(deviceDraft.tone); setSelectedTypes(deviceDraft.selectedTypes);
+        setAutomaticSettings(deviceDraft.automaticSettings ?? []); setLength(deviceDraft.length ?? "standard");
       }
       if (storedTone && tones.some((item) => item.id === storedTone)) {
         setTone(storedTone);
@@ -611,6 +623,10 @@ export function StudioShell({
           const p = snapshot.preferences;
           setBrandName(p.brandName); setAudience(p.audience); setOffer(p.offer);
           setWritingStyle(p.writingStyle); setContentGoal(p.contentGoal);
+          setImageBrandColors(p.brandColors ?? ""); setImageVisualStyle(p.visualStyle ?? "");
+          setLength(p.length ?? "standard");
+          // Legacy saved choices remain explicit; only absent preferences are inferred.
+          setAutomaticSettings(p.automaticSettings ?? (["tone", "sharpness", "ctaMode", "presetTopic", "length"] as CreativeSetting[]).filter(key => p[key] === undefined));
           if (p.tone) setTone(p.tone);
           if (p.sharpness) setSharpness(p.sharpness);
           if (p.ctaMode) setCtaMode(p.ctaMode);
@@ -655,7 +671,7 @@ export function StudioShell({
 
   useEffect(() => {
     if (!hasMounted) return;
-    const preferences: WorkspacePreferences = { brandName, audience, offer, writingStyle, contentGoal, tone, sharpness, ctaMode, presetTopic, selectedTypes };
+    const preferences: WorkspacePreferences = { brandName, audience, offer, writingStyle, contentGoal, tone, sharpness, ctaMode, presetTopic, selectedTypes, automaticSettings, length, brandColors: imageBrandColors, visualStyle: imageVisualStyle };
     const draft: Draft = { ...preferences, id: "current-draft", title: source.trim().slice(0, 54) || "Current draft", source, tone, selectedTypes, updatedAt: new Date().toISOString() };
     const nextStore = upsertDraft(store, draft);
     const localSaved = writeStore(nextStore, accountId);
@@ -674,7 +690,7 @@ export function StudioShell({
       else if (!authenticated) setSaveStatus(localSaved ? "Draft saved on this device" : "Draft not saved. Download a copy of your content.");
     }, 700);
     return () => window.clearTimeout(timer);
-  }, [hasMounted, accountId, authenticated, workspaceReady, source, brandName, audience, offer, writingStyle, contentGoal, tone, sharpness, ctaMode, presetTopic, selectedTypes, store]);
+  }, [hasMounted, accountId, authenticated, workspaceReady, source, brandName, audience, offer, writingStyle, contentGoal, tone, sharpness, ctaMode, presetTopic, selectedTypes, store, automaticSettings, length, imageBrandColors, imageVisualStyle]);
 
   useEffect(() => {
     isGeneratingRef.current = isPending;
@@ -816,7 +832,8 @@ export function StudioShell({
       presetTopic,
       selectedTypes: refinement ? [refinement.section.type] : selectedTypes,
       length,
-      ...(refinement ? { refinement: { action: refinement.action as NonNullable<GenerationInput["refinement"]>["action"], section: refinement.section } } : {})
+      automaticSettings,
+      ...(refinement ? { refinement: { action: Object.hasOwn(REFINEMENT_ACTIONS, refinement.action) ? refinement.action as NonNullable<GenerationInput["refinement"]>["action"] : "custom", ...(Object.hasOwn(REFINEMENT_ACTIONS, refinement.action) ? {} : { instructions: refinement.action }), section: refinement.section } } : {})
     };
     const fingerprint = JSON.stringify(payload);
     retryIntent.current = { source: nextSource, refinement };
@@ -891,6 +908,7 @@ export function StudioShell({
       title: source.trim().slice(0, 54) || "Untitled content note",
       source: cleanPlainText(source),
       brandName, audience, offer, writingStyle, contentGoal,
+      automaticSettings, length,
       tone,
       sharpness,
       ctaMode,
@@ -902,6 +920,7 @@ export function StudioShell({
   }
 
   function loadDraft(draft: Draft) {
+    setAutomaticSettings(draft.automaticSettings ?? []); setLength(draft.length ?? "standard");
     setSource(cleanPlainText(draft.source));
     setTone(draft.tone);
     setSharpness(draft.sharpness ?? "balanced");
@@ -1028,6 +1047,7 @@ export function StudioShell({
         outputText,
         mode: imageMode,
         creativeInstructions: excerpt(imageInstructions, 600),
+        appearance: imageAppearance,
         platform: excerpt(imagePlatform || section.platform, 80),
         contentType: excerpt(labelForContentType(section.type), 80),
         style: imageStyle,
@@ -1158,6 +1178,11 @@ export function StudioShell({
               writingStyle={writingStyle}
               contentGoal={contentGoal}
               length={length}
+              automaticSettings={automaticSettings}
+              onAutomaticChange={(key, automatic) => setAutomaticSettings(current => automatic ? [...new Set([...current, key])] : current.filter(k => k !== key))}
+              onSelectPlatform={type => { setSelectedTypes([type]); setActiveFilter("all"); }}
+              brandColors={imageBrandColors}
+              onBrandColorsChange={setImageBrandColors}
               onLengthChange={setLength}
               plan={plan}
               usage={usage}
@@ -1187,6 +1212,7 @@ export function StudioShell({
               onSelectBrand={(brand) => {
                 setBrandName(brand.name); setAudience(brand.audience); setOffer(brand.offer);
                 setWritingStyle(brand.writing_preferences);
+                setAutomaticSettings(current => current.filter(k => k !== "tone" && k !== "ctaMode"));
                 if (tones.some(t => t.id === brand.tone)) setTone(brand.tone as ToneId);
                 if (ctaModes.some(c => c.id === brand.cta_style)) setCtaMode(brand.cta_style as CtaModeId);
               }}
@@ -1315,6 +1341,7 @@ export function StudioShell({
 
       <ImageGenerationPanel
         studio={{ mode: imageMode, instructions: imageInstructions, source: imageSource, industry: imageIndustry, platform: imagePlatform,
+          appearance: imageAppearance, onAppearance: setImageAppearance,
           onMode: setImageMode, onInstructions: setImageInstructions, onSource: setImageSource, onIndustry: setImageIndustry, onPlatform: setImagePlatform,
           onEdit: editImage, onUndo: () => {
             if (!imageSection || !imageUndo.current || imagePending) return;
@@ -1558,6 +1585,10 @@ function OutputPanel({
   onCopyAll: () => void;
   onDownload: () => void;
 }) {
+  if (result.id === "sample" && !isPending) return <section id={id} ref={containerRef} className="min-w-0 border-t border-white/10 py-6 xl:border-t-0">
+    <h2 className="text-xl font-semibold">Your content</h2>
+    {error ? <p role="alert" className="mt-4 text-sm text-goldSoft">{error}</p> : <p className="mt-4 text-sm text-muted">No content yet.</p>}
+  </section>;
   return (
     <section
       id={id}
@@ -1595,11 +1626,10 @@ function OutputPanel({
         </div>
       ) : null}
 
-      {!isPending && result.id !== "sample" && result.sections.length ? (
-        <GenerationSummary sections={result.sections} />
-      ) : null}
-
-      <div className="studio-scroll mt-5 flex snap-x scroll-px-4 gap-2 overflow-x-auto pb-2 sm:mt-4">
+      <details className="mt-4 border-b border-white/10 pb-3">
+      <summary className="cursor-pointer text-sm text-muted">Formats & filters</summary>
+      {!isPending && result.id !== "sample" && result.sections.length ? <GenerationSummary sections={result.sections} /> : null}
+      <div className="studio-scroll mt-3 flex snap-x scroll-px-4 gap-2 overflow-x-auto pb-2">
         {filters.map((filter) => (
           <button
             key={filter.id}
@@ -1617,6 +1647,7 @@ function OutputPanel({
           </button>
         ))}
       </div>
+      </details>
 
       <div className="mt-4 grid w-full min-w-0 gap-4 sm:mt-3 sm:gap-3">
         {isPending ? (
@@ -1650,7 +1681,7 @@ function OutputPanel({
           className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 disabled:cursor-not-allowed disabled:text-muted sm:mt-4 sm:min-h-11 sm:rounded"
       >
         <RefreshCcw size={17} />
-        Regenerate current set
+        Regenerate
       </button>
       <button type="button" onClick={onUndo} disabled={!canUndo || isPending} className="mt-3 flex min-h-10 items-center gap-2 text-sm text-muted disabled:opacity-40" title="Undo last content edit"><Undo2 size={16} />Undo edit</button>
       <div className="mt-3 grid gap-2 sm:mt-2 sm:grid-cols-3">
@@ -2046,7 +2077,7 @@ function OutputCard({
   const formattedOutput = formatOutputSection(section, sourceText);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(section);
-  const [refinement, setRefinement] = useState("shorten");
+  const [refinement, setRefinement] = useState("");
 
   return (
     <article data-content-editing={editing} className="w-full min-w-0 overflow-hidden rounded border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
@@ -2056,7 +2087,6 @@ function OutputCard({
             {section.platform}
           </p>
           <h3 className="mt-2 break-words text-xl font-semibold leading-6 text-bone sm:mt-1 sm:text-lg">{section.title}</h3>
-          <p className="mt-2 text-xs text-muted sm:mt-1">{labelForContentType(section.type)}</p>
           {section.revisionSource && <p className="mt-1 text-xs text-muted">{section.revisionSource === "manual" ? "Manually edited" : "AI refined"}</p>}
         </div>
         <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0 sm:flex-wrap">
@@ -2071,7 +2101,7 @@ function OutputCard({
             )}
           >
             {canGenerateImage ? <Wand2 size={15} /> : <Lock size={15} />}
-            Generate Image
+            Create Image
           </button>}
           <button
             type="button"
@@ -2124,12 +2154,18 @@ function OutputCard({
 
       <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
         <button type="button" onClick={() => { setDraft(section); setEditing(true); }} disabled={editing} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-3 text-sm"><PenLine size={15} />Edit</button>
-        <select aria-label={`Refine ${section.title}`} value={refinement} onChange={e => setRefinement(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/20 bg-ink px-2 text-xs">
+        <button type="button" disabled={editing} onClick={() => onCopyRefinement("alternative")} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-3 text-sm"><RefreshCcw size={15} />Regenerate</button>
+      </div>
+      <form className="mt-3 grid gap-2" onSubmit={e => { e.preventDefault(); if (refinement.trim() && !editing) onCopyRefinement(refinement.trim()); }}>
+        <label className="grid gap-2 text-sm">What would you like to change?<input value={refinement} maxLength={400} onChange={e => setRefinement(e.target.value)} placeholder="Make it shorter and more conversational." className="min-h-11 min-w-0 rounded border border-white/20 bg-ink px-3 text-sm" /></label>
+        <div className="flex flex-wrap items-center gap-2"><button type="submit" disabled={editing || !refinement.trim()} className="flex min-h-11 items-center gap-2 rounded border border-violet/60 px-3 text-sm disabled:opacity-40"><Sparkles size={14} />Apply change</button><span className="text-xs text-muted">1 generation</span></div>
+        <details><summary className="cursor-pointer text-xs text-muted">Quick changes</summary>
+        <select aria-label={`Refine ${section.title}`} value={Object.hasOwn(REFINEMENT_ACTIONS, refinement) ? refinement : ""} onChange={e => setRefinement(e.target.value)} className="mt-2 min-h-11 min-w-0 rounded border border-white/20 bg-ink px-2 text-xs">
+          <option value="" disabled>Choose a change</option>
           {Object.entries({ shorten: "Make shorter", expand: "Make longer", simplify: "Simplify", professional: "More professional", conversational: "More conversational", hook: "Strengthen hook", cta: "Improve CTA", alternative: "Create alternative" }).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
-        <button type="button" disabled={editing} onClick={() => onCopyRefinement(refinement)} className="flex min-h-11 items-center gap-2 rounded border border-violet/60 px-3 text-xs"><Sparkles size={14} />Refine with AI</button>
-        <span className="text-xs text-muted">1 generation</span>
-      </div>
+        </details>
+      </form>
     </article>
   );
 }
@@ -2161,7 +2197,7 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
           {block.lines.map((line, index) => (
             <li
               key={`${line}-${index}`}
-              className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] p-3 text-sm leading-6 text-bone/90 sm:rounded"
+              className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-3 border-b border-white/10 py-3 text-sm leading-6 text-bone/90"
             >
               <span className="grid h-7 w-7 place-items-center rounded-full border border-gold/50 bg-gold/10 text-xs font-semibold text-goldSoft">
                 {index + 1}
@@ -2176,13 +2212,13 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "hashtags" || block.kind === "tags") {
     return (
-      <div className="min-w-0 rounded-xl border border-gold/25 bg-gold/[0.07] p-3 sm:rounded">
-        <OutputBlockLabel>{block.label}</OutputBlockLabel>
-        <div className="mt-2 flex flex-wrap gap-2">
+      <div className="min-w-0">
+        <span className="sr-only">{block.label}</span>
+        <div className="flex flex-wrap gap-x-2 gap-y-1">
           {block.lines.map((line) => (
             <span
               key={line}
-              className="max-w-full break-words rounded-full border border-gold/25 bg-ink/60 px-3 py-1.5 text-xs font-semibold text-goldSoft"
+              className="max-w-full break-words text-sm text-muted"
             >
               {line}
             </span>
@@ -2194,7 +2230,7 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "platform") {
     return (
-      <div className="min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.035] p-4 sm:rounded">
+      <div className="min-w-0 border-b border-white/10 py-3">
         <OutputBlockLabel>{block.label}</OutputBlockLabel>
         <div className="mt-3 grid gap-3">
           {block.lines.map((line, index) => (
@@ -2209,8 +2245,8 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "hook" || block.kind === "subject" || block.kind === "title") {
     return (
-      <div className="min-w-0 rounded-xl border border-violet/30 bg-violet/10 p-4 text-sm leading-6 text-bone sm:rounded">
-        <OutputBlockLabel>{block.label}</OutputBlockLabel>
+      <div className="min-w-0 text-sm leading-6 text-bone">
+        <span className="sr-only">{block.label}</span>
         <div className="mt-2 grid min-w-0 gap-2">
           {block.lines.map((line) => (
             <p key={line} className="min-w-0 break-words text-[0.98rem] font-semibold leading-7 text-bone">
@@ -2224,8 +2260,8 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "cta" || block.kind === "preview") {
     return (
-      <div className="min-w-0 rounded-xl border border-violet/35 bg-violet/[0.08] p-4 text-sm leading-6 text-bone sm:rounded sm:p-3">
-        <OutputBlockLabel>{block.label}</OutputBlockLabel>
+      <div className="min-w-0 text-sm leading-6 text-bone">
+        <span className="sr-only">{block.label}</span>
         <div className="mt-2 grid min-w-0 gap-2">
           {block.lines.map((line) => (
             <p key={line} className="min-w-0 whitespace-pre-line break-words text-bone/92">
@@ -2276,6 +2312,7 @@ function OutputBlockLabel({ children }: { children: React.ReactNode }) {
 }
 
 type ImageStudioControls = {
+  appearance: ImageAppearance; onAppearance: (value: ImageAppearance) => void;
   mode: ImageMode; instructions: string; source: string; industry: string; platform: string;
   onMode: (mode: ImageMode) => void; onInstructions: (value: string) => void;
   onSource: (value: string) => void; onIndustry: (value: string) => void; onPlatform: (value: string) => void;
@@ -2326,7 +2363,7 @@ function ImageGenerationPanel({
   }, [section]);
 
   const isProStudio = plan === "pro_studio";
-  const selectedMode = buildCreativeBrief({ mode: studio.mode, creativeInstructions: studio.instructions, outputText: studio.source,
+  const selectedMode = buildCreativeBrief({ appearance: studio.appearance, mode: studio.mode, creativeInstructions: studio.instructions, outputText: studio.source || studio.instructions,
     platform: studio.platform, contentType: section?.type ?? "", style, format, brandContext: { visualStyle, brandColors } }).design.mode;
 
   return (
@@ -2375,18 +2412,22 @@ function ImageGenerationPanel({
         ) : (
           <div className="mt-5 grid items-start gap-6 md:grid-cols-2">
             <div className="grid min-w-0 gap-4">
+              <label className="grid gap-2 text-sm font-semibold">What image would you like?
+                <textarea rows={3} maxLength={600} value={studio.instructions} disabled={isPending} onChange={e => studio.onInstructions(e.target.value)} placeholder="Create a luxury cream-and-gold giveaway graphic for Gorl Lead." className="rounded border border-white/20 bg-ink p-3 leading-7" />
+              </label>
+              <ImageChoices value={studio.appearance} onChange={studio.onAppearance} format={format} onFormat={onFormatChange} disabled={isPending} brandColors={brandColors} />
+              <p aria-live="polite" className="text-xs text-muted">{selectedMode === "text" ? "Text design · No AI image credit" : `${selectedMode === "mixed" ? "Text + Image" : "Image"} · 1 AI image credit on success`}</p>
+              <details className="border-y border-white/10 py-3">
+              <summary className="cursor-pointer text-sm font-semibold">Advanced Options (Optional)</summary>
+              <div className="mt-4 grid gap-4">
               <div role="group" aria-label="Visual mode" className="grid grid-cols-4 gap-1 rounded border border-white/15 p-1">
                 {IMAGE_MODES.map(mode => <button key={mode} type="button" aria-pressed={studio.mode === mode} disabled={isPending}
                   onClick={() => studio.onMode(mode)} className={clsx("min-h-11 rounded px-1 text-sm", studio.mode === mode ? "bg-violet text-white" : "text-muted hover:bg-white/10")}>
                   {{ auto: "Auto", image: "Image", text: "Text", mixed: "Text + Image" }[mode]}
                 </button>)}
               </div>
-              <p aria-live="polite" className="text-xs text-muted">{selectedMode === "text" ? "Text design · No AI image credit" : `${selectedMode === "mixed" ? "Text + Image" : "Image"} · 1 AI image credit on success`}</p>
-              <label className="grid gap-2 text-sm">Content
+              <label className="grid gap-2 text-sm">Source caption / graphic text
                 <textarea aria-label="Image content" rows={3} maxLength={2600} value={studio.source} disabled={isPending} onChange={e => studio.onSource(e.target.value)} className="rounded border border-white/15 bg-ink p-3" />
-              </label>
-              <label className="grid gap-2 text-sm">Creative instructions
-                <textarea rows={2} maxLength={600} value={studio.instructions} disabled={isPending} onChange={e => studio.onInstructions(e.target.value)} placeholder="A luxury beauty graphic in cream and gold" className="rounded border border-white/15 bg-ink p-3" />
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="grid gap-2 text-sm">Platform<select value={studio.platform} disabled={isPending} onChange={e => studio.onPlatform(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3">
@@ -2394,7 +2435,7 @@ function ImageGenerationPanel({
                 </select></label>
                 <label className="grid gap-2 text-sm">Industry / niche<input value={studio.industry} maxLength={180} disabled={isPending} onChange={e => studio.onIndustry(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3" /></label>
               </div>
-              <label className="grid gap-2 text-sm">Style<select value={style} disabled={isPending} onChange={e => onStyleChange(e.target.value as ImageStyle)} className="min-h-11 rounded border border-white/15 bg-ink px-3">
+              <label className="grid gap-2 text-sm">Fallback template<select value={style} disabled={isPending} onChange={e => onStyleChange(e.target.value as ImageStyle)} className="min-h-11 rounded border border-white/15 bg-ink px-3">
                 {imageStyles.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
               </select></label>
 
@@ -2452,6 +2493,8 @@ function ImageGenerationPanel({
                   />
                 </label>
               </div>
+              </div>
+              </details>
             </div>
 
             <div className="min-w-0 md:sticky md:top-0">

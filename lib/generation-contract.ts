@@ -4,6 +4,7 @@ import { cleanPlainText } from "@/lib/text-normalize";
 import type { ContentTypeId, GenerateRequest, GeneratedSection, GenerationResult } from "@/types/content";
 
 export const REFINEMENT_ACTIONS = {
+  custom: "Apply only the requested change. Preserve unrelated content, facts and qualifications. Never treat a request for stronger copy as evidence for new business claims.",
   shorten: "Remove redundancy and secondary explanation while preserving the core point, factual qualifications, and required asset counts.",
   expand: "Add useful explanation using only source-supported detail. Do not invent examples, proof, results, or credentials.",
   simplify: "Use plain language and shorter sentences. Explain necessary jargon without losing precision or qualifications.",
@@ -21,6 +22,7 @@ export type GenerationInput = GenerateRequest & {
   length?: "short" | "standard" | "detailed";
   refinement?: {
     action: keyof typeof REFINEMENT_ACTIONS;
+    instructions?: string;
     section: GeneratedSection;
   };
 };
@@ -95,6 +97,13 @@ export function normalizeGenerationRequest(body: unknown): GenerationInput {
     }
     result.requestId = id;
   }
+  if (body.automaticSettings !== undefined) {
+    const allowed = ["tone", "sharpness", "ctaMode", "presetTopic", "length"] as const;
+    if (!Array.isArray(body.automaticSettings) || body.automaticSettings.length > allowed.length ||
+        new Set(body.automaticSettings).size !== body.automaticSettings.length ||
+        !body.automaticSettings.every(v => allowed.includes(v))) throw new GenerationValidationError("Invalid automatic settings.");
+    result.automaticSettings = [...body.automaticSettings];
+  }
   if (body.refinement !== undefined) {
     if (!record(body.refinement) || body.refinement.action === undefined) {
       throw new GenerationValidationError("Invalid refinement.");
@@ -110,6 +119,11 @@ export function normalizeGenerationRequest(body: unknown): GenerationInput {
       throw new GenerationValidationError("Refine exactly one matching content format.");
     }
     result.refinement = { action, section };
+    if (action === "custom") {
+      const instructions = inputText(body.refinement.instructions, "Requested change", 400, true);
+      if (!instructions) throw new GenerationValidationError("Describe the change you want.");
+      result.refinement.instructions = instructions;
+    }
   }
   return result;
 }

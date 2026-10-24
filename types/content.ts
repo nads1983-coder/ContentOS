@@ -85,6 +85,8 @@ export type GenerationResult = {
 };
 
 export type Draft = {
+  automaticSettings?: CreativeSetting[];
+  length?: "short" | "standard" | "detailed";
   id: string;
   updatedAt: string;
   title: string;
@@ -108,7 +110,9 @@ export type StudioStore = {
   drafts: Draft[];
 };
 
+export type CreativeSetting = "tone" | "sharpness" | "ctaMode" | "presetTopic" | "length";
 export type GenerateRequest = {
+  automaticSettings?: CreativeSetting[];
   source: string;
   brandName?: string;
   audience?: string;

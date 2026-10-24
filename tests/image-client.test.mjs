@@ -27,6 +27,7 @@ function harness(overrides = {}) {
     accountId: "account1", isProStudio: true, result: { source: "Original user source" },
     imageStyle: "premium", imageFormat: "square", brandName: "", audience: "", offer: "", writingStyle: "", contentGoal: "",
     imageBrandColors: "", imageVisualStyle: "", crypto: { randomUUID },
+    imageAppearance: { type: "auto", style: "auto", colours: [] },
     imageMode: "auto", imageInstructions: "", imageSource: overrides.result?.source ?? "Original user source", imageIndustry: "", imagePlatform: "",
     buildSectionCopyText: (_section, options) => options.sourceText, labelForContentType: () => "LinkedIn Post",
     formatSectionImageText: (_section, source) => source, isImageContentType,

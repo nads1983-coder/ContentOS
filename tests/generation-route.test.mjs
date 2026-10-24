@@ -129,6 +129,19 @@ test("route reserves before a bounded provider call and completes only validated
   assert.equal(response.headers.get("X-Request-Id"), "a189b831-43ea-479c-89ab-e639734983ab");
 });
 
+test("simple creation and bounded custom refinement use the same guarded provider route", async () => {
+  for (const refinement of [undefined, { action: "custom", instructions: "Make it shorter and warmer.", section: section("linkedin") }]) {
+    const { response, calls, providerInput, clientOptions } = await routeFixture({ body: {
+      source, selectedTypes: ["linkedin"], automaticSettings: ["tone", "length"], refinement
+    } });
+    assert.equal(response.status, 200);
+    assert.deepEqual(calls, ["reserve", "provider", "complete"]);
+    assert.equal(clientOptions.maxRetries, 0);
+    assert.match(providerInput.input, /Tone selected: Automatic/);
+    if (refinement) assert.match(providerInput.input, /Requested change: Make it shorter and warmer\./);
+  }
+});
+
 test("route rejects unsafe/unauthenticated/invalid/unconfigured requests before admission", async () => {
   for (const [options, status] of [[{ unsafe: true }, 403], [{ anonymous: true }, 401],
     [{ body: { source: "bad" } }, 400], [{ noDatabase: true }, 503], [{ noKey: true }, 503]]) {

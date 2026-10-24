@@ -1,6 +1,7 @@
 import type { SocialImageFormat, SocialImageStyle, SocialImageTemplate } from "@/lib/social-image";
 import { IMAGE_MODES, normaliseDesign, imageCopy } from "@/lib/image-design";
 import type { ImageMode, ImageDesign } from "@/lib/image-design";
+import { parseImageAppearance, type ImageAppearance } from "@/lib/image-appearance";
 
 export const IMAGE_STYLES = ["minimal", "premium", "corporate", "bold", "dark", "modern"] as const;
 export const IMAGE_FORMATS = ["square", "landscape", "portrait", "vertical"] as const;
@@ -26,6 +27,7 @@ export class ImageGenerationError extends Error {
 }
 
 export type ImageGenerationInput = {
+  appearance?: ImageAppearance;
   mode?: ImageMode;
   creativeInstructions?: string;
   requestId: string;
@@ -88,11 +90,18 @@ export function normalizeImageRequest(value: unknown): ImageGenerationInput {
   if (value.mode !== undefined && !imageCopy(text(value.outputText, 2600, true)).trim()) {
     throw new ImageGenerationError("Add a message or visual idea, not just hashtags or keywords.");
   }
+  let appearance: ImageAppearance | undefined;
+  if (value.appearance !== undefined) {
+    try { appearance = parseImageAppearance(value.appearance); }
+    catch { throw new ImageGenerationError("Choose a supported image type, style and up to two valid HEX colours."); }
+    if (value.mode === undefined) throw new ImageGenerationError("Visual choices require a design mode.");
+  }
   return {
     requestId: validateImageRequestId(value.requestId),
     // Omitted fields stay omitted so pre-upgrade request fingerprints still replay.
     ...(value.mode !== undefined ? { mode: option(value.mode, IMAGE_MODES, "auto") } : {}),
     ...(value.creativeInstructions !== undefined ? { creativeInstructions: text(value.creativeInstructions, 600) } : {}),
+    ...(appearance ? { appearance } : {}),
     outputText: text(value.outputText, 2600, true),
     platform: text(value.platform, 80), contentType,
     style: option(value.style, IMAGE_STYLES, "premium"),

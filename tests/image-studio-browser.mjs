@@ -40,13 +40,22 @@ try{
   await page.goto(`${base}/image-studio-test`);
   await page.getByRole("button",{name:"Image Studio",exact:true}).click();
   const dialog=page.getByRole("dialog");
+  await dialog.locator("summary").filter({hasText:"Advanced Options (Optional)"}).click();
   await dialog.getByLabel("Image content").fill("A quiet ritual.\n\nMake space for a slower morning. #Beauty #Care");
-  await dialog.getByLabel("Creative instructions").fill("A luxury beauty graphic using cream and gold.\nHeadline: A quiet ritual");
+  await dialog.getByLabel("What image would you like?").fill("A luxury beauty graphic using cream and gold.\nHeadline: A quiet ritual");
+  await dialog.getByLabel("Image type",{exact:true}).selectOption("graphic");
+  await dialog.getByLabel("Style",{exact:true}).selectOption("luxury");
+  await dialog.getByRole("button",{name:"Green",exact:true}).click();
+  await dialog.getByLabel("Custom HEX").fill("#badhex");
+  assert.equal(await dialog.getByRole("button",{name:"Add custom colour"}).isDisabled(),true);
+  await dialog.getByLabel("Custom HEX").fill("#fff");
+  await dialog.getByRole("button",{name:"Add custom colour"}).click();
   await dialog.getByRole("button",{name:"Text",exact:true}).click();
   await dialog.getByRole("button",{name:"Generate visual",exact:true}).click();
   await dialog.getByRole("button",{name:"Download PNG"}).waitFor();
   assert.equal(h.calls.filter(c=>c==="provider").length,0);
   assert.equal(payloads[0].mode,"text");assert.match(payloads[0].outputText,/#Beauty/);
+  assert.deepEqual(payloads[0].appearance,{type:"graphic",style:"luxury",colours:["#176d51","#ffffff"]});
   await dialog.getByLabel("Headline",{exact:true}).fill("Space to slow down");
   await dialog.getByRole("button",{name:"Apply edits",exact:true}).click();
   assert.equal(payloads.length,1,"Edits must not dispatch generation");
@@ -63,7 +72,7 @@ try{
   }
   await page.setViewportSize({width:1440,height:1100});
   for(const [mode,label] of [["image","Image"],["mixed","Text + Image"],["auto","Auto"]]){
-    await dialog.getByLabel("Creative instructions").fill(mode==="image"?"Editorial photography of a quiet morning, no text":"Bold technology announcement in white and teal");
+    await dialog.getByLabel("What image would you like?").fill(mode==="image"?"Editorial photography of a quiet morning, no text":"Bold technology announcement in white and teal");
     await dialog.getByRole("button",{name:label,exact:true}).click();
     await dialog.getByRole("button",{name:"Regenerate image"}).click();
     await page.waitForFunction(()=>!document.querySelector('dialog button[disabled] svg.animate-spin'));

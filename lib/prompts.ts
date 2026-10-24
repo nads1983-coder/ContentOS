@@ -88,6 +88,7 @@ Before finalizing, remove any em dashes or double hyphens from every title, body
 }
 
 export function buildInput(request: GenerateRequest) {
+  const automatic = new Set(request.automaticSettings ?? []);
   const requestedTypes = request.selectedTypes
     .map((id) => contentTypes.find((type) => type.id === id))
     .filter((type): type is NonNullable<typeof type> => Boolean(type));
@@ -101,14 +102,14 @@ Target audience: ${request.audience || "Not provided"}
 Offer/product/service: ${request.offer || "Not provided"}
 Writing style notes: ${request.writingStyle || "Not provided"}
 Content goal: ${request.contentGoal || "Not provided"}
-Tone selected: ${labelForTone(request.tone)}
-Sharpness selected: ${labelForSharpness(request.sharpness)}
-Sharpness behavior: ${sharpnessInstructions[request.sharpness]}
-CTA mode selected: ${labelForCtaMode(request.ctaMode)}
-CTA behavior: ${ctaInstructions[request.ctaMode]}
-Content category selected: ${labelForPresetTopic(request.presetTopic)}
+Tone selected: ${automatic.has("tone") ? "Automatic: infer from the current request and saved brand voice." : labelForTone(request.tone)}
+Sharpness selected: ${automatic.has("sharpness") ? "Automatic: fit the message and platform." : labelForSharpness(request.sharpness)}
+Sharpness behavior: ${automatic.has("sharpness") ? "Natural, clear and appropriately direct." : sharpnessInstructions[request.sharpness]}
+CTA mode selected: ${automatic.has("ctaMode") ? "Automatic: omit when inappropriate or forbidden by the source." : labelForCtaMode(request.ctaMode)}
+CTA behavior: ${automatic.has("ctaMode") ? "Infer a natural ending without inventing actions, links or offers." : ctaInstructions[request.ctaMode]}
+Content category selected: ${automatic.has("presetTopic") ? "Infer from the current request." : labelForPresetTopic(request.presetTopic)}
 Category guidance: ${
-    request.presetTopic === "none"
+    automatic.has("presetTopic") || request.presetTopic === "none"
       ? "Use the source material as the main angle."
       : descriptionForPresetTopic(request.presetTopic)
   }
@@ -117,6 +118,10 @@ Generate these content outputs:
 ${requestedTypes.map((type) => `- ${type.id}: ${type.prompt}`).join("\n")}
 
 General quality rules:
+- Current instructions override saved brand preferences. Explicit creative controls override automatic defaults. Never override No CTA, factual restrictions or the customer's supplied facts.
+- Infer creative structure, not business facts. Never invent giveaway prizes, dates, entry rules, eligibility, links, prices or guarantees.
+- For missing essential information, use [CONFIRM: specific missing detail] and mark the section title "Draft - details to confirm". Do not silently fill in a plausible answer.
+${request.automaticSettings !== undefined ? "- Produce one coherent, ready-to-edit draft per requested platform, not alternative captions. For Instagram and TikTok, disregard requests for multiple caption alternatives above. Keep necessary thread posts, carousel slides, hashtag sets and explicitly requested hook/CTA collections intact. No publisher instructions outside clearly labelled missing-detail placeholders." : ""}
 - write for creators, entrepreneurs, small businesses, coaches, consultants, and agencies
 - keep the user's source material at the center
 - make each output platform-native rather than copying the same post everywhere
