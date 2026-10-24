@@ -329,7 +329,7 @@ function formatFacebook(section: GeneratedSection) {
 }
 
 function formatYouTube(section: GeneratedSection) {
-  const bodyLines = splitLines(baseBody(section));
+  const bodyLines = splitLines(removeHashtagTokens(removeHashtagOnlyLines(baseBody(section))));
   const title = extractLabeledLine(bodyLines, ["Title", "Video title", "Shorts title", "Caption idea"]);
   const description = extractLabeledLine(title.lines, ["Description", "Short description"]);
   const items = baseItems(section);
