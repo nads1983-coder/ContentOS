@@ -46,6 +46,7 @@ import type { GenerationInput } from "@/lib/generation-contract";
 import type { CreativeSetting } from "@/types/content";
 import { REFINEMENT_ACTIONS } from "@/lib/generation-contract";
 import { captionHashtags, excludeCaptionHashtags } from "@/lib/hashtag-output";
+import { generationFailure, type GenerationFailure } from "@/lib/generation-feedback";
 import {
   buildGenerationCopyText,
   buildSectionCopyText,
@@ -505,6 +506,8 @@ export function StudioShell({
   const retryIntent = useRef<{ source: string; refinement?: { section: GeneratedSection; action: string } } | null>(null);
   const workspaceWriter = useRef<ReturnType<typeof createWorkspaceWriter> | null>(null);
   const activeAccount = useRef(accountId);
+  const accountEpoch = useRef(0);
+  const hydratedEpoch = useRef(-1);
   const lastWorkspaceState = useRef("");
   const needsWorkspaceBaseline = useRef(true);
   const [workspaceReady, setWorkspaceReady] = useState(false);
@@ -519,6 +522,8 @@ export function StudioShell({
   const [anonymousUsed, setAnonymousUsed] = useState(0);
   const [result, setResult] = useState<GenerationResult>(sampleResult);
   const [error, setError] = useState("");
+  const [failedGeneration, setFailedGeneration] = useState<GenerationFailure | null>(null);
+  const [showEarlierResult, setShowEarlierResult] = useState(false);
   const [canStartNewAttempt, setCanStartNewAttempt] = useState(false);
   const [copiedId, setCopiedId] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -554,6 +559,7 @@ export function StudioShell({
 
   useEffect(() => {
     activeAccount.current = accountId;
+    accountEpoch.current++;
     let canceled = false;
     const timeout = window.setTimeout(async () => {
       setHasMounted(false);
@@ -561,6 +567,7 @@ export function StudioShell({
       lastWorkspaceState.current = "";
       needsWorkspaceBaseline.current = true;
       requestAttempt.current = null;
+      setFailedGeneration(null); setShowEarlierResult(false); setError(""); setCanStartNewAttempt(false);
       imageRequestAttempt.current = null;
       setGeneratedImages({});
       setImageSection(null);
@@ -572,6 +579,7 @@ export function StudioShell({
       setSource(""); setBrandName(""); setAudience(""); setOffer(""); setWritingStyle(""); setContentGoal("");
       setTone("professional"); setSharpness("balanced"); setCtaMode("soft"); setPresetTopic("none"); setLength("standard");
       setSelectedTypes(["linkedin"]); setResult(sampleResult); setUndoResults([]);
+      isGeneratingRef.current = false; setIsPending(false);
       setAutomaticSettings(["tone", "sharpness", "ctaMode", "presetTopic", "length"]);
       if (accountId && authenticated) void readDeviceImages<GeneratedImage>(accountId).then(images => {
         if (!canceled) { setGeneratedImages(current => ({ ...images, ...current })); setImageStorageAccount(accountId); }
@@ -652,6 +660,7 @@ export function StudioShell({
         if (autosave) { setSource(autosave.source); setBrandName(autosave.brandName ?? ""); setAudience(autosave.audience ?? ""); setOffer(autosave.offer ?? ""); setWritingStyle(autosave.writingStyle ?? ""); setContentGoal(autosave.contentGoal ?? ""); }
       }
       if (canceled) return;
+      hydratedEpoch.current = accountEpoch.current;
       setHasMounted(true);
     }, 0);
 
@@ -659,7 +668,7 @@ export function StudioShell({
   }, [authenticated, accountId]);
 
   useEffect(() => {
-    if (!hasMounted) {
+    if (!hasMounted || hydratedEpoch.current !== accountEpoch.current) {
       return;
     }
 
@@ -667,7 +676,7 @@ export function StudioShell({
   }, [hasMounted, store, accountId]);
 
   useEffect(() => {
-    if (!hasMounted) return;
+    if (!hasMounted || hydratedEpoch.current !== accountEpoch.current) return;
     const preferences: WorkspacePreferences = { brandName, audience, offer, writingStyle, contentGoal, tone, sharpness, ctaMode, presetTopic, selectedTypes, automaticSettings, length, brandColors: imageBrandColors, visualStyle: imageVisualStyle };
     const draft: Draft = { ...preferences, id: "current-draft", title: source.trim().slice(0, 54) || "Current draft", source, tone, selectedTypes, updatedAt: new Date().toISOString() };
     const nextStore = upsertDraft(store, draft);
@@ -836,6 +845,8 @@ export function StudioShell({
     retryIntent.current = { source: nextSource, refinement };
     if (requestAttempt.current?.fingerprint !== fingerprint) requestAttempt.current = { fingerprint, id: crypto.randomUUID() };
 
+    let failureCode: string | undefined;
+    const generationEpoch = accountEpoch.current;
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -847,10 +858,10 @@ export function StudioShell({
       });
 
       const data = (await response.json()) as GenerationResult | { error?: string; code?: string };
-      if (activeAccount.current !== accountId) return;
+      if (activeAccount.current !== accountId || accountEpoch.current !== generationEpoch) return;
 
       if (!response.ok) {
-        if ("code" in data && ["generation_failed", "invalid_generation", "generation_timeout", "request_failed", "request_expired"].includes(data.code ?? "")) setCanStartNewAttempt(true);
+        failureCode = "code" in data ? data.code : undefined;
         const message = "error" in data ? data.error : undefined;
         throw new Error(message ?? "Generation failed.");
       }
@@ -860,6 +871,8 @@ export function StudioShell({
       }
 
       const cleanedResult = cleanGenerationResult(data);
+      setFailedGeneration(null);
+      setShowEarlierResult(false);
       requestAttempt.current = null;
       retryIntent.current = null;
       pendingAutoScrollIdRef.current = cleanedResult.id;
@@ -878,15 +891,17 @@ export function StudioShell({
         setAnonymousUsed(monthlyStoredGenerationCount(addRecent(store, cleanedResult)));
       }
     } catch (generationError) {
-      if (activeAccount.current !== accountId) return;
-      setError(
-        generationError instanceof Error
-          ? generationError.message
-          : "Generation failed. Try again."
-      );
+      if (activeAccount.current !== accountId || accountEpoch.current !== generationEpoch) return;
+      const failure = generationFailure(payload.source, Boolean(refinement), generationError instanceof Error ? generationError.message : "Generation failed.", failureCode);
+      setFailedGeneration({ ...failure, accountId, requestedChange: refinement?.action });
+      setShowEarlierResult(false);
+      setCanStartNewAttempt(failure.canStartNew);
+      setError("");
     } finally {
-      isGeneratingRef.current = false;
-      setIsPending(false);
+      if (activeAccount.current === accountId && accountEpoch.current === generationEpoch) {
+        isGeneratingRef.current = false;
+        setIsPending(false);
+      }
     }
   }
 
@@ -930,6 +945,7 @@ export function StudioShell({
   }
 
   function saveCurrent() {
+    if (failedGeneration && !showEarlierResult) return;
     if (!isPro) {
       setError("Saved history is a Pro feature.");
       return;
@@ -1225,9 +1241,13 @@ export function StudioShell({
               containerRef={outputWorkspaceRef}
               result={result}
               sourceText={result.source}
+              currentSource={source}
               activeFilter={activeFilter}
               visibleSections={visibleSections}
               error={error}
+              failure={failedGeneration?.accountId === accountId ? failedGeneration : null}
+              showEarlierResult={showEarlierResult}
+              onShowEarlier={() => setShowEarlierResult(true)}
               copiedId={copiedId}
               isPending={isPending}
               plan={plan}
@@ -1274,7 +1294,7 @@ export function StudioShell({
             />
           </section>
 
-          {canStartNewAttempt ? <button type="button" disabled={isPending} onClick={() => { requestAttempt.current = null; const intent = retryIntent.current; void generateContent(intent?.source ?? source, intent?.refinement); }} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm"><RefreshCcw size={16} />Start a new attempt</button> : null}
+          {canStartNewAttempt ? <div><button type="button" disabled={isPending} onClick={() => { requestAttempt.current = null; const intent = retryIntent.current; void generateContent(intent?.source ?? source, intent?.refinement); }} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm"><RefreshCcw size={16} />Try latest request again</button><p className="mt-2 text-xs text-muted">Starts a new AI request. Provider costs may apply even if the result is rejected.</p></div> : null}
 
           <p className="min-h-5 text-xs text-muted" role="status">{saveStatus}</p>
           {historyWarning ? <p className="text-xs text-amber-200" role="status">{historyWarning}</p> : null}
@@ -1294,7 +1314,7 @@ export function StudioShell({
             store={store}
             plan={plan}
             onPlanChange={viewPlans}
-            onOpen={(item) => { setResult(item); setUndoResults([]); setActiveFilter("all"); scrollToStudioSection("outputs"); }}
+            onOpen={(item) => { setResult(item); setShowEarlierResult(true); setUndoResults([]); setActiveFilter("all"); scrollToStudioSection("outputs"); }}
             onCopy={async (item) => {
               try {
                 setError("");
@@ -1328,6 +1348,7 @@ export function StudioShell({
           onLoadResult={(item) => {
             const cleanedItem = cleanGenerationResult(item);
             setResult(cleanedItem);
+            setShowEarlierResult(true);
             setSource(cleanPlainText(cleanedItem.source));
             setTone(item.tone);
             setSharpness(item.sharpness ?? "balanced");
@@ -1381,6 +1402,8 @@ export function StudioShell({
           canGenerate={canGenerate}
           isPending={isPending}
           saved={isSaved(store, result)}
+          canSave={!isPending && (!failedGeneration || showEarlierResult)}
+          earlierResult={Boolean(failedGeneration)}
           onGenerate={() => generateContent()}
           onSave={saveCurrent}
           onSaveDraft={saveDraft}
@@ -1546,9 +1569,13 @@ function OutputPanel({
   containerRef,
   result,
   sourceText,
+  currentSource,
   activeFilter,
   visibleSections,
   error,
+  failure,
+  showEarlierResult,
+  onShowEarlier,
   copiedId,
   isPending,
   isSaved,
@@ -1570,9 +1597,13 @@ function OutputPanel({
   containerRef: React.RefObject<HTMLElement | null>;
   result: GenerationResult;
   sourceText: string;
+  currentSource: string;
   activeFilter: FilterId;
   visibleSections: GeneratedSection[];
   error: string;
+  failure: GenerationFailure | null;
+  showEarlierResult: boolean;
+  onShowEarlier: () => void;
   copiedId: string;
   isPending: boolean;
   isSaved: boolean;
@@ -1590,6 +1621,17 @@ function OutputPanel({
   onCopyAll: () => void;
   onDownload: () => void;
 }) {
+  const earlier = Boolean(failure) || result.source.trim() !== currentSource.trim();
+  const failureNotice = failure && !isPending ? <div role="alert" data-testid="generation-failure" className="mb-6 rounded border border-gold/40 bg-gold/10 p-4 text-sm leading-6 text-bone">
+    <h2 className="text-base font-semibold">{failure.uncertain ? "Latest result not confirmed" : failure.refinement ? "Latest refinement failed" : "Latest generation failed"}</h2>
+    <p className="mt-2">{failure.uncertain ? "The latest request did not return a confirmed result. Your earlier draft is preserved. Retry the unchanged request to check its status." : "The latest request did not produce an accepted result. Your earlier draft is preserved; it is not output from this request."}</p>
+    <p className="mt-3 font-semibold">{failure.refinement ? "Brief for the failed refinement" : "Latest request"}</p>
+    <blockquote className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{failure.source}</blockquote>
+    {failure.requestedChange ? <p className="mt-2 break-words">Requested change: {failure.requestedChange}</p> : null}
+    <p className="mt-3 text-muted">{failure.message}</p>
+    {result.id !== "sample" && !showEarlierResult ? <button type="button" onClick={onShowEarlier} className="mt-3 min-h-11 rounded border border-white/20 px-3 font-semibold">Show earlier draft</button> : null}
+  </div> : null;
+  if (failure && !showEarlierResult && !isPending) return <section id={id} ref={containerRef} className="min-w-0 scroll-mt-20">{failureNotice}</section>;
   if (result.id === "sample" && !isPending) return <section id={id} ref={containerRef} className="min-w-0 border-t border-white/10 py-6 xl:border-t-0">
     <h2 className="text-xl font-semibold">Your content</h2>
     {error ? <p role="alert" className="mt-4 text-sm text-goldSoft">{error}</p> : <p className="mt-4 text-sm text-muted">No content yet.</p>}
@@ -1600,11 +1642,13 @@ function OutputPanel({
       ref={containerRef}
       className="scroll-mt-20 w-full min-w-0 overflow-hidden"
     >
+      {failureNotice}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 overflow-hidden">
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
-            {result.id === "sample" ? "Example content pack" : "Your content pack"}
+            {result.id === "sample" ? "Example content pack" : earlier ? "Earlier generation - not the latest request" : "Your content pack"}
           </p>
+          {earlier && result.id !== "sample" ? <div data-testid="earlier-generation-source" className="mt-3 text-sm"><p className="font-semibold">Original brief for this earlier draft</p><p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{result.source}</p></div> : null}
           <h2 className="mt-2 line-clamp-2 font-display text-[1.7rem] uppercase leading-none tracking-normal text-bone sm:truncate sm:text-2xl">
             {result.title}
           </h2>
@@ -1620,7 +1664,7 @@ function OutputPanel({
               ? "border-gold/70 bg-gold/15 text-goldSoft"
               : "border-white/10 bg-white/[0.04] text-muted hover:border-gold/60"
           )}
-          aria-label="Save output"
+          aria-label={failure ? "Save earlier output" : "Save output"}
         >
           {isSaved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
         </button>
@@ -1697,7 +1741,7 @@ function OutputPanel({
           className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
         >
           <Copy size={16} />
-          {copiedId === "all" ? "Copied" : "Copy all"}
+          {copiedId === "all" ? "Copied" : failure ? "Copy earlier draft" : "Copy all"}
         </button>
         <button
           type="button"
@@ -1705,7 +1749,7 @@ function OutputPanel({
           className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
         >
           <FileText size={16} />
-          Download .txt
+          {failure ? "Export earlier draft .txt" : "Download .txt"}
         </button>
         <button
           type="button"
@@ -1713,7 +1757,7 @@ function OutputPanel({
           className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded"
         >
           <Bookmark size={16} />
-          Save all
+          {failure ? "Save earlier draft" : "Save all"}
         </button>
       </div>
     </section>
@@ -2889,6 +2933,8 @@ function BottomActionBar({
   canGenerate,
   isPending,
   saved,
+  canSave,
+  earlierResult,
   onGenerate,
   onSave,
   onSaveDraft,
@@ -2897,6 +2943,8 @@ function BottomActionBar({
   canGenerate: boolean;
   isPending: boolean;
   saved: boolean;
+  canSave: boolean;
+  earlierResult: boolean;
   onGenerate: () => void;
   onSave: () => void;
   onSaveDraft: () => void;
@@ -2917,10 +2965,11 @@ function BottomActionBar({
         <button
           type="button"
           onClick={onSave}
+          disabled={!canSave}
           className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/[0.025] text-[0.7rem] font-semibold text-bone"
         >
           {saved ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
-          Save
+          {earlierResult ? "Save earlier" : "Save"}
         </button>
         <button
           type="button"
