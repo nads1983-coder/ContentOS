@@ -11,6 +11,7 @@ import { previewFixturesEnabled, previewTextResponse } from "@/lib/preview-fixtu
 import {
   GENERATION_LIMITS,
   GenerationOutputError,
+  GenerationGroundingError,
   parseGenerationOutput,
   readGenerationRequest
 } from "@/lib/generation-contract";
@@ -26,9 +27,10 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 function logGenerationFailure(error: unknown, event: "reservation" | "reservation_failure" | "provider" | "completion") {
-  const errorClass = error instanceof GenerationOutputError ? "invalid_output"
-    : error instanceof APIConnectionTimeoutError ? "provider_timeout"
-      : error instanceof APIUserAbortError ? "provider_abort" : "operation_failure";
+  const errorClass = error instanceof GenerationGroundingError ? "unsupported_business_facts"
+    : error instanceof GenerationOutputError ? "invalid_output"
+      : error instanceof APIConnectionTimeoutError ? "provider_timeout"
+        : error instanceof APIUserAbortError ? "provider_abort" : "operation_failure";
   captureServerError(new Error("Generation operation failed."), {
     route: "/api/generate", event, error_class: errorClass
   });
@@ -140,12 +142,14 @@ export async function POST(nextRequest: NextRequest) {
     const timedOut = error instanceof APIConnectionTimeoutError || error instanceof APIUserAbortError ||
       (error instanceof Error && ["AbortError", "TimeoutError", "APIConnectionTimeoutError", "APIUserAbortError"].includes(error.name));
     return NextResponse.json({
-      error: invalidOutput
-        ? "The AI returned an incomplete or invalid pack. No successful generation was recorded."
-        : timedOut
-          ? "Generation timed out or was cancelled. No successful generation was recorded."
-          : "Generation failed. No successful generation was recorded.",
-      code: invalidOutput ? "invalid_generation" : timedOut ? "generation_timeout" : "generation_failed",
+      error: error instanceof GenerationGroundingError
+        ? "The AI added business details that could not be matched to your brief. This result was not saved and your existing draft is unchanged. No successful generation was recorded."
+        : invalidOutput
+          ? "The AI returned an incomplete or invalid pack. No successful generation was recorded."
+          : timedOut
+            ? "Generation timed out or was cancelled. No successful generation was recorded."
+            : "Generation failed. No successful generation was recorded.",
+      code: error instanceof GenerationGroundingError ? "unsupported_business_facts" : invalidOutput ? "invalid_generation" : timedOut ? "generation_timeout" : "generation_failed",
       requestId
     }, { status: invalidOutput ? 502 : timedOut ? 504 : 500, headers });
   }

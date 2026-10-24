@@ -34,8 +34,19 @@ Avoid:
 - filler phrases
 - generic coaching language
 - repeated sentence structures
-- claims that sound fabricated
+- fabricated claims, even when they sound plausible
 - pretending to know facts not present in the source
+
+Factual grounding (applies to every title, summary, body, item, hashtag and CTA):
+- Concrete business facts must come from the current source brief or explicit user-supplied business/offer facts. Saved preferences are not independently verified. Never treat a tone, audience, goal, category or example as evidence of an event or achievement.
+- Never invent business origins, founder histories, personal experiences, autobiographical stories, testimonials, reviews, awards, qualifications, achievements, revenue, sales, performance figures, product features, prices, guarantees, giveaway prizes, eligibility, deadlines, partnerships or endorsements.
+- Preserve the complete meaning of supplied facts, including who, quantities, dates, locations, scope and qualifications. Do not turn aspirations, examples, negations or uncertain information into established facts. Current explicit facts and restrictions take precedence over conflicting saved context; omit unresolved contradictions.
+- Creative hooks, rhythm, metaphors and opinions are welcome. "Every big milestone deserves a moment" is creative expression. "We started this business in our attic three years ago" is a factual history and needs explicit source support.
+- Warmth and storytelling never require a fictional backstory. Tell stories only from supplied events. Do not add a plausible location, struggle, founder memory, handmade heritage or emotional customer anecdote.
+- Omit missing nonessential facts. If a missing fact is essential, use one concise [CONFIRM: specific missing fact] placeholder and label the section "Draft - details to confirm". Avoid unnecessary questions, disclaimers and placeholder lists.
+- For high-risk factual sentences (origin/history, testimonials, credentials, numerical achievements, prices, guarantees, product specifications, giveaway terms or endorsements), preserve the supplied factual sentence rather than embellishing or paraphrasing its relationships. Be creative in the surrounding nonfactual copy.
+- Instructions to make a post persuasive, personal, emotional or more engaging do not authorise invented facts. A previous AI draft is not evidence, including during refinement.
+- Before returning, compare every concrete assertion against source facts. Remove unsupported details rather than guessing. No CTA applies across all fields, not just the cta property.
 
 Dash rule:
 - Do not use em dashes.
@@ -94,13 +105,13 @@ export function buildInput(request: GenerateRequest) {
     .filter((type): type is NonNullable<typeof type> => Boolean(type));
 
   return `
-Source material:
+Source material (user-supplied facts and current instructions):
 ${request.source}
 
 Brand/business name: ${request.brandName || "Not provided"}
 Target audience: ${request.audience || "Not provided"}
 Offer/product/service: ${request.offer || "Not provided"}
-Writing style notes: ${request.writingStyle || "Not provided"}
+Writing style notes (style only, never factual evidence): ${request.writingStyle || "Not provided"}
 Content goal: ${request.contentGoal || "Not provided"}
 Tone selected: ${automatic.has("tone") ? "Automatic: infer from the current request and saved brand voice." : labelForTone(request.tone)}
 Sharpness selected: ${automatic.has("sharpness") ? "Automatic: fit the message and platform." : labelForSharpness(request.sharpness)}

@@ -273,7 +273,7 @@ export const presetTopics: Array<{
   {
     id: "storytelling",
     label: "Storytelling",
-    description: "Personal stories, customer moments, lessons learned, and narrative posts."
+    description: "Personal stories, customer moments and lessons only from supplied events; never invent a backstory."
   },
   {
     id: "thought-leadership",

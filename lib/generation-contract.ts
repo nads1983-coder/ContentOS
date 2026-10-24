@@ -1,6 +1,7 @@
 import { parseProductionGeneration } from "@/lib/production-generation";
 import { contentTypes, ctaModes, defaultSelectedTypes, presetTopics, sharpnessModes, tones } from "@/lib/content-config";
 import { cleanPlainText } from "@/lib/text-normalize";
+import { hasUnsupportedBusinessFacts } from "@/lib/business-facts";
 import type { ContentTypeId, GenerateRequest, GeneratedSection, GenerationResult } from "@/types/content";
 
 export const REFINEMENT_ACTIONS = {
@@ -39,6 +40,7 @@ export const GENERATION_LIMITS = {
 
 export class GenerationValidationError extends Error {}
 export class GenerationOutputError extends Error {}
+export class GenerationGroundingError extends GenerationOutputError {}
 
 function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -202,6 +204,8 @@ export { productionOutputSchema } from "@/lib/production-generation";
 export function parseGenerationOutput(text: string, request: GenerationInput): GenerationResult {
   if (typeof text !== "string" || text.length > GENERATION_LIMITS.outputCharacters) throw new GenerationOutputError("Invalid output size.");
   try {
+    // Inspect before caption fallbacks or CTA removal can hide a rejected assertion.
+    if (hasUnsupportedBusinessFacts(JSON.parse(text), request)) throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged.");
     const result = parseProductionGeneration(text, request);
     if (result.sections.length !== request.selectedTypes.length ||
         new Set(result.sections.map(s => s.type)).size !== request.selectedTypes.length ||
@@ -210,8 +214,10 @@ export function parseGenerationOutput(text: string, request: GenerationInput): G
       throw new Error("Missing or duplicate requested formats.");
     }
     if (new TextEncoder().encode(JSON.stringify(result)).byteLength > GENERATION_LIMITS.resultBytes) throw new Error("Output too large.");
+    if (hasUnsupportedBusinessFacts(result, request)) throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged.");
     return result;
-  } catch {
+  } catch (error) {
+    if (error instanceof GenerationGroundingError) throw error;
     throw new GenerationOutputError("The AI response is incomplete or cannot be saved. Your draft is unchanged.");
   }
 }
