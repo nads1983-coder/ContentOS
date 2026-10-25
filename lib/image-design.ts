@@ -1,5 +1,6 @@
 import type { BuildPosterInput } from "@/lib/social-image";
 import { brandContextScope, styleContext } from "@/lib/brand-context";
+import { imageCompositionPrompt } from "@/lib/image-composition";
 
 export const IMAGE_MODES = ["auto", "image", "text", "mixed"] as const;
 export type ImageMode = typeof IMAGE_MODES[number];
@@ -79,6 +80,7 @@ export function buildCreativeBrief(input: BuildPosterInput) {
     font: /\b(?:luxury|elegant|serif|editorial)\b/i.test(selectedStyle || direction) ? "editorial" : "sans"
   };
   if (design.body === design.headline) design.body = "";
+  const composition = imageCompositionPrompt(source, instructions, mode === "mixed");
   return { design, source, direction, prompt: [
     "Create one original, conceptually relevant social visual. Do not reproduce a caption or a generic SaaS background.",
     `Content meaning (context, not text to draw): ${source}`,
@@ -91,7 +93,7 @@ export function buildCreativeBrief(input: BuildPosterInput) {
     "Saved colours and style are aesthetic preferences, not permission to add a brand, product, competition, offer or promotional subject.",
     `Palette: ${design.background.replace("#", "hex ")}, ${design.accent.replace("#", "hex ")}.`,
     `Platform: ${imageCopy(input.platform, 80)}. Orientation: ${input.format}.`,
-    mode === "mixed" ? "Keep the subject in the upper half; the app adds a solid text panel in the lower half. Keep the focal point clear of that panel." : "Use a clear focal point and full-frame composition. Natural, well-lit subjects with meaningful context.",
+    composition || (mode === "mixed" ? "Keep the subject in the upper half; the app adds a solid text panel in the lower half. Keep the focal point clear of that panel." : "Use a clear focal point and full-frame composition. Natural, well-lit subjects with meaningful context."),
     "Mandatory: no visible text, letters, captions, hashtag symbols, typography, watermarks, logos, signage or UI. All requested words are rendered separately by the app.",
     "Do not invent products, packaging, logos, business facts, offers or brand assets. Depict concepts rather than fabricate a branded product. No decorative orbs."
   ].join("\n") };

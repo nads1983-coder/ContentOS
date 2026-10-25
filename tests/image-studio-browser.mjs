@@ -18,7 +18,8 @@ const context=await browser.newContext({acceptDownloads:true});
 const page=await context.newPage();const errors=[];
 page.on("pageerror",e=>errors.push(e.message));
 const h=createImageHarness();h.userId="image-test-account";h.rows.set(h.userId,profile({id:h.userId}));
-const payloads=[],responses=[];let revision=0;
+const payloads=[],responses=[],providerPayloads=[];let revision=0;
+h.provider=async(_url,init)=>{providerPayloads.push(JSON.parse(init.body));return Response.json({data:[{b64_json:PNG}]});};
 const snapshot=()=>({revision:String(revision),store:{drafts:[],recent:[],saved:[]},brandProfiles:[],preferences:{brandName:"Mira",audience:"Busy professionals",offer:"",writingStyle:"Warm, thoughtful",contentGoal:""}});
 await page.route("**/*",async route=>{
   const url=new URL(route.request().url());
@@ -104,6 +105,30 @@ try{
     else assert.match(svg,/<image/);
   }
   assert.equal(h.calls.filter(c=>c==="provider").length,3);
+  const comparison="Create a Syria or Canada Foodie Beauty graphic.";
+  await dialog.getByLabel("Image content").fill(comparison);
+  await dialog.getByLabel("What image would you like?").fill(comparison);
+  await dialog.getByLabel("Image type",{exact:true}).selectOption("illustration");
+  await dialog.getByLabel("Style",{exact:true}).selectOption("playful");
+  await dialog.getByRole("button",{name:"Green",exact:true}).click();
+  await dialog.getByRole("button",{name:"Purple",exact:true}).click();
+  await dialog.getByRole("button",{name:"Auto",exact:true}).click();
+  await dialog.getByRole("button",{name:"Regenerate image"}).click();
+  await page.waitForFunction(()=>!document.querySelector('dialog button[disabled] svg.animate-spin'));
+  await page.waitForTimeout(300);
+  assert.equal(h.calls.filter(c=>c==="provider").length,4);
+  assert.match(providerPayloads.at(-1).prompt,/Syria or Canada Foodie Beauty/);
+  assert.match(providerPayloads.at(-1).prompt,/comparable visual area and detail for BOTH sides/);
+  assert.match(providerPayloads.at(-1).prompt,/choice remains open/);
+  assert.match(providerPayloads.at(-1).prompt,/Selected style: playful/);
+  assert.match(providerPayloads.at(-1).prompt,/hex 7450c8/);
+  assert.match(providerPayloads.at(-1).prompt,/hex ffffff/);
+  for(const width of [1440,768,390]){
+    await page.setViewportSize({width,height:1000});
+    assert.equal(await dialog.evaluate(el=>el.scrollWidth>el.clientWidth),false);
+    await dialog.screenshot({path:`${artifacts}/comparison-${width}.png`});
+  }
+  await page.setViewportSize({width:1440,height:1100});
   const before=payloads.length;
   await page.reload();
   await page.getByRole("button",{name:"Image Studio",exact:true}).click();
@@ -130,9 +155,9 @@ try{
     const bytes=await readFile(`${artifacts}/${format}.png`);
     assert.deepEqual([bytes.readUInt32BE(16),bytes.readUInt32BE(20)],[width,height]);
   }
-  assert.equal(h.calls.filter(c=>c==="provider").length,3,"All four Text design exports use no provider");
+  assert.equal(h.calls.filter(c=>c==="provider").length,4,"All four Text design exports use no provider");
   assert.deepEqual(errors,[]);
-  const result={passed:true,modes:4,viewports:[1440,768,390],mockedRequests:payloads.length,mockedProviderCalls:3,paidCalls:0,editing:true,undo:true,pngExport:true,exactPngDimensions:4,keyboardModal:true,deviceReload:true,accountIsolation:true,pageErrors:errors};
+  const result={passed:true,modes:4,viewports:[1440,768,390],mockedRequests:payloads.length,mockedProviderCalls:4,paidCalls:0,comparisonPayload:true,editing:true,undo:true,pngExport:true,exactPngDimensions:4,keyboardModal:true,deviceReload:true,accountIsolation:true,pageErrors:errors};
   await writeFile(`${artifacts}/result.json`,JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
 }catch(error){await page.screenshot({path:`${artifacts}/failure.png`,fullPage:true}).catch(()=>{});console.error({responses,errors});throw error;}
 finally{await context.close();await browser.close();await rm(fixtureDirectory,{recursive:true});}

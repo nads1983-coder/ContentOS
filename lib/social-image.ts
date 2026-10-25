@@ -1,6 +1,7 @@
 import { renderDesignSvg } from "@/lib/image-design";
 import type { ImageMode, ImageDesign } from "@/lib/image-design";
 import { brandContextScope, styleContext } from "@/lib/brand-context";
+import { imageCompositionPrompt } from "@/lib/image-composition";
 
 export type SocialImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";
 export type SocialImageFormat = "square" | "landscape" | "portrait" | "vertical";
@@ -232,6 +233,7 @@ export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
   const visualStyle = cleanImageText(styleContext(brand.visualStyle ?? input.style, brand.brandName ?? "", scope.identity), 180);
   const topic = cleanImageText(input.brandContext.contentTopic ?? input.contentType ?? input.outputText, 180);
   const template = platformTemplate(input).replace(/_/g, " ");
+  const composition = imageCompositionPrompt(cleanImageText(input.outputText, 1200), cleanImageText(input.creativeInstructions ?? "", 600));
 
   return [
     `Create a premium textless background for a ${template} social media visual.`,
@@ -245,6 +247,7 @@ export function buildTextlessBackgroundPrompt(input: BuildPosterInput) {
     `Canvas orientation: ${input.format}.`,
     `Platform context: ${cleanImageText(input.platform || "social media", 80)}.`,
     `Content topic mood: ${topic}.`,
+    composition,
     audience ? `Audience mood: ${audience}.` : "",
     offer ? `Commercial context: ${offer}.` : "",
     styleNotes ? `Writing style mood: ${styleNotes}.` : "",
