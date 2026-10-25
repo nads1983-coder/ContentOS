@@ -2,7 +2,7 @@ import type { GenerationInput } from "@/lib/generation-contract";
 import type { GenerationResult } from "@/types/content";
 import { normalizePostSection, socialPostTypes } from "@/lib/post-format";
 import { hashtagMaximums, labelledHashtagMaximum } from "@/lib/hashtag-context";
-import { buildHashtagPolicy } from "@/lib/hashtag-policy";
+import { buildHashtagPolicy, isHashtagPlatform } from "@/lib/hashtag-policy";
 import { completeRequestedHashtags } from "@/lib/hashtag-output";
 
 // A fragment inside a URL or identifier is not a social hashtag.
@@ -26,8 +26,9 @@ function cleanFiller(value: string, request: GenerationInput) {
 }
 
 export function applyContentQuality(result: GenerationResult, request: GenerationInput): GenerationResult {
-  const supported = buildHashtagPolicy(request).accepts;
-  result = completeRequestedHashtags(result, request);
+  const policy = buildHashtagPolicy(request, result.sections.filter(s => isHashtagPlatform(s.type)).map(s => s.body.replace(tagPattern, "")));
+  const supported = policy.accepts;
+  result = completeRequestedHashtags(result, request, policy);
   const clean = (text: string, seen?: Set<string>) => cleanFiller(text, request).replace(tagPattern, tag => {
     const key = compact(tag);
     if (!supported(tag) || seen?.has(key)) return "";

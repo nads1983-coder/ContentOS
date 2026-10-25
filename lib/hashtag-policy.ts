@@ -2,6 +2,7 @@ import type { GenerateRequest, GeneratedSection } from "@/types/content";
 import { brandContextScope } from "@/lib/brand-context";
 import { conceptualHashtags, hashtagMaximums } from "@/lib/hashtag-context";
 import { socialHashtag } from "@/lib/post-format";
+import { groundedTopicHashtags } from "@/lib/hashtag-topic";
 
 type HashtagRequest = GenerateRequest & { refinement?: { instructions?: string; section?: GeneratedSection } };
 export const hashtagKey = (text: string) => text.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
@@ -40,7 +41,7 @@ const socialThemes: Record<HashtagPlatform, string[]> = {
 };
 const canonical = new Map(["Consistency", "ShowingUp", "LinkedInPresence", "LinkedInGrowth", "PersonalBranding", "ProfessionalGrowth", "ProfessionalDevelopment", "SkillDevelopment", "Learning", "Coding", "Programming", "SoftwareDevelopment", "Productivity", "TimeManagement", "Creativity", "CreativeProcess"].map(tag => [hashtagKey(tag), `#${tag}`]));
 
-export function buildHashtagPolicy(request: HashtagRequest) {
+export function buildHashtagPolicy(request: HashtagRequest, captionText: string[] = []) {
   const scope = brandContextScope(request);
   const current = [request.source, request.refinement?.instructions ?? ""].join("\n");
   const choice = hashtagChoice(request.refinement?.instructions ?? "") ?? hashtagChoice(request.source);
@@ -55,13 +56,15 @@ export function buildHashtagPolicy(request: HashtagRequest) {
   const brandPattern = request.brandName ? new RegExp(`(?<![\\p{L}\\p{N}])${request.brandName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\p{L}\\p{N}])`, "giu") : null;
   for (const text of [request.source, request.refinement?.instructions ?? "", scope.savedFacts ? request.offer ?? "" : "", scope.identity ? request.audience ?? "" : ""]) {
     const topic = (brandPattern ? text.replace(brandPattern, "") : text).split(/(?<=[.!?;])\s+|\n/)
-      .filter(clause => !/^\s*(?:please\s+)?(?:no|omit|avoid|exclude|remove|without|do not|don't)\b/i.test(clause)).join(" ");
+      .filter(clause => !/^\s*(?:please\s+)?(?:no|omit|avoid|exclude|remove|without|do not|don't)\b/i.test(clause))
+      .filter(clause => !/^\s*(?:please\s+)?(?:use|include|add|keep|put|format|group|place)\s+(?:(?:one|each|all|the|up|to|only|exactly|\d+)\s+){0,4}(?:hashtags?\b|#)/i.test(clause)).join(" ");
     topicParts.push(topic);
     for (const key of conceptualHashtags(topic)) { allowed.add(key); concepts.add(canonical.get(key) ?? `#${key}`); }
     const words = topic.normalize("NFKC").toLowerCase().replace(/(\d),(?=\d{3}\b)/g, "$1").match(/[\p{L}\p{N}]+/gu) ?? [];
     for (let i = 0; i < words.length; i++) for (let length = 1; length <= 4 && i + length <= words.length; length++) allowed.add(words.slice(i, i + length).join(""));
   }
   const topic = topicParts.join(" ");
+  const grounded = groundedTopicHashtags(topicParts.slice(0, 2).join(" ").replace(socialHashtag, ""), captionText);
   // YouTube as the subject supports discovery themes, not claims about the
   // author's channel, income or niche. Platform selection cannot activate these.
   if (/\byoutube\b/i.test(topic)) for (const tag of ["YouTube", "OnlineVideo", "VideoContent", "VideoDiscovery", "DigitalMedia", "YouTubeVideos", "VideoSharing", "DigitalContent", "OnlineContent", "YouTubeCommunity"]) {
@@ -79,10 +82,11 @@ export function buildHashtagPolicy(request: HashtagRequest) {
       else { if (isCurrent) { allowed.add(key); explicit.add(tag); } denied.delete(key); }
     }
   }
-  const accepts = (tag: string) => enabled && !generic.has(hashtagKey(tag)) && allowed.has(hashtagKey(tag)) && !denied.has(hashtagKey(tag)) &&
+  const accepts = (tag: string) => enabled && !generic.has(hashtagKey(tag)) && (allowed.has(hashtagKey(tag)) || grounded.accepts(tag)) && !denied.has(hashtagKey(tag)) &&
     (scope.identity || !request.brandName || hashtagKey(tag) !== hashtagKey(request.brandName));
   const suggestions = (platform: HashtagPlatform) => [...new Set([
-    ...(socialTopic && platforms.includes(platform) ? socialThemes[platform].map(tag => `#${tag}`) : []), ...concepts, ...explicit
+    ...(socialTopic && platforms.includes(platform) ? socialThemes[platform].map(tag => `#${tag}`) : []), ...concepts, ...explicit,
+    ...(!socialTopic && concepts.size === 0 && explicit.size === 0 ? grounded.suggestions : [])
   ])].filter(accepts);
   const existingPreference = request.refinement?.section && hashtagTokens([request.refinement.section.body, ...request.refinement.section.items].join("\n")).some(accepts);
   const instructions = [request.refinement?.instructions, request.source, request.writingStyle].filter((v): v is string => Boolean(v));
@@ -99,6 +103,7 @@ export function hashtagPromptContext(request: HashtagRequest) {
     `Hashtag instruction: ${policy.requested ? "meaningful suggestions explicitly requested" : "use relevant platform defaults when appropriate"}. Questions about hashtags not working are subjects, not omission instructions.`,
     "Every platform caption gets its own relevant tags automatically, whether or not Hashtags is selected. Keep them in items, grouped after one blank line below the post. Facebook, LinkedIn and YouTube allow up to five; never stop at one when several useful themes are supported. Do not pad sparse topics.",
     "The optional Hashtags format is ONE set of five additional subject-relevant choices, distinct from the union of caption tags and unique within the set. Do not repeat platform-labelled caption sets or remove caption tags to supply it. Use fewer if five supported alternatives are unavailable. #Hashtags alone is not useful.",
+    "Use concise topic phrases from the brief and caption, including spelling/inflection variants and supported conceptual themes. Do not replace topic-specific tags with a format label. Caption wording cannot establish a new niche, business fact or promotion absent from the brief.",
     ...policy.platforms.map(platform => `${hashtagPlatforms[platform]} source-derived candidates (not business claims or mandatory quotas): ${policy.suggestions(platform).join(" ") || "choose meaningful tags supported by the actual subject; do not invent a niche"}`)
   ].join("\n");
 }

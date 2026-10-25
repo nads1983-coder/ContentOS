@@ -25,15 +25,16 @@ test("caption copy removes exact repetition and duplicate CTA, retaining distinc
 test("server output, workspace round-trip, clipboard transport and export retain identical LF spacing", async () => {
   const result = parse(section());
   const restored = parseWorkspaceGeneration(JSON.parse(JSON.stringify(result)));
-  assert.equal(copy.buildSectionCopyText(restored.sections[0]), expected);
-  assert.equal(copy.buildGenerationCopyText(restored), expected);
+  const completed = expected + " #PlanningIdeas";
+  assert.equal(copy.buildSectionCopyText(restored.sections[0]), completed);
+  assert.equal(copy.buildGenerationCopyText(restored), completed);
   assert.equal(plainPostText(expected), expected, "formatter preserves copied spacing");
   let written;
   const descriptor = Object.getOwnPropertyDescriptor(globalThis, "navigator");
   Object.defineProperty(globalThis, "navigator", { configurable: true, value: { clipboard: { writeText: async value => { written = value; } } } });
   try { await copy.copyPlainText(copy.buildSectionCopyText(restored.sections[0])); }
   finally { if (descriptor) Object.defineProperty(globalThis, "navigator", descriptor); else delete globalThis.navigator; }
-  assert.equal(written, expected);
+  assert.equal(written, completed);
 });
 
 test("short real captions never become source instructions, and literal identifiers survive formatting", () => {
@@ -61,7 +62,7 @@ test("all post platforms group tags; explicit separate-line request survives gen
   }
   const result = parse(section(), { source: "Share planning ideas. Use one hashtag per line." });
   assert.equal(result.sections[0].hashtagLayout, "lines");
-  assert.ok(copy.buildSectionCopyText(parseWorkspaceGeneration(result).sections[0]).endsWith("#Planning\n#Ideas"));
+  assert.ok(copy.buildSectionCopyText(parseWorkspaceGeneration(result).sections[0]).endsWith("#Planning\n#Ideas\n#PlanningIdeas"));
   const override = parse(section(), { writingStyle: "Use one hashtag per line.", source: "Share planning ideas. Put hashtags on one line." });
   assert.equal(override.sections[0].hashtagLayout, "inline");
 });
