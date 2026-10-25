@@ -21,7 +21,10 @@ test("one sentence produces a single-platform contract; all 14 formats remain pa
     const result = parseGenerationOutput(JSON.stringify({ title: "Milestone", summary: "Giveaway draft", sections: [section(id)] }), r);
     assert.equal(result.sections.length, 1);
     assert.equal(result.sections[0].type, id);
-    assert.match(result.sections[0].body, /\[CONFIRM:/);
+    if(id==='platformHashtags'){
+      assert.ok(result.sections[0].items.length>0);
+      assert.doesNotMatch(result.sections[0].body,/\[CONFIRM:/);
+    }else assert.match(result.sections[0].body, /\[CONFIRM:/);
     assert.equal(result.source, source);
   }
   assert.equal(contentTypes.length, 14);

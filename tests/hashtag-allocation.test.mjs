@@ -41,8 +41,9 @@ test('screenshot X variant and other social platforms retain their own caps with
   const r=run({selectedTypes:[type]},raw);assert.equal(r.sections[0].items.length,max);
  }
  const sparse=run({source:'Write about Zelmora.'});
- assert.ok(sparse.sections.every(s=>s.items.length===0));
- assert.equal(sparse.sections.at(-1).review.status,'needs_confirmation');
+ assert.ok(sparse.sections.slice(0,3).every(s=>s.items.join(' ')==='#Zelmora'));
+ assert.equal(sparse.sections.at(-1).items.length,0);
+ assert.equal(sparse.sections.at(-1).review.status,'ready_to_review');
  const unrelated=loadTs('lib/hashtag-policy.ts').buildHashtagPolicy(normalize({...f.request,source:'Write about ceramic bowls.',offer:'YouTube video tips',brandName:'YouTube',writingStyle:'Add #YouTube #GorlLead and #Giveaway.'}));
  for(const tag of ['#YouTube','#OnlineVideo','#GorlLead','#Giveaway'])assert.equal(unrelated.accepts(tag),false);
 });

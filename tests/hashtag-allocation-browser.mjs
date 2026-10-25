@@ -10,7 +10,12 @@ await mkdir(dir,{recursive:true});
 const fixtureRoute=new URL('../app/image-studio-test/',import.meta.url);
 await mkdir(fixtureRoute,{recursive:true});
 await writeFile(new URL('page.tsx',fixtureRoute),await readFile(new URL('fixtures/image-studio-page.tsx.fixture',import.meta.url)),{flag:'wx'});
-const f=JSON.parse(await readFile(new URL('fixtures/youtube-hashtag-allocation.json',import.meta.url),'utf8'));
+let f=JSON.parse(await readFile(new URL('fixtures/youtube-hashtag-allocation.json',import.meta.url),'utf8'));
+if(process.env.TEST_HASHTAG_CASE==='room-lighting'){
+ const e=JSON.parse(await readFile(new URL('fixtures/grounded-hashtag-topics.json',import.meta.url),'utf8')).examples.find(e=>e.id==='room-lighting');
+ f={request:{source:e.source,selectedTypes:[...e.platforms,'platformHashtags']},captionTags:e.expectedCaptionTags,additionalTags:e.expectedAdditionalTags,
+  mockProviderOutput:{title:'Coloured room lighting',summary:'A personal reflection.',sections:[...e.platforms.map(type=>({id:type,type,platform:type,title:'Caption',body:e.body,items:e.captionCandidates,cta:''})),{id:'platformHashtags',type:'platformHashtags',platform:'General',title:'Additional hashtags',body:'',items:e.additionalCandidates,cta:''}]}};
+}
 const {normalizeGenerationRequest,parseGenerationOutput}=loadTs('lib/generation-contract.ts');
 const {workspaceFromProfile,updateWorkspaceProfile}=loadTs('lib/workspace-contract.ts');
 const {reserveGenerationInProfile,completeGenerationInProfile}=loadTs('lib/generation-reservation.ts');
@@ -39,8 +44,8 @@ async function newContext(){
     if(reserved.result.status==='replay')return route.fulfill({json:reserved.result.result});
     const raw=structuredClone(f.mockProviderOutput);
     if(input.refinement){
-     raw.sections=[{...input.refinement.section,items:['#YouTube','#WhyILoveYouTube','#GorlLead','#papercraft']}];
-     if(input.refinement.section.type!=='platformHashtags')raw.sections[0].body='Another perspective is worth exploring.\n\nThat is what I love about YouTube.';
+     raw.sections=[{...input.refinement.section,items:input.refinement.section.type==='platformHashtags'?f.mockProviderOutput.sections.at(-1).items:[...f.captionTags,'#GorlLead','#papercraft']}];
+     if(input.refinement.section.type!=='platformHashtags')raw.sections[0].body=f.mockProviderOutput.sections[0].body;
     }
     const output=parseGenerationOutput(JSON.stringify(raw),input);
     const done=completeGenerationInProfile(rows.get(id),id,input.requestId,reserved.result.fingerprint,output);rows.set(id,done.data);
@@ -57,7 +62,7 @@ try{
  await page.getByLabel('What would you like to create?').fill(f.request.source);
  await page.getByLabel('Where will you publish it?').selectOption('linkedin');
  await page.getByText('Advanced Options (Optional)',{exact:true}).click();
- for(const name of ['Facebook','YT Shorts','Hashtags'])await page.getByRole('checkbox',{name,exact:true}).check();
+ for(const type of f.request.selectedTypes.filter(t=>t!=='linkedin'))await page.getByRole('checkbox',{name:({facebook:'Facebook',youtubeShorts:'YT Shorts',instagram:'Instagram',tiktok:'TikTok',platformHashtags:'Hashtags'})[type],exact:true}).check();
  await page.getByText('Advanced Options (Optional)',{exact:true}).click();
  await page.getByRole('button',{name:'Create Content',exact:true}).click();
  const cards=page.locator('#outputs article');await cards.nth(3).waitFor();
@@ -81,7 +86,7 @@ try{
  await cards.nth(3).getByLabel('What would you like to change?').fill('Suggest relevant alternatives.');
  await cards.nth(3).getByRole('button',{name:'Apply change'}).click();
  await cards.nth(3).getByText('AI refined',{exact:true}).waitFor();
- assert.ok(requests[2].refinement.captionHashtags.includes('#YouTube'));
+ assert.ok(requests[2].refinement.captionHashtags.includes(f.captionTags[0]));
  stage='save export restore';
  await page.getByRole('button',{name:'Save all',exact:true}).click();
  await page.waitForTimeout(1200);

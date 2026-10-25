@@ -57,8 +57,8 @@ test("questions and educational topics are not no-hashtag instructions; explicit
 
 test("only a relevant subject authorizes social strategy candidates, not a selected platform or Hashtags label", () => {
   const result = run({ source: "Write something useful." });
-  assert.equal(result.sections[1].review.status, "needs_confirmation");
-  assert.match(result.sections[1].body, /\[CONFIRM:/);
+  assert.equal(result.sections[1].review.status, "ready_to_review");
+  assert.match(result.sections[1].body, /No additional relevant hashtags could be established/);
   assert.deepEqual(result.sections[1].items, []);
   assert.doesNotMatch(JSON.stringify(result), /#Hashtags\b|#LinkedInTips/);
   const unrelated = buildHashtagPolicy(request({ source: "Our ceramic bowls are blue. Include hashtags." }));

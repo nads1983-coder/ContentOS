@@ -1,0 +1,31 @@
+{
+  "evidence": "The three briefs and reported symptoms are supplied by the owner. Caption prose and provider candidates below are synthetic mocks, not recovered live provider responses. Earlier fixtures remain unchanged.",
+  "examples": [
+    {
+      "id": "youtube",
+      "source": "Why I love YouTube",
+      "platforms": ["facebook", "linkedin", "youtubeShorts"],
+      "body": "There is always another perspective to explore.\n\nThat is what I love about YouTube.",
+      "captionCandidates": ["#YouTube"],
+      "additionalCandidates": ["#YouTube", "#WhyILoveYouTube"]
+    },
+    {
+      "id": "hashtag-effectiveness",
+      "source": "Why are hashtags not working on my posts?",
+      "platforms": ["linkedin"],
+      "body": "Hashtags are not the whole strategy.\n\nWhat is the post saying, and who is it for? Those questions deserve attention too.",
+      "captionCandidates": ["#Hashtags"],
+      "additionalCandidates": ["#Hashtags"]
+    },
+    {
+      "id": "room-lighting",
+      "source": "Why do I love the different coloured lights in my room so much?",
+      "platforms": ["instagram", "linkedin", "tiktok"],
+      "body": "Same room, different colours.\n\nThere is something lovely about coloured lighting. Room lighting can be part of the atmosphere, not just the background.",
+      "captionCandidates": ["#RoomLighting", "#ColouredLights", "#Lighting", "#ColourfulLighting", "#RoomLights", "#GorlLead", "#papercraft"],
+      "additionalCandidates": ["#RoomLighting", "#ColourfulLights", "#ColouredLighting", "#LightingIdeas", "#RoomLightingInspiration", "#ColourfulRoom", "#Giveaway", "#LEDStripLights"],
+      "expectedCaptionTags": ["#RoomLighting", "#ColouredLights", "#Lighting", "#ColourfulLighting", "#RoomLights"],
+      "expectedAdditionalTags": ["#ColourfulLights", "#ColouredLighting", "#LightingIdeas", "#RoomLightingInspiration", "#ColourfulRoom"]
+    }
+  ]
+}

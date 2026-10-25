@@ -29,8 +29,7 @@ export function excludeCaptionHashtags(result: GenerationResult): GenerationResu
 
 // Captions allocate first, without reading the optional set. All additions pass
 // the same source policy and caps before exclusion from the additional pool.
-export function completeRequestedHashtags(result: GenerationResult, request: GenerationInput): GenerationResult {
-  const policy = buildHashtagPolicy(request);
+export function completeRequestedHashtags(result: GenerationResult, request: GenerationInput, policy = buildHashtagPolicy(request, result.sections.filter(s => isHashtagPlatform(s.type)).map(s => withoutTags(s.body)))): GenerationResult {
   const accepted = (tags: string[]) => unique(tags.filter(policy.accepts));
   const sections = result.sections.map(section => {
     if (!isHashtagPlatform(section.type) || !policy.enabled) return section;
@@ -49,7 +48,7 @@ export function completeRequestedHashtags(result: GenerationResult, request: Gen
     if (!policy.enabled) return { ...section, body: "Hashtags omitted as requested.", items: [], cta: "" };
     const candidates = accepted([...sectionTags(section), ...policy.platforms.flatMap(platform => policy.suggestions(platform))]);
     const items = candidates.filter(tag => !used.has(hashtagKey(tag))).slice(0, policy.limit("platformHashtags"));
-    const body = items.length ? "" : candidates.length ? "No additional relevant hashtags beyond those in your posts." : "[CONFIRM: Add a specific subject before choosing relevant hashtags.]";
+    const body = items.length ? "" : candidates.length || captionHashtags({ ...result, sections }).length ? "No additional relevant hashtags beyond those in your posts." : "No additional relevant hashtags could be established from this brief.";
     return { ...section, body, items, cta: "" };
   }) };
 }
