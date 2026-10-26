@@ -101,7 +101,9 @@ test("Lite upgrade/downgrade uses existing billing portal, never another subscri
 });
 
 test("incident containment refuses Lite before account, Stripe or provider work", async () => {
+  const suspended={LITE_PURCHASES_SUSPENDED:true,LITE_SUSPENDED_MESSAGE:"New Lite subscriptions are temporarily unavailable."};
   const {POST}=loadTs("app/api/billing/checkout/route.ts",{
+    "@/lib/lite-availability":suspended,
     "server-only":{},"next/server":{NextResponse:Response},"@/lib/request-security":{rejectUnsafeWrite:()=>null},
     "@/lib/auth":{getCurrentUser:async()=>{throw new Error("Should not access account");}},
     "@/lib/backend":{},"@/lib/repository":{},"@/lib/founder-claim-repository":{}
@@ -109,7 +111,8 @@ test("incident containment refuses Lite before account, Stripe or provider work"
   const response=await POST(new Request("https://example.invalid/api/billing/checkout",{method:"POST",body:JSON.stringify({plan:"lite"})}));
   assert.equal(response.status,503);
   assert.match((await response.json()).error,/temporarily unavailable/);
-  await assert.rejects(()=>stripe.createCheckoutSession({plan:"lite"}),/temporarily unavailable/);
+  const contained=loadTs("lib/stripe-rest.ts",{"@/lib/env":{getEnv:()=>env},"@/lib/lite-availability":suspended});
+  await assert.rejects(()=>contained.createCheckoutSession({plan:"lite"}),/temporarily unavailable/);
 });
 
 test("Lite webhook activation, upgrades, downgrades and cancellation preserve content and other accounts", async () => {

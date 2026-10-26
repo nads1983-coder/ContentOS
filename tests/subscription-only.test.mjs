@@ -12,7 +12,7 @@ test("cancelled Lifetime product has no route, marketing, adapter or migration",
   assert.equal((migration.match(/CREATE TABLE /g)||[]).length,3);
 });
 
-test("subscription checkout preserves Creator/Studio, suspends new Lite and rejects a forged Lifetime plan",async()=>{
+test("subscription checkout enables Lite, preserves Creator/Studio and rejects a forged Lifetime plan",async()=>{
   const calls=[];
   const {POST}=loadTs("app/api/billing/checkout/route.ts",{
     "server-only":{},"next/server":{NextResponse:Response},
@@ -24,10 +24,9 @@ test("subscription checkout preserves Creator/Studio, suspends new Lite and reje
     "@/lib/stripe-rest":{getStripeSubscriptionState:async()=>({plan:"free",status:"none"}),reconcileActiveSubscriptionPlan:s=>s,checkoutPlanIsCoveredByState:()=>false,hasActiveUnknownPaidSubscription:()=>false,createCheckoutSession:async input=>{calls.push(input);return {url:"https://checkout.stripe.com/synthetic"};}}
   });
   const send=plan=>POST(new Request("https://example.invalid/api/billing/checkout",{method:"POST",body:JSON.stringify({plan})}));
-  assert.equal((await send("lite")).status,503);
-  for(const plan of ["pro_creator","pro_studio"]) assert.equal((await send(plan)).status,200);
+  for(const plan of ["lite","pro_creator","pro_studio"]) assert.equal((await send(plan)).status,200);
   assert.equal((await send("lifetime_access")).status,400);
-  assert.deepEqual(calls.map(c=>c.plan),["pro_creator","pro_studio"]);
+  assert.deepEqual(calls.map(c=>c.plan),["lite","pro_creator","pro_studio"]);
   assert.ok(calls.every(c=>c.founderOffer===false&&c.userId==="synthetic-user"));
 });
 
