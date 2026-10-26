@@ -40,6 +40,7 @@ export const metadata: Metadata = {
 };
 
 const planLabels: Record<PlanId, string> = {
+  lite: "Lite",
   free: "Free",
   founder: "Founder",
   pro_creator: "Pro Creator",
@@ -196,7 +197,7 @@ export default async function DashboardPage() {
   const status = normalizeSubscriptionStatus(profile?.subscription_status);
   const hasLifetimeAccess = hasLifetimeEntitlement(profile);
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
-  const canUpgradeToCreator = !hasActiveSubscription;
+  const canUpgradeToCreator = !hasActiveSubscription || plan === "lite";
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
   let monthlyUsageCount = 0;
 

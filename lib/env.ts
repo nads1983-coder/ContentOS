@@ -18,6 +18,7 @@ const serverEnv = {
   stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
   stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
   stripeProCreatorPriceId: process.env.STRIPE_PRO_CREATOR_PRICE_ID ?? "",
+  stripeLitePriceId: process.env.STRIPE_LITE_PRICE_ID ?? "",
   stripeProStudioPriceId: process.env.STRIPE_PRO_STUDIO_PRICE_ID ?? "",
   stripeFounderCouponId: process.env.STRIPE_FOUNDER_COUPON_ID ?? "",
   stripeFounderPromotionCodeId: process.env.STRIPE_FOUNDER_PROMOTION_CODE_ID ?? "",

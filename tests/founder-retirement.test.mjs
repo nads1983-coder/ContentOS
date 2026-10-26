@@ -64,7 +64,7 @@ test("ordinary subscription cancellations still update normally", async () => {
 
 test("public offer removed without changing paid plan prices or product limits", () => {
   const { pricingPlans } = loadTs("lib/pricing.ts");
-  assert.deepEqual(pricingPlans.map(p => p.price), ["£0", "£9/month", "£39/month"]);
+  assert.deepEqual(pricingPlans.filter(p => p.billingPlan !== "lite").map(p => p.price), ["£0", "£9/month", "£39/month"]);
   assert.ok(pricingPlans.every(p => !p.offerNote));
   for (const file of ["app/page.tsx", "app/pricing/page.tsx", "app/dashboard/page.tsx"]) {
     assert.doesNotMatch(readFileSync(file, "utf8"), /FoundingOffer|Continue Founder claim|Claim Founder Access/);

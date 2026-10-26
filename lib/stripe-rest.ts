@@ -10,7 +10,7 @@ import {
 } from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
 
-export type BillingPlan = "pro_creator" | "pro_studio";
+export type BillingPlan = "lite" | "pro_creator" | "pro_studio";
 
 const apiVersion = "2026-02-25.clover";
 const stripeRequestTimeoutMs = 12_000;
@@ -73,6 +73,8 @@ export function normalizePlanId(value?: string | null): PlanId {
     .toLowerCase()
     .replace(/[_\s]+/g, "-");
 
+  if (normalized === "lite") return "lite";
+
   if (normalized === "pro-studio" || normalized === "prostudio" || normalized === "studio") {
     return "pro_studio";
   }
@@ -118,6 +120,7 @@ function stripeRedirectUrl(path: string) {
 
 function stripePriceId(plan: BillingPlan) {
   const env = getEnv();
+  if (plan === "lite") return env.stripeLitePriceId;
   return plan === "pro_creator"
     ? env.stripeProCreatorPriceId
     : env.stripeProStudioPriceId;
@@ -220,15 +223,21 @@ function planFromPriceId(priceId?: string): PlanId {
     return "pro_creator";
   }
 
+  if (priceId && priceId === env.stripeLitePriceId) return "lite";
   return "free";
 }
 
 function planFromSubscription(subscription: StripeSubscription): PlanId {
+  // Current price is authoritative after a portal upgrade/downgrade; metadata
+  // can still contain the plan selected at the original checkout.
+  const pricePlan = planFromPriceId(subscription.items?.data[0]?.price?.id);
   const metadataPlan = normalizePlanId(
     subscription.metadata?.plan ??
       subscription.metadata?.Plan ??
       subscription.metadata?.PLAN
   );
+
+  if (pricePlan !== "free" && (pricePlan === "lite" || metadataPlan === "lite")) return pricePlan;
 
   if (metadataPlan !== "free") {
     return metadataPlan;
@@ -314,6 +323,7 @@ export function planHasActiveEntitlement(plan: PlanId, status?: string) {
 
 function planRank(plan: PlanId) {
   const normalized = normalizePlanId(plan);
+  if (normalized === "lite") return 0.5;
 
   if (normalized === "pro_studio") {
     return 2;
@@ -554,6 +564,19 @@ export async function createCheckoutSession(input: {
 
   if (!price) {
     throw new Error("Stripe price ID is not configured.");
+  }
+
+  if (input.plan === "lite") {
+    const configured = await stripeGet<{
+      id: string; active: boolean; currency: string; unit_amount: number | null;
+      type: string; recurring?: { interval: string; interval_count: number; usage_type?: string };
+    }>(`prices/${encodeURIComponent(price)}`);
+    if (configured.id !== price || !configured.active || configured.currency !== "gbp" ||
+        configured.unit_amount !== 500 || configured.type !== "recurring" ||
+        configured.recurring?.interval !== "month" || configured.recurring.interval_count !== 1 ||
+        configured.recurring.usage_type !== "licensed") {
+      throw new Error("Lite requires an active GBP 5 monthly recurring price. Checkout is unavailable.");
+    }
   }
 
   const body = new URLSearchParams(Object.entries({

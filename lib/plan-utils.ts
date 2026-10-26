@@ -2,6 +2,7 @@ import { PlanId } from "@/types/saas";
 import { BillingPlan } from "@/lib/pricing";
 
 export function planRank(plan: PlanId | BillingPlan) {
+  if (plan === "lite") return 0.5;
   if (plan === "pro_studio") {
     return 2;
   }

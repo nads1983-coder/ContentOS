@@ -11,6 +11,7 @@ import {
 import {
   checkoutPlanIsCoveredByState,
   createCheckoutSession,
+  createCustomerPortalSession,
   BillingPlan,
   expireCheckoutSession,
   getFounderOfferAvailability,
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
   }
   const user = await getCurrentUser();
 
-  if (!plan || !["pro_creator", "pro_studio"].includes(plan)) {
+  if (!plan || !["lite", "pro_creator", "pro_studio"].includes(plan)) {
     return NextResponse.json({ error: "Invalid plan." }, { status: 400 });
   }
 
@@ -156,6 +157,14 @@ export async function POST(request: Request) {
         email: user.email,
         ...subscriptionState
       });
+    }
+
+    // Lite plan changes use the existing subscription, never a second checkout.
+    if ((plan === "lite" || subscriptionState.plan === "lite") &&
+        subscriptionState.stripeSubscriptionId && subscriptionState.stripeCustomerId &&
+        ["active", "trialing", "past_due"].includes(subscriptionState.status)) {
+      const portal = await createCustomerPortalSession({ customerId: subscriptionState.stripeCustomerId });
+      return NextResponse.json({ url: portal.url });
     }
 
     if (checkoutPlanIsCoveredByState(plan, subscriptionState)) {

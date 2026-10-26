@@ -201,6 +201,7 @@ function formatDate(value?: string | null) {
 }
 
 function labelForPlan(plan: PlanId) {
+  if (plan === "lite") return "Lite Plan";
   if (plan === "pro_studio") {
     return "Pro Plan";
   }
@@ -322,7 +323,7 @@ async function downloadVisualAsPng(dataUrl: string, filename: string) {
 }
 
 type FormatterMode = "desktop" | "mobile";
-type PlanId = "free" | "founder" | "pro_creator" | "pro_studio";
+type PlanId = "free" | "lite" | "founder" | "pro_creator" | "pro_studio";
 type FormatterPlatform = "linkedin" | "instagram" | "tiktok" | "xThread" | "shortVideoScript";
 type TextStyle = "bold" | "italic" | "boldItalic" | "underline" | "strikethrough";
 type ImageStyle = "minimal" | "premium" | "corporate" | "bold" | "dark" | "modern";
@@ -1460,7 +1461,7 @@ function TopBar({
                 ? "Founder workspace"
               : plan === "pro_creator"
                 ? "Pro Creator workspace"
-                : "Free workspace"}
+                : plan === "lite" ? "Lite workspace" : "Free workspace"}
           </div>
           {authenticated ? (
             <>

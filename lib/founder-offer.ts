@@ -29,7 +29,7 @@ export class FounderOfferUnavailableError extends Error {
 }
 
 export function founderIntentQuery(plan?: string | null, founderOffer = false) {
-  const requestedPlan = plan === "pro_creator" || plan === "pro_studio"
+  const requestedPlan = plan === "lite" || plan === "pro_creator" || plan === "pro_studio"
     ? plan
     : founderOffer ? "pro_creator" : null;
 
