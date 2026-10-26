@@ -22,9 +22,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No Stripe customer found." }, { status: 404 });
   }
 
-  const session = await createCustomerPortalSession({
-    customerId: profile.stripe_customer_id
-  });
-
-  return NextResponse.json({ url: session.url });
+  try {
+    const session = await createCustomerPortalSession({ customerId: profile.stripe_customer_id });
+    return NextResponse.json({ url: session.url });
+  } catch {
+    return NextResponse.json(
+      { error: "Billing management is temporarily unavailable. Your subscription has not been changed." },
+      { status: 503 }
+    );
+  }
 }

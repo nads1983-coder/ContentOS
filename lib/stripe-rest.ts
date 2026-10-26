@@ -730,13 +730,55 @@ export async function expireCheckoutSession(sessionId: string) {
 export async function createCustomerPortalSession(input: {
   customerId: string;
 }) {
-  return stripeRequest<{ url: string }>(
-    "billing_portal/sessions",
-    new URLSearchParams({
+  const env = getEnv();
+  const configurationId = env.stripePortalConfigurationId?.trim();
+  const prices = [env.stripeLitePriceId, env.stripeProCreatorPriceId, env.stripeProStudioPriceId];
+  const unavailable = () => new Error("Billing management is temporarily unavailable. Your subscription has not been changed.");
+  if (!configurationId || !/^bpc_[a-zA-Z0-9]+$/.test(configurationId) ||
+      prices.some(price => !price) || new Set(prices).size !== 3) throw unavailable();
+
+  try {
+    const config = await stripeGet<{
+      id: string; active: boolean; is_default: boolean; metadata?: Record<string, string>;
+      features?: {
+        subscription_update?: {
+          enabled?: boolean; default_allowed_updates?: string[];
+          products?: { product: string; prices: string[]; adjustable_quantity?: { enabled?: boolean } }[];
+          proration_behavior?: string; billing_cycle_anchor?: string; trial_update_behavior?: string;
+          schedule_at_period_end?: { conditions?: unknown[] };
+        };
+        subscription_cancel?: { enabled?: boolean; mode?: string; proration_behavior?: string };
+        payment_method_update?: { enabled?: boolean };
+        invoice_history?: { enabled?: boolean };
+      };
+    }>(`billing_portal/configurations/${configurationId}`, new URLSearchParams({
+      "expand[]": "features.subscription_update.products"
+    }));
+    const update = config.features?.subscription_update;
+    const products = update?.products;
+    const catalogue = products?.flatMap(product => product.prices);
+    // Check the expanded catalogue on every session; never use a default or stale fallback.
+    if (config.id !== configurationId || config.active !== true || config.is_default !== false ||
+        config.metadata?.application !== "getcontentos" || update?.enabled !== true ||
+        update.default_allowed_updates?.length !== 1 || update.default_allowed_updates[0] !== "price" ||
+        !Array.isArray(products) || products.length !== 3 ||
+        new Set(products.map(product => product.product)).size !== 3 ||
+        products.some(product => !product.product || product.prices?.length !== 1 || product.adjustable_quantity?.enabled !== false) ||
+        catalogue?.length !== 3 || new Set(catalogue).size !== 3 || prices.some(price => !catalogue.includes(price)) ||
+        update.proration_behavior !== "create_prorations" || update.billing_cycle_anchor !== "unchanged" ||
+        update.trial_update_behavior !== "continue_trial" || update.schedule_at_period_end?.conditions?.length !== 0 ||
+        config.features?.subscription_cancel?.enabled !== true || config.features.subscription_cancel.mode !== "at_period_end" ||
+        config.features.subscription_cancel.proration_behavior !== "none" ||
+        config.features.payment_method_update?.enabled !== true || config.features.invoice_history?.enabled !== true) throw unavailable();
+
+    return await stripeRequest<{ url: string }>("billing_portal/sessions", new URLSearchParams({
       customer: input.customerId,
+      configuration: configurationId,
       return_url: stripeRedirectUrl("/dashboard")
-    })
-  );
+    }));
+  } catch {
+    throw unavailable();
+  }
 }
 
 export async function scheduleFounderSubscriptionCancellation(subscriptionId: string) {
