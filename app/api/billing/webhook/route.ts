@@ -4,7 +4,6 @@ import {
   retrieveCheckoutSession,
   getStripeSubscriptionState,
   scheduleFounderSubscriptionCancellation,
-  stripeSubscriptionToState,
   verifyStripeSignature
 } from "@/lib/stripe-rest";
 import { updateSubscriptionStatus } from "@/lib/repository";
@@ -230,22 +229,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true });
     }
 
-    const fallbackState = stripeSubscriptionToState({
-      id: object.id ?? "",
-      customer: object.customer ?? "",
-      status: event.type === "customer.subscription.deleted" ? "canceled" : object.status ?? "active",
-      current_period_end: object.current_period_end,
-      cancel_at_period_end: object.cancel_at_period_end,
-      canceled_at: object.canceled_at,
-      metadata: object.metadata,
-      items: object.items
+    // Even deletion events can arrive after a replacement subscription. Never
+    // overwrite current entitlements using the event's historical snapshot.
+    const state = await getStripeSubscriptionState({
+      stripeCustomerId: object.customer,
+      stripeSubscriptionId: object.id
     });
-    const state = event.type === "customer.subscription.deleted"
-      ? fallbackState
-      : await getStripeSubscriptionState({
-        stripeCustomerId: object.customer,
-        stripeSubscriptionId: object.id
-      });
 
     console.log("Stripe subscription event sync", {
       eventType: event.type,

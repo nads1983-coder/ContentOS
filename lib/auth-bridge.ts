@@ -16,7 +16,7 @@ export async function authBridge(request: Request, action: "login" | "signup" | 
     }
     const base = auth.options.baseURL as string;
     const founderOffer = input.founderOffer === true;
-    const requestedPlan = input.plan === "pro_creator" || input.plan === "pro_studio" ? input.plan : null;
+    const requestedPlan = input.plan === "lite" || input.plan === "pro_creator" || input.plan === "pro_studio" ? input.plan : null;
     const callbackURL = founderLoginCallbackUrl(base, requestedPlan, founderOffer);
     const [path, body] = action === "login" ? ["sign-in/email", { email, password: input.password }]
       : action === "signup" ? ["sign-up/email", { email, password: input.password, name: typeof input.fullName === "string" && input.fullName.trim() ? input.fullName.trim().slice(0, 100) : "ContentOS member", callbackURL }]

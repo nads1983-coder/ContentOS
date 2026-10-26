@@ -10,17 +10,21 @@ import {
 } from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
 
-export type BillingPlan = "pro_creator" | "pro_studio";
+export type BillingPlan = "lite" | "pro_creator" | "pro_studio";
 
 const apiVersion = "2026-02-25.clover";
 const stripeRequestTimeoutMs = 12_000;
 
 type StripeList<T> = {
   data: T[];
+  has_more?: boolean;
 };
 
 type StripePrice = {
   id: string;
+  active?: boolean;
+  type?: string;
+  recurring?: { usage_type?: string } | null;
 };
 
 type StripeSubscription = {
@@ -29,10 +33,12 @@ type StripeSubscription = {
   status: string;
   current_period_end?: number;
   cancel_at_period_end?: boolean;
+  cancel_at?: number | null;
   canceled_at?: number | null;
   metadata?: Record<string, string>;
   items?: StripeList<{
     price?: StripePrice;
+    quantity?: number;
   }>;
 };
 
@@ -64,6 +70,7 @@ export type StripeSubscriptionState = {
   stripeSubscriptionId?: string;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
+  cancelAt?: string | null;
   canceledAt?: string | null;
 };
 
@@ -72,6 +79,8 @@ export function normalizePlanId(value?: string | null): PlanId {
     ?.trim()
     .toLowerCase()
     .replace(/[_\s]+/g, "-");
+
+  if (normalized === "lite") return "lite";
 
   if (normalized === "pro-studio" || normalized === "prostudio" || normalized === "studio") {
     return "pro_studio";
@@ -118,6 +127,7 @@ function stripeRedirectUrl(path: string) {
 
 function stripePriceId(plan: BillingPlan) {
   const env = getEnv();
+  if (plan === "lite") return env.stripeLitePriceId;
   return plan === "pro_creator"
     ? env.stripeProCreatorPriceId
     : env.stripeProStudioPriceId;
@@ -205,36 +215,28 @@ async function stripeGet<T>(path: string, query?: URLSearchParams) {
 
 function planFromPriceId(priceId?: string): PlanId {
   const env = getEnv();
-
-  if (
-    priceId &&
-    (priceId === env.stripeProStudioPriceId || env.stripeLegacyProStudioPriceIds.includes(priceId))
-  ) {
-    return "pro_studio";
-  }
-
-  if (
-    priceId &&
-    (priceId === env.stripeProCreatorPriceId || env.stripeLegacyProCreatorPriceIds.includes(priceId))
-  ) {
-    return "pro_creator";
-  }
-
-  return "free";
+  if (!priceId) return "free";
+  const matches: PlanId[] = [];
+  if (priceId === env.stripeProStudioPriceId || env.stripeLegacyProStudioPriceIds.includes(priceId)) matches.push("pro_studio");
+  if (priceId === env.stripeProCreatorPriceId || env.stripeLegacyProCreatorPriceIds.includes(priceId)) matches.push("pro_creator");
+  if (priceId === env.stripeLitePriceId) matches.push("lite");
+  return matches.length === 1 ? matches[0] : "free";
 }
 
 function planFromSubscription(subscription: StripeSubscription): PlanId {
-  const metadataPlan = normalizePlanId(
-    subscription.metadata?.plan ??
-      subscription.metadata?.Plan ??
-      subscription.metadata?.PLAN
-  );
-
-  if (metadataPlan !== "free") {
-    return metadataPlan;
-  }
-
-  return planFromPriceId(subscription.items?.data[0]?.price?.id);
+  // Only the current, single configured subscription item grants a paid tier.
+  // Checkout metadata and scheduled/pending changes are not entitlement evidence.
+  const items = subscription.items;
+  if (!items || items.has_more || items.data.length !== 1) return "free";
+  const item = items.data[0];
+  const price = item.price;
+  if (!price || (item.quantity !== undefined && item.quantity !== 1) ||
+      (price.type !== undefined && price.type !== "recurring") ||
+      price.recurring === null ||
+      (price.recurring?.usage_type !== undefined && price.recurring.usage_type !== "licensed")) return "free";
+  // An archived recognised price still honours existing subscriptions; active
+  // controls new sales, not whether an existing subscription has been paid.
+  return planFromPriceId(price.id);
 }
 
 function timestampToIso(timestamp?: number | null) {
@@ -296,6 +298,10 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
   const plan = hasActiveEntitlement(status) || status === "past_due"
     ? planFromSubscription(subscription)
     : "free";
+  const scheduledCancelAt = typeof subscription.cancel_at === "number" &&
+    Number.isFinite(subscription.cancel_at) && subscription.cancel_at > 0
+    ? subscription.cancel_at
+    : null;
 
   return {
     plan,
@@ -303,7 +309,9 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
     stripeCustomerId: subscription.customer,
     stripeSubscriptionId: subscription.id,
     currentPeriodEnd: timestampToIso(subscription.current_period_end),
-    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+    // The existing profile flag represents pending cancellation, including portal cancel_at.
+    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || scheduledCancelAt),
+    cancelAt: timestampToIso(scheduledCancelAt ?? (subscription.cancel_at_period_end ? subscription.current_period_end : undefined)) ?? null,
     canceledAt: timestampToIso(subscription.canceled_at)
   };
 }
@@ -314,6 +322,7 @@ export function planHasActiveEntitlement(plan: PlanId, status?: string) {
 
 function planRank(plan: PlanId) {
   const normalized = normalizePlanId(plan);
+  if (normalized === "lite") return 0.5;
 
   if (normalized === "pro_studio") {
     return 2;
@@ -328,28 +337,11 @@ function planRank(plan: PlanId) {
 
 export function reconcileActiveSubscriptionPlan(
   state: StripeSubscriptionState,
-  storedPlan?: string | null
+  _storedPlan?: string | null
 ): StripeSubscriptionState {
-  const normalizedStatePlan = normalizePlanId(state.plan);
-  const normalizedStoredPlan = normalizePlanId(storedPlan);
-
-  // Entitlements must be based on stable internal plan IDs, not displayed prices.
-  // If Stripe confirms an active subscription but the price ID is not mapped
-  // after a pricing change, never downgrade the user to Free during sync.
-  if (
-    normalizedStatePlan === "free" &&
-    Boolean(state.stripeSubscriptionId) &&
-    hasActiveEntitlement(normalizeSubscriptionStatus(state.status))
-  ) {
-    return {
-      ...state,
-      plan: normalizedStoredPlan !== "free" ? normalizedStoredPlan : "pro_creator"
-    };
-  }
-
   return {
     ...state,
-    plan: normalizedStatePlan
+    plan: normalizePlanId(state.plan)
   };
 }
 
@@ -556,6 +548,19 @@ export async function createCheckoutSession(input: {
     throw new Error("Stripe price ID is not configured.");
   }
 
+  if (input.plan === "lite") {
+    const configured = await stripeGet<{
+      id: string; active: boolean; currency: string; unit_amount: number | null;
+      type: string; recurring?: { interval: string; interval_count: number; usage_type?: string };
+    }>(`prices/${encodeURIComponent(price)}`);
+    if (configured.id !== price || !configured.active || configured.currency !== "gbp" ||
+        configured.unit_amount !== 500 || configured.type !== "recurring" ||
+        configured.recurring?.interval !== "month" || configured.recurring.interval_count !== 1 ||
+        configured.recurring.usage_type !== "licensed") {
+      throw new Error("Lite requires an active GBP 5 monthly recurring price. Checkout is unavailable.");
+    }
+  }
+
   const body = new URLSearchParams(Object.entries({
     mode: "subscription",
     success_url: stripeRedirectUrl(input.founderOffer
@@ -725,13 +730,55 @@ export async function expireCheckoutSession(sessionId: string) {
 export async function createCustomerPortalSession(input: {
   customerId: string;
 }) {
-  return stripeRequest<{ url: string }>(
-    "billing_portal/sessions",
-    new URLSearchParams({
+  const env = getEnv();
+  const configurationId = env.stripePortalConfigurationId?.trim();
+  const prices = [env.stripeLitePriceId, env.stripeProCreatorPriceId, env.stripeProStudioPriceId];
+  const unavailable = () => new Error("Billing management is temporarily unavailable. Your subscription has not been changed.");
+  if (!configurationId || !/^bpc_[a-zA-Z0-9]+$/.test(configurationId) ||
+      prices.some(price => !price) || new Set(prices).size !== 3) throw unavailable();
+
+  try {
+    const config = await stripeGet<{
+      id: string; active: boolean; is_default: boolean; metadata?: Record<string, string>;
+      features?: {
+        subscription_update?: {
+          enabled?: boolean; default_allowed_updates?: string[];
+          products?: { product: string; prices: string[]; adjustable_quantity?: { enabled?: boolean } }[];
+          proration_behavior?: string; billing_cycle_anchor?: string; trial_update_behavior?: string;
+          schedule_at_period_end?: { conditions?: unknown[] };
+        };
+        subscription_cancel?: { enabled?: boolean; mode?: string; proration_behavior?: string };
+        payment_method_update?: { enabled?: boolean };
+        invoice_history?: { enabled?: boolean };
+      };
+    }>(`billing_portal/configurations/${configurationId}`, new URLSearchParams({
+      "expand[]": "features.subscription_update.products"
+    }));
+    const update = config.features?.subscription_update;
+    const products = update?.products;
+    const catalogue = products?.flatMap(product => product.prices);
+    // Check the expanded catalogue on every session; never use a default or stale fallback.
+    if (config.id !== configurationId || config.active !== true || config.is_default !== false ||
+        config.metadata?.application !== "getcontentos" || update?.enabled !== true ||
+        update.default_allowed_updates?.length !== 1 || update.default_allowed_updates[0] !== "price" ||
+        !Array.isArray(products) || products.length !== 3 ||
+        new Set(products.map(product => product.product)).size !== 3 ||
+        products.some(product => !product.product || product.prices?.length !== 1 || product.adjustable_quantity?.enabled !== false) ||
+        catalogue?.length !== 3 || new Set(catalogue).size !== 3 || prices.some(price => !catalogue.includes(price)) ||
+        update.proration_behavior !== "create_prorations" || update.billing_cycle_anchor !== "unchanged" ||
+        update.trial_update_behavior !== "continue_trial" || update.schedule_at_period_end?.conditions?.length !== 0 ||
+        config.features?.subscription_cancel?.enabled !== true || config.features.subscription_cancel.mode !== "at_period_end" ||
+        config.features.subscription_cancel.proration_behavior !== "none" ||
+        config.features.payment_method_update?.enabled !== true || config.features.invoice_history?.enabled !== true) throw unavailable();
+
+    return await stripeRequest<{ url: string }>("billing_portal/sessions", new URLSearchParams({
       customer: input.customerId,
+      configuration: configurationId,
       return_url: stripeRedirectUrl("/dashboard")
-    })
-  );
+    }));
+  } catch {
+    throw unavailable();
+  }
 }
 
 export async function scheduleFounderSubscriptionCancellation(subscriptionId: string) {

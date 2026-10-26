@@ -16,7 +16,7 @@ export const metadata = pageMetadata({
 
 function parseBillingPlan(value?: string | string[]): BillingPlan | null {
   const plan = Array.isArray(value) ? value[0] : value;
-  return plan === "pro_creator" || plan === "pro_studio" ? plan : null;
+  return plan === "lite" || plan === "pro_creator" || plan === "pro_studio" ? plan : null;
 }
 
 function parseFounderOffer(value?: string | string[]) {

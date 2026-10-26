@@ -11,7 +11,7 @@ export function CheckoutButton({
   covered,
   founderOffer = false
 }: {
-  plan: "pro_creator" | "pro_studio";
+  plan: "lite" | "pro_creator" | "pro_studio";
   children: React.ReactNode;
   className?: string;
   authenticated?: boolean;
@@ -166,7 +166,7 @@ export function FounderCheckoutButton({ className }: { className?: string }) {
   );
 }
 
-function setPendingCheckout(plan: "pro_creator" | "pro_studio", founderOffer = false) {
+function setPendingCheckout(plan: "lite" | "pro_creator" | "pro_studio", founderOffer = false) {
   try {
     window.localStorage.setItem("contentos_pending_checkout_plan", plan);
     window.localStorage.setItem("contentos_pending_checkout_at", new Date().toISOString());
@@ -180,10 +180,10 @@ function setPendingCheckout(plan: "pro_creator" | "pro_studio", founderOffer = f
   }
 }
 
-export function getPendingCheckout(): "pro_creator" | "pro_studio" | null {
+export function getPendingCheckout(): "lite" | "pro_creator" | "pro_studio" | null {
   try {
     const value = window.localStorage.getItem("contentos_pending_checkout_plan");
-    return value === "pro_creator" || value === "pro_studio" ? value : null;
+    return value === "lite" || value === "pro_creator" || value === "pro_studio" ? value : null;
   } catch {
     return null;
   }

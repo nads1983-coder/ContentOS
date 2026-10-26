@@ -13,7 +13,7 @@ export default function PricingPage() {
 
   return (
     <PublicPage title="Simple pricing for creators and teams">
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {plans.map((plan) => (
           <div
             key={plan.name}

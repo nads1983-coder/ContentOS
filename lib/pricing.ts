@@ -1,4 +1,4 @@
-export type BillingPlan = "pro_creator" | "pro_studio";
+export type BillingPlan = "lite" | "pro_creator" | "pro_studio";
 
 export type MarketingPlan = {
   name: string;
@@ -22,6 +22,21 @@ export const pricingPlans: MarketingPlan[] = [
     body: "For testing the workflow and creating core post formats.",
     items: ["Basic generation", "Limited monthly generations", "Core post formats"],
     cta: "Start creating"
+  },
+  {
+    name: "Lite",
+    price: "£5/month",
+    schemaPrice: "5",
+    billingPlan: "lite",
+    body: "For occasional creators who want the complete text creation workflow.",
+    items: [
+      "10 pooled text generations/refinements per month",
+      "All 14 content formats",
+      "Brand preferences and natural-language refinement",
+      "Editing, saving, copying and exporting",
+      "No AI image generation"
+    ],
+    cta: "Choose Lite"
   },
   {
     name: "Pro Creator",

@@ -146,6 +146,12 @@ const jsonLd = [
     offers: [
       {
         "@type": "Offer",
+        name: "Lite",
+        price: "5",
+        priceCurrency: "GBP"
+      },
+      {
+        "@type": "Offer",
         name: "Pro Creator",
         price: pricingPlans.find((plan) => plan.billingPlan === "pro_creator")?.schemaPrice ?? "9",
         priceCurrency: "GBP"
@@ -415,7 +421,7 @@ export default function Home() {
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Simple pricing for creators and teams
             </h2>
-            <div className="mt-8 grid items-stretch gap-4 lg:grid-cols-3">
+            <div className="mt-8 grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4">
               {pricingPlans.map((plan) => (
                 <article
                   key={plan.name}
