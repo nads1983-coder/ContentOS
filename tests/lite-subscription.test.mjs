@@ -9,11 +9,11 @@ const now = new Date("2026-10-26T12:00:00Z");
 const profile = { id: "synthetic-lite", email: "lite@example.invalid", plan: "lite", subscription_status: "active", workspace: { draft: "keep" } };
 const input = { source: "An original synthetic planning checklist", tone: "professional", sharpness: "balanced", ctaMode: "soft", presetTopic: "none", selectedTypes: ["linkedin"] };
 
-test("approved plan order, 20/50 pool and existing allowances are preserved", () => {
+test("approved plan order, 10/50 pool and existing allowances are preserved", () => {
   const { pricingPlans } = loadTs("lib/pricing.ts");
   assert.deepEqual(pricingPlans.map(p => [p.name,p.price]), [["Free","£0"],["Lite","£5/month"],["Pro Creator","£9/month"],["Pro Studio","£39/month"]]);
   const { monthlyLimitForPlan } = loadTs("lib/usage.ts");
-  assert.deepEqual(["free","lite","founder","pro_creator","pro_studio"].map(monthlyLimitForPlan), [3,20,50,50,250]);
+  assert.deepEqual(["free","lite","founder","pro_creator","pro_studio"].map(monthlyLimitForPlan), [3,10,50,50,250]);
   assert.ok(monthlyLimitForPlan("lite") < monthlyLimitForPlan("pro_creator") / 2);
   const { planCoversPlan } = loadTs("lib/plan-utils.ts");
   assert.equal(planCoversPlan("lite", "pro_creator"), false);
@@ -24,26 +24,27 @@ test("Lite has every text format, one pooled generation/refinement limit and ato
   const { contentTypes } = loadTs("lib/content-config.ts");
   assert.equal(contentTypes.length, 14);
   for (const type of contentTypes) assert.equal(generation.reserveGenerationInProfile(profile, profile.id, "request-format", {...input, selectedTypes:[type.id]}, now).result.plan, "lite");
-  const used = { ...profile, generation_usage_json: { "2026-10-01T00:00:00.000Z": 19 } };
+  const used = { ...profile, generation_usage_json: { "2026-10-01T00:00:00.000Z": 9 } };
   const refinement = { ...input, refinement: { action: "custom", instructions: "Make it shorter", section: { id:"s", type:"linkedin", title:"Post", platform:"LinkedIn", body:"A synthetic checklist", items:[] } } };
   const admitted = generation.reserveGenerationInProfile(used, profile.id, "request-refine", refinement, now);
   assert.throws(() => generation.reserveGenerationInProfile(admitted.data, profile.id, "request-next", input, now), e => e.code === "quota_exceeded");
   const result = { id:"pack", createdAt:now.toISOString(), source:input.source, tone:input.tone, selectedTypes:["linkedin"], title:"Checklist", summary:"Planning", sections:[refinement.refinement.section] };
   const saved = generation.completeGenerationInProfile(admitted.data, profile.id, "request-refine", admitted.result.fingerprint, result, now);
-  assert.equal(saved.data.generation_usage_json["2026-10-01T00:00:00.000Z"],20);
+  assert.equal(saved.data.generation_usage_json["2026-10-01T00:00:00.000Z"],10);
   assert.equal(generation.reserveGenerationInProfile(saved.data, profile.id, "request-refine", refinement, now).result.status,"replay");
   assert.equal(generation.completeGenerationInProfile(saved.data, profile.id, "request-refine", admitted.result.fingerprint, result, now).data.usage_events_json.length,1);
   assert.throws(() => generation.reserveGenerationInProfile(saved.data, profile.id, "request-extra", input, now), e => e.code === "quota_exceeded");
   assert.throws(() => generation.reserveGenerationInProfile(profile, "different-account", "request-cross", input, now), e => e.status === 403);
   assert.deepEqual(saved.data.workspace,profile.workspace);
+  assert.equal(generation.reserveGenerationInProfile(saved.data, profile.id, "request-new-month", input, new Date("2026-11-01T00:00:00Z")).result.status,"reserved");
 });
 
 test("Lite cancellation/expiry falls back to Free, upgrades retain used capacity", () => {
   for (const status of ["canceled","past_due","none","incomplete"]) assert.equal(generation.effectiveGenerationPlan({...profile, subscription_status:status},now),"free");
   assert.equal(generation.effectiveGenerationPlan({...profile, subscription_current_period_end:"2026-09-01"},now),"free");
-  const used={...profile,generation_usage_json:{"2026-10-01T00:00:00.000Z":20}};
+  const used={...profile,generation_usage_json:{"2026-10-01T00:00:00.000Z":10}};
   const upgraded=generation.reserveGenerationInProfile({...used,plan:"pro_creator"},profile.id,"request-upgrade",input,now);
-  assert.equal(upgraded.data.generation_usage_json["2026-10-01T00:00:00.000Z"],20);
+  assert.equal(upgraded.data.generation_usage_json["2026-10-01T00:00:00.000Z"],10);
   assert.throws(()=>generation.reserveGenerationInProfile({...used,generation_usage_json:{"2026-10-01T00:00:00.000Z":25}},profile.id,"request-downgrade",input,now),e=>e.code==="quota_exceeded");
 });
 

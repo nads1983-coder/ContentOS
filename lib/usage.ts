@@ -2,7 +2,7 @@ import type { UsageSummary, PlanId } from "@/types/saas";
 
 const defaultPlanLimits: Record<PlanId, number> = {
   free: 3,
-  lite: 20,
+  lite: 10,
   founder: 50,
   pro_creator: 50,
   pro_studio: 250

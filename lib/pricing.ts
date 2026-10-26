@@ -30,7 +30,7 @@ export const pricingPlans: MarketingPlan[] = [
     billingPlan: "lite",
     body: "For occasional creators who want the complete text creation workflow.",
     items: [
-      "20 pooled text generations/refinements per month",
+      "10 pooled text generations/refinements per month",
       "All 14 content formats",
       "Brand preferences and natural-language refinement",
       "Editing, saving, copying and exporting",

@@ -23,7 +23,7 @@ try{
     await page.setViewportSize({width,height:1000});
     await page.goto(`${base}/pricing`);
     assert.deepEqual(await page.locator("section h2").allTextContents(),["Free","Lite, £5/month","Pro Creator, £9/month","Pro Studio, £39/month"]);
-    assert.equal(await page.getByText("20 pooled text generations/refinements per month").count(),1);
+    assert.equal(await page.getByText("10 pooled text generations/refinements per month").count(),1);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
     await page.screenshot({path:`/tmp/contentos-lite-browser/pricing-${width}.png`,fullPage:true});
     await page.getByRole("button",{name:"Choose Lite"}).click();
@@ -31,7 +31,7 @@ try{
     assert.equal(await page.evaluate(()=>localStorage.getItem("contentos_pending_checkout_plan")),"lite");
     await page.goto(`${base}/lite-local-test`);
     await page.getByText("Lite workspace",{exact:true}).waitFor({state:"attached"});
-    await page.getByText("20 / 20 generations remaining",{exact:true}).waitFor();
+    await page.getByText("10 / 10 generations remaining",{exact:true}).waitFor();
     await page.getByLabel("Where will you publish it?").selectOption("linkedin");
     assert.equal(await page.getByLabel("Where will you publish it?").locator("option:disabled").count(),0);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
