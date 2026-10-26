@@ -14,7 +14,8 @@ import {
   planHasActiveEntitlement,
   reconcileActiveSubscriptionPlan,
   retrieveStripeSubscription,
-  stripeSubscriptionToState
+  stripeSubscriptionToState,
+  stripeCustomerIsAvailable
 } from "@/lib/stripe-rest";
 import {
   getUserProfileForUser,
@@ -199,6 +200,14 @@ export default async function DashboardPage() {
   const plan = normalizePlanId(profile?.plan);
   const status = normalizeSubscriptionStatus(profile?.subscription_status);
   const hasLifetimeAccess = hasLifetimeEntitlement(profile);
+  let billingCustomerUnavailable = false;
+  if (hasLifetimeAccess && profile?.stripe_customer_id && isStripeConfigured()) {
+    try {
+      billingCustomerUnavailable = !await stripeCustomerIsAvailable(profile.stripe_customer_id);
+    } catch {
+      // An outage must not be mistaken for a deleted billing account.
+    }
+  }
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
   const hasPendingCancellation = !hasLifetimeAccess && hasActiveSubscription && Boolean(profile?.subscription_cancel_at_period_end);
   const cancellationDate = profile?.subscription_cancel_at ?? profile?.subscription_current_period_end;
@@ -279,7 +288,8 @@ export default async function DashboardPage() {
                   {hasLifetimeAccess ? "Your lifetime Pro Studio access is active." : "Your current plan is active."}
                 </p>
               ) : null}
-              {profile?.stripe_customer_id ? <ManageBillingButton /> : null}
+              {profile?.stripe_customer_id && !billingCustomerUnavailable ? <ManageBillingButton /> : null}
+              {billingCustomerUnavailable ? <p className="mt-3 text-sm text-muted">No Stripe billing account is linked to your lifetime access. Your benefits remain active; no payment is required.</p> : null}
             </div>
           </article>
 

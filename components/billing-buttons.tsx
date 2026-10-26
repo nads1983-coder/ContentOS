@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { clsx } from "clsx";
+import { LITE_PURCHASES_SUSPENDED, LITE_SUSPENDED_MESSAGE } from "@/lib/lite-availability";
 
 export function CheckoutButton({
   plan,
@@ -20,8 +21,10 @@ export function CheckoutButton({
 }) {
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState("");
+  const suspended = plan === "lite" && LITE_PURCHASES_SUSPENDED && !covered;
 
   async function checkout() {
+    if (suspended) return;
     if (covered) {
       clearPendingCheckout();
       window.location.href = "/dashboard";
@@ -87,14 +90,15 @@ export function CheckoutButton({
       <button
         type="button"
         onClick={checkout}
-        disabled={isPending}
+        disabled={isPending || suspended}
         className={clsx(
           "min-h-11 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted",
           className
         )}
       >
-        {isPending ? "Opening checkout..." : children}
+        {suspended ? "Lite temporarily unavailable" : isPending ? "Opening checkout..." : children}
       </button>
+      {suspended ? <p className="text-xs text-muted">{LITE_SUSPENDED_MESSAGE}</p> : null}
       {error ? <p className="text-xs text-goldSoft">{error}</p> : null}
     </div>
   );

@@ -2,7 +2,7 @@ import { rejectUnsafeWrite } from "@/lib/request-security";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { getUserProfileForUser } from "@/lib/repository";
-import { createCustomerPortalSession } from "@/lib/stripe-rest";
+import { BillingCustomerUnavailableError, createCustomerPortalSession } from "@/lib/stripe-rest";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -25,7 +25,10 @@ export async function POST(request: Request) {
   try {
     const session = await createCustomerPortalSession({ customerId: profile.stripe_customer_id });
     return NextResponse.json({ url: session.url });
-  } catch {
+  } catch (error) {
+    if (error instanceof BillingCustomerUnavailableError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     return NextResponse.json(
       { error: "Billing management is temporarily unavailable. Your subscription has not been changed." },
       { status: 503 }

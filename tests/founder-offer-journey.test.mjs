@@ -708,6 +708,7 @@ function customerRecoveryTransport(options = {}) {
   vm.runInNewContext(code, { module, exports: module.exports, require: name => {
     if (name === "@/lib/env") return { getEnv: () => env, isStripeConfigured: () => true };
     if (name === "@/lib/founder-offer") return founderOfferModule;
+    if (name === "@/lib/lite-availability") return { LITE_PURCHASES_SUSPENDED: true };
     // These historical acquisition fixtures retain coverage of pre-retirement claims.
     if (name === "@/lib/founder-retirement") return { FOUNDER_OFFER_RETIRED: false };
     return require(name);

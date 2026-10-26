@@ -9,6 +9,7 @@ import {
   resolveFounderOfferAvailability
 } from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
+import { LITE_PURCHASES_SUSPENDED, LITE_SUSPENDED_MESSAGE } from "@/lib/lite-availability";
 
 export type BillingPlan = "lite" | "pro_creator" | "pro_studio";
 
@@ -47,6 +48,12 @@ type StripeCustomer = {
   email?: string;
   deleted?: boolean;
 };
+
+class StripeReadError extends Error {
+  constructor(message: string, readonly status: number, readonly code?: string) {
+    super(message);
+  }
+}
 
 type StripePromotionCode = {
   id: string;
@@ -204,10 +211,10 @@ async function stripeGet<T>(path: string, query?: URLSearchParams) {
     cache: "no-store"
   });
 
-  const data = (await response.json()) as T & { error?: { message?: string } };
+  const data = (await response.json()) as T & { error?: { message?: string; code?: string } };
 
   if (!response.ok) {
-    throw new Error(data.error?.message ?? "Stripe request failed.");
+    throw new StripeReadError(data.error?.message ?? "Stripe request failed.", response.status, data.error?.code);
   }
 
   return data;
@@ -542,6 +549,7 @@ export async function createCheckoutSession(input: {
   idempotencyKey?: string;
 }) {
   if (input.founderOffer && FOUNDER_OFFER_RETIRED) throw new FounderCheckoutError(FOUNDER_RETIRED_MESSAGE);
+  if (input.plan === "lite" && LITE_PURCHASES_SUSPENDED) throw new Error(LITE_SUSPENDED_MESSAGE);
   const price = stripePriceId(input.plan);
 
   if (!price) {
@@ -727,17 +735,38 @@ export async function expireCheckoutSession(sessionId: string) {
   );
 }
 
+export class BillingCustomerUnavailableError extends Error {
+  constructor() {
+    super("No Stripe billing account is available for this account. Your existing access has not changed. Contact support if you have a paid subscription.");
+    this.name = "BillingCustomerUnavailableError";
+  }
+}
+
+export async function stripeCustomerIsAvailable(customerId: string) {
+  try {
+    const customer = await stripeGet<StripeCustomer>(`customers/${encodeURIComponent(customerId)}`);
+    return customer.id === customerId && customer.deleted !== true;
+  } catch (error) {
+    if (error instanceof StripeReadError && error.status === 404 && error.code === "resource_missing") return false;
+    throw error;
+  }
+}
+
 export async function createCustomerPortalSession(input: {
   customerId: string;
 }) {
   const env = getEnv();
   const configurationId = env.stripePortalConfigurationId?.trim();
-  const prices = [env.stripeLitePriceId, env.stripeProCreatorPriceId, env.stripeProStudioPriceId];
+  const prices = [
+    ...(!LITE_PURCHASES_SUSPENDED ? [env.stripeLitePriceId] : []),
+    env.stripeProCreatorPriceId, env.stripeProStudioPriceId
+  ];
   const unavailable = () => new Error("Billing management is temporarily unavailable. Your subscription has not been changed.");
   if (!configurationId || !/^bpc_[a-zA-Z0-9]+$/.test(configurationId) ||
-      prices.some(price => !price) || new Set(prices).size !== 3) throw unavailable();
+      prices.some(price => !price) || new Set(prices).size !== prices.length) throw unavailable();
 
   try {
+    if (!await stripeCustomerIsAvailable(input.customerId)) throw new BillingCustomerUnavailableError();
     const config = await stripeGet<{
       id: string; active: boolean; is_default: boolean; metadata?: Record<string, string>;
       features?: {
@@ -761,10 +790,10 @@ export async function createCustomerPortalSession(input: {
     if (config.id !== configurationId || config.active !== true || config.is_default !== false ||
         config.metadata?.application !== "getcontentos" || update?.enabled !== true ||
         update.default_allowed_updates?.length !== 1 || update.default_allowed_updates[0] !== "price" ||
-        !Array.isArray(products) || products.length !== 3 ||
-        new Set(products.map(product => product.product)).size !== 3 ||
+        !Array.isArray(products) || products.length !== prices.length ||
+        new Set(products.map(product => product.product)).size !== prices.length ||
         products.some(product => !product.product || product.prices?.length !== 1 || product.adjustable_quantity?.enabled !== false) ||
-        catalogue?.length !== 3 || new Set(catalogue).size !== 3 || prices.some(price => !catalogue.includes(price)) ||
+        catalogue?.length !== prices.length || new Set(catalogue).size !== prices.length || prices.some(price => !catalogue.includes(price)) ||
         update.proration_behavior !== "create_prorations" || update.billing_cycle_anchor !== "unchanged" ||
         update.trial_update_behavior !== "continue_trial" || update.schedule_at_period_end?.conditions?.length !== 0 ||
         config.features?.subscription_cancel?.enabled !== true || config.features.subscription_cancel.mode !== "at_period_end" ||
@@ -776,7 +805,8 @@ export async function createCustomerPortalSession(input: {
       configuration: configurationId,
       return_url: stripeRedirectUrl("/dashboard")
     }));
-  } catch {
+  } catch (error) {
+    if (error instanceof BillingCustomerUnavailableError) throw error;
     throw unavailable();
   }
 }
