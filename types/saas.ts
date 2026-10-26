@@ -34,6 +34,7 @@ export type UserProfile = {
   subscription_current_period_end?: string | null;
   subscription_cancel_at_period_end?: boolean | null;
   subscription_canceled_at?: string | null;
+  subscription_cancel_at?: string | null;
   entitlement_source?: string | null;
   amount_paid?: number | null;
   onboarding_completed?: boolean;

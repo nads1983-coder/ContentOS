@@ -134,6 +134,7 @@ export default async function DashboardPage() {
         stripe_subscription_id: subscriptionState.stripeSubscriptionId,
         subscription_current_period_end: subscriptionState.currentPeriodEnd,
         subscription_cancel_at_period_end: subscriptionState.cancelAtPeriodEnd,
+        subscription_cancel_at: subscriptionState.cancelAt,
         subscription_canceled_at: subscriptionState.canceledAt
       };
     } catch {
@@ -170,11 +171,13 @@ export default async function DashboardPage() {
           stripeSubscriptionId: profile.stripe_subscription_id,
           currentPeriodEnd: subscriptionState.currentPeriodEnd,
           cancelAtPeriodEnd: subscriptionState.cancelAtPeriodEnd,
+          cancelAt: subscriptionState.cancelAt,
           canceledAt: subscriptionState.canceledAt
         }) ?? {
           ...profile,
           subscription_current_period_end: subscriptionState.currentPeriodEnd,
           subscription_cancel_at_period_end: subscriptionState.cancelAtPeriodEnd,
+          subscription_cancel_at: subscriptionState.cancelAt,
           subscription_canceled_at: subscriptionState.canceledAt
         };
       }
@@ -197,6 +200,8 @@ export default async function DashboardPage() {
   const status = normalizeSubscriptionStatus(profile?.subscription_status);
   const hasLifetimeAccess = hasLifetimeEntitlement(profile);
   const hasActiveSubscription = planHasActiveEntitlement(plan, status);
+  const hasPendingCancellation = !hasLifetimeAccess && hasActiveSubscription && Boolean(profile?.subscription_cancel_at_period_end);
+  const cancellationDate = profile?.subscription_cancel_at ?? profile?.subscription_current_period_end;
   const canUpgradeToCreator = !hasActiveSubscription || plan === "lite";
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
   let monthlyUsageCount = 0;
@@ -244,20 +249,20 @@ export default async function DashboardPage() {
             </p>
             <h2 className="mt-3 text-2xl font-semibold text-bone">{planLabels[plan]}</h2>
             <p className="mt-2 text-sm text-muted">
-              Status: {profile?.subscription_cancel_at_period_end && hasActiveSubscription
-                ? `${status} / canceling at period end`
+              Status: {hasPendingCancellation
+                ? `${status} / cancellation scheduled`
                 : status}
             </p>
             <p className="mt-2 text-sm text-muted">
               {hasLifetimeAccess
                 ? "Access: Lifetime / no expiry"
-                : `${profile?.subscription_cancel_at_period_end && hasActiveSubscription
-                  ? "Paid until"
-                  : "Renewal date"}: ${formatDate(profile?.subscription_current_period_end)}`}
+                : hasPendingCancellation
+                  ? `Paid until: ${formatDate(cancellationDate)}`
+                  : `Renewal date: ${formatDate(profile?.subscription_current_period_end)}`}
             </p>
-            {profile?.subscription_cancel_at_period_end ? (
+            {hasPendingCancellation ? (
               <p className="mt-2 rounded border border-gold/40 bg-gold/10 p-3 text-sm text-bone">
-                Cancellation pending. Access remains active until {formatDate(profile.subscription_current_period_end)}.
+                Cancellation pending. Access remains active until {formatDate(cancellationDate)}.
               </p>
             ) : null}
             <div className="mt-5 grid gap-3">

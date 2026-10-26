@@ -25,7 +25,7 @@ function array<T>(value: unknown): T[] {
   return [];
 }
 function profile(d: Document): UserProfile {
-  return { id: d.id, email: d.email, full_name: d.full_name ?? undefined, plan: normalizePlanId(d.plan), subscription_status: normalizeSubscriptionStatus(d.subscription_status), stripe_customer_id: d.stripe_customer_id ?? undefined, stripe_subscription_id: d.stripe_subscription_id ?? undefined, stripe_checkout_session_id: d.stripe_checkout_session_id ?? undefined, subscription_current_period_end: d.subscription_current_period_end ?? null, subscription_cancel_at_period_end: d.subscription_cancel_at_period_end ?? false, subscription_canceled_at: d.subscription_canceled_at ?? null, entitlement_source: d.entitlement_source ?? null, amount_paid: d.amount_paid ?? null };
+  return { id: d.id, email: d.email, full_name: d.full_name ?? undefined, plan: normalizePlanId(d.plan), subscription_status: normalizeSubscriptionStatus(d.subscription_status), stripe_customer_id: d.stripe_customer_id ?? undefined, stripe_subscription_id: d.stripe_subscription_id ?? undefined, stripe_checkout_session_id: d.stripe_checkout_session_id ?? undefined, subscription_current_period_end: d.subscription_current_period_end ?? null, subscription_cancel_at_period_end: d.subscription_cancel_at_period_end ?? false, subscription_cancel_at: d.subscription_cancel_at ?? null, subscription_canceled_at: d.subscription_canceled_at ?? null, entitlement_source: d.entitlement_source ?? null, amount_paid: d.amount_paid ?? null };
 }
 // Readers do not need replay bodies or terminal IDs. Never use this projection
 // as the basis for a write: mutate() must re-read the complete locked document.
@@ -142,6 +142,7 @@ export async function updateSubscriptionStatus(input: {
   stripeCheckoutSessionId?: string;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
+  cancelAt?: string | null;
   canceledAt?: string | null;
   entitlementSource?: string;
   amountPaid?: number;
@@ -156,7 +157,7 @@ export async function updateSubscriptionStatus(input: {
       if (hasLifetimeEntitlement(profile(d))) return { data: d, result: profile(d) };
       // A delayed deletion must not replace a newer subscription after an earlier read.
       if (input.expectedStripeSubscriptionId !== undefined && d.stripe_subscription_id !== input.expectedStripeSubscriptionId) return { data: d, result: profile(d) };
-      const data = { ...d, ...clean({ plan: normalizePlanId(input.plan), subscription_status: normalizeSubscriptionStatus(input.status), stripe_customer_id: input.stripeCustomerId, stripe_subscription_id: input.stripeSubscriptionId, stripe_checkout_session_id: input.stripeCheckoutSessionId, subscription_current_period_end: input.currentPeriodEnd ?? null, subscription_cancel_at_period_end: input.cancelAtPeriodEnd ?? false, subscription_canceled_at: input.canceledAt ?? null, entitlement_source: input.entitlementSource, amount_paid: input.amountPaid, updated_at: new Date().toISOString() }) };
+      const data = { ...d, ...clean({ plan: normalizePlanId(input.plan), subscription_status: normalizeSubscriptionStatus(input.status), stripe_customer_id: input.stripeCustomerId, stripe_subscription_id: input.stripeSubscriptionId, stripe_checkout_session_id: input.stripeCheckoutSessionId, subscription_current_period_end: input.currentPeriodEnd ?? null, subscription_cancel_at_period_end: input.cancelAtPeriodEnd ?? false, subscription_cancel_at: input.cancelAt ?? null, subscription_canceled_at: input.canceledAt ?? null, entitlement_source: input.entitlementSource, amount_paid: input.amountPaid, updated_at: new Date().toISOString() }) };
       return { data, result: profile(data) };
     }));
   }
@@ -172,6 +173,7 @@ export async function syncUserSubscriptionState(input: {
   stripeCheckoutSessionId?: string;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
+  cancelAt?: string | null;
   canceledAt?: string | null;
   entitlementSource?: string;
   amountPaid?: number;

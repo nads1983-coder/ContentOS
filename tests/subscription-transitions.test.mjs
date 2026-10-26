@@ -166,10 +166,74 @@ test("Founder and complimentary owner profiles survive paid-plan and cancellatio
     const h = harness({ ...protection, subscription_status: "active" });
     const before = structuredClone(h.data);
     for (const status of ["active", "canceled"]) {
-      const s = subscription("lite", "pro_creator", { status });
+      const s = subscription("lite", "pro_creator", { status, cancel_at: 1796083200, cancel_at_period_end: false });
       h.stripeRows = [s];
       await h.send(s, status === "active" ? "customer.subscription.updated" : "customer.subscription.deleted");
       assert.deepEqual(h.data, before);
     }
   }
 });
+
+test("captured portal cancel_at is pending without changing the authoritative billing period", () => {
+  const h = harness();
+  // Relevant fields from the real test-clock portal cancellation captured on 26 October.
+  const captured = subscription("pro_creator", "lite", {
+    status: "active", cancel_at_period_end: false, cancel_at: 1796083200,
+    current_period_end: 1796083200, canceled_at: 1793498400
+  });
+  const state = h.api.stripeSubscriptionToState(captured);
+  assert.equal(state.cancelAtPeriodEnd, true);
+  assert.equal(state.cancelAt, "2026-12-01T00:00:00.000Z");
+  assert.equal(state.currentPeriodEnd, "2026-12-01T00:00:00.000Z");
+  assert.equal(state.canceledAt, "2026-11-01T02:00:00.000Z", "canceled_at is initiation, not effective cancellation");
+  assert.equal(state.plan, "pro_creator");
+  const earlier = h.api.stripeSubscriptionToState({ ...captured, cancel_at: 1794787200 });
+  assert.equal(earlier.cancelAt, "2026-11-16T00:00:00.000Z");
+  assert.equal(earlier.currentPeriodEnd, state.currentPeriodEnd, "do not change quota windows or entitlement expiry");
+});
+
+test("period-end flag falls back to period end; explicit cancel_at takes precedence", () => {
+  const h = harness();
+  const s = subscription("lite", "pro_studio", { cancel_at_period_end: true, current_period_end: 1796083200 });
+  assert.equal(h.api.stripeSubscriptionToState(s).cancelAt, "2026-12-01T00:00:00.000Z");
+  assert.equal(h.api.stripeSubscriptionToState({ ...s, cancel_at: 1794787200 }).cancelAt, "2026-11-16T00:00:00.000Z");
+  assert.equal(h.api.stripeSubscriptionToState({ ...s, current_period_end: undefined }).cancelAt, null);
+  for (const cancel_at of [null, undefined, 0, -1, NaN, Infinity, "1796083200"]) {
+    const state = h.api.stripeSubscriptionToState({ ...s, cancel_at_period_end: false, cancel_at });
+    assert.equal(state.cancelAtPeriodEnd, false);
+    assert.equal(state.cancelAt, null);
+  }
+});
+
+for (const plan of ["lite", "pro_creator", "pro_studio"]) {
+  test(`${plan}: webhook persists both cancellation forms, reversal clears date, renewal keeps usage`, async () => {
+    const h = harness();
+    const other = structuredClone(h.rows.get("other-user"));
+    const end = 1796083200;
+    for (const extra of [
+      { cancel_at: 1794787200, cancel_at_period_end: false },
+      { cancel_at: null, cancel_at_period_end: true }
+    ]) {
+      h.stripeRows = [subscription(plan, "pro_studio", { current_period_end: end, ...extra })];
+      for (let n = 0; n < 2; n++) await h.send(h.stripeRows[0]);
+      assert.equal(h.data.plan, plan);
+      assert.equal(h.data.subscription_cancel_at_period_end, true);
+      assert.equal(h.data.subscription_cancel_at, new Date((extra.cancel_at ?? end) * 1000).toISOString());
+      assert.equal(h.data.subscription_current_period_end, new Date(end * 1000).toISOString());
+      assert.equal((await h.repository.getUserProfile("user-test")).subscription_cancel_at, h.data.subscription_cancel_at);
+      h.checkPreserved();
+    }
+    const staleCancellation = h.stripeRows[0];
+    h.stripeRows = [subscription(plan, "lite", { cancel_at: null, cancel_at_period_end: false, current_period_end: end })];
+    await h.send(staleCancellation);
+    assert.equal(h.data.subscription_cancel_at_period_end, false);
+    assert.equal(h.data.subscription_cancel_at, null);
+    h.stripeRows = [subscription(plan, "lite", { current_period_end: end + 31 * 86400 })];
+    await h.send(h.stripeRows[0], "invoice.paid");
+    assert.equal(h.data.plan, plan);
+    assert.equal(h.data.subscription_cancel_at, null);
+    assert.equal(h.data.subscription_cancel_at_period_end, false);
+    assert.deepEqual(h.rows.get("other-user"), other);
+    h.checkPreserved();
+  });
+}

@@ -33,6 +33,7 @@ type StripeSubscription = {
   status: string;
   current_period_end?: number;
   cancel_at_period_end?: boolean;
+  cancel_at?: number | null;
   canceled_at?: number | null;
   metadata?: Record<string, string>;
   items?: StripeList<{
@@ -69,6 +70,7 @@ export type StripeSubscriptionState = {
   stripeSubscriptionId?: string;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
+  cancelAt?: string | null;
   canceledAt?: string | null;
 };
 
@@ -296,6 +298,10 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
   const plan = hasActiveEntitlement(status) || status === "past_due"
     ? planFromSubscription(subscription)
     : "free";
+  const scheduledCancelAt = typeof subscription.cancel_at === "number" &&
+    Number.isFinite(subscription.cancel_at) && subscription.cancel_at > 0
+    ? subscription.cancel_at
+    : null;
 
   return {
     plan,
@@ -303,7 +309,9 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
     stripeCustomerId: subscription.customer,
     stripeSubscriptionId: subscription.id,
     currentPeriodEnd: timestampToIso(subscription.current_period_end),
-    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+    // The existing profile flag represents pending cancellation, including portal cancel_at.
+    cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || scheduledCancelAt),
+    cancelAt: timestampToIso(scheduledCancelAt ?? (subscription.cancel_at_period_end ? subscription.current_period_end : undefined)) ?? null,
     canceledAt: timestampToIso(subscription.canceled_at)
   };
 }
