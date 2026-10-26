@@ -30,6 +30,7 @@ import {
 import { getUserProfileForUser, syncUserSubscriptionState, updateSubscriptionStatus } from "@/lib/repository";
 import { hasLifetimeEntitlement } from "@/lib/entitlements";
 import { FOUNDER_OFFER_RETIRED, FOUNDER_RETIRED_MESSAGE } from "@/lib/founder-retirement";
+import { LITE_PURCHASES_SUSPENDED, LITE_SUSPENDED_MESSAGE } from "@/lib/lite-availability";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -42,6 +43,9 @@ export async function POST(request: Request) {
     plan?: BillingPlan;
     founderOffer?: boolean;
   };
+  if (plan === "lite" && LITE_PURCHASES_SUSPENDED) {
+    return NextResponse.json({ error: LITE_SUSPENDED_MESSAGE }, { status: 503 });
+  }
 
   if (founderOffer && FOUNDER_OFFER_RETIRED) {
     return NextResponse.json({ error: FOUNDER_RETIRED_MESSAGE, redirectUrl: "/founder" }, { status: 410 });

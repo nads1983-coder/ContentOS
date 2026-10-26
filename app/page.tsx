@@ -4,6 +4,7 @@ import { BrandLogo } from "@/components/brand-logo";
 import { pageMetadata } from "@/lib/metadata";
 import { pricingPlans } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site";
+import { LITE_PURCHASES_SUSPENDED } from "@/lib/lite-availability";
 
 export const metadata = pageMetadata({
   title: "ContentOS | Authority-First AI Content Workflow",
@@ -148,6 +149,7 @@ const jsonLd = [
         "@type": "Offer",
         name: "Lite",
         price: "5",
+        availability: LITE_PURCHASES_SUSPENDED ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
         priceCurrency: "GBP"
       },
       {

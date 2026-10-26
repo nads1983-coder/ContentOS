@@ -3,6 +3,8 @@ import test from "node:test";
 import { loadTs, createImageHarness } from "./image-test-helpers.mjs";
 
 const env = { stripeSecretKey: "offline", stripeLitePriceId: "price_lite", stripeProCreatorPriceId: "price_creator", stripeProStudioPriceId: "price_studio", stripeLegacyProCreatorPriceIds: [], stripeLegacyProStudioPriceIds: [], appUrl: "https://example.invalid" };
+// Preserve future enabled-price contract coverage; containment is tested separately below.
+const salesEnabled = { LITE_PURCHASES_SUSPENDED: false };
 const stripe = loadTs("lib/stripe-rest.ts", { "@/lib/env": { getEnv: () => env } });
 const generation = loadTs("lib/generation-reservation.ts");
 const now = new Date("2026-10-26T12:00:00Z");
@@ -74,12 +76,12 @@ test("Lite checkout validates GBP5 monthly price, passes account binding, fails 
   const valid={id:"price_lite",active:true,currency:"gbp",unit_amount:500,type:"recurring",recurring:{interval:"month",interval_count:1,usage_type:"licensed"}};
   for(const changes of [null,{active:false},{currency:"usd"},{unit_amount:900},{recurring:{interval:"year",interval_count:1,usage_type:"licensed"}}]){
     const calls=[];
-    const api=loadTs("lib/stripe-rest.ts",{"@/lib/env":{getEnv:()=>env,isStripeConfigured:()=>true}},new Map(),{fetch:async(url,init)=>{calls.push({url,init});return Response.json(init?.method==="POST"?{id:"cs_synthetic",url:"https://checkout.stripe.com/synthetic"}:{...valid,...changes});}});
+    const api=loadTs("lib/stripe-rest.ts",{"@/lib/lite-availability":salesEnabled,"@/lib/env":{getEnv:()=>env,isStripeConfigured:()=>true}},new Map(),{fetch:async(url,init)=>{calls.push({url,init});return Response.json(init?.method==="POST"?{id:"cs_synthetic",url:"https://checkout.stripe.com/synthetic"}:{...valid,...changes});}});
     const run=()=>api.createCheckoutSession({plan:"lite",userId:profile.id,email:profile.email});
     if(changes){await assert.rejects(run,/GBP 5/);assert.equal(calls.length,1);}
     else {await run(); const body=new URLSearchParams(calls[1].init.body); assert.equal(body.get("line_items[0][price]"),"price_lite");assert.equal(body.get("subscription_data[metadata][plan]"),"lite");assert.equal(body.get("client_reference_id"),profile.id);}
   }
-  const missing=loadTs("lib/stripe-rest.ts",{"@/lib/env":{getEnv:()=>({...env,stripeLitePriceId:""})}});
+  const missing=loadTs("lib/stripe-rest.ts",{"@/lib/lite-availability":salesEnabled,"@/lib/env":{getEnv:()=>({...env,stripeLitePriceId:""})}});
   await assert.rejects(()=>missing.createCheckoutSession({plan:"lite"}),/not configured/);
 });
 
@@ -87,6 +89,7 @@ test("Lite upgrade/downgrade uses existing billing portal, never another subscri
   for(const [current,target] of [["lite","pro_creator"],["pro_creator","lite"],["lite","lite"]]){
     let checkouts=0,portals=0;
     const {POST}=loadTs("app/api/billing/checkout/route.ts",{
+      "@/lib/lite-availability":salesEnabled,
       "server-only":{},"next/server":{NextResponse:Response},"@/lib/request-security":{rejectUnsafeWrite:()=>null},
       "@/lib/auth":{getCurrentUser:async()=>({id:profile.id,email:profile.email})},"@/lib/backend":{isDatabaseConfigured:()=>true,isAuthConfigured:()=>true},
       "@/lib/repository":{getUserProfileForUser:async()=>({...profile,plan:current}),syncUserSubscriptionState:async()=>{}},"@/lib/founder-claim-repository":{},
@@ -95,6 +98,18 @@ test("Lite upgrade/downgrade uses existing billing portal, never another subscri
     const response=await POST(new Request("https://example.invalid/api/billing/checkout",{method:"POST",body:JSON.stringify({plan:target})}));
     assert.equal(response.status,200);assert.equal(portals,1);assert.equal(checkouts,0);
   }
+});
+
+test("incident containment refuses Lite before account, Stripe or provider work", async () => {
+  const {POST}=loadTs("app/api/billing/checkout/route.ts",{
+    "server-only":{},"next/server":{NextResponse:Response},"@/lib/request-security":{rejectUnsafeWrite:()=>null},
+    "@/lib/auth":{getCurrentUser:async()=>{throw new Error("Should not access account");}},
+    "@/lib/backend":{},"@/lib/repository":{},"@/lib/founder-claim-repository":{}
+  });
+  const response=await POST(new Request("https://example.invalid/api/billing/checkout",{method:"POST",body:JSON.stringify({plan:"lite"})}));
+  assert.equal(response.status,503);
+  assert.match((await response.json()).error,/temporarily unavailable/);
+  await assert.rejects(()=>stripe.createCheckoutSession({plan:"lite"}),/temporarily unavailable/);
 });
 
 test("Lite webhook activation, upgrades, downgrades and cancellation preserve content and other accounts", async () => {
