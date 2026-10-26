@@ -17,10 +17,14 @@ const stripeRequestTimeoutMs = 12_000;
 
 type StripeList<T> = {
   data: T[];
+  has_more?: boolean;
 };
 
 type StripePrice = {
   id: string;
+  active?: boolean;
+  type?: string;
+  recurring?: { usage_type?: string } | null;
 };
 
 type StripeSubscription = {
@@ -33,6 +37,7 @@ type StripeSubscription = {
   metadata?: Record<string, string>;
   items?: StripeList<{
     price?: StripePrice;
+    quantity?: number;
   }>;
 };
 
@@ -208,42 +213,28 @@ async function stripeGet<T>(path: string, query?: URLSearchParams) {
 
 function planFromPriceId(priceId?: string): PlanId {
   const env = getEnv();
-
-  if (
-    priceId &&
-    (priceId === env.stripeProStudioPriceId || env.stripeLegacyProStudioPriceIds.includes(priceId))
-  ) {
-    return "pro_studio";
-  }
-
-  if (
-    priceId &&
-    (priceId === env.stripeProCreatorPriceId || env.stripeLegacyProCreatorPriceIds.includes(priceId))
-  ) {
-    return "pro_creator";
-  }
-
-  if (priceId && priceId === env.stripeLitePriceId) return "lite";
-  return "free";
+  if (!priceId) return "free";
+  const matches: PlanId[] = [];
+  if (priceId === env.stripeProStudioPriceId || env.stripeLegacyProStudioPriceIds.includes(priceId)) matches.push("pro_studio");
+  if (priceId === env.stripeProCreatorPriceId || env.stripeLegacyProCreatorPriceIds.includes(priceId)) matches.push("pro_creator");
+  if (priceId === env.stripeLitePriceId) matches.push("lite");
+  return matches.length === 1 ? matches[0] : "free";
 }
 
 function planFromSubscription(subscription: StripeSubscription): PlanId {
-  // Current price is authoritative after a portal upgrade/downgrade; metadata
-  // can still contain the plan selected at the original checkout.
-  const pricePlan = planFromPriceId(subscription.items?.data[0]?.price?.id);
-  const metadataPlan = normalizePlanId(
-    subscription.metadata?.plan ??
-      subscription.metadata?.Plan ??
-      subscription.metadata?.PLAN
-  );
-
-  if (pricePlan !== "free" && (pricePlan === "lite" || metadataPlan === "lite")) return pricePlan;
-
-  if (metadataPlan !== "free") {
-    return metadataPlan;
-  }
-
-  return planFromPriceId(subscription.items?.data[0]?.price?.id);
+  // Only the current, single configured subscription item grants a paid tier.
+  // Checkout metadata and scheduled/pending changes are not entitlement evidence.
+  const items = subscription.items;
+  if (!items || items.has_more || items.data.length !== 1) return "free";
+  const item = items.data[0];
+  const price = item.price;
+  if (!price || (item.quantity !== undefined && item.quantity !== 1) ||
+      (price.type !== undefined && price.type !== "recurring") ||
+      price.recurring === null ||
+      (price.recurring?.usage_type !== undefined && price.recurring.usage_type !== "licensed")) return "free";
+  // An archived recognised price still honours existing subscriptions; active
+  // controls new sales, not whether an existing subscription has been paid.
+  return planFromPriceId(price.id);
 }
 
 function timestampToIso(timestamp?: number | null) {
@@ -338,28 +329,11 @@ function planRank(plan: PlanId) {
 
 export function reconcileActiveSubscriptionPlan(
   state: StripeSubscriptionState,
-  storedPlan?: string | null
+  _storedPlan?: string | null
 ): StripeSubscriptionState {
-  const normalizedStatePlan = normalizePlanId(state.plan);
-  const normalizedStoredPlan = normalizePlanId(storedPlan);
-
-  // Entitlements must be based on stable internal plan IDs, not displayed prices.
-  // If Stripe confirms an active subscription but the price ID is not mapped
-  // after a pricing change, never downgrade the user to Free during sync.
-  if (
-    normalizedStatePlan === "free" &&
-    Boolean(state.stripeSubscriptionId) &&
-    hasActiveEntitlement(normalizeSubscriptionStatus(state.status))
-  ) {
-    return {
-      ...state,
-      plan: normalizedStoredPlan !== "free" ? normalizedStoredPlan : "pro_creator"
-    };
-  }
-
   return {
     ...state,
-    plan: normalizedStatePlan
+    plan: normalizePlanId(state.plan)
   };
 }
 
