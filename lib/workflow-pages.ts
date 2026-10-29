@@ -27,9 +27,9 @@ export type WorkflowPage = {
 export const workflowPages: WorkflowPage[] = [
   {
     slug: "linkedin-post-generator-workflow",
-    title: "LinkedIn Post Generator Workflow | ContentOS",
+    title: "AI LinkedIn Post Generator Workflow for Founders | ContentOS",
     description:
-      "A practical LinkedIn post generator workflow for turning one idea into authority-led posts, hooks, CTAs and review-ready drafts.",
+      "Learn how to use AI to turn founder notes into credible LinkedIn posts with strong hooks, useful examples, clear calls to action and a human review step.",
     h1: "LinkedIn post generator workflow",
     keyword: "LinkedIn post generator workflow",
     audience: "Founders, consultants, coaches and professionals writing authority-led LinkedIn content.",
@@ -405,7 +405,7 @@ export const workflowPages: WorkflowPage[] = [
   },
   {
     slug: "content-repurposing-workflow",
-    title: "Content Repurposing Workflow: One Idea, Multiple Formats | ContentOS",
+    title: "AI Content Repurposing: One Idea, Multiple Formats | ContentOS",
     description:
       "Use a content repurposing workflow to extract one strong source idea and rebuild it as distinct LinkedIn, newsletter, video, carousel and X assets.",
     h1: "Content repurposing workflow",
@@ -474,7 +474,7 @@ export const workflowPages: WorkflowPage[] = [
   },
   {
     slug: "ai-brand-voice-workflow",
-    title: "AI Brand Voice Workflow | ContentOS",
+    title: "AI Brand Voice Generator Workflow | ContentOS",
     description:
       "Build a practical AI brand voice workflow that keeps generated content consistent, credible and reviewable.",
     h1: "AI brand voice workflow",
