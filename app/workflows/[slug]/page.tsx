@@ -157,10 +157,10 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
       ) : null}
 
       <section className="grid gap-3 rounded border border-white/10 bg-white/[0.03] p-4">
-        <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Who this helps</h2>
+        <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Who this workflow is for</h2>
         <p>{page.audience}</p>
         <p>
-          Search intent: <span className="text-bone">{page.intent}</span>
+          Your goal: <span className="text-bone">{page.intent}</span>
         </p>
       </section>
 
@@ -237,7 +237,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
       </section>
 
       <section className="grid gap-3 rounded border border-goldSoft/30 bg-goldSoft/10 p-4">
-        <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Build the full workflow</h2>
+        <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Try this workflow with ContentOS</h2>
         <p>
           Use ContentOS to generate, repurpose, refine and save platform-ready content from one idea while keeping the
           final review in human hands.
