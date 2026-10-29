@@ -418,6 +418,45 @@ export default function Home() {
           </div>
         </section>
 
+        <section aria-labelledby="content-workflow-guides" className="px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-7xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">Explore practical workflows</p>
+            <h2 id="content-workflow-guides" className="mt-4 max-w-3xl text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
+              Turn one idea into content for every platform.
+            </h2>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
+              Start with a free, practical guide. See the prompts, examples and review steps behind repeatable content creation before trying them in ContentOS.
+            </p>
+            <div className="mt-8 grid gap-4 md:grid-cols-3">
+              {[
+                {
+                  title: "AI LinkedIn post generator workflow",
+                  description: "Shape a founder note into a useful LinkedIn post with a stronger hook, clear lesson and credible CTA.",
+                  href: "/workflows/linkedin-post-generator-workflow"
+                },
+                {
+                  title: "AI content repurposing workflow",
+                  description: "Adapt one source idea into LinkedIn posts, captions, scripts and email drafts without losing your point of view.",
+                  href: "/workflows/content-repurposing-workflow"
+                },
+                {
+                  title: "AI brand voice workflow",
+                  description: "Define a consistent tone and review checklist so AI-assisted drafts still sound like your business.",
+                  href: "/workflows/ai-brand-voice-workflow"
+                }
+              ].map((guide) => (
+                <article key={guide.href} className="flex flex-col rounded border border-white/10 bg-coal/70 p-5">
+                  <h3 className="text-lg font-semibold text-bone">{guide.title}</h3>
+                  <p className="mt-3 flex-1 text-sm leading-6 text-muted">{guide.description}</p>
+                  <Link href={guide.href} className="mt-5 inline-flex text-sm font-semibold text-goldSoft hover:text-bone">
+                    Read the workflow <span aria-hidden="true" className="ml-2">→</span>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl">
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
