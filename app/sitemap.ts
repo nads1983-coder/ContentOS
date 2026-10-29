@@ -25,7 +25,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...routes.map((route) => ({
       url: absoluteUrl(route.path || "/"),
-      lastModified: new Date(),
       changeFrequency: route.changeFrequency,
       priority: route.priority
     })),
@@ -37,7 +36,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
     ...workflowPages.map((page) => ({
       url: absoluteUrl(workflowPath(page.slug)),
-      lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.75
     }))
