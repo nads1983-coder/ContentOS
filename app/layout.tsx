@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { SiteFooter } from "@/components/site-footer";
 import { Analytics } from "@/components/analytics";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
@@ -81,6 +82,7 @@ export default function RootLayout({
       <body>
         {previewFixturesEnabled() ? <aside role="status" className="border-b border-gold/40 bg-ink px-4 py-2 text-center text-sm text-bone">Protected Preview: synthetic accounts and simulated AI only. No payments or emails.</aside> : null}
         {children}
+        <SiteFooter />
         {nadineAnalyticsSiteId && nadineAnalyticsTrackingKey ? (
           <Analytics siteId={nadineAnalyticsSiteId} trackingKey={nadineAnalyticsTrackingKey} endpoint={nadineAnalyticsEndpoint} />
         ) : null}
