@@ -16,9 +16,9 @@ export function PublicPage({
   return (
     <main className="min-h-screen overflow-x-hidden px-4 py-8 text-bone sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-4xl">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <BrandLogo />
-          <nav className="flex items-center gap-4 text-sm text-muted" aria-label="Page">
+          <nav className="grid w-full grid-cols-4 items-center gap-x-2 gap-y-2 border-t border-white/10 pt-3 text-center text-xs text-muted sm:flex sm:w-auto sm:flex-wrap sm:justify-end sm:gap-4 sm:border-0 sm:pt-0 sm:text-sm" aria-label="Page">
             <Link href="/" className="hover:text-bone">
               Home
             </Link>
