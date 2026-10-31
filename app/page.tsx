@@ -13,14 +13,6 @@ export const metadata = pageMetadata({
   path: "/"
 });
 
-const valueBullets = [
-  "Authority-led outputs",
-  "Multi-platform execution",
-  "Built-in formatter",
-  "Repurposing packs",
-  "Saved content library"
-];
-
 const benefits = [
   {
     title: "From idea to publish-ready pack",
@@ -36,60 +28,6 @@ const benefits = [
   }
 ];
 
-const features = [
-  "Authority-first post generation",
-  "One-idea repurposing engine",
-  "Platform-specific formatting",
-  "Carousel and script generation",
-  "Writing style memory",
-  "Saved content library",
-  "Clean export tools",
-  "Platform-aware optimization",
-  "Strategic prompt presets",
-  "Content refinement tools",
-  "Generate matching social visuals from your content"
-];
-
-const credibilityStats = [
-  {
-    value: "1 idea",
-    label: "becomes a structured content pack"
-  },
-  {
-    value: "7+ formats",
-    label: "ready for platform-specific publishing"
-  },
-  {
-    value: "Minutes",
-    label: "from source material to usable drafts"
-  }
-];
-
-const audienceTypes = [
-  "Founders building visible expertise",
-  "Consultants turning insight into demand",
-  "Creators publishing with more structure",
-  "Small teams keeping content consistent"
-];
-
-const testimonials = [
-  {
-    quote:
-      "ContentOS helps me get from a rough thought to something I can actually publish. It feels structured without making the writing sound generic.",
-    name: "Founder and consultant"
-  },
-  {
-    quote:
-      "The biggest shift is speed. I can create a LinkedIn post, caption, thread and email angle from one idea without rebuilding the message every time.",
-    name: "Creator operator"
-  },
-  {
-    quote:
-      "It gives my content a cleaner point of view. Less blank-page thinking, more useful drafts I can refine and ship.",
-    name: "Personal brand strategist"
-  }
-];
-
 const exampleOutputs = [
   {
     label: "Before",
@@ -101,15 +39,6 @@ const exampleOutputs = [
     title: "A publish-ready direction",
     body: "Founders do not need more content pressure. They need a repeatable way to turn clear thinking into platform-ready posts, captions, scripts and follow-up ideas."
   }
-];
-
-const creationExamples = [
-  "Authority-building LinkedIn posts",
-  "Launch and offer announcements",
-  "Educational carousels and scripts",
-  "Newsletter drafts from social ideas",
-  "Platform hashtag and keyword sets",
-  "Repurposing packs for one core message"
 ];
 
 const faqs = [
@@ -195,7 +124,7 @@ export default function Home() {
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
             <BrandLogo />
             <nav className="hidden items-center gap-6 text-sm text-muted md:flex" aria-label="Primary">
-              <a href="#features" className="transition hover:text-bone">
+              <a href="#benefits" className="transition hover:text-bone">
                 Features
               </a>
               <a href="#pricing" className="transition hover:text-bone">
@@ -228,7 +157,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="relative max-w-[100vw] overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+        <section id="demo" className="relative max-w-[100vw] overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <div className="mx-auto grid w-full max-w-7xl min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.88fr)] lg:items-center">
             <div className="min-w-0 overflow-hidden">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
@@ -240,7 +169,7 @@ export default function Home() {
                 <span className="block">content from one idea.</span>
               </h1>
               <p className="mt-6 max-w-2xl break-words text-base leading-7 text-muted sm:text-lg sm:leading-8">
-                ContentOS helps creators, founders, consultants and professionals turn rough ideas into structured posts, captions, scripts, hooks, CTAs and repurposing packs with a clearer, more authoritative style.
+                Turn a rough idea into ready-to-edit posts, captions and scripts for the platforms you use.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
@@ -250,20 +179,13 @@ export default function Home() {
                   Start creating
                 </Link>
                 <a
-                  href="#examples"
+                  href="#demo"
                   className="flex min-h-12 items-center justify-center rounded border border-white/10 bg-white/[0.04] px-5 text-sm font-semibold text-bone transition hover:border-gold/60"
                 >
                   View examples
                 </a>
               </div>
-              <ul className="mt-8 grid gap-2 text-sm leading-6 text-muted sm:grid-cols-2">
-                {valueBullets.map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-goldSoft" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+
             </div>
             <div className="w-full min-w-0 overflow-hidden rounded border border-white/10 bg-panel/76 p-3 shadow-violet backdrop-blur-xl sm:p-4">
               <div className="w-full min-w-0 overflow-hidden rounded border border-white/10 bg-ink/80 p-4 sm:p-5">
@@ -271,11 +193,11 @@ export default function Home() {
                   Content pack preview
                 </p>
                 <div className="mt-4 grid gap-3">
-                  {["LinkedIn post", "Instagram caption", "TikTok script", "X thread", "Carousel outline", "Email draft"].map((item) => (
+                  {["LinkedIn post", "Instagram caption", "TikTok script"].map((item) => (
                     <div key={item} className="min-w-0 rounded border border-white/10 bg-white/[0.04] p-3">
                       <p className="text-sm font-semibold text-bone">{item}</p>
                       <p className="mt-1 break-words text-xs leading-5 text-muted">
-                        Platform-ready content shaped from the same strategic idea.
+                        One message, tailored to this format and ready for your edits.
                       </p>
                     </div>
                   ))}
@@ -285,50 +207,13 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-white/[0.025] px-4 py-12 sm:px-6 lg:px-8">
-          <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
-                Built for modern creators and professionals
-              </p>
-              <h2 className="mt-4 max-w-2xl break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
-                Content infrastructure for people who publish expertise.
-              </h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted">
-                Use ContentOS when you need clarity, consistency and speed without turning your content into generic output. It is built for authority-led communication, not engagement bait.
-              </p>
-              <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                {credibilityStats.map((item) => (
-                  <div key={item.value} className="rounded border border-white/10 bg-coal/70 p-4">
-                    <p className="text-xl font-extrabold text-goldSoft">{item.value}</p>
-                    <p className="mt-1 text-xs leading-5 text-muted">{item.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="grid gap-3 md:grid-cols-2">
-              {audienceTypes.map((item) => (
-                <div key={item} className="rounded border border-white/10 bg-white/[0.035] p-4 text-sm font-semibold leading-6 text-bone">
-                  {item}
-                </div>
-              ))}
-              <div className="rounded border border-gold/35 bg-gold/[0.08] p-4 md:col-span-2">
-                <p className="text-sm font-semibold text-goldSoft">Platform-ready content in minutes</p>
-                <p className="mt-2 text-sm leading-6 text-muted">
-                  Move from unstructured source material to usable LinkedIn posts, Instagram captions, TikTok hooks, X threads, email drafts and carousel outlines in one workflow.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <section id="benefits" className="px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl">
             <h2 className="max-w-3xl break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               From idea to publish-ready content.
             </h2>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
-              ContentOS gives serious creators and professionals a structured path from rough thinking to clear, platform-ready execution. Less overthinking, fewer blank pages, stronger message discipline.
+              Create, tailor and save usable drafts without starting from a blank page.
             </p>
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               {benefits.map((item) => (
@@ -348,7 +233,7 @@ export default function Home() {
                 Before and after the workflow.
               </h2>
               <p className="mt-4 text-sm leading-7 text-muted">
-                ContentOS is designed to turn scattered expertise into structured communication. The output starts clearer, so editing becomes refinement instead of rescue work.
+                See how one rough thought becomes a clearer draft.
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
@@ -360,97 +245,6 @@ export default function Home() {
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">{item.label}</p>
                   <h3 className="mt-3 text-lg font-semibold text-bone">{item.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-muted">{item.body}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="features" className="px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-7xl">
-            <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
-              A structured content operating system
-            </h2>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
-              Plan, generate, format, refine, save and repurpose content without jumping between disconnected prompts, notes and drafts.
-            </p>
-            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {features.map((feature) => (
-                <div key={feature} className="flex min-h-16 items-center rounded border border-white/10 bg-white/[0.035] p-4 text-sm font-semibold leading-5 text-bone">
-                  {feature}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-7xl">
-            <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-              <div>
-                <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
-                  What users are creating.
-                </h2>
-                <p className="mt-4 text-sm leading-7 text-muted">
-                  Use the same source idea to create sharper, more consistent assets across your publishing workflow.
-                </p>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {creationExamples.map((item) => (
-                  <div key={item} className="rounded border border-white/10 bg-coal/70 p-4 text-sm font-semibold leading-6 text-bone">
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              {testimonials.map((item) => (
-                <figure key={item.name} className="rounded border border-white/10 bg-white/[0.035] p-5">
-                  <blockquote className="text-sm leading-7 text-muted">
-                    "{item.quote}"
-                  </blockquote>
-                  <figcaption className="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-goldSoft">
-                    {item.name}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section aria-labelledby="content-workflow-guides" className="px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-7xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">Explore practical workflows</p>
-            <h2 id="content-workflow-guides" className="mt-4 max-w-3xl text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
-              Turn one idea into content for every platform.
-            </h2>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
-              Start with a free, practical guide. See the prompts, examples and review steps behind repeatable content creation before trying them in ContentOS.
-            </p>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              {[
-                {
-                  title: "AI LinkedIn post generator workflow",
-                  description: "Shape a founder note into a useful LinkedIn post with a stronger hook, clear lesson and credible CTA.",
-                  href: "/workflows/linkedin-post-generator-workflow"
-                },
-                {
-                  title: "AI content repurposing workflow",
-                  description: "Adapt one source idea into LinkedIn posts, captions, scripts and email drafts without losing your point of view.",
-                  href: "/workflows/content-repurposing-workflow"
-                },
-                {
-                  title: "AI brand voice workflow",
-                  description: "Define a consistent tone and review checklist so AI-assisted drafts still sound like your business.",
-                  href: "/workflows/ai-brand-voice-workflow"
-                }
-              ].map((guide) => (
-                <article key={guide.href} className="flex flex-col rounded border border-white/10 bg-coal/70 p-5">
-                  <h3 className="text-lg font-semibold text-bone">{guide.title}</h3>
-                  <p className="mt-3 flex-1 text-sm leading-6 text-muted">{guide.description}</p>
-                  <Link href={guide.href} className="mt-5 inline-flex text-sm font-semibold text-goldSoft hover:text-bone">
-                    Read the workflow <span aria-hidden="true" className="ml-2">→</span>
-                  </Link>
                 </article>
               ))}
             </div>
@@ -524,31 +318,14 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="examples" className="px-4 py-14 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-7xl">
-            <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
-              Starter templates
-            </h2>
-            <div className="mt-8 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-              {["Launch announcement", "Educational post", "Product promotion", "Personal brand story", "Thought leadership", "Newsletter repurpose", "Short-form video script"].map((item) => (
-                <Link
-                  key={item}
-                  href={studioHref}
-                  className="rounded border border-white/10 bg-white/[0.035] p-4 text-sm font-semibold text-bone transition hover:border-violet/60"
-                >
-                  {item}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section id="faq" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-4xl">
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
-              FAQ
+              Ready to create content from your next idea?
             </h2>
-            <div className="mt-8 grid gap-4">
+            <Link href={studioHref} className="mt-5 inline-flex min-h-12 items-center justify-center rounded border border-violet/70 bg-violet px-6 text-sm font-semibold text-white hover:bg-violetDeep">Start creating</Link>
+            <h3 className="mt-10 text-lg font-semibold text-bone">Quick answers</h3>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {faqs.map((item) => (
                 <article key={item.question} className="rounded border border-white/10 bg-coal/70 p-5">
                   <h3 className="text-lg font-semibold text-bone">{item.question}</h3>
