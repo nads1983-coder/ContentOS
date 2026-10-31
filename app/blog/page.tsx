@@ -1,3 +1,4 @@
+import { absoluteUrl } from "@/lib/site";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PublicPage } from "@/components/public-page";
@@ -14,6 +15,7 @@ export const metadata = pageMetadata({
 export default function BlogIndexPage() {
   return (
     <PublicPage title="ContentOS Blog">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "CollectionPage", name: "ContentOS Blog", url: absoluteUrl("/blog"), description: "Practical articles about AI content workflows, idea repurposing, creator systems and platform-ready publishing." }).replace(/</g, "\\u003c") }} />
       <div className="grid gap-4">
         {blogPosts.map((post) => (
           <article key={post.slug} className="rounded border border-white/10 bg-white/[0.03] p-4">
