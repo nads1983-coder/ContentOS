@@ -12,10 +12,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@better-auth/core": "1.7.4",
-    "@better-auth/drizzle-adapter": "1.7.4",
+    "@better-auth/core": "1.7.7",
+    "@better-auth/drizzle-adapter": "1.7.7",
     "@vercel/functions": "3.9.7",
-    "better-auth": "1.7.4",
+    "better-auth": "1.7.7",
     "brace-expansion": "^1.1.21",
     "clsx": "latest",
     "drizzle-orm": "0.45.2",
