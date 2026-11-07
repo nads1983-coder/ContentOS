@@ -54,7 +54,7 @@ import {
 } from "@/lib/copy";
 import { formatOutputSection, formatSectionPlainText, formatSectionImageText, OutputBlock } from "@/lib/output-format";
 import { isImageContentType } from "@/lib/image-generation-contract";
-import { IMAGE_MODES, backgroundFromDesignImage, buildCreativeBrief, normaliseDesign } from "@/lib/image-design";
+import { IMAGE_MODES, backgroundFromDesignImage, buildCreativeBrief, normaliseDesign, explicitQuote, QUOTE_LIMIT } from "@/lib/image-design";
 import type { ImageMode, ImageDesign } from "@/lib/image-design";
 import { buildSocialPosterContent, renderSocialPosterSvg, svgToDataUrl } from "@/lib/social-image";
 import { boundDeviceImages, readDeviceImages, saveDeviceImages } from "@/lib/image-device-store";
@@ -1046,6 +1046,11 @@ export function StudioShell({
 
     if (!isProStudio) {
       setImageError("Image generation is available on Pro Studio.");
+      return;
+    }
+
+    if ((explicitQuote(imageInstructions)?.length ?? 0) > QUOTE_LIMIT || imageInstructions.length > 600) {
+      setImageError(`Quote or headline must be ${QUOTE_LIMIT} characters or fewer and instructions must be 600 characters or fewer. Please edit your text.`);
       return;
     }
 
@@ -2459,7 +2464,7 @@ function ImageGenerationPanel({
           <div className="mt-5 grid items-start gap-6 md:grid-cols-2">
             <div className="grid min-w-0 gap-4">
               <label className="grid gap-2 text-sm font-semibold">What image would you like?
-                <textarea rows={3} maxLength={600} value={studio.instructions} disabled={isPending} onChange={e => studio.onInstructions(e.target.value)} placeholder="Create a luxury cream-and-gold giveaway graphic for Gorl Lead." className="rounded border border-white/20 bg-ink p-3 leading-7" />
+                <textarea rows={3} value={studio.instructions} disabled={isPending} onChange={e => studio.onInstructions(e.target.value)} placeholder="Create a luxury cream-and-gold giveaway graphic for Gorl Lead." className="rounded border border-white/20 bg-ink p-3 leading-7" />
               </label>
               <ImageChoices value={studio.appearance} onChange={studio.onAppearance} format={format} onFormat={onFormatChange} disabled={isPending} brandColors={brandColors} />
               <p aria-live="polite" className="text-xs text-muted">{selectedMode === "text" ? "Text design · No AI image credit" : `${selectedMode === "mixed" ? "Text + Image" : "Image"} · 1 AI image credit on success`}</p>

@@ -7,6 +7,7 @@ import ts from "typescript";
 import { loadTs } from "./image-test-helpers.mjs";
 const { isImageContentType } = loadTs("lib/image-generation-contract.ts");
 const { boundDeviceImages } = loadTs("lib/image-device-store.ts");
+const { explicitQuote, QUOTE_LIMIT } = loadTs("lib/image-design.ts");
 
 const source = readFileSync(new URL("../components/studio-shell.tsx", import.meta.url), "utf8");
 const ast = ts.createSourceFile("studio-shell.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -31,7 +32,7 @@ function harness(overrides = {}) {
     imageMode: "auto", imageInstructions: "", imageSource: overrides.result?.source ?? "Original user source", imageIndustry: "", imagePlatform: "",
     buildSectionCopyText: (_section, options) => options.sourceText, labelForContentType: () => "LinkedIn Post",
     formatSectionImageText: (_section, source) => source, isImageContentType,
-    boundDeviceImages,
+    boundDeviceImages, explicitQuote, QUOTE_LIMIT,
     setImagePending: value => { state.pending = value; }, setImageError: value => state.errors.push(value),
     setGeneratedImages: updater => { state.images = updater(state.images); },
     fetch: async (_url, options) => {

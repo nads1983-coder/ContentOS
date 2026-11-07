@@ -26,7 +26,7 @@ test("inline and multiline image text directives stay separate and do not render
   }
   const instructions = "Cream and gold graphic. Headline: Room for ideas. Support: A quiet moment. Brand: Mira";
   const brief = buildCreativeBrief(input({ mode: "text", outputText: instructions, creativeInstructions: instructions }));
-  assert.equal(brief.design.headline, "Room for ideas");
+  assert.equal(brief.design.headline, "Room for ideas.");
   assert.equal(brief.design.body, "A quiet moment");
   assert.equal(brief.design.brand, "Mira");
   const notADirective = "Do not put a Headline: on this photograph.";
@@ -46,14 +46,15 @@ test("explicit palette and creative direction override saved preferences; no inv
   }
 });
 
-test("hashtags stay only in captions across all modes, platforms and editing", () => {
+test("captions stay out of image prompts while explicit headline edits remain exact", () => {
   for (const mode of ["auto", "image", "text", "mixed"]) for (const platform of ["LinkedIn", "Instagram", "Facebook", "TikTok", "X", "Pinterest", "YouTube"]) {
     const source = "A calmer start. #Marketing ＃日本語\n\nOne clear idea. #Idea";
     const value = input({ mode, platform, outputText: source, creativeInstructions: "Headline: A fresh start #Heading", brandContext: { brandName: "Mira #brand", industry: "#Industry Leadership" } });
     const brief = buildCreativeBrief(value);
     assert.doesNotMatch(brief.prompt, /[#＃][\p{L}\p{N}_]+/u);
     const edited = normaliseDesign({ ...brief.design, headline: "Better #headline", body: "Clear #body" });
-    assert.doesNotMatch(visible(renderDesignSvg(edited,1080,1350)), /[#＃][\p{L}\p{N}_]+/u);
+    if (edited.mode !== "image") assert.match(visible(renderDesignSvg(edited,1080,1350)), /Better\s+#headline/);
+    assert.doesNotMatch(visible(renderDesignSvg(edited,1080,1350)), /#body/);
     assert.equal(value.outputText, source);
   }
   assert.throws(() => input({ outputText: "Hashtags: #Only #Tags" }), /Add a message/);

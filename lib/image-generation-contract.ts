@@ -1,5 +1,5 @@
 import type { SocialImageFormat, SocialImageStyle, SocialImageTemplate } from "@/lib/social-image";
-import { IMAGE_MODES, normaliseDesign, imageCopy } from "@/lib/image-design";
+import { IMAGE_MODES, normaliseDesign, imageCopy, explicitQuote, invalidQuoteCharacters, QUOTE_LIMIT } from "@/lib/image-design";
 import type { ImageMode, ImageDesign } from "@/lib/image-design";
 import { parseImageAppearance, type ImageAppearance } from "@/lib/image-appearance";
 
@@ -81,6 +81,8 @@ export function validateImageRequestId(value: unknown): string {
 }
 export function normalizeImageRequest(value: unknown): ImageGenerationInput {
   if (!isImageRecord(value)) throw new ImageGenerationError("Invalid image request.");
+  const quote = typeof value.creativeInstructions === "string" ? explicitQuote(value.creativeInstructions) : undefined;
+  if (quote && (quote.length > QUOTE_LIMIT || invalidQuoteCharacters(quote))) throw new ImageGenerationError(`Quote or headline must be ${QUOTE_LIMIT} characters or fewer and contain valid text. Please edit it.`, 400, "invalid_quote");
   const brand = value.brandContext ?? {};
   if (!isImageRecord(brand)) throw new ImageGenerationError("Invalid brand context.");
   const contentType = text(value.contentType, 80);

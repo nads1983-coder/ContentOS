@@ -74,8 +74,16 @@ try{
   assert.equal(payloads[0].mode,"text");assert.match(payloads[0].outputText,/#Beauty/);
   assert.equal(payloads[0].platform,"Pinterest");assert.equal(payloads[0].contentType,"Pinterest");
   assert.deepEqual(payloads[0].appearance,{type:"graphic",style:"luxury",colours:["#176d51","#ffffff"]});
-  await dialog.getByLabel("Headline",{exact:true}).fill("Space to slow down");
+  const longQuote="A".repeat(121);
+  await dialog.getByLabel("Headline",{exact:true}).fill(longQuote);
+  assert.equal(await dialog.getByLabel("Headline",{exact:true}).inputValue(),longQuote);
+  assert.equal(await dialog.getByRole("button",{name:"Apply edits",exact:true}).isDisabled(),true);
+  await dialog.getByRole("alert").getByText(/120 characters or fewer/).waitFor();
+  const exactQuote="“Don’t erase #1: café & <hope>.”";
+  await dialog.getByLabel("Headline",{exact:true}).fill(exactQuote);
   await dialog.getByRole("button",{name:"Apply edits",exact:true}).click();
+  const editedSvg=decodeURIComponent((await dialog.locator('img[alt^="Generated visual"]').getAttribute("src")).split(",").slice(1).join(","));
+  assert.match(editedSvg, /café &amp; &lt;hope&gt;/);
   assert.equal(payloads.length,1,"Edits must not dispatch generation");
   await dialog.getByRole("button",{name:"Undo design edit"}).click();
   assert.equal(await dialog.getByLabel("Headline",{exact:true}).inputValue(),"A quiet ritual");

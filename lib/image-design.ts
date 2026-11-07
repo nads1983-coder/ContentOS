@@ -1,6 +1,7 @@
 import type { BuildPosterInput } from "@/lib/social-image";
 import { brandContextScope, styleContext } from "@/lib/brand-context";
 import { imageCompositionPrompt } from "@/lib/image-composition";
+import { selectSourceQuote } from "@/lib/quote-selection";
 
 export const IMAGE_MODES = ["auto", "image", "text", "mixed"] as const;
 export type ImageMode = typeof IMAGE_MODES[number];
@@ -42,6 +43,14 @@ function directive(value: string, label: string): string | undefined {
   const nextLabel = "headline|quote|support(?:ing text)?|brand(?: name)?";
   return value.match(new RegExp(`(?:^|\\n|[.!?;]\\s+)\\s*(?:${label})\\s*:\\s*([^\\n]+?)(?=\\n|[.!?;]\\s+(?:${nextLabel})\\s*:|$)`, "i"))?.[1]?.replace(/^["“]|["”]$/g, "");
 }
+export const QUOTE_LIMIT = 120;
+export function invalidQuoteCharacters(value: string): boolean {
+  return [...value].some(char => { const code = char.codePointAt(0)!; return (code < 32 && code !== 9 && code !== 10 && code !== 13) || (code >= 0xd800 && code <= 0xdfff) || code === 0xfffe || code === 0xffff; });
+}
+export function explicitQuote(value: string): string | undefined {
+  const nextLabel = "headline|quote|support(?:ing text)?|brand(?: name)?";
+  return value.match(new RegExp(`(?:^|\\n|[.!?;]\\s+)\\s*(?:headline|quote)\\s*:\\s*([^\\n]+?)(?=\\n|(?<=[.!?;])\\s+(?:${nextLabel})\\s*:|$)`, "i"))?.[1]?.trim();
+}
 
 export function buildCreativeBrief(input: BuildPosterInput) {
   const instructions = imageCopy(input.creativeInstructions ?? "", 600);
@@ -69,7 +78,7 @@ export function buildCreativeBrief(input: BuildPosterInput) {
   const explicitPalette = palette(input.creativeInstructions ?? "");
   const selected = appearance?.colours.length ? appearance.colours : explicitPalette.length ? explicitPalette : palette(brand.brandColors ?? "");
   const paragraphs = source.split(/\n+/).map(s => s.trim()).filter(s => s && !/^(?:cta|call to action)\s*:/i.test(s));
-  const headline = shorten(directive(instructions, "headline|quote") ?? (instructionOnly ? "" : paragraphs[0]?.split(/(?<=[.!?])\s+/)[0]) ?? "", 68);
+  const headline = explicitQuote(input.creativeInstructions ?? "") ?? (instructionOnly ? "" : selectSourceQuote(input.outputText));
   const supporting = directive(instructions, "support(?:ing text)?") ?? (instructionOnly ? "" : paragraphs.slice(1).find(s => !s.includes(headline))) ?? "";
   const defaults = { minimal: ["#ffffff", "#111116"], premium: ["#ffffff", "#245c4a"], corporate: ["#ffffff", "#2356bc"],
     bold: ["#f1d34f", "#111116"], dark: ["#111116", "#a88ee5"], modern: ["#ffffff", "#087e83"] }[input.style];
@@ -104,10 +113,10 @@ export function normaliseDesign(value: unknown): ImageDesign {
   const v = value as Record<string, unknown>;
   if (!["image", "text", "mixed"].includes(String(v.mode)) || !["left", "center"].includes(String(v.align)) ||
       !["sans", "editorial"].includes(String(v.font)) || ![v.background, v.accent].every(c => typeof c === "string" && /^#[a-f0-9]{6}$/i.test(c)) ||
-      ![v.headline, v.body, v.brand].every(c => typeof c === "string" && c.length <= 200)) throw new Error("Invalid design");
+      ![v.headline, v.body, v.brand].every(c => typeof c === "string" && c.length <= 200) || (v.headline as string).length > QUOTE_LIMIT || invalidQuoteCharacters(v.headline as string)) throw new Error("Invalid design");
   return { mode: v.mode as ImageDesign["mode"], align: v.align as ImageDesign["align"], font: v.font as ImageDesign["font"],
     background: v.background as string, accent: v.accent as string,
-    headline: shorten(v.headline as string, 68), body: shorten(v.body as string, 120), brand: shorten(v.brand as string, 36) };
+    headline: v.headline as string, body: shorten(v.body as string, 120), brand: shorten(v.brand as string, 36) };
 }
 export function foreground(background: string): string {
   const rgb = background.slice(1).match(/../g)!.map(c => parseInt(c, 16) / 255).map(c => c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4);
