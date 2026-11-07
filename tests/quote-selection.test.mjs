@@ -32,6 +32,21 @@ test('long explicit quotations are rejected without clipping input', () => {
   assert.equal(input.creativeInstructions, `Quote: ${quote}`);
 });
 
+test('quote blocks and their accents stay within the canvas across formats and lengths', () => {
+  for (const [width, height] of [[1080,1080],[1080,1350],[1536,864],[1080,1920]]) {
+    for (const headline of ['Rest matters.', 'A thoughtful idea can make a meaningful difference.', 'A meaningful thought '.repeat(5).trim()]) {
+      const design = buildCreativeBrief(normalizeImageRequest(imageInput({ brandContext: {}, mode: 'text', outputText: 'A post.', creativeInstructions: `Quote: ${headline}` }))).design;
+      const svg = renderDesignSvg(design,width,height);
+      const match = svg.match(/<tspan x="([\d.]+)" y="([\d.]+)"/);
+      assert.ok(match);
+      assert.ok(Number(match[1]) >= width * .08 && Number(match[1]) < width / 2);
+      assert.ok(Number(match[2]) > height * .2 && Number(match[2]) < height * .8);
+      const accent = svg.match(/<rect x="([\d.]+)" y="([\d.]+)" width="[\d.]+" height="6"/);
+      assert.ok(accent && Number(accent[2]) < Number(match[2]));
+    }
+  }
+});
+
 test('explicit quote and headline take precedence over automatic selection', () => {
   for (const label of ['Quote', 'Headline']) {
     const brief = buildCreativeBrief(normalizeImageRequest(imageInput({ brandContext: {}, outputText: 'Consistent practice builds creative confidence.', creativeInstructions: `${label}: A fresh perspective` })));

@@ -146,19 +146,24 @@ export function renderDesignSvg(design: ImageDesign, width: number, height: numb
   const photo = backgroundDataUrl && /^data:image\/png;base64,[a-z0-9+/]+=*$/i.test(backgroundDataUrl) ? backgroundDataUrl : undefined;
   const margin = Math.ceil(width * .08), textWidth = width - margin * 2;
   const panelY = d.mode === "mixed" && photo ? Math.round(height * .52) : 0, panelHeight = height - panelY;
-  const x = d.align === "center" ? width / 2 : margin, color = foreground(d.background);
+  const color = foreground(d.background);
   const headline = fittedLines(d.headline, textWidth, Math.min(width * (d.mode === "text" ? .09 : .071), panelHeight * .115), 3);
   const body = fittedLines(d.body, textWidth, Math.min(width * .032, panelHeight * .064), 3);
   const brand = fittedLines(d.brand, textWidth, Math.min(26, width * .022), 1);
   const blockHeight = headline.lines.length * headline.size * 1.2 + body.lines.length * body.size * 1.2 + panelHeight * .05;
-  const headY = panelY + Math.max(panelHeight * .16, (panelHeight - blockHeight) * .43);
+  const estimateWidth = (lines: string[], size: number) => Math.max(0, ...lines.map(line => [...line].reduce((total, char) => total + (char === " " ? .35 : /[ilI.,:;!'|]/.test(char) ? .4 : /[MW@%&]/.test(char) ? 1.15 : /[a-z0-9]/i.test(char) ? .8 : 1.25), 0) * size));
+  const blockWidth = Math.max(estimateWidth(headline.lines, headline.size), estimateWidth(body.lines, body.size));
+  const x = d.align === "center" ? width / 2 : d.mode === "text" ? Math.max(margin, (width - blockWidth) / 2) : margin;
+  const headY = d.mode === "text" ? Math.max(panelHeight * .16, (panelHeight - blockHeight) / 2 + headline.size) : panelY + Math.max(panelHeight * .16, (panelHeight - blockHeight) * .43);
   const bodyY = headY + headline.lines.length * headline.size * 1.2 + panelHeight * .05;
+  const accentX = d.mode === "text" ? (d.align === "center" ? width / 2 - width * .04 : x) : margin;
+  const accentY = d.mode === "text" ? Math.max(panelHeight * .08, headY - headline.size * 1.5) : panelY + panelHeight * .08;
   const text = (lines: string[], y: number, size: number, font: string, weight: number) => `<text fill="${color}" font-family="${font}" font-size="${size}" font-weight="${weight}" text-anchor="${d.align === "center" ? "middle" : "start"}">${lines.map((l, i) => `<tspan x="${x}" y="${y + i * size * 1.2}">${escapeXml(l)}</tspan>`).join("")}</text>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeXml(d.mode === "image" ? "Original social visual" : d.headline)}">
     <rect width="${width}" height="${height}" fill="${d.background}"/>
     ${photo && d.mode !== "text" ? `<image href="${photo}" width="${width}" height="${d.mode === "mixed" ? panelY : height}" preserveAspectRatio="xMidYMid slice"/>` : ""}
     ${d.mode !== "image" ? `<rect y="${panelY}" width="${width}" height="${panelHeight}" fill="${d.background}"/>
-    <rect x="${margin}" y="${panelY + panelHeight * .08}" width="${width * .08}" height="6" fill="${d.accent}"/>
+    <rect x="${accentX}" y="${accentY}" width="${width * .08}" height="6" fill="${d.accent}"/>
     ${text(headline.lines, headY, headline.size, d.font === "editorial" ? "Georgia, serif" : "Arial, sans-serif", 700)}
     ${text(body.lines, bodyY, body.size, "Arial, sans-serif", 400)}
     <text x="${x}" y="${height - panelHeight * .09}" fill="${color}" font-family="Arial, sans-serif" font-size="${brand.size}" text-anchor="${d.align === "center" ? "middle" : "start"}">${escapeXml(d.brand)}</text>` : ""}
