@@ -53,3 +53,15 @@ test('explicit quote and headline take precedence over automatic selection', () 
     assert.equal(brief.design.headline, 'A fresh perspective');
   }
 });
+
+test('text mode uses plain description and preserves explicit and source precedence', () => {
+  const make = (outputText, creativeInstructions) => buildCreativeBrief(normalizeImageRequest(imageInput({ brandContext: {}, mode: 'text', outputText, creativeInstructions })));
+  const plain = '“I can.” Café & hope!';
+  const result = make(plain, plain);
+  assert.equal(result.design.headline, plain);
+  assert.equal(result.design.body, '');
+  assert.equal(make('Source text wins.', 'A different description.').design.headline, 'Source text wins.');
+  assert.equal(make('Source text wins.', 'Quote: “My exact words.”').design.headline, '“My exact words.”');
+  const long = 'x'.repeat(121);
+  assert.throws(() => normalizeImageRequest(imageInput({brandContext:{},mode:'text',outputText:long,creativeInstructions:long})), /120 characters or fewer/);
+});

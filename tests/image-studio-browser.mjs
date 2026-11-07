@@ -92,6 +92,13 @@ try{
   await downloaded.saveAs(`${artifacts}/text-design.png`);
   const png=await readFile(`${artifacts}/text-design.png`);
   assert.deepEqual([png.readUInt32BE(16),png.readUInt32BE(20)],[1080,1080]);
+  await dialog.getByLabel("Image content").fill("");
+  await dialog.getByLabel("Text for your graphic").fill("“Small steps matter.”");
+  await dialog.getByRole("button",{name:"Regenerate image"}).click();
+  await dialog.getByLabel("Headline",{exact:true}).waitFor();
+  await page.waitForFunction(()=>!document.querySelector('dialog button[disabled] svg.animate-spin'));
+  assert.equal(await dialog.getByLabel("Headline",{exact:true}).inputValue(),"“Small steps matter.”");
+  await dialog.getByLabel("Image content").fill("A quiet ritual.\n\nMake space for a slower morning. #Beauty #Care");
   for(const width of [1440,768,390]){
     await page.setViewportSize({width,height:1000});
     await dialog.screenshot({path:`${artifacts}/studio-${width}.png`});
@@ -100,7 +107,7 @@ try{
   }
   await page.setViewportSize({width:1440,height:1100});
   for(const [mode,label] of [["image","Image"],["mixed","Text + Image"],["auto","Auto"]]){
-    await dialog.getByLabel("What image would you like?").fill(mode==="image"?"Editorial photography of a quiet morning, no text":"Bold technology announcement in white and teal");
+    await dialog.getByLabel("What image would you like?").or(dialog.getByLabel("Text for your graphic")).fill(mode==="image"?"Editorial photography of a quiet morning, no text":"Bold technology announcement in white and teal");
     await dialog.getByRole("button",{name:label,exact:true}).click();
     await dialog.getByRole("button",{name:"Regenerate image"}).click();
     await page.waitForFunction(()=>!document.querySelector('dialog button[disabled] svg.animate-spin'));

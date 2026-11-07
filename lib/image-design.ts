@@ -51,6 +51,17 @@ export function explicitQuote(value: string): string | undefined {
   const nextLabel = "headline|quote|support(?:ing text)?|brand(?: name)?";
   return value.match(new RegExp(`(?:^|\\n|[.!?;]\\s+)\\s*(?:headline|quote)\\s*:\\s*([^\\n]+?)(?=\\n|(?<=[.!?;])\\s+(?:${nextLabel})\\s*:|$)`, "i"))?.[1]?.trim();
 }
+export function resolveTextHeadline(source: string, instructions: string, mode?: ImageMode): string {
+  const explicit = explicitQuote(instructions);
+  if (explicit !== undefined) return explicit;
+  const content = source.trim(), idea = instructions.trim();
+  if (mode === "text") {
+    if (!content || content === idea) return idea;
+    if (!/[\r\n]/.test(content) && (content.length <= QUOTE_LIMIT || !selectSourceQuote(content))) return content;
+    return selectSourceQuote(content);
+  }
+  return content === idea && idea ? "" : selectSourceQuote(source);
+}
 
 export function buildCreativeBrief(input: BuildPosterInput) {
   const instructions = imageCopy(input.creativeInstructions ?? "", 600);
@@ -78,7 +89,7 @@ export function buildCreativeBrief(input: BuildPosterInput) {
   const explicitPalette = palette(input.creativeInstructions ?? "");
   const selected = appearance?.colours.length ? appearance.colours : explicitPalette.length ? explicitPalette : palette(brand.brandColors ?? "");
   const paragraphs = source.split(/\n+/).map(s => s.trim()).filter(s => s && !/^(?:cta|call to action)\s*:/i.test(s));
-  const headline = explicitQuote(input.creativeInstructions ?? "") ?? (instructionOnly ? "" : selectSourceQuote(input.outputText));
+  const headline = resolveTextHeadline(input.outputText, input.creativeInstructions ?? "", input.mode);
   const supporting = directive(instructions, "support(?:ing text)?") ?? (instructionOnly ? "" : paragraphs.slice(1).find(s => !s.includes(headline))) ?? "";
   const defaults = { minimal: ["#ffffff", "#111116"], premium: ["#ffffff", "#245c4a"], corporate: ["#ffffff", "#2356bc"],
     bold: ["#f1d34f", "#111116"], dark: ["#111116", "#a88ee5"], modern: ["#ffffff", "#087e83"] }[input.style];

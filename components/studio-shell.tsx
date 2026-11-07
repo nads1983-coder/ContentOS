@@ -2463,9 +2463,10 @@ function ImageGenerationPanel({
         ) : (
           <div className="mt-5 grid items-start gap-6 md:grid-cols-2">
             <div className="grid min-w-0 gap-4">
-              <label className="grid gap-2 text-sm font-semibold">What image would you like?
+              <label className="grid gap-2 text-sm font-semibold">{studio.mode === "text" ? "Text for your graphic" : "What image would you like?"}
                 <textarea rows={3} value={studio.instructions} disabled={isPending} onChange={e => studio.onInstructions(e.target.value)} placeholder="Create a luxury cream-and-gold giveaway graphic for Gorl Lead." className="rounded border border-white/20 bg-ink p-3 leading-7" />
               </label>
+              {studio.mode === "text" && !studio.instructions.trim() && !studio.source.trim() && <p className="text-sm text-muted">Add text for your graphic to continue.</p>}
               <ImageChoices value={studio.appearance} onChange={studio.onAppearance} format={format} onFormat={onFormatChange} disabled={isPending} brandColors={brandColors} />
               <p aria-live="polite" className="text-xs text-muted">{selectedMode === "text" ? "Text design · No AI image credit" : `${selectedMode === "mixed" ? "Text + Image" : "Image"} · 1 AI image credit on success`}</p>
               <details className="border-y border-white/10 py-3">

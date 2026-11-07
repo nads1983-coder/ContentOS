@@ -142,11 +142,12 @@ test("device design retention is bounded, latest first, and leaves originals int
   assert.equal(Object.keys(saved).length,8);assert.ok(saved["11"]);assert.equal(saved["0"],undefined);assert.equal(Object.keys(images).length,12);
 });
 
-test("instruction-only requests create imagery, not a graphic of publisher instructions",async()=>{
+test("instruction-only auto mode creates imagery while explicit text mode displays the supplied text",async()=>{
   const words="Create a luxury beauty graphic using cream and gold.";
   const brief=buildCreativeBrief(input({outputText:words,creativeInstructions:words}));
   assert.equal(brief.design.mode,"image");assert.equal(brief.design.headline,"");assert.equal(brief.design.body,"");
   const h=createImageHarness();
   const response=await h.post(imageInput({mode:"text",outputText:words,creativeInstructions:words}));
-  assert.equal(response.response.status,400);assert.equal(h.calls.includes("provider"),false);
+  assert.equal(response.response.status,200);assert.equal(h.calls.includes("provider"),false);
+  assert.equal(response.body.design.headline,words);
 });
