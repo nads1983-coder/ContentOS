@@ -39,7 +39,7 @@ const socialThemes: Record<HashtagPlatform, string[]> = {
   twitter: ["ContentStrategy", "SocialMediaMarketing"],
   youtubeShorts: ["YouTubeShortsTips", "ContentStrategy", "SocialMediaMarketing"]
 };
-const canonical = new Map(["CareerChange", "CareerTransition", "BuildingConfidence", "SmallBusiness", "ProfessionalAchievement", "ProductAnnouncement", "Consistency", "ShowingUp", "LinkedInPresence", "LinkedInGrowth", "PersonalBranding", "ProfessionalGrowth", "ProfessionalDevelopment", "SkillDevelopment", "Learning", "Coding", "Programming", "SoftwareDevelopment", "Productivity", "TimeManagement", "Creativity", "CreativeProcess"].map(tag => [hashtagKey(tag), `#${tag}`]));
+const canonical = new Map(["Entrepreneurship", "StartingABusiness", "SmallBusinessJourney", "Leadership", "PeopleManagement", "Confidence", "PersonalDevelopment", "BusinessGrowth", "CustomerRelationships", "CareerChange", "CareerTransition", "BuildingConfidence", "SmallBusiness", "ProfessionalAchievement", "ProductAnnouncement", "Consistency", "ShowingUp", "LinkedInPresence", "LinkedInGrowth", "PersonalBranding", "ProfessionalGrowth", "ProfessionalDevelopment", "SkillDevelopment", "Learning", "Coding", "Programming", "SoftwareDevelopment", "Productivity", "TimeManagement", "Creativity", "CreativeProcess"].map(tag => [hashtagKey(tag), `#${tag}`]));
 
 export function buildHashtagPolicy(request: HashtagRequest, captionText: string[] = []) {
   const scope = brandContextScope(request);
@@ -85,16 +85,16 @@ export function buildHashtagPolicy(request: HashtagRequest, captionText: string[
   // A source word sequence is evidence of relevance, not proof of a usable tag.
   // Preserve explicitly requested tags, but reject numerical and grammatical fragments.
   const explicitKeys = new Set([...explicit].map(hashtagKey));
+  const weakTags = new Set(["business", "career", "ownbusiness", "strongcustomer", "proud", "starting", "finallystarting", "myself", "worried", "thinking", "samejob"]);
   const fragment = (tag: string) => {
     const parts = tag.replace(/^#/, "").replace(/([a-z\d])([A-Z])/g, "$1 $2").toLowerCase().split(/[_\s]+/).filter(Boolean);
-    return /\d/.test(tag) || /againafter/i.test(hashtagKey(tag)) || parts.some(part => /^(?:after|again|before|because|but|the|and|or|same|about|with|without|from|into|for|in|of|to)$/.test(part));
+    return weakTags.has(hashtagKey(tag)) || /\d/.test(tag) || /againafter/i.test(hashtagKey(tag)) || parts.some(part => /^(?:after|again|before|because|but|the|and|or|same|about|with|without|from|into|for|in|of|to|my|myself|been|takes)$/.test(part));
   };
   const trustedThemes = new Set([...concepts, ...Object.values(socialThemes).flat().map(tag => `#${tag}`)].map(hashtagKey));
   const accepts = (tag: string) => enabled && (explicitKeys.has(hashtagKey(tag)) || trustedThemes.has(hashtagKey(tag)) || !fragment(tag)) && !generic.has(hashtagKey(tag)) && (allowed.has(hashtagKey(tag)) || grounded.accepts(tag)) && !denied.has(hashtagKey(tag)) &&
     (scope.identity || !request.brandName || hashtagKey(tag) !== hashtagKey(request.brandName));
   const suggestions = (platform: HashtagPlatform) => [...new Set([
-    ...(socialTopic && platforms.includes(platform) ? socialThemes[platform].map(tag => `#${tag}`) : []), ...concepts, ...explicit,
-    ...(!socialTopic && concepts.size === 0 && explicit.size === 0 ? grounded.suggestions : [])
+    ...(socialTopic && platforms.includes(platform) ? socialThemes[platform].map(tag => `#${tag}`) : []), ...concepts, ...explicit
   ])].filter(accepts);
   const existingPreference = request.refinement?.section && hashtagTokens([request.refinement.section.body, ...request.refinement.section.items].join("\n")).some(accepts);
   const instructions = [request.refinement?.instructions, request.source, request.writingStyle].filter((v): v is string => Boolean(v));

@@ -8,6 +8,15 @@ export function conceptualHashtags(source: string): string[] {
   const consistent = /\b(?:consisten(?:t|cy|tly)|regular(?:ly)?|showing up|daily practice|steady effort)\b/.test(text);
   const activity = /\b(?:post(?:s|ing)?|activ(?:e|ity)|creat(?:e|ing)|sharing|showing up|writing|presence|practice)\b/.test(text);
   const professional = /\b(?:linkedin|career|professional|workplace)\b/.test(text);
+  // Activate topic suggestions only from affirmative brief language.
+  const affirmative = !/\b(?:not|never|no longer|do not|don't|avoid)\b/.test(text);
+  if (affirmative && /\b(?:start(?:ing|ed)?|launch(?:ing|ed)?|found(?:ing|ed)?)\b/.test(text) && /\b(?:business|company)\b/.test(text)) add("entrepreneurship", "startingabusiness", "smallbusinessjourney");
+  if (affirmative && /\b(?:leader|leadership|manag(?:er|ement|ing))\b/.test(text)) {
+    add("leadership");
+    if (/\b(?:team|people|employees|staff)\b/.test(text)) add("peoplemanagement");
+  }
+  if (affirmative && /\bconfidence\b/.test(text)) add("confidence", "personaldevelopment");
+  if (affirmative && /\b(?:business|company)\b/.test(text) && /\b(?:growth|grow(?:ing)?|building)\b/.test(text) && /\bcustomer relationships?\b/.test(text)) add("businessgrowth", "customerrelationships");
   if (/\b(?:career|careers)\b/.test(text) && /\b(?:chang(?:e|ing)|transition|switch(?:ing)?|new career)\b/.test(text)) add("careerchange", "careertransition");
   if (/\bconfidence\b/.test(text) && /\b(?:build(?:ing)?|grow(?:ing)?|develop(?:ing)?)\b/.test(text)) add("buildingconfidence");
   if (/\bsmall business\b/.test(text)) add("smallbusiness");

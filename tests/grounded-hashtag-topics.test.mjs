@@ -33,15 +33,16 @@ test('three reported topics: automatic caption allocation, distinct extras, no m
  }
 });
 
-test('unfamiliar topics have lexical fallback without a topic dictionary or model tags',()=>{
+test('unfamiliar topics accept grounded model tags without manufacturing fallback tags',()=>{
  for(const [source,body,tags] of [
   ['Why I enjoy coastal birdwatching.','Coastal birdwatching is a welcome pause.',['#CoastalBirdwatching','#Birdwatching']],
   ['Write about restoring vintage radios.','Vintage radios invite a closer look.',['#VintageRadios','#Radios']],
   ['I enjoy miniature railway photography.','Miniature railway photography is a different perspective.',['#MiniatureRailwayPhotography','#RailwayPhotography']],
   ['Why do I love the different coloured lights in my room?','Room lighting and coloured lights.',['#RoomLighting','#ColouredLights']]
  ]){
-  const f={source,body,platforms:['instagram','linkedin','tiktok'],captionCandidates:[],additionalCandidates:[]};
+  const f={source,body,platforms:['instagram','linkedin','tiktok'],captionCandidates:tags,additionalCandidates:[]};
   const r=run(f);for(const s of r.sections.slice(0,-1)){for(const tag of tags)assert.ok(s.items.includes(tag),`${source}: ${s.items}`);assert.ok(s.items.length<=5);}
+  const empty=run({...f,captionCandidates:[]}); assert.ok(empty.sections.slice(0,-1).every(s=>s.items.length===0));
   assert.doesNotMatch(JSON.stringify(r),/\[CONFIRM:/);
  }
 });
@@ -52,7 +53,7 @@ test('inflections and case survive; unsupported caption nouns cannot become hash
  for(const tag of ['#LEDStrips','#GamingRoom','#LightTherapy','#LuxuryRoom','#GuaranteedSleep','#LightingGiveaway','#GorlLead','#papercraft','#Room50PercentOff'])assert.equal(p.accepts(tag),false,tag);
  const sparse=run({...f,source:'Write something useful.'});assert.ok(sparse.sections.every(s=>s.items.length===0));
  assert.doesNotMatch(buildStudioInput(fixtureInput(f)),/#GorlLead|#papercraft/);
- assert.match(buildStudioInput(fixtureInput(f)),/#ColouredLights/);
+ assert.match(buildStudioInput(fixtureInput(f)),/choose meaningful tags supported by the actual subject/);
  const negative=buildHashtagPolicy(fixtureInput(f,{source:'Write about coastal birdwatching. Do not discuss vintage radios.'}),['Vintage radios and birdwatching.']);
  assert.equal(negative.accepts('#VintageRadios'),false);
  const domain=buildHashtagPolicy(fixtureInput(f,{source:'Write a post about plan.com.'}),['An earlier draft about plan.com.']);
