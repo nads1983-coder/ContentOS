@@ -688,12 +688,15 @@ export type StripeCheckoutSession = {
   id: string;
   url?: string | null;
   amount_total?: number | null;
+  amount_subtotal?: number | null;
+  currency?: string | null;
   mode?: string | null;
   status?: string | null;
   payment_status?: string;
   client_reference_id?: string | null;
   expires_at?: number | null;
   customer?: string | null;
+  payment_intent?: string | { id: string } | null;
   subscription?: string | null;
   metadata?: Record<string, string>;
   discounts?: Array<{
@@ -703,11 +706,15 @@ export type StripeCheckoutSession = {
     } | null;
   }>;
   line_items?: {
+    has_more?: boolean;
     data: Array<{
-      price?: StripePrice;
+      quantity?: number;
+      amount_total?: number;
+      price?: StripePrice & { currency?: string; unit_amount?: number | null };
     }>;
   };
   total_details?: {
+    amount_discount?: number | null;
     breakdown?: {
       discounts?: Array<{
         discount?: {
