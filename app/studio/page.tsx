@@ -14,7 +14,7 @@ import {
 import { getMonthlyUsageCount, getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
 import { buildUsageSummary } from "@/lib/usage";
 import type { PlanId, UsageSummary, UserProfile } from "@/types/saas";
-import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement, paidCreatorLifetimeIsPrimary } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 
@@ -76,6 +76,15 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
     };
   }
 
+  if (paidCreatorLifetimeIsPrimary(profile)) {
+    return {
+      plan: "pro_creator",
+      accountId: user.id,
+      authenticated: true,
+      usage: await usageForProfile({ ...profile, subscription_current_period_end: null }, "pro_creator")
+    };
+  }
+
   if (isStripeConfigured()) {
     try {
       const subscriptionState = reconcileActiveSubscriptionPlan(await getStripeSubscriptionState({
@@ -93,6 +102,11 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
       const syncedStatus = normalizeSubscriptionStatus(
         synced?.subscription_status ?? subscriptionState.status
       );
+
+      if (paidCreatorLifetimeIsPrimary(synced ?? profile)) {
+        return { plan: "pro_creator", accountId: user.id, authenticated: true,
+          usage: await usageForProfile({ ...(synced ?? profile), subscription_current_period_end: null }, "pro_creator") };
+      }
 
       if (planHasActiveEntitlement(syncedPlan, syncedStatus)) {
         return {
