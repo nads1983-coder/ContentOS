@@ -43,7 +43,7 @@ function shorten(value: string, max: number): string {
 function completeSupportingText(value: string, explicit = false): string {
   const clean = imageCopy(value).replace(/\s+/g, " ").trim();
   if (!clean || (!explicit && /(?:\.{3}|…)\s*$/.test(clean))) return "";
-  if (clean.length <= 120) return clean;
+  if (clean.length <= 120) return explicit || /[.!?][”"’']?$/.test(clean) ? clean : "";
   const sentence = clean.match(/^.{1,120}?[.!?](?=\s|$)/)?.[0];
   return sentence ?? "";
 }

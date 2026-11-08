@@ -44,6 +44,8 @@ test('framing respects explicit close-ups and supporting text remains complete o
   assert.match(mixed.prompt, /An intentional close-up portrait/);
   const long = buildCreativeBrief(imageInput({ mode: 'mixed', outputText: 'A headline.\n\n' + 'An unfinished long sentence '.repeat(8), creativeInstructions: '', brandContext: {} }));
   assert.equal(long.design.body, '');
+  const fragment = buildCreativeBrief(imageInput({ mode: 'mixed', outputText: 'A headline.\n\nA sentence that trails off', creativeInstructions: '', brandContext: {} }));
+  assert.equal(fragment.design.body, '');
   const image = buildCreativeBrief(imageInput({ mode: 'image', outputText: source, creativeInstructions: 'No text', brandContext: {} }));
   assert.equal(image.design.body, '');
   const quote = buildCreativeBrief(imageInput({ mode: 'text', outputText: source, creativeInstructions: 'Quote: “Small steps matter.”', brandContext: {} }));
