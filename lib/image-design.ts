@@ -103,7 +103,10 @@ export function buildCreativeBrief(input: BuildPosterInput) {
   const composition = imageCompositionPrompt(source, instructions, mode === "mixed");
   return { design, source, direction, prompt: [
     "Create one original, conceptually relevant social visual. Do not reproduce a caption or a generic SaaS background.",
-    `Content meaning (context, not text to draw): ${source}`,
+    `Content to interpret (context, not text to draw): ${imageCopy(input.outputText, 2600)}`,
+    "Identify the central message, relevant context, and relationships in the content; use them to guide a specific visual, not a generic stock scene. Preserve the meaning of the whole content rather than illustrating an isolated keyword.",
+    "Treat figurative language as meaning, not necessarily a literal scene: choose visual cues grounded in the context that communicate the intended idea. For a literal visual request, depict the requested subject directly. Do not turn a metaphor into a factual event.",
+    "Use only details supported by the content or explicit instructions. Do not invent people, identities, locations, events, outcomes or other factual details; when specifics are absent, keep the visual conceptual or nonspecific.",
     `Creative direction (takes precedence over saved preferences): ${direction}`,
     `Image type: ${visualType === "auto" ? "Infer from the description and source." : visualType}. ${visualType === "graphic" ? "Use graphic design, not photography or unrelated people." : visualType === "illustration" ? "Use an illustrated composition, not photography." : visualType === "photograph" ? "Use natural photography, not vector graphics." : ""}`,
     "Selected type, style and palette override inferred or saved defaults. Other explicit description instructions must be respected. Do not add unrelated people or objects.",
@@ -113,7 +116,7 @@ export function buildCreativeBrief(input: BuildPosterInput) {
     "Saved colours and style are aesthetic preferences, not permission to add a brand, product, competition, offer or promotional subject.",
     `Palette: ${design.background.replace("#", "hex ")}, ${design.accent.replace("#", "hex ")}.`,
     `Platform: ${imageCopy(input.platform, 80)}. Orientation: ${input.format}.`,
-    composition || (mode === "mixed" ? "Keep the subject in the upper half; the app adds a solid text panel in the lower half. Keep the focal point clear of that panel." : "Use a clear focal point and full-frame composition. Natural, well-lit subjects with meaningful context."),
+    composition || (mode === "mixed" ? "Keep the subject in the upper half; the app adds a solid text panel in the lower half. Keep the focal point clear of that panel." : "Use a clear focal point and full-frame composition suited to the supplied content."),
     "Mandatory: no visible text, letters, captions, hashtag symbols, typography, watermarks, logos, signage or UI. All requested words are rendered separately by the app.",
     "Do not invent products, packaging, logos, business facts, offers or brand assets. Depict concepts rather than fabricate a branded product. No decorative orbs."
   ].join("\n") };
