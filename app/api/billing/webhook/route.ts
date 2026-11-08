@@ -4,6 +4,7 @@ import {
   retrieveCheckoutSession,
   getStripeSubscriptionState,
   scheduleFounderSubscriptionCancellation,
+  retrievePaidLifetimePaymentIntent,
   verifyStripeSignature
 } from "@/lib/stripe-rest";
 import { updateSubscriptionStatus } from "@/lib/repository";
@@ -22,6 +23,7 @@ import {
   isPermanentFounderActivationError
 } from "@/lib/founder-checkout-service";
 import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
+import { completePaidCreatorLifetimePurchase, reversePaidCreatorLifetimePurchase, isPaidCreatorLifetimePaymentIntent } from "@/lib/paid-lifetime-fulfillment";
 
 type StripeWebhookEvent = {
   type: string;
@@ -39,6 +41,7 @@ type StripeWebhookEvent = {
       email?: string;
       amount_total?: number | null;
       payment_status?: string;
+      payment_intent?: string;
       metadata?: Record<string, string>;
       items?: {
         data: Array<{
@@ -75,7 +78,24 @@ export async function POST(request: Request) {
     // The paid fulfillment workflow is deliberately not live; ask Stripe to
     // retry rather than lose a payment event or grant unverified access.
     if (object.metadata?.offer === PAID_LIFETIME_OFFER.code) {
-      return NextResponse.json({ error: "Paid lifetime fulfillment is not enabled." }, { status: 503 });
+      if (!PAID_LIFETIME_OFFER.checkoutEnabled) {
+        return NextResponse.json({ error: "Paid lifetime fulfillment is not enabled." }, { status: 503 });
+      }
+      try {
+        if (!object.id || !object.metadata.purchase_id) throw new Error("Missing lifetime purchase identifier.");
+        const session = await retrieveCheckoutSession(object.id);
+        const intentId = typeof session.payment_intent === "string"
+          ? session.payment_intent : session.payment_intent?.id;
+        if (!intentId) throw new Error("Missing lifetime payment intent.");
+        const intent = await retrievePaidLifetimePaymentIntent(intentId);
+        await completePaidCreatorLifetimePurchase(object.metadata.purchase_id,session,intent);
+        return NextResponse.json({ received: true });
+      } catch (error) {
+        console.error("[Lifetime Checkout] Payment verification or fulfillment requires retry", {
+          sessionId: object.id, error: error instanceof Error ? error.message : "Unknown error"
+        });
+        return NextResponse.json({ error: "Lifetime fulfillment requires reconciliation." }, { status: 503 });
+      }
     }
     const isFounderCheckout = founderSubscriptionMetadataQualifies(object.metadata);
 
@@ -179,6 +199,33 @@ export async function POST(request: Request) {
       email: object.customer_email,
       ...state
     });
+  }
+
+  if (["charge.refunded","charge.dispute.created"].includes(event.type) && object.payment_intent) {
+    if (!PAID_LIFETIME_OFFER.checkoutEnabled) {
+      // These events may also belong to unrelated Stripe products. Leave them
+      // to existing billing flows while this paid offer is commercially closed.
+      return NextResponse.json({ received: true });
+    }
+    try {
+      if (!await isPaidCreatorLifetimePaymentIntent(object.payment_intent)) {
+        return NextResponse.json({ received: true });
+      }
+      const intent = await retrievePaidLifetimePaymentIntent(object.payment_intent);
+      const charge = intent.latest_charge;
+      if (event.type === "charge.dispute.created" && charge?.disputed === true) {
+        await reversePaidCreatorLifetimePurchase(object.payment_intent,"disputed");
+      } else if (event.type === "charge.refunded" && charge?.refunded === true &&
+          intent.amount_received && charge.amount_refunded === intent.amount_received) {
+        await reversePaidCreatorLifetimePurchase(object.payment_intent,"refunded");
+      }
+      return NextResponse.json({ received: true });
+    } catch (error) {
+      console.error("[Lifetime Checkout] Refund/dispute reversal requires reconciliation", {
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+      return NextResponse.json({ error: "Lifetime reversal requires reconciliation." }, { status: 503 });
+    }
   }
 
   if (
