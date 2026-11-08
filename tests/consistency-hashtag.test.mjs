@@ -30,4 +30,6 @@ test('topic inference is narrow and platform caps remain intact',()=>{
  }
  const p=buildHashtagPolicy(normalize({source:'A reliable thermostat keeps temperature consistent.',selectedTypes:['linkedin']}));
  assert.equal(p.accepts('#PersonalDevelopment'),false);assert.equal(p.accepts('#GrowthMindset'),false);
+ const unrelated=buildHashtagPolicy(normalize({source:'The thermostat keeps temperature consistent. My goals are to sell thermostats.',selectedTypes:['linkedin']}));
+ assert.equal(unrelated.accepts('#Consistency'),false);assert.equal(unrelated.accepts('#PersonalDevelopment'),false);assert.equal(unrelated.accepts('#GrowthMindset'),false);
 });

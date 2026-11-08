@@ -27,7 +27,10 @@ export function conceptualHashtags(source: string): string[] {
   if (/\b(?:announc(?:e|ing)|introduc(?:e|ing))\b/.test(text) && /\bproduct\b/.test(text)) add("productannouncement");
   // Consistency about personal goals is a topic in its own right, not only
   // a social-posting or activity topic.
-  if (consistent && /\b(?:my|personal)\s+goals?\b/.test(text)) add("consistency", "personaldevelopment", "growthmindset");
+  const goalConsistency = text.split(/[.!?;\n]/).some(sentence =>
+    /\b(?:consisten(?:t|cy|tly)|regular(?:ly)?|showing up|daily practice|steady effort)\b/.test(sentence) &&
+    /\b(?:my|personal)\s+goals?\b/.test(sentence));
+  if (goalConsistency) add("consistency", "personaldevelopment", "growthmindset");
   if (consistent && activity) add("consistency", "showingup");
   if (/\blinkedin\b/.test(text) && activity) {
     add("linkedinpresence");
