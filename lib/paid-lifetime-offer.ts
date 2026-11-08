@@ -13,7 +13,7 @@ export const PAID_LIFETIME_OFFER = {
   fulfillmentEnabled: false
 } as const;
 
-/** Count completed, non-reversed lifetime purchases, not checkout attempts. */
+/** Display historical purchases, including reversed sales. Active reservations also hold places; use the DB allocator for checkout. */
 export function lifetimePriceForCompletedSales(completedSales: number) {
   if (!Number.isSafeInteger(completedSales) || completedSales < 0) {
     throw new RangeError("Completed lifetime sales must be a non-negative integer.");

@@ -6,7 +6,7 @@ function harness(){
   const purchase={id:"purchase1",user_id:"u1",price_pence:9900,attempt_key:"attempt1",
     stripe_checkout_session_id:"cs_test123",stripe_payment_intent_id:null,status:"open"};
   const profile={id:"u1",email:"u@example.com",plan:"free",subscription_status:"none",stripe_subscription_id:"sub_history"};
-  let state={purchase,profile};
+  let state={purchase,profile,events:[]};
   const pool={connect:async()=>{
     let before;
     return {release(){},async query(sql,values=[]){
@@ -15,13 +15,19 @@ function harness(){
       if(q==="COMMIT"){before=null;return {rows:[]};}
       if(q==="ROLLBACK"){state=before;before=null;return {rows:[]};}
       if(q.startsWith("SELECT pg_advisory_xact_lock"))return {rows:[]};
+      if(q.startsWith("INSERT INTO contentos_app.paid_lifetime_payment_events")) {
+        if(!state.events.some(e=>e.id===values[0])) state.events.push({id:values[0],intent:values[1],reason:values[2]});
+        return {rows:[]};
+      }
+      if(q.startsWith("SELECT reason")) return {rows:state.events.filter(e=>e.intent===values[0]).sort((a,b)=>["refunded","disputed","review"].indexOf(a.reason)-["refunded","disputed","review"].indexOf(b.reason)).slice(0,1)};
       if(q.includes("SELECT * FROM contentos_app.paid_creator_lifetime_purchases WHERE id="))return {rows:[structuredClone(state.purchase)]};
       if(q.includes("SELECT * FROM contentos_app.paid_creator_lifetime_purchases WHERE stripe_payment_intent_id="))return {rows:state.purchase.stripe_payment_intent_id===values[0]?[structuredClone(state.purchase)]:[]};
       if(q.includes("SELECT data FROM contentos_app.profiles"))return {rows:[{data:structuredClone(state.profile)}]};
       if(q.startsWith("UPDATE contentos_app.paid_creator_lifetime_purchases")){
         if(q.includes("status='completed'")){
-          state.purchase.status="completed";state.purchase.stripe_payment_intent_id=values[1];
-        }else state.purchase.status=values[1];
+          state.purchase.status="completed";
+        }else if(q.includes("SET stripe_payment_intent_id")) state.purchase.stripe_payment_intent_id=values[1];
+        else state.purchase.status=values[1];
         return {rows:[]};
       }
       if(q.startsWith("UPDATE contentos_app.profiles")){state.profile=JSON.parse(values[1]);return {rows:[]};}
@@ -50,7 +56,17 @@ test("verified payment grants once and preserves subscription records",async()=>
   assert.equal((await h.api.reversePaidCreatorLifetimePurchase("pi_123","refunded")).status,"reversed");
   assert.equal(h.state.profile.paid_creator_lifetime_status,"refunded");
   assert.equal(h.state.profile.stripe_subscription_id,"sub_history");
-  await assert.rejects(h.api.completePaidCreatorLifetimePurchase("purchase1",session,intent));
+  assert.equal((await h.api.completePaidCreatorLifetimePurchase("purchase1",session,intent)).status,"reversed");
+  assert.equal(h.state.profile.paid_creator_lifetime_status,"refunded");
+});
+
+test("unmatched refund survives stale completion and duplicate events",async()=>{
+  const h=harness();
+  assert.equal((await h.api.reversePaidCreatorLifetimePurchase("pi_123","refunded","evt_1")).status,"retained");
+  await h.api.reversePaidCreatorLifetimePurchase("pi_123","refunded","evt_1");
+  assert.equal(h.state.events.length,1);
+  assert.equal((await h.api.completePaidCreatorLifetimePurchase("purchase1",session,intent)).status,"reversed");
+  assert.equal(h.state.profile.paid_creator_lifetime_status,"refunded");
 });
 
 test("incorrect payment cannot grant a lifetime entitlement",async()=>{

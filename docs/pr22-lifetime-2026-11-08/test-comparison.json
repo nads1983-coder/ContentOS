@@ -1,0 +1,127 @@
+{
+  "base": {
+    "counts": {
+      "tests": 444,
+      "pass": 432,
+      "fail": 10,
+      "skipped": 2
+    },
+    "failures": [
+      {
+        "name": "exact captured retest keeps its factual hook, removes unsupported niche and two stock phrases",
+        "location": "tests/content-quality.test.mjs:15:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        '#independentmakers',\n        '#northbankpaper',\n    -   '#1000subscribers',\n    -   '#Subscribers',\n    -   '#Giveaway'\n      ]\n    "
+      },
+      {
+        "name": "brand name alone and newly generated prose do not establish a niche",
+        "location": "tests/content-quality.test.mjs:33:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        '#northbankpaper',\n    -   '#Subscribers',\n    -   '#Giveaway'\n      ]\n    "
+      },
+      {
+        "name": "explicit hashtag preferences and current overrides are respected",
+        "location": "tests/content-quality.test.mjs:42:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   '#Subscribers',\n    -   '#Giveaway'\n    - ]\n    "
+      },
+      {
+        "name": "Unicode, compound audience phrases, numbers and explicit tags remain usable",
+        "location": "tests/content-quality.test.mjs:51:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        '#IndependentMakers',\n    -   '#1000Subscribers',\n        '#NorthbankPaper',\n    -   '#Subscribers',\n    -   '#Giveaway'\n      ]\n    "
+      },
+      {
+        "name": "deduplication spans caption and tags but does not delete independent platform sets or plain labels",
+        "location": "tests/content-quality.test.mjs:62:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        'Hook:',\n        '#northbankpaper',\n        '#independentmakers',\n    -   '#Subscribers',\n    -   '#Giveaway'\n      ]\n    "
+      },
+      {
+        "name": "refinement remains grounded while allowing explicit style and hashtag instructions",
+        "location": "tests/content-quality.test.mjs:93:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        '#northbankpaper',\n        '#independentmakers',\n    -   '#1000subscribers'\n      ]\n    "
+      },
+      {
+        "name": "server output, workspace round-trip, clipboard transport and export retain identical LF spacing",
+        "location": "tests/post-format.test.mjs:25:1",
+        "error": "|-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n      'A little room to think.\\n' +\n        '\\n' +\n        'Try putting one idea on paper.\\n' +\n        '\\n' +\n        'What would you write?\\n' +\n        '\\n' +\n    +   '#Planning #Ideas'\n    -   '#Planning #Ideas #PlanningIdeas'\n    "
+      },
+      {
+        "name": "all post platforms group tags; explicit separate-line request survives generation and cloud save",
+        "location": "tests/post-format.test.mjs:59:1",
+        "error": "|-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(copy.buildSectionCopyText(parseWorkspaceGeneration(result).sections[0]).endsWith(\"#Planning\\n#Ideas\\n#PlanningIdeas\"))\n    "
+      },
+      {
+        "name": "default hashtag limits do not add filler or drop meaningful text accompanying a tag",
+        "location": "tests/post-format.test.mjs:70:1",
+        "error": "|-\n    Expected values to be strictly equal:\n    \n    0 !== 5\n    "
+      },
+      {
+        "name": "one sentence produces a single-platform contract; all 14 formats remain parseable",
+        "location": "tests/simple-creation.test.mjs:17:1",
+        "error": "|-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(result.sections[0].items.length>0)\n    "
+      }
+    ]
+  },
+  "head": {
+    "counts": {
+      "tests": 462,
+      "pass": 450,
+      "fail": 10,
+      "skipped": 2
+    },
+    "failures": [
+      {
+        "name": "exact captured retest keeps its factual hook, removes unsupported niche and two stock phrases",
+        "location": "tests/content-quality.test.mjs:15:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        '#independentmakers',\n        '#northbankpaper',\n    -   '#1000subscribers',\n    -   '#Subscribers',\n    -   '#Giveaway'\n      ]\n    "
+      },
+      {
+        "name": "brand name alone and newly generated prose do not establish a niche",
+        "location": "tests/content-quality.test.mjs:33:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        '#northbankpaper',\n    -   '#Subscribers',\n    -   '#Giveaway'\n      ]\n    "
+      },
+      {
+        "name": "explicit hashtag preferences and current overrides are respected",
+        "location": "tests/content-quality.test.mjs:42:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n    + []\n    - [\n    -   '#Subscribers',\n    -   '#Giveaway'\n    - ]\n    "
+      },
+      {
+        "name": "Unicode, compound audience phrases, numbers and explicit tags remain usable",
+        "location": "tests/content-quality.test.mjs:51:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        '#IndependentMakers',\n    -   '#1000Subscribers',\n        '#NorthbankPaper',\n    -   '#Subscribers',\n    -   '#Giveaway'\n      ]\n    "
+      },
+      {
+        "name": "deduplication spans caption and tags but does not delete independent platform sets or plain labels",
+        "location": "tests/content-quality.test.mjs:62:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        'Hook:',\n        '#northbankpaper',\n        '#independentmakers',\n    -   '#Subscribers',\n    -   '#Giveaway'\n      ]\n    "
+      },
+      {
+        "name": "refinement remains grounded while allowing explicit style and hashtag instructions",
+        "location": "tests/content-quality.test.mjs:93:1",
+        "error": "|-\n    Expected values to be strictly deep-equal:\n    + actual - expected\n    \n      [\n        '#northbankpaper',\n        '#independentmakers',\n    -   '#1000subscribers'\n      ]\n    "
+      },
+      {
+        "name": "server output, workspace round-trip, clipboard transport and export retain identical LF spacing",
+        "location": "tests/post-format.test.mjs:25:1",
+        "error": "|-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n      'A little room to think.\\n' +\n        '\\n' +\n        'Try putting one idea on paper.\\n' +\n        '\\n' +\n        'What would you write?\\n' +\n        '\\n' +\n    +   '#Planning #Ideas'\n    -   '#Planning #Ideas #PlanningIdeas'\n    "
+      },
+      {
+        "name": "all post platforms group tags; explicit separate-line request survives generation and cloud save",
+        "location": "tests/post-format.test.mjs:59:1",
+        "error": "|-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(copy.buildSectionCopyText(parseWorkspaceGeneration(result).sections[0]).endsWith(\"#Planning\\n#Ideas\\n#PlanningIdeas\"))\n    "
+      },
+      {
+        "name": "default hashtag limits do not add filler or drop meaningful text accompanying a tag",
+        "location": "tests/post-format.test.mjs:70:1",
+        "error": "|-\n    Expected values to be strictly equal:\n    \n    0 !== 5\n    "
+      },
+      {
+        "name": "one sentence produces a single-platform contract; all 14 formats remain parseable",
+        "location": "tests/simple-creation.test.mjs:17:1",
+        "error": "|-\n    The expression evaluated to a falsy value:\n    \n      assert.ok(result.sections[0].items.length>0)\n    "
+      }
+    ]
+  },
+  "identicalFailures": true,
+  "node": "v24.15.0",
+  "lockfileSha256": "32b5f6a5baec4be2c7c0466c91dfc3ba27e6473359c33f285a7749f101a9bc50",
+  "baseSha": "f7229ae4231158fd859ecd54d0aa0fcc05f890aa",
+  "headSha": "eda02487200fd64c96a20afb61b8056ef6dbd070"
+}

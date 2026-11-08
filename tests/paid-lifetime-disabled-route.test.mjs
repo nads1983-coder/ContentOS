@@ -6,6 +6,7 @@ test("disabled lifetime checkout refuses requests before account, database or St
   const forbidden = () => { throw new Error("Disabled route reached a live dependency"); };
   const { POST } = loadTs("app/api/lifetime/checkout/route.ts", {
     "next/server": { NextResponse: Response },
+    "@/lib/paid-lifetime-reconciliation": { reconcileLifetimeCheckouts: forbidden },
     "@/lib/request-security": { rejectUnsafeWrite: () => null },
     "@/lib/auth": { getCurrentUser: forbidden },
     "@/lib/repository": { getUserProfileForUser: forbidden },

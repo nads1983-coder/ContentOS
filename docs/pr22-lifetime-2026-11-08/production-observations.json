@@ -1,0 +1,59 @@
+{
+  "audit_date": "2026-11-08",
+  "read_only": true,
+  "production": {
+    "domain": "getcontentos.co",
+    "deployment_id": "dpl_2pFutFE74y4wwza577juvxxCsEAA",
+    "branch": "main",
+    "sha": "f7229ae4231158fd859ecd54d0aa0fcc05f890aa"
+  },
+  "database": {
+    "project_id": "long-hat-93822871",
+    "branch_id": "br-broad-sea-b29qogmq",
+    "branch_name": "production",
+    "database_name": "contentos",
+    "query_role": "contentos_runtime",
+    "budget_configuration_present": true,
+    "spend_ledger_present": true,
+    "paid_lifetime_table_present": false,
+    "starts_month": "2026-10",
+    "opening_microgbp": 6778302,
+    "suspended": false,
+    "approved_at": "2026-10-21T18:43:22.224Z",
+    "current_month": "2026-11",
+    "accounted_microgbp": 475409,
+    "requests": 17,
+    "grouped_usage": [
+      {
+        "kind": "text",
+        "model": "gpt-4.1",
+        "state": "settled",
+        "requests": 12,
+        "accounted_microgbp": 147053,
+        "last_created_at": "2026-11-08T13:43:14.168Z"
+      },
+      {
+        "kind": "image",
+        "model": "gpt-image-2.5-flare-2026-09-08",
+        "state": "settled",
+        "requests": 5,
+        "accounted_microgbp": 328356,
+        "last_created_at": "2026-11-08T12:17:34.342Z"
+      }
+    ]
+  },
+  "environment_metadata": {
+    "status": 403,
+    "code": "forbidden",
+    "decrypt": false,
+    "cli_installed": false,
+    "model_override_verified": false
+  },
+  "limits": [
+    "No schema/data mutations",
+    "No invoice reconciliation",
+    "No Stripe payments or provider calls",
+    "No real PostgreSQL migration/concurrency exercise",
+    "No browser purchase journey"
+  ]
+}

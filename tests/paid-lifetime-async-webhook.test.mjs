@@ -25,7 +25,7 @@ function harness(overrides = {}) {
     "@/lib/stripe-rest": {
       verifyStripeSignature: () => true,
       retrieveCheckoutSession: async () => current,
-      retrievePaidLifetimePaymentIntent: async () => { calls.push("retrieveIntent"); return { id: "pi_test123" }; }
+      retrievePaidLifetimePaymentIntent: async () => { calls.push("retrieveIntent"); return { id: "pi_test123",status:"requires_payment_method",amount_received:0 }; }
     },
     "@/lib/repository": { updateSubscriptionStatus: async () => { throw new Error("Unexpected subscription update"); } },
     "@/lib/founder-claim-repository": { founderClaimRepository: {} },
@@ -64,7 +64,7 @@ test("a subsequent asynchronous payment success activates through verified Strip
 test("an asynchronous failure releases only a matching unpaid reservation", async () => {
   const h = harness();
   assert.equal((await h.send("checkout.session.async_payment_failed")).status, 200);
-  assert.deepEqual(h.calls, ["terminate"]);
+  assert.deepEqual(h.calls, ["retrieveIntent", "terminate"]);
   const invalid = harness({ amount_total: 14900 });
   assert.equal((await invalid.send("checkout.session.async_payment_failed")).status, 503);
   assert.deepEqual(invalid.calls, []);

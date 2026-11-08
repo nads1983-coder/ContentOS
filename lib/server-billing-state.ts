@@ -53,9 +53,6 @@ export async function getServerBillingState(): Promise<ServerBillingState> {
     return { isLoggedIn: true, plan: profile.plan, status: "active" };
   }
 
-  if (paidCreatorLifetimeIsPrimary(profile)) {
-    return { isLoggedIn: true, plan: "pro_creator", status: "active" };
-  }
 
   if (isStripeConfigured()) {
     try {
@@ -85,6 +82,10 @@ export async function getServerBillingState(): Promise<ServerBillingState> {
     } catch {
       // Public CTAs should still render if Stripe is temporarily unavailable.
     }
+  }
+
+  if (paidCreatorLifetimeIsPrimary(profile)) {
+    return { isLoggedIn: true, plan: "pro_creator", status: "active" };
   }
 
   const plan = normalizePlanId(profile.plan);

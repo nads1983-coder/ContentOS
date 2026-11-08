@@ -22,6 +22,13 @@
       "when": 1791296400000,
       "tag": "0002_founder_checkout_claims",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794168000000,
+      "tag": "0004_paid_creator_lifetime",
+      "breakpoints": true
     }
   ]
 }

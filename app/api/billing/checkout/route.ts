@@ -1,3 +1,4 @@
+import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
 import { rejectUnsafeWrite } from "@/lib/request-security";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
@@ -28,7 +29,7 @@ import {
   startFounderCheckout
 } from "@/lib/founder-checkout-service";
 import { getUserProfileForUser, syncUserSubscriptionState, updateSubscriptionStatus } from "@/lib/repository";
-import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement, hasPaidCreatorLifetimeEntitlement } from "@/lib/entitlements";
 import { FOUNDER_OFFER_RETIRED, FOUNDER_RETIRED_MESSAGE } from "@/lib/founder-retirement";
 import { LITE_PURCHASES_SUSPENDED, LITE_SUSPENDED_MESSAGE } from "@/lib/lite-availability";
 
@@ -85,7 +86,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (profile && hasLifetimeEntitlement(profile)) {
+    if (profile && (hasLifetimeEntitlement(profile) || (hasPaidCreatorLifetimeEntitlement(profile) && plan !== "pro_studio"))) {
       return NextResponse.json(
         {
           error: "Your lifetime access already includes this plan.",
@@ -191,6 +192,8 @@ export async function POST(request: Request) {
       );
     }
 
+    const coordinate = user && (PAID_LIFETIME_OFFER.fulfillmentEnabled || PAID_LIFETIME_OFFER.checkoutEnabled);
+    if (coordinate) await (await import("@/lib/paid-lifetime-billing-guard")).reserveRecurringCheckout(user.id,plan);
     const session = await createCheckoutSession({
       plan,
       userId: user?.id,
@@ -199,6 +202,7 @@ export async function POST(request: Request) {
       founderOffer: false
     });
 
+    if (coordinate) await (await import("@/lib/paid-lifetime-billing-guard")).recordRecurringCheckout(user.id,session.id);
     return NextResponse.json({ url: session.url });
   } catch (error) {
     if (founderOffer) {

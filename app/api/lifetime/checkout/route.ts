@@ -1,7 +1,8 @@
+import { reconcileLifetimeCheckouts } from "@/lib/paid-lifetime-reconciliation";
 import { NextResponse } from "next/server";
 import { rejectUnsafeWrite } from "@/lib/request-security";
 import { getCurrentUser } from "@/lib/auth";
-import { getUserProfileForUser } from "@/lib/repository";
+import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
 import { hasLifetimeEntitlement, hasPaidCreatorLifetimeEntitlement } from "@/lib/entitlements";
 import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
 import {
@@ -9,7 +10,7 @@ import {
 } from "@/lib/paid-lifetime-reservations";
 import { startPaidLifetimeCheckout } from "@/lib/paid-lifetime-checkout-service";
 import {
-  createPaidLifetimeCheckoutSession, retrieveCheckoutSession, getStripeSubscriptionState
+  createPaidLifetimeCheckoutSession, retrieveCheckoutSession, getStripeSubscriptionState, hasPendingSubscriptionCheckout
 } from "@/lib/stripe-rest";
 
 export const runtime = "nodejs";
@@ -41,6 +42,12 @@ export async function POST(request: Request) {
     if (["active","trialing","past_due","incomplete"].includes(recurring.status)) {
       return NextResponse.json({ error: "Contact support to move an existing subscription to lifetime access." }, { status: 409 });
     }
+    const customerId = recurring.stripeCustomerId ?? profile.stripe_customer_id;
+    if (customerId && await hasPendingSubscriptionCheckout(customerId)) {
+      return NextResponse.json({error:"Resolve your existing subscription checkout before purchasing lifetime access."},{status:409});
+    }
+    await syncUserSubscriptionState({userId:user.id,email:user.email,...recurring});
+    await reconcileLifetimeCheckouts();
     const result = await startPaidLifetimeCheckout({
       userId: user.id,email:user.email,customerId: recurring.stripeCustomerId ?? profile.stripe_customer_id
     }, {
@@ -55,6 +62,6 @@ export async function POST(request: Request) {
     console.error("[Lifetime Checkout] Purchase initiation unavailable", {
       error: error instanceof Error ? error.message : "Unknown error"
     });
-    return NextResponse.json({ error: "Lifetime checkout could not be prepared. No payment was started." }, { status: 503 });
+    return NextResponse.json({ error: "Lifetime checkout could not be confirmed. Check your dashboard or contact support before starting another payment." }, { status: 503 });
   }
 }

@@ -765,7 +765,16 @@ export async function createPaidLifetimeCheckoutSession(input: {
     body.set("customer_email", input.email);
     body.set("customer_creation", "always");
   }
-  const created = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body, {
+  // Persist the exact request before POST. Retries must not change customer,
+  // email, redirects or expiry under an existing Stripe idempotency key.
+  const { getPool } = await import("@/lib/db/client");
+  const stored = await getPool().query<{checkout_params:string}>(
+    `UPDATE contentos_app.paid_creator_lifetime_purchases
+     SET checkout_params=COALESCE(checkout_params,$2) WHERE id=$1 AND status IN ('preparing','open') RETURNING checkout_params`,
+    [input.claim.id,body.toString()]);
+  if (!stored.rows[0]) throw new Error("Lifetime attempt is no longer open.");
+  const immutableBody = new URLSearchParams(stored.rows[0].checkout_params);
+  const created = await stripeRequest<StripeCheckoutSession>("checkout/sessions", immutableBody, {
     idempotencyKey: input.claim.attemptKey
   });
   if (!created.id || !created.url) {
@@ -781,6 +790,30 @@ export async function retrievePaidLifetimePaymentIntent(paymentIntentId: string)
   if (!/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) throw new Error("Invalid payment intent ID.");
   return stripeGet<LifetimePaymentIntent>(`payment_intents/${encodeURIComponent(paymentIntentId)}`,
     new URLSearchParams({ "expand[]": "latest_charge" }));
+}
+
+// Recover older recurring checkouts created before the durable guard existed.
+// An unpaid completed session can still be settling asynchronously.
+export async function hasPendingSubscriptionCheckout(customerId: string) {
+  let cursor: string | undefined;
+  for (let page = 0; page < 100; page += 1) {
+    const params = new URLSearchParams({customer:customerId,limit:"100"});
+    if (cursor) params.set("starting_after",cursor);
+    const result = await stripeGet<StripeList<StripeCheckoutSession>>("checkout/sessions",params);
+    for (const session of result.data) {
+      if (session.mode !== "subscription") continue;
+      if (session.status === "open") return true;
+      if (session.status === "complete" && session.payment_status === "unpaid") {
+        if (typeof session.subscription !== "string") return true;
+        const subscription = await retrieveStripeSubscription(session.subscription);
+        if (!["canceled","incomplete_expired"].includes(subscription.status)) return true;
+      }
+    }
+    if (!result.has_more) return false;
+    cursor = result.data.at(-1)?.id;
+    if (!cursor) break;
+  }
+  throw new Error("Subscription checkout history requires reconciliation.");
 }
 
 export class BillingCustomerUnavailableError extends Error {
@@ -887,4 +920,20 @@ export function verifyStripeSignature(payload: string, signatureHeader: string |
   // Accept overlapping signing secrets during Stripe rotation; reject malformed signatures.
   return parts.filter(([key])=>key==="v1").some(([,value])=>
     /^[a-f0-9]{64}$/i.test(value??"") && timingSafeEqual(Buffer.from(value,"hex"),expectedBuffer));
+}
+
+/** Exhaustive bounded listing; never treat a truncated/failed lookup as absence. */
+export async function findLifetimeCheckoutSessions(claim: {id:string; attemptKey:string; createdAt:string}) {
+  const matches: StripeCheckoutSession[] = [];
+  let cursor: string | undefined;
+  for (let page=0; page<100; page++) {
+    const query = new URLSearchParams({limit:"100", "created[gte]":String(Math.floor(Date.parse(claim.createdAt)/1000)-60)});
+    if (cursor) query.set("starting_after",cursor);
+    const list = await stripeGet<StripeList<StripeCheckoutSession>>("checkout/sessions",query);
+    for (const session of list.data) if (session.metadata?.purchase_id === claim.id && session.metadata?.attempt_key === claim.attemptKey) matches.push(await retrieveCheckoutSession(session.id));
+    if (!list.has_more) return matches;
+    cursor = list.data.at(-1)?.id;
+    if (!cursor) break;
+  }
+  throw new Error("Checkout reconciliation listing incomplete.");
 }

@@ -202,7 +202,7 @@ export function reserveGenerationInProfile(data: Document, userId: string, reque
     hasLifetimeEntitlement(data) || paidCreatorLifetimeIsPrimary(data, now) ? null : data.subscription_current_period_end);
   const used = usageInWindow(data, userId, periodStart, periodEnd);
   const pending = entries.filter(r => r.status === "reserved" && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
-  if (used.text + used.other + pending >= monthlyLimitForPlan(plan)) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
+  if (used.text + (paidCreatorLifetimeIsPrimary(data, now) ? 0 : used.other) + pending >= monthlyLimitForPlan(plan)) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
   const attempts = admitTextAttempt(data, now);
   const reservation: Reservation = { requestId, fingerprint, plan, status: "reserved", createdAt: now.toISOString(), periodStart, periodEnd };
   const updated = { ...data, text_generation_attempts_json: attempts.recent, text_generation_daily_attempts_json: attempts.daily, generation_reservations_json: [...entries, reservation], generation_usage_json: { ...counters(data), [periodStart]: used.text } };

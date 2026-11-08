@@ -199,7 +199,7 @@ export default async function DashboardPage() {
   }
   const paidCreatorPrimary = paidCreatorLifetimeIsPrimary(profile);
   const plan = paidCreatorPrimary ? "pro_creator" : normalizePlanId(profile?.plan);
-  const status = normalizeSubscriptionStatus(profile?.subscription_status);
+  const status = paidCreatorPrimary ? "active" : normalizeSubscriptionStatus(profile?.subscription_status);
   const hasLifetimeAccess = hasLifetimeEntitlement(profile) || hasPaidCreatorLifetimeEntitlement(profile);
   let billingCustomerUnavailable = false;
   if (hasLifetimeAccess && profile?.stripe_customer_id && isStripeConfigured()) {
@@ -209,8 +209,9 @@ export default async function DashboardPage() {
       // An outage must not be mistaken for a deleted billing account.
     }
   }
-  const hasActiveSubscription = planHasActiveEntitlement(normalizePlanId(profile?.plan), status);
-  const hasPendingCancellation = !hasLifetimeAccess && hasActiveSubscription && Boolean(profile?.subscription_cancel_at_period_end);
+  const hasActiveSubscription = !hasLifetimeEntitlement(profile) &&
+    planHasActiveEntitlement(normalizePlanId(profile?.plan), normalizeSubscriptionStatus(profile?.subscription_status));
+  const hasPendingCancellation = hasActiveSubscription && Boolean(profile?.subscription_cancel_at_period_end);
   const cancellationDate = profile?.subscription_cancel_at ?? profile?.subscription_current_period_end;
   const canUpgradeToCreator = !hasLifetimeAccess && (!hasActiveSubscription || plan === "lite");
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
@@ -220,6 +221,7 @@ export default async function DashboardPage() {
     try {
       monthlyUsageCount = await getMonthlyUsageCount({
         userId: profileUserId,
+        eventType: paidCreatorPrimary ? "text_generation" : undefined,
         periodEnd: paidCreatorPrimary ? null : profile?.subscription_current_period_end
       });
     } catch {
@@ -264,12 +266,13 @@ export default async function DashboardPage() {
                 : status}
             </p>
             <p className="mt-2 text-sm text-muted">
-              {hasLifetimeAccess
-                ? "Access: Lifetime / no expiry"
+              {hasLifetimeAccess && !hasActiveSubscription
+                ? hasLifetimeEntitlement(profile) ? "Access: Lifetime / no expiry" : "Creator lifetime access: no recurring payment"
                 : hasPendingCancellation
                   ? `Paid until: ${formatDate(cancellationDate)}`
                   : `Renewal date: ${formatDate(profile?.subscription_current_period_end)}`}
             </p>
+            {hasPaidCreatorLifetimeEntitlement(profile) && hasActiveSubscription ? <p className="mt-2 text-sm text-muted">Creator lifetime access remains separate from your recurring subscription.</p> : null}
             {hasPendingCancellation ? (
               <p className="mt-2 rounded border border-gold/40 bg-gold/10 p-3 text-sm text-bone">
                 Cancellation pending. Access remains active until {formatDate(cancellationDate)}.

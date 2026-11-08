@@ -31,7 +31,7 @@ export async function startPaidLifetimeCheckout(input: {
       if (session.id === claim.stripeCheckoutSessionId && validateOpenPaidLifetimeCheckout(session, claim)) {
         return { url: session.url, pricePence: claim.pricePence, purchaseId: claim.id };
       }
-      if (session.status === "expired" && session.id === claim.stripeCheckoutSessionId) {
+      if (session.status === "expired" && session.payment_status === "unpaid" && !session.payment_intent && session.id === claim.stripeCheckoutSessionId) {
         await deps.expire(claim.id);
         continue;
       }

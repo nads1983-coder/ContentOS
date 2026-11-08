@@ -38,7 +38,8 @@ async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promi
   try {
     const used = await getMonthlyUsageCount({
       userId: profile.id,
-      periodEnd: profile.subscription_current_period_end
+      periodEnd: profile.subscription_current_period_end,
+      eventType: paidCreatorLifetimeIsPrimary(profile) ? "text_generation" : undefined
     });
 
     return buildUsageSummary(plan, used, profile.subscription_current_period_end);
@@ -76,14 +77,6 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
     };
   }
 
-  if (paidCreatorLifetimeIsPrimary(profile)) {
-    return {
-      plan: "pro_creator",
-      accountId: user.id,
-      authenticated: true,
-      usage: await usageForProfile({ ...profile, subscription_current_period_end: null }, "pro_creator")
-    };
-  }
 
   if (isStripeConfigured()) {
     try {
@@ -119,6 +112,15 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
     } catch {
       // Use stored account state if Stripe is temporarily unavailable.
     }
+  }
+
+  if (paidCreatorLifetimeIsPrimary(profile)) {
+    return {
+      plan: "pro_creator",
+      accountId: user.id,
+      authenticated: true,
+      usage: await usageForProfile({ ...profile, subscription_current_period_end: null }, "pro_creator")
+    };
   }
 
   const plan = normalizePlanId(profile.plan);

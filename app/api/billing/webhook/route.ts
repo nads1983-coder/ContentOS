@@ -23,11 +23,12 @@ import {
   isPermanentFounderActivationError
 } from "@/lib/founder-checkout-service";
 import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
-import { completePaidCreatorLifetimePurchase, reversePaidCreatorLifetimePurchase, isPaidCreatorLifetimePaymentIntent } from "@/lib/paid-lifetime-fulfillment";
+import { completePaidCreatorLifetimePurchase, reversePaidCreatorLifetimePurchase } from "@/lib/paid-lifetime-fulfillment";
 import { getPaidLifetimeReservation, terminatePaidLifetimeReservation } from "@/lib/paid-lifetime-reservations";
 import { validateFailedPaidLifetimeCheckout } from "@/lib/paid-lifetime-stripe";
 
 type StripeWebhookEvent = {
+  id?: string;
   type: string;
   data: {
     object: {
@@ -76,7 +77,7 @@ export async function POST(request: Request) {
   const object = event.data.object;
 
   const isLifetimeCheckoutEvent = [
-    "checkout.session.completed", "checkout.session.async_payment_succeeded", "checkout.session.async_payment_failed"
+    "checkout.session.completed", "checkout.session.async_payment_succeeded", "checkout.session.async_payment_failed", "checkout.session.expired"
   ].includes(event.type) && object.metadata?.offer === PAID_LIFETIME_OFFER.code;
   if (isLifetimeCheckoutEvent) {
     if (!PAID_LIFETIME_OFFER.fulfillmentEnabled) {
@@ -85,6 +86,13 @@ export async function POST(request: Request) {
     try {
       if (!object.id || !object.metadata?.purchase_id) throw new Error("Missing lifetime purchase identifier.");
       const session = await retrieveCheckoutSession(object.id);
+      if (event.type === "checkout.session.expired") {
+        const claim = await getPaidLifetimeReservation(object.metadata.purchase_id);
+        if (!claim || session.id !== claim.stripeCheckoutSessionId || session.status !== "expired" ||
+            session.payment_status !== "unpaid" || session.payment_intent) throw new Error("Expiry is uncertain.");
+        await terminatePaidLifetimeReservation(claim.id,"expired");
+        return NextResponse.json({ received: true });
+      }
       if (event.type === "checkout.session.completed" && session.payment_status === "unpaid") {
         // Payment methods with delayed settlement must not grant access yet.
         return NextResponse.json({ received: true, pending: true });
@@ -94,6 +102,11 @@ export async function POST(request: Request) {
         if (!claim || !validateFailedPaidLifetimeCheckout(session, claim)) {
           throw new Error("Failed payment cannot be reconciled to an open reservation.");
         }
+        const failedIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
+        if (!failedIntentId) throw new Error("Failed payment identity is uncertain.");
+        const failedIntent = await retrievePaidLifetimePaymentIntent(failedIntentId);
+        if (failedIntent.id !== failedIntentId || !["canceled","requires_payment_method"].includes(failedIntent.status ?? "") ||
+            failedIntent.amount_received !== 0 || failedIntent.latest_charge?.paid) throw new Error("Payment failure is not terminal.");
         await terminatePaidLifetimeReservation(claim.id, "failed");
         return NextResponse.json({ received: true });
       }
@@ -216,24 +229,19 @@ export async function POST(request: Request) {
     });
   }
 
-  if (["charge.refunded","charge.dispute.created"].includes(event.type) && object.payment_intent) {
+  if (["charge.refunded","charge.dispute.created","charge.dispute.updated","charge.dispute.closed"].includes(event.type) && object.payment_intent) {
     if (!PAID_LIFETIME_OFFER.fulfillmentEnabled) {
       // These events may also belong to unrelated Stripe products. Leave them
       // to existing billing flows while this paid offer is commercially closed.
       return NextResponse.json({ received: true });
     }
     try {
-      if (!await isPaidCreatorLifetimePaymentIntent(object.payment_intent)) {
-        return NextResponse.json({ received: true });
-      }
+      if (!event.id) throw new Error("Missing Stripe event ID.");
       const intent = await retrievePaidLifetimePaymentIntent(object.payment_intent);
       const charge = intent.latest_charge;
-      if (event.type === "charge.dispute.created" && charge?.disputed === true) {
-        await reversePaidCreatorLifetimePurchase(object.payment_intent,"disputed");
-      } else if (event.type === "charge.refunded" && charge?.refunded === true &&
-          intent.amount_received && charge.amount_refunded === intent.amount_received) {
-        await reversePaidCreatorLifetimePurchase(object.payment_intent,"refunded");
-      }
+      const reason = charge?.refunded ? "refunded" : event.type.startsWith("charge.dispute.")
+        ? "disputed" : "review";
+      await reversePaidCreatorLifetimePurchase(object.payment_intent, reason, event.id, event.type);
       return NextResponse.json({ received: true });
     } catch (error) {
       console.error("[Lifetime Checkout] Refund/dispute reversal requires reconciliation", {
