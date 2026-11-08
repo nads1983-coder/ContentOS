@@ -5,9 +5,9 @@ import { socialHashtag } from "@/lib/post-format";
 
 const sectionTags = (section: GeneratedSection) => hashtagTokens([section.body, ...section.items, section.cta ?? ""].join("\n"));
 const withoutTags = (text: string) => text.replace(socialHashtag, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
-const unique = (tags: string[]) => {
+const unique = (tags: string[], explicit = new Set<string>()) => {
   const seen = new Set<string>();
-  return tags.filter(tag => { const key = hashtagKey(tag); if (seen.has(key)) return false; seen.add(key); return true; });
+  return tags.filter(tag => { const raw = hashtagKey(tag); const group = /^(?:careerchange|changingcareers|careertransition)$/.test(raw) ? "careerchange" : raw; const key = explicit.has(raw) ? raw : group; if (seen.has(key) || (!explicit.has(raw) && tags.some(other => explicit.has(hashtagKey(other)) && /^(?:careerchange|changingcareers|careertransition)$/.test(hashtagKey(other))) && group === "careerchange")) return false; seen.add(key); return true; });
 };
 
 export function captionHashtags(result: GenerationResult) {
@@ -30,7 +30,7 @@ export function excludeCaptionHashtags(result: GenerationResult): GenerationResu
 // Captions allocate first, without reading the optional set. All additions pass
 // the same source policy and caps before exclusion from the additional pool.
 export function completeRequestedHashtags(result: GenerationResult, request: GenerationInput, policy = buildHashtagPolicy(request, result.sections.filter(s => isHashtagPlatform(s.type)).map(s => withoutTags(s.body)))): GenerationResult {
-  const accepted = (tags: string[]) => unique(tags.filter(policy.accepts));
+  const accepted = (tags: string[]) => unique(tags.filter(policy.accepts), policy.explicitKeys);
   const sections = result.sections.map(section => {
     if (!isHashtagPlatform(section.type) || !policy.enabled) return section;
     const previous = request.refinement?.section;

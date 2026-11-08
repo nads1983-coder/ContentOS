@@ -8,6 +8,11 @@ export function conceptualHashtags(source: string): string[] {
   const consistent = /\b(?:consisten(?:t|cy|tly)|regular(?:ly)?|showing up|daily practice|steady effort)\b/.test(text);
   const activity = /\b(?:post(?:s|ing)?|activ(?:e|ity)|creat(?:e|ing)|sharing|showing up|writing|presence|practice)\b/.test(text);
   const professional = /\b(?:linkedin|career|professional|workplace)\b/.test(text);
+  if (/\b(?:career|careers)\b/.test(text) && /\b(?:chang(?:e|ing)|transition|switch(?:ing)?|new career)\b/.test(text)) add("careerchange", "careertransition");
+  if (/\bconfidence\b/.test(text) && /\b(?:build(?:ing)?|grow(?:ing)?|develop(?:ing)?)\b/.test(text)) add("buildingconfidence");
+  if (/\bsmall business\b/.test(text)) add("smallbusiness");
+  if (/\bprofessional achievement\b/.test(text)) add("professionalachievement");
+  if (/\b(?:announc(?:e|ing)|introduc(?:e|ing))\b/.test(text) && /\bproduct\b/.test(text)) add("productannouncement");
   if (consistent && activity) add("consistency", "showingup");
   if (/\blinkedin\b/.test(text) && activity) {
     add("linkedinpresence");
