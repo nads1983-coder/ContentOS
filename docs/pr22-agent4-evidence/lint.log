@@ -1,0 +1,4 @@
+
+> social-content-os@0.1.0 lint
+> eslint app components lib types eslint.config.mjs next.config.ts tailwind.config.ts
+

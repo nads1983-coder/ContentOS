@@ -1,0 +1,56 @@
+{
+  "reviewed_head": "a5c3658",
+  "application_commit": "ffcf049fbd164519676f89e7e1fc22b29dd34911",
+  "decision": "NO-GO",
+  "targeted": {
+    "tests": 91,
+    "passed": 91
+  },
+  "typecheck": "passed",
+  "lint": "passed",
+  "full_suite": {
+    "tests": 475,
+    "pass": 463,
+    "fail": 10,
+    "skipped": 2
+  },
+  "baseline_failure_names_identical": true,
+  "postgres_evidence": "Agents 2/3 runs inspected; not rerun in Agent 4",
+  "real_stripe_sandbox": "not verified",
+  "preview_isolation": "not verified",
+  "application_changes": false,
+  "cost_scenarios": [
+    {
+      "model": "gpt-5.2",
+      "input_bound_or_example": 2000,
+      "output_bound_or_example": 1000,
+      "per_call_gbp": 0.021,
+      "per_customer_50_gbp": 1.05,
+      "cohort25_gbp": 26.25
+    },
+    {
+      "model": "gpt-5.2",
+      "input_bound_or_example": 2000,
+      "output_bound_or_example": 3000,
+      "per_call_gbp": 0.0546,
+      "per_customer_50_gbp": 2.73,
+      "cohort25_gbp": 68.25
+    },
+    {
+      "model": "gpt-5.2",
+      "input_bound_or_example": 132096,
+      "output_bound_or_example": 24000,
+      "per_call_gbp": 0.680602,
+      "per_customer_50_gbp": 34.0301,
+      "cohort25_gbp": 850.7525
+    },
+    {
+      "model": "gpt-4.1",
+      "input_bound_or_example": 132096,
+      "output_bound_or_example": 24000,
+      "per_call_gbp": 0.547431,
+      "per_customer_50_gbp": 27.37155,
+      "cohort25_gbp": 684.28875
+    }
+  ]
+}
