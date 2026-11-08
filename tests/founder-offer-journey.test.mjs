@@ -711,6 +711,8 @@ function customerRecoveryTransport(options = {}) {
     if (name === "@/lib/lite-availability") return { LITE_PURCHASES_SUSPENDED: true };
     // These historical acquisition fixtures retain coverage of pre-retirement claims.
     if (name === "@/lib/founder-retirement") return { FOUNDER_OFFER_RETIRED: false };
+    if (name === "@/lib/paid-lifetime-offer") return { PAID_LIFETIME_OFFER: { checkoutEnabled: false } };
+    if (name === "@/lib/paid-lifetime-stripe") return { buildLifetimeCheckoutParams: () => { throw Error("Lifetime sales disabled in Founder fixtures"); } };
     return require(name);
   }, fetch, URL, URLSearchParams, AbortSignal, Buffer, console: { error() {}, log() {} } });
   const api = module.exports;
