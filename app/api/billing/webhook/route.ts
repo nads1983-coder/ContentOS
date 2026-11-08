@@ -21,6 +21,7 @@ import {
   handleFounderSubscriptionEvent,
   isPermanentFounderActivationError
 } from "@/lib/founder-checkout-service";
+import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
 
 type StripeWebhookEvent = {
   type: string;
@@ -70,6 +71,12 @@ export async function POST(request: Request) {
   const object = event.data.object;
 
   if (event.type === "checkout.session.completed") {
+    // Never interpret a one-time lifetime payment as a recurring subscription.
+    // The paid fulfillment workflow is deliberately not live; ask Stripe to
+    // retry rather than lose a payment event or grant unverified access.
+    if (object.metadata?.offer === PAID_LIFETIME_OFFER.code) {
+      return NextResponse.json({ error: "Paid lifetime fulfillment is not enabled." }, { status: 503 });
+    }
     const isFounderCheckout = founderSubscriptionMetadataQualifies(object.metadata);
 
     if (isFounderCheckout) {
