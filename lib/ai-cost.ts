@@ -12,6 +12,11 @@ export class AICapacityError extends Error {
   }
 }
 export type CostQuote = { version: string; kind: "text" | "image"; model: string; hash: string; inputBound: number; outputBound: number; maximum: number };
+function textMicroUSD(model: string, input: number, output: number): number {
+  if (["gpt-4.1", "gpt-4.1-2025-04-14"].includes(model)) return input * 2 + output * 8;
+  if (["gpt-5.2", "gpt-5.2-2025-12-11"].includes(model)) return Math.ceil((input * 7 + output * 56) / 4);
+  throw new AICapacityError("unreviewed_provider_payload");
+}
 function imageOutputRate(model: string): number {
   if (model === DEFAULT_IMAGE_MODEL || model === "gpt-image-2.5-flare") return 30;
   if (model === "gpt-image-1") return 40;
@@ -30,9 +35,9 @@ export function quoteAI(kind: CostQuote["kind"], payload: Record<string, unknown
   const inputBound = bytes + 4096;
   let outputBound: number, usd: number;
   if (kind === "text") {
-    if (!["gpt-4.1", "gpt-4.1-2025-04-14"].includes(model) || bytes > COST_POLICY.textBytes ||
+    if (bytes > COST_POLICY.textBytes ||
         payload.max_output_tokens !== 24000 || payload.tools || payload.previous_response_id || payload.background) throw new AICapacityError("unreviewed_provider_payload");
-    outputBound = 24000; usd = inputBound * 2 + outputBound * 8;
+    outputBound = 24000; usd = textMicroUSD(model, inputBound, outputBound);
   } else {
     // Stop new reservations at the published shutdown date; retain settlement of old calls.
     if (model === "gpt-image-1" && now >= new Date("2026-10-23T00:00:00Z")) throw new AICapacityError("pricing_review_required");
@@ -59,7 +64,7 @@ export function usageCost(quote: CostQuote, usage: unknown): number | null {
   if (input > quote.inputBound || output > quote.outputBound) throw new AICapacityError("provider_cost_bound_exceeded");
   // Images here have text-only input; do not silently accept billable image inputs.
   if (quote.kind === "image" && (u.input_tokens_details as { image_tokens?: number } | undefined)?.image_tokens) throw new AICapacityError("provider_cost_bound_exceeded");
-  const cost = conservativeGBP(input * (quote.kind === "text" ? 2 : 5) + output * (quote.kind === "text" ? 8 : imageOutputRate(quote.model)));
+  const cost = conservativeGBP(quote.kind === "text" ? textMicroUSD(quote.model, input, output) : input * 5 + output * imageOutputRate(quote.model));
   if (cost > quote.maximum) throw new AICapacityError("provider_cost_bound_exceeded");
   return cost;
 }
