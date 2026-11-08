@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { loadTs } from "./image-test-helpers.mjs";
 
-const { buildLifetimeCheckoutParams, validatePaidLifetimeCheckout, validateLifetimePaymentIntent } = loadTs("lib/paid-lifetime-stripe.ts");
+const { buildLifetimeCheckoutParams, validatePaidLifetimeCheckout, validateLifetimePaymentIntent, validateFailedPaidLifetimeCheckout } = loadTs("lib/paid-lifetime-stripe.ts");
 const claim = { id: "purchase123", userId: "user123", attemptKey: "lifetime:one", pricePence: 9900, stripeCheckoutSessionId: "cs_test_abc" };
 const session = {
   id: "cs_test_abc", mode: "payment", status: "complete", payment_status: "paid",
@@ -20,6 +20,17 @@ test("lifetime Checkout has exactly one payment-mode item and account-bound meta
   assert.equal(body.get("metadata[attempt_key]"), claim.attemptKey);
   assert.equal(body.get("allow_promotion_codes"), null);
   assert.equal(body.get("subscription_data[metadata][offer]"), null);
+  assert.equal(body.get("payment_method_types[0]"), null, "Stripe selects eligible payment methods dynamically");
+});
+
+test("asynchronous failure releases only the matching unpaid one-time checkout", () => {
+  const failed = { ...session, payment_status: "unpaid", line_items: { ...session.line_items, has_more: false } };
+  assert.equal(validateFailedPaidLifetimeCheckout(failed, claim), true);
+  for (const patch of [
+    { payment_status: "paid" }, { status: "open" }, { amount_total: 14900 },
+    { client_reference_id: "other" }, { metadata: { ...session.metadata, attempt_key: "other" } },
+    { line_items: { data: [] } }
+  ]) assert.equal(validateFailedPaidLifetimeCheckout({ ...failed, ...patch }, claim), false);
 });
 
 test("only fully paid, exact-amount account-bound one-time sessions qualify", () => {
