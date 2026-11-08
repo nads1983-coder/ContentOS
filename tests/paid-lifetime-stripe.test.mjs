@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { loadTs } from "./image-test-helpers.mjs";
 
-const { buildLifetimeCheckoutParams, validatePaidLifetimeCheckout } = loadTs("lib/paid-lifetime-stripe.ts");
+const { buildLifetimeCheckoutParams, validatePaidLifetimeCheckout, validateLifetimePaymentIntent } = loadTs("lib/paid-lifetime-stripe.ts");
 const claim = { id: "purchase123", userId: "user123", attemptKey: "lifetime:one", pricePence: 9900, stripeCheckoutSessionId: "cs_test_abc" };
 const session = {
   id: "cs_test_abc", mode: "payment", status: "complete", payment_status: "paid",
@@ -33,8 +33,24 @@ test("only fully paid, exact-amount account-bound one-time sessions qualify", ()
     { metadata: { ...session.metadata, offer: "founder" } },
     { total_details: { amount_discount: 500 } },
     { line_items: { data: [] } },
+    { line_items: { ...session.line_items, has_more: true } },
     { line_items: { data: [{ ...session.line_items.data[0], quantity: 2 }] } },
     { line_items: { data: [{ ...session.line_items.data[0], price: { ...session.line_items.data[0].price, recurring: { interval: "month" } } }] } }
   ];
   for (const altered of alterations) assert.equal(validatePaidLifetimeCheckout({ ...session, ...altered }, claim), false, JSON.stringify(altered));
+});
+
+test("later refunds, disputes, partial payments and charge mismatches block activation", () => {
+  const charge = { id: "ch_123", paid: true, refunded: false, disputed: false, amount_refunded: 0 };
+  const intent = { id: "pi_123", status: "succeeded", currency: "gbp", amount: 9900,
+    amount_received: 9900, latest_charge: charge };
+  assert.equal(validateLifetimePaymentIntent(intent,session,9900),true);
+  for (const changed of [
+    { status: "requires_payment_method" }, { currency: "usd" },
+    { amount_received: 4900 }, { id: "pi_other" },
+    { latest_charge: { ...charge, refunded: true } },
+    { latest_charge: { ...charge, disputed: true } },
+    { latest_charge: { ...charge, amount_refunded: 500 } },
+    { latest_charge: null }
+  ]) assert.equal(validateLifetimePaymentIntent({ ...intent,...changed },session,9900),false,JSON.stringify(changed));
 });
