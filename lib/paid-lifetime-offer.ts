@@ -8,7 +8,9 @@ export const PAID_LIFETIME_OFFER = {
   monthlyAiImages: 0,
   currency: "gbp",
   /** Never infer launch readiness from environment configuration alone. */
-  checkoutEnabled: false
+  checkoutEnabled: false,
+  /** Keep this on after the first sale, even if new checkout is later closed. */
+  fulfillmentEnabled: false
 } as const;
 
 /** Count completed, non-reversed lifetime purchases, not checkout attempts. */
