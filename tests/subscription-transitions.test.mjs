@@ -43,6 +43,11 @@ function harness(profile = {}) {
   });
   const { POST } = loadTs("app/api/billing/webhook/route.ts", {
     "next/server": { NextResponse: Response }, "@/lib/founder-claim-repository": {},
+    "@/lib/paid-lifetime-fulfillment": {
+      completePaidCreatorLifetimePurchase: async () => { throw new Error("Unexpected lifetime fulfillment"); },
+      reversePaidCreatorLifetimePurchase: async () => { throw new Error("Unexpected lifetime reversal"); },
+      isPaidCreatorLifetimePaymentIntent: async () => false
+    },
     "@/lib/stripe-rest": { ...api, verifyStripeSignature: () => true },
     "@/lib/repository": { updateSubscriptionStatus: h.repository.updateSubscriptionStatus }
   }, new Map(), { console: quiet });
