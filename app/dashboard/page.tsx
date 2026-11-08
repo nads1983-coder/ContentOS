@@ -27,7 +27,7 @@ import {
 } from "@/lib/repository";
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
-import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement, hasPaidCreatorLifetimeEntitlement, paidCreatorLifetimeIsPrimary } from "@/lib/entitlements";
 import type { GenerationResult } from "@/types/content";
 
 export const dynamic = "force-dynamic";
@@ -197,9 +197,10 @@ export default async function DashboardPage() {
       console.warn("Dashboard brand profile fetch failed");
     }
   }
-  const plan = normalizePlanId(profile?.plan);
+  const paidCreatorPrimary = paidCreatorLifetimeIsPrimary(profile);
+  const plan = paidCreatorPrimary ? "pro_creator" : normalizePlanId(profile?.plan);
   const status = normalizeSubscriptionStatus(profile?.subscription_status);
-  const hasLifetimeAccess = hasLifetimeEntitlement(profile);
+  const hasLifetimeAccess = hasLifetimeEntitlement(profile) || hasPaidCreatorLifetimeEntitlement(profile);
   let billingCustomerUnavailable = false;
   if (hasLifetimeAccess && profile?.stripe_customer_id && isStripeConfigured()) {
     try {
@@ -208,10 +209,10 @@ export default async function DashboardPage() {
       // An outage must not be mistaken for a deleted billing account.
     }
   }
-  const hasActiveSubscription = planHasActiveEntitlement(plan, status);
+  const hasActiveSubscription = planHasActiveEntitlement(normalizePlanId(profile?.plan), status);
   const hasPendingCancellation = !hasLifetimeAccess && hasActiveSubscription && Boolean(profile?.subscription_cancel_at_period_end);
   const cancellationDate = profile?.subscription_cancel_at ?? profile?.subscription_current_period_end;
-  const canUpgradeToCreator = !hasActiveSubscription || plan === "lite";
+  const canUpgradeToCreator = !hasLifetimeAccess && (!hasActiveSubscription || plan === "lite");
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
   let monthlyUsageCount = 0;
 
@@ -219,14 +220,14 @@ export default async function DashboardPage() {
     try {
       monthlyUsageCount = await getMonthlyUsageCount({
         userId: profileUserId,
-        periodEnd: profile?.subscription_current_period_end
+        periodEnd: paidCreatorPrimary ? null : profile?.subscription_current_period_end
       });
     } catch {
       console.warn("Dashboard usage fetch failed");
     }
   }
 
-  const usage = buildUsageSummary(plan, monthlyUsageCount, profile?.subscription_current_period_end);
+  const usage = buildUsageSummary(plan, monthlyUsageCount, paidCreatorPrimary ? null : profile?.subscription_current_period_end);
   let recent: GenerationResult[] = [];
   let historyUnavailable = false;
   if (isDatabaseConfigured()) {
@@ -285,7 +286,7 @@ export default async function DashboardPage() {
               ) : null}
               {!canUpgradeToCreator && !canUpgradeToStudio ? (
                 <p className="rounded border border-white/10 bg-white/[0.035] p-3 text-sm text-muted">
-                  {hasLifetimeAccess ? "Your lifetime Pro Studio access is active." : "Your current plan is active."}
+                  {hasPaidCreatorLifetimeEntitlement(profile) ? "Your lifetime Pro Creator access is active." : hasLifetimeAccess ? "Your lifetime Pro Studio access is active." : "Your current plan is active."}
                 </p>
               ) : null}
               {profile?.stripe_customer_id && !billingCustomerUnavailable ? <ManageBillingButton /> : null}
