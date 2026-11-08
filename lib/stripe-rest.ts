@@ -759,7 +759,12 @@ export async function createPaidLifetimeCheckoutSession(input: {
     stripeRedirectUrl("/success?session_id={CHECKOUT_SESSION_ID}&lifetime=1"),
     stripeRedirectUrl("/pricing?lifetime=canceled"));
   if (input.customerId) body.set("customer", input.customerId);
-  else body.set("customer_email", input.email);
+  else {
+    // Payment-mode Checkout does not always create a Stripe Customer by
+    // default. Fulfillment requires a durable customer identity.
+    body.set("customer_email", input.email);
+    body.set("customer_creation", "always");
+  }
   const created = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body, {
     idempotencyKey: input.claim.attemptKey
   });
