@@ -40,8 +40,8 @@ function mapReservation(row: ReservationRow): PaidLifetimeReservation {
  */
 export async function reservePaidLifetimePurchase(userId: string, email: string): Promise<PaidLifetimeReservation> {
   if (!userId || !email.trim()) throw new Error("Authenticated account required.");
-  if (PAID_LIFETIME_OFFER.checkoutEnabled) {
-    throw new Error("Review checkout activation before enabling paid reservations.");
+  if (!PAID_LIFETIME_OFFER.checkoutEnabled) {
+    throw new Error("Paid lifetime reservations are not open.");
   }
   const client = await getPool().connect();
   try {
