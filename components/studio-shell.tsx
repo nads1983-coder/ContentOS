@@ -54,6 +54,7 @@ import {
 } from "@/lib/copy";
 import { formatOutputSection, formatSectionPlainText, formatSectionImageText, OutputBlock } from "@/lib/output-format";
 import { isImageContentType } from "@/lib/image-generation-contract";
+import { suggestImageDescription } from "@/lib/image-prefill";
 import { IMAGE_MODES, backgroundFromDesignImage, buildCreativeBrief, normaliseDesign, explicitQuote, QUOTE_LIMIT } from "@/lib/image-design";
 import type { ImageMode, ImageDesign } from "@/lib/image-design";
 import { buildSocialPosterContent, renderSocialPosterSvg, svgToDataUrl } from "@/lib/social-image";
@@ -1263,7 +1264,9 @@ export function StudioShell({
               onOpenImagePanel={(section) => {
                 if (!isImageContentType(section.type)) return;
                 setImageSection(section);
-                setImageSource(formatSectionImageText(section, result.source).slice(0, 2600));
+                const post = formatSectionImageText(section, result.source);
+                setImageSource(post.slice(0, 2600));
+                setImageInstructions(suggestImageDescription(post));
                 setImagePlatform(section.platform); imageUndo.current = null;
                 setImageError("");
               }}
