@@ -126,6 +126,10 @@ test("Lite webhook activation, upgrades, downgrades and cancellation preserve co
       reversePaidCreatorLifetimePurchase:async()=>{throw new Error("Unexpected lifetime reversal");},
       isPaidCreatorLifetimePaymentIntent:async()=>false
     },
+    "@/lib/paid-lifetime-reservations":{
+      getPaidLifetimeReservation:async()=>{throw new Error("Unexpected lifetime reservation lookup");},
+      terminatePaidLifetimeReservation:async()=>{throw new Error("Unexpected lifetime reservation termination");}
+    },
     "@/lib/stripe-rest":{...stripe,verifyStripeSignature:()=>true,getStripeSubscriptionState:async()=>stripe.stripeSubscriptionToState(current)},
     "@/lib/repository":{updateSubscriptionStatus:h.repository.updateSubscriptionStatus}
   },new Map(),{console:{log:()=>{},warn:()=>{},error:()=>{}}});
