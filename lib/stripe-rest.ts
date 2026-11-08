@@ -13,6 +13,7 @@ import { LITE_PURCHASES_SUSPENDED, LITE_SUSPENDED_MESSAGE } from "@/lib/lite-ava
 import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
 import { buildLifetimeCheckoutParams } from "@/lib/paid-lifetime-stripe";
 import type { LifetimeCheckoutClaim } from "@/lib/paid-lifetime-stripe";
+import type { LifetimePaymentIntent } from "@/lib/paid-lifetime-stripe";
 
 export type BillingPlan = "lite" | "pro_creator" | "pro_studio";
 
@@ -761,6 +762,13 @@ export async function createPaidLifetimeCheckoutSession(input: {
   // A payment session may not be marked paid yet. Fulfillment must separately
   // retrieve the expanded session and validate the exact completed payment.
   return created;
+}
+
+/** Read back the authoritative payment and expanded charge before fulfillment. */
+export async function retrievePaidLifetimePaymentIntent(paymentIntentId: string) {
+  if (!/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) throw new Error("Invalid payment intent ID.");
+  return stripeGet<LifetimePaymentIntent>(`payment_intents/${encodeURIComponent(paymentIntentId)}`,
+    new URLSearchParams({ "expand[]": "latest_charge" }));
 }
 
 export class BillingCustomerUnavailableError extends Error {
