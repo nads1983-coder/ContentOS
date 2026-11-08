@@ -37,6 +37,8 @@ export type UserProfile = {
   subscription_cancel_at?: string | null;
   entitlement_source?: string | null;
   amount_paid?: number | null;
+  paid_creator_lifetime_status?: "active" | "refunded" | "disputed" | null;
+  paid_creator_lifetime_purchase_id?: string | null;
   onboarding_completed?: boolean;
   created_at?: string;
   updated_at?: string;
