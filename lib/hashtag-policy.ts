@@ -87,7 +87,7 @@ export function buildHashtagPolicy(request: HashtagRequest, captionText: string[
   const explicitKeys = new Set([...explicit].map(hashtagKey));
   const fragment = (tag: string) => {
     const parts = tag.replace(/^#/, "").replace(/([a-z\d])([A-Z])/g, "$1 $2").toLowerCase().split(/[_\s]+/).filter(Boolean);
-    return /\d/.test(tag) || parts.some(part => /^(?:after|again|before|because|but|the|and|or|same|about|with|without|from|into|for|in|of|to)$/.test(part));
+    return /\d/.test(tag) || /againafter/i.test(hashtagKey(tag)) || parts.some(part => /^(?:after|again|before|because|but|the|and|or|same|about|with|without|from|into|for|in|of|to)$/.test(part));
   };
   const trustedThemes = new Set([...concepts, ...Object.values(socialThemes).flat().map(tag => `#${tag}`)].map(hashtagKey));
   const accepts = (tag: string) => enabled && (explicitKeys.has(hashtagKey(tag)) || trustedThemes.has(hashtagKey(tag)) || !fragment(tag)) && !generic.has(hashtagKey(tag)) && (allowed.has(hashtagKey(tag)) || grounded.accepts(tag)) && !denied.has(hashtagKey(tag)) &&

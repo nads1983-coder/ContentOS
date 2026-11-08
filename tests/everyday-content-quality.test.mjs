@@ -9,7 +9,7 @@ const section = (type, body, items=[]) => ({id:type,type,platform:type,title:'A 
 const run = (input, type, body, items=[]) => parse(JSON.stringify({title:'A reflection',summary:'A thought to share.',sections:[section(type,body,items)]}), normalize({source:input,selectedTypes:[type],tone:'friendly',ctaMode:'none'}));
 test('career example filters fragments and duplicate concepts on social platforms', () => {
  for (const type of ['linkedin','instagram','facebook']) {
-  const r=run(source,type,'A career change can feel daunting.', ['#12Years','#StartingAgainAfter','#ChangingCareers','#AgainAfter','#SameJob']);
+  const r=run(source,type,'A career change can feel daunting.', ['#12Years','#StartingAgainAfter','#ChangingCareers','#AgainAfter','#SameJob','#againafter','#startingagainafter']);
   const tags=r.sections[0].items;
   assert.doesNotMatch(tags.join(' '),/#12Years|#StartingAgainAfter|#AgainAfter|#SameJob/i);
   assert.ok(tags.some(t=>/careerchange|changingcareers|careertransition/i.test(t)));
