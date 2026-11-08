@@ -64,7 +64,6 @@ export function buildLifetimeCheckoutParams(claim: LifetimeCheckoutClaim, succes
   }
   return new URLSearchParams({
     mode: "payment",
-    "payment_method_types[0]": "card",
     success_url: successUrl,
     cancel_url: cancelUrl,
     client_reference_id: claim.userId,
@@ -121,4 +120,22 @@ export function validateOpenPaidLifetimeCheckout(session: LifetimeStripeSession,
     item[0]?.price?.unit_amount === claim.pricePence &&
     item[0]?.price?.type === "one_time" && !item[0]?.price?.recurring &&
     typeof session.expires_at === "number" && session.expires_at * 1000 > Date.now());
+}
+
+/** A signed async failure may release a slot only after a fresh, account-bound Stripe lookup. */
+export function validateFailedPaidLifetimeCheckout(session: LifetimeStripeSession, claim: LifetimeCheckoutClaim) {
+  const item = session.line_items?.data;
+  return Boolean(session.id === claim.stripeCheckoutSessionId && session.status === "complete" &&
+    session.payment_status === "unpaid" && session.mode === "payment" &&
+    session.currency === PAID_LIFETIME_OFFER.currency &&
+    session.amount_total === claim.pricePence && session.amount_subtotal === claim.pricePence &&
+    session.total_details?.amount_discount === 0 &&
+    session.client_reference_id === claim.userId &&
+    session.metadata?.offer === PAID_LIFETIME_OFFER.code &&
+    session.metadata?.purchase_id === claim.id && session.metadata?.user_id === claim.userId &&
+    session.metadata?.attempt_key === claim.attemptKey &&
+    session.line_items?.has_more === false && item?.length === 1 && item[0]?.quantity === 1 &&
+    item[0]?.amount_total === claim.pricePence && item[0]?.price?.unit_amount === claim.pricePence &&
+    item[0]?.price?.currency === PAID_LIFETIME_OFFER.currency &&
+    item[0]?.price?.type === "one_time" && !item[0]?.price?.recurring);
 }
