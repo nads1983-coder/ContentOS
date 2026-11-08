@@ -39,7 +39,7 @@ const socialThemes: Record<HashtagPlatform, string[]> = {
   twitter: ["ContentStrategy", "SocialMediaMarketing"],
   youtubeShorts: ["YouTubeShortsTips", "ContentStrategy", "SocialMediaMarketing"]
 };
-const canonical = new Map(["Entrepreneurship", "StartingABusiness", "SmallBusinessJourney", "Leadership", "PeopleManagement", "Confidence", "PersonalDevelopment", "BusinessGrowth", "CustomerRelationships", "CareerChange", "CareerTransition", "BuildingConfidence", "SmallBusiness", "ProfessionalAchievement", "ProductAnnouncement", "Consistency", "ShowingUp", "LinkedInPresence", "LinkedInGrowth", "PersonalBranding", "ProfessionalGrowth", "ProfessionalDevelopment", "SkillDevelopment", "Learning", "Coding", "Programming", "SoftwareDevelopment", "Productivity", "TimeManagement", "Creativity", "CreativeProcess"].map(tag => [hashtagKey(tag), `#${tag}`]));
+const canonical = new Map(["Entrepreneurship", "StartingABusiness", "SmallBusinessJourney", "Leadership", "PeopleManagement", "Confidence", "PersonalDevelopment", "GrowthMindset", "BusinessGrowth", "CustomerRelationships", "CareerChange", "CareerTransition", "BuildingConfidence", "SmallBusiness", "ProfessionalAchievement", "ProductAnnouncement", "Consistency", "ShowingUp", "LinkedInPresence", "LinkedInGrowth", "PersonalBranding", "ProfessionalGrowth", "ProfessionalDevelopment", "SkillDevelopment", "Learning", "Coding", "Programming", "SoftwareDevelopment", "Productivity", "TimeManagement", "Creativity", "CreativeProcess"].map(tag => [hashtagKey(tag), `#${tag}`]));
 
 export function buildHashtagPolicy(request: HashtagRequest, captionText: string[] = []) {
   const scope = brandContextScope(request);
