@@ -1,5 +1,5 @@
 import type { GenerateRequest } from "@/types/content";
-import { channelClaims, channelEvidence, milestoneEvidence, promotionEvidence, subjectText, sourceEvidence } from "@/lib/claim-evidence";
+import { careerDurationEvidence, channelClaims, channelEvidence, milestoneEvidence, promotionEvidence, subjectText, sourceEvidence } from "@/lib/claim-evidence";
 import { plainPostText, socialHashtag } from "@/lib/post-format";
 import { brandContextScope, mentionsBrand } from "@/lib/brand-context";
 
@@ -9,6 +9,7 @@ const highRiskClaims = [
   /\b(?:we|I|our business|our company|our brand|the business|the company|the brand)\s+(?:was |were )?(?:started|began|founded|launched|built)\s+(?:(?:this|our|the)\s+(?:business|company|brand)\s+)?(?:as|in|from|with|by|back in)\b/i,
   /\b(?:our|my|the)\s+(?:founder|founding|origin)\s+(?:story|journey|team)\b/i,
   /\b(?:I|we)\s+(?:worked as|lived in|grew up|quit my|quit our|spent \d+ years|remember when)\b/i,
+  /\bi(?: have|'ve) spent \d+ (?:years?|months?)\b/i,
   /\b(?:customers?|clients?|reviewers?)\s+(?:say|said|told us|rated|love|report|reported)\b/i,
   /\b(?:testimonial|five.star rated|5.star rated|award.winning|certified|accredited)\b/i,
   /\b(?:won|received|earned)\b[^.!?\n]{0,60}\b(?:award|qualification|certification)\b/i,
@@ -93,6 +94,10 @@ export function reviewBusinessFacts(value: unknown, request: GenerateRequest): G
     const supported = evidence.find(source => subjectText(source.text, request) === subjectText(claim, request) && !(source.source === "offer" && evidence.some(current =>
       current.source === "brief" && classify(current.text) === claimCategory && /\b(?:not|never|no longer|do not|don't)\b/.test(current.text))));
     if (supported) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: supported.source, index: supported.index } };
+    if (claimCategory === "high_risk") {
+      const career = careerDurationEvidence(sentence, request);
+      if (career) return { ...base, category: claimCategory, classification: "source_supported", evidence: career };
+    }
     if (claimCategory) {
       const fact = milestoneEvidence(sentence, String(path), request);
       if (fact) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: fact.source, index: fact.index } };

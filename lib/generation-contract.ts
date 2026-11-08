@@ -227,7 +227,7 @@ export function parseGenerationOutput(text: string, request: GenerationInput): G
     const raw = JSON.parse(text);
     let prepared;
     try { prepared = preparePublication(raw, request); }
-    catch { throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged."); }
+    catch { throw new GenerationGroundingError("Details could not be verified against your brief. Your existing draft is unchanged."); }
     const parsed = parseProductionGeneration(JSON.stringify(prepared.value), request);
     // Rebuilding a hashtag set must not conceal an instruction violation.
     if (hasForbiddenCta(parsed, request)) throw new GenerationOutputError("The response conflicts with No CTA.");
@@ -239,7 +239,7 @@ export function parseGenerationOutput(text: string, request: GenerationInput): G
       throw new Error("Missing or duplicate requested formats.");
     }
     if (new TextEncoder().encode(JSON.stringify(result)).byteLength > GENERATION_LIMITS.resultBytes) throw new Error("Output too large.");
-    if (hasUnsupportedBusinessFacts(result, request)) throw new GenerationGroundingError("Unsupported business details were detected. Your existing draft is unchanged.");
+    if (hasUnsupportedBusinessFacts(result, request)) throw new GenerationGroundingError("Details could not be verified against your brief. Your existing draft is unchanged.");
     if (hasForbiddenCta(result, request)) throw new GenerationOutputError("The response conflicts with No CTA.");
     return result;
   } catch (error) {

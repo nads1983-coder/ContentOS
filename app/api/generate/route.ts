@@ -143,7 +143,7 @@ export async function POST(nextRequest: NextRequest) {
       (error instanceof Error && ["AbortError", "TimeoutError", "APIConnectionTimeoutError", "APIUserAbortError"].includes(error.name));
     return NextResponse.json({
       error: error instanceof GenerationGroundingError
-        ? "The AI added business details that could not be matched to your brief. This result was not saved and your existing draft is unchanged. No successful generation was recorded."
+        ? "The AI added details that could not be verified against your brief. This result was not saved and your existing draft is unchanged. No successful generation was recorded."
         : invalidOutput
           ? "The AI returned an incomplete or invalid pack. No successful generation was recorded."
           : timedOut

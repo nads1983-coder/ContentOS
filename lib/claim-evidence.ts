@@ -23,6 +23,19 @@ export function sourceEvidence(request: GenerateRequest) {
     .filter(fact => isConfirmedFact(fact.text)));
 }
 
+// Match only complete first-person formulations with the same duration and
+// unchanged employment context. Restrictive grammar prevents extra claims from
+// borrowing evidence, including negation, occupations or employer names.
+export function careerDurationEvidence(value: string, request: GenerateRequest) {
+  const source = factualText(request.source);
+  const brief = source.match(/^i(?:'m| am) (?:thinking about|considering) changing careers,? but i(?:'m| am) worried about starting again after (\d+) (years?|months?) in the same job$/);
+  if (!brief) return undefined;
+  const claim = factualText(value);
+  const match = claim.match(/^i(?: spent| have spent|'ve spent) (\d+) (years?|months?) in the same job,? and i(?: am|'m) (?:considering|thinking about) (?:a career change|changing careers)$/);
+  if (!match || match[1] !== brief[1] || match[2] !== brief[2]) return undefined;
+  return { source: "brief" as const, index: 0 };
+}
+
 export function promotionEvidence(value: string, request: GenerateRequest) {
   const text = subjectText(value, request);
   const existence = text.match(/^(?:to celebrate this milestone, )?we(?:'re| are) (?:running|hosting|holding|launching) a (giveaway|competition|contest)$/);
