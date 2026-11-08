@@ -10,6 +10,9 @@ import {
 } from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
 import { LITE_PURCHASES_SUSPENDED, LITE_SUSPENDED_MESSAGE } from "@/lib/lite-availability";
+import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
+import { buildLifetimeCheckoutParams } from "@/lib/paid-lifetime-stripe";
+import type { LifetimeCheckoutClaim } from "@/lib/paid-lifetime-stripe";
 
 export type BillingPlan = "lite" | "pro_creator" | "pro_studio";
 
@@ -733,6 +736,31 @@ export async function expireCheckoutSession(sessionId: string) {
     `checkout/sessions/${encodeURIComponent(sessionId)}/expire`,
     new URLSearchParams()
   );
+}
+
+/** Prepared only: deliberately inaccessible while the commercial gate is off. */
+export async function createPaidLifetimeCheckoutSession(input: {
+  claim: LifetimeCheckoutClaim;
+  customerId?: string | null;
+  email: string;
+}) {
+  if (!PAID_LIFETIME_OFFER.checkoutEnabled) {
+    throw new Error("Paid lifetime checkout is not open.");
+  }
+  const body = buildLifetimeCheckoutParams(input.claim,
+    stripeRedirectUrl("/success?session_id={CHECKOUT_SESSION_ID}&lifetime=1"),
+    stripeRedirectUrl("/pricing?lifetime=canceled"));
+  if (input.customerId) body.set("customer", input.customerId);
+  else body.set("customer_email", input.email);
+  const created = await stripeRequest<StripeCheckoutSession>("checkout/sessions", body, {
+    idempotencyKey: input.claim.attemptKey
+  });
+  if (!created.id || !created.url) {
+    throw new Error("Stripe did not provide a valid lifetime checkout session.");
+  }
+  // A payment session may not be marked paid yet. Fulfillment must separately
+  // retrieve the expanded session and validate the exact completed payment.
+  return created;
 }
 
 export class BillingCustomerUnavailableError extends Error {
