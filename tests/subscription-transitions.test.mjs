@@ -48,6 +48,10 @@ function harness(profile = {}) {
       reversePaidCreatorLifetimePurchase: async () => { throw new Error("Unexpected lifetime reversal"); },
       isPaidCreatorLifetimePaymentIntent: async () => false
     },
+    "@/lib/paid-lifetime-reservations": {
+      getPaidLifetimeReservation: async () => { throw new Error("Unexpected lifetime reservation lookup"); },
+      terminatePaidLifetimeReservation: async () => { throw new Error("Unexpected lifetime reservation termination"); }
+    },
     "@/lib/stripe-rest": { ...api, verifyStripeSignature: () => true },
     "@/lib/repository": { updateSubscriptionStatus: h.repository.updateSubscriptionStatus }
   }, new Map(), { console: quiet });
