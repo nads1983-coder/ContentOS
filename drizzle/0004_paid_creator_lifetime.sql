@@ -11,6 +11,7 @@ CREATE TABLE contentos_app.paid_creator_lifetime_purchases (
   early_bird_slot smallint CHECK (early_bird_slot BETWEEN 1 AND 25),
   attempt_key text NOT NULL UNIQUE,
   stripe_checkout_session_id text UNIQUE,
+  stripe_checkout_url text,
   stripe_payment_intent_id text UNIQUE,
   stripe_customer_id text,
   expires_at timestamptz,
@@ -48,5 +49,5 @@ CREATE INDEX paid_lifetime_user_history
 REVOKE ALL ON contentos_app.paid_creator_lifetime_purchases FROM PUBLIC;
 GRANT SELECT, INSERT ON contentos_app.paid_creator_lifetime_purchases TO contentos_runtime;
 GRANT UPDATE(status,stripe_checkout_session_id,stripe_payment_intent_id,
-  stripe_customer_id,expires_at,completed_at,reversed_at,updated_at)
+  stripe_checkout_url,stripe_customer_id,expires_at,completed_at,reversed_at,updated_at)
   ON contentos_app.paid_creator_lifetime_purchases TO contentos_runtime;
