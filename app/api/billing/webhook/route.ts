@@ -24,6 +24,8 @@ import {
 } from "@/lib/founder-checkout-service";
 import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
 import { completePaidCreatorLifetimePurchase, reversePaidCreatorLifetimePurchase, isPaidCreatorLifetimePaymentIntent } from "@/lib/paid-lifetime-fulfillment";
+import { getPaidLifetimeReservation, terminatePaidLifetimeReservation } from "@/lib/paid-lifetime-reservations";
+import { validateFailedPaidLifetimeCheckout } from "@/lib/paid-lifetime-stripe";
 
 type StripeWebhookEvent = {
   type: string;
@@ -73,30 +75,43 @@ export async function POST(request: Request) {
   }
   const object = event.data.object;
 
-  if (event.type === "checkout.session.completed") {
-    // Never interpret a one-time lifetime payment as a recurring subscription.
-    // The paid fulfillment workflow is deliberately not live; ask Stripe to
-    // retry rather than lose a payment event or grant unverified access.
-    if (object.metadata?.offer === PAID_LIFETIME_OFFER.code) {
-      if (!PAID_LIFETIME_OFFER.checkoutEnabled) {
-        return NextResponse.json({ error: "Paid lifetime fulfillment is not enabled." }, { status: 503 });
-      }
-      try {
-        if (!object.id || !object.metadata.purchase_id) throw new Error("Missing lifetime purchase identifier.");
-        const session = await retrieveCheckoutSession(object.id);
-        const intentId = typeof session.payment_intent === "string"
-          ? session.payment_intent : session.payment_intent?.id;
-        if (!intentId) throw new Error("Missing lifetime payment intent.");
-        const intent = await retrievePaidLifetimePaymentIntent(intentId);
-        await completePaidCreatorLifetimePurchase(object.metadata.purchase_id,session,intent);
-        return NextResponse.json({ received: true });
-      } catch (error) {
-        console.error("[Lifetime Checkout] Payment verification or fulfillment requires retry", {
-          sessionId: object.id, error: error instanceof Error ? error.message : "Unknown error"
-        });
-        return NextResponse.json({ error: "Lifetime fulfillment requires reconciliation." }, { status: 503 });
-      }
+  const isLifetimeCheckoutEvent = [
+    "checkout.session.completed", "checkout.session.async_payment_succeeded", "checkout.session.async_payment_failed"
+  ].includes(event.type) && object.metadata?.offer === PAID_LIFETIME_OFFER.code;
+  if (isLifetimeCheckoutEvent) {
+    if (!PAID_LIFETIME_OFFER.fulfillmentEnabled) {
+      return NextResponse.json({ error: "Paid lifetime fulfillment is not enabled." }, { status: 503 });
     }
+    try {
+      if (!object.id || !object.metadata?.purchase_id) throw new Error("Missing lifetime purchase identifier.");
+      const session = await retrieveCheckoutSession(object.id);
+      if (event.type === "checkout.session.completed" && session.payment_status === "unpaid") {
+        // Payment methods with delayed settlement must not grant access yet.
+        return NextResponse.json({ received: true, pending: true });
+      }
+      if (event.type === "checkout.session.async_payment_failed") {
+        const claim = await getPaidLifetimeReservation(object.metadata.purchase_id);
+        if (!claim || !validateFailedPaidLifetimeCheckout(session, claim)) {
+          throw new Error("Failed payment cannot be reconciled to an open reservation.");
+        }
+        await terminatePaidLifetimeReservation(claim.id, "failed");
+        return NextResponse.json({ received: true });
+      }
+      const intentId = typeof session.payment_intent === "string"
+        ? session.payment_intent : session.payment_intent?.id;
+      if (!intentId) throw new Error("Missing lifetime payment intent.");
+      const intent = await retrievePaidLifetimePaymentIntent(intentId);
+      await completePaidCreatorLifetimePurchase(object.metadata.purchase_id, session, intent);
+      return NextResponse.json({ received: true });
+    } catch (error) {
+      console.error("[Lifetime Checkout] Payment verification or fulfillment requires retry", {
+        sessionId: object.id, error: error instanceof Error ? error.message : "Unknown error"
+      });
+      return NextResponse.json({ error: "Lifetime fulfillment requires reconciliation." }, { status: 503 });
+    }
+  }
+
+  if (event.type === "checkout.session.completed") {
     const isFounderCheckout = founderSubscriptionMetadataQualifies(object.metadata);
 
     if (isFounderCheckout) {
@@ -202,7 +217,7 @@ export async function POST(request: Request) {
   }
 
   if (["charge.refunded","charge.dispute.created"].includes(event.type) && object.payment_intent) {
-    if (!PAID_LIFETIME_OFFER.checkoutEnabled) {
+    if (!PAID_LIFETIME_OFFER.fulfillmentEnabled) {
       // These events may also belong to unrelated Stripe products. Leave them
       // to existing billing flows while this paid offer is commercially closed.
       return NextResponse.json({ received: true });
