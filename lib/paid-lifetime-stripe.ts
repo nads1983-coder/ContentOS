@@ -20,13 +20,40 @@ export type LifetimeStripeSession = {
   payment_intent?: string | { id: string } | null;
   customer?: string | null;
   metadata?: Record<string, string>;
-  line_items?: { data?: Array<{
+  line_items?: { has_more?: boolean; data?: Array<{
     quantity?: number;
     amount_total?: number;
     price?: { currency?: string; unit_amount?: number | null; type?: string; recurring?: unknown };
   }> };
   total_details?: { amount_discount?: number | null };
 };
+
+export type LifetimePaymentIntent = {
+  id?: string;
+  status?: string;
+  currency?: string;
+  amount?: number;
+  amount_received?: number;
+  latest_charge?: {
+    id?: string;
+    paid?: boolean;
+    refunded?: boolean;
+    disputed?: boolean;
+    amount_refunded?: number;
+  } | null;
+};
+
+/** A paid Checkout session alone remains paid after some later reversals. */
+export function validateLifetimePaymentIntent(intent: LifetimePaymentIntent, session: LifetimeStripeSession, pricePence: number) {
+  const expectedId = typeof session.payment_intent === "string"
+    ? session.payment_intent : session.payment_intent?.id;
+  const charge = intent.latest_charge;
+  return Boolean(expectedId && intent.id === expectedId && intent.status === "succeeded" &&
+    intent.currency === PAID_LIFETIME_OFFER.currency && intent.amount === pricePence &&
+    intent.amount_received === pricePence && charge?.id?.startsWith("ch_") &&
+    charge.paid === true && charge.refunded === false && charge.disputed === false &&
+    charge.amount_refunded === 0);
+}
 
 export function buildLifetimeCheckoutParams(claim: LifetimeCheckoutClaim, successUrl: string, cancelUrl: string) {
   if (!claim.userId || !claim.id || !claim.attemptKey ||
@@ -69,7 +96,7 @@ export function validatePaidLifetimeCheckout(session: LifetimeStripeSession, cla
     session.metadata?.attempt_key === claim.attemptKey &&
     (typeof intent === "string" ? intent.startsWith("pi_") : Boolean(intent?.id?.startsWith("pi_"))) &&
     typeof session.customer === "string" && session.customer.startsWith("cus_") &&
-    item?.length === 1 && item[0]?.quantity === 1 &&
+    session.line_items?.has_more !== true && item?.length === 1 && item[0]?.quantity === 1 &&
     item[0]?.amount_total === claim.pricePence &&
     item[0]?.price?.currency === PAID_LIFETIME_OFFER.currency &&
     item[0]?.price?.unit_amount === claim.pricePence &&
