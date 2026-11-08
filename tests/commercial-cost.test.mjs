@@ -86,3 +86,13 @@ test("known usage reconciles conservatively; uncertain and malformed usage never
   assert.throws(()=>usageCost(q,{input_tokens:q.inputBound+1,output_tokens:0}));
   assert.throws(()=>usageCost(quoteAI("image",image,date),{input_tokens:10,output_tokens:10,input_tokens_details:{image_tokens:1}}));
 });
+test("GPT-5.2 default and pinned model use their own verified rates, including fractional input pricing", () => {
+  for (const model of ["gpt-5.2", "gpt-5.2-2025-12-11"]) {
+    const q = quoteAI("text", { ...text, model }, new Date("2026-11-08T00:00:00Z"));
+    const expectedMax = conservativeGBP(Math.ceil((q.inputBound * 7 + q.outputBound * 56) / 4));
+    assert.equal(q.maximum, expectedMax);
+    assert.equal(usageCost(q, { input_tokens: 2000, output_tokens: 1000 }), 21000);
+    assert.equal(usageCost(q, { input_tokens: q.inputBound, output_tokens: q.outputBound }), expectedMax);
+  }
+  assert.equal(usageCost(quoteAI("text", text, date), { input_tokens: 2000, output_tokens: 1000 }), 14400);
+});
