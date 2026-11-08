@@ -10,6 +10,8 @@ export type LifetimeCheckoutClaim = {
 
 export type LifetimeStripeSession = {
   id?: string;
+  url?: string | null;
+  expires_at?: number | null;
   mode?: string | null;
   status?: string | null;
   payment_status?: string | null;
@@ -62,6 +64,7 @@ export function buildLifetimeCheckoutParams(claim: LifetimeCheckoutClaim, succes
   }
   return new URLSearchParams({
     mode: "payment",
+    "payment_method_types[0]": "card",
     success_url: successUrl,
     cancel_url: cancelUrl,
     client_reference_id: claim.userId,
@@ -102,4 +105,20 @@ export function validatePaidLifetimeCheckout(session: LifetimeStripeSession, cla
     item[0]?.price?.unit_amount === claim.pricePence &&
     item[0]?.price?.type === "one_time" && !item[0]?.price?.recurring
   );
+}
+
+export function validateOpenPaidLifetimeCheckout(session: LifetimeStripeSession, claim: LifetimeCheckoutClaim) {
+  const item = session.line_items?.data;
+  return Boolean(session.id?.startsWith("cs_") && session.url?.startsWith("https://checkout.stripe.com/") &&
+    session.mode === "payment" && session.status === "open" && session.payment_status === "unpaid" &&
+    session.currency === PAID_LIFETIME_OFFER.currency && session.amount_total === claim.pricePence &&
+    session.amount_subtotal === claim.pricePence && session.total_details?.amount_discount === 0 &&
+    session.client_reference_id === claim.userId && session.metadata?.offer === PAID_LIFETIME_OFFER.code &&
+    session.metadata?.user_id === claim.userId && session.metadata?.purchase_id === claim.id &&
+    session.metadata?.attempt_key === claim.attemptKey && session.line_items?.has_more !== true &&
+    item?.length === 1 && item[0]?.quantity === 1 && item[0]?.amount_total === claim.pricePence &&
+    item[0]?.price?.currency === PAID_LIFETIME_OFFER.currency &&
+    item[0]?.price?.unit_amount === claim.pricePence &&
+    item[0]?.price?.type === "one_time" && !item[0]?.price?.recurring &&
+    typeof session.expires_at === "number" && session.expires_at * 1000 > Date.now());
 }
