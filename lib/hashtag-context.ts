@@ -10,7 +10,10 @@ export function conceptualHashtags(source: string): string[] {
   const professional = /\b(?:linkedin|career|professional|workplace)\b/.test(text);
   // Activate topic suggestions only from affirmative brief language.
   const affirmative = !/\b(?:not|never|no longer|do not|don't|avoid)\b/.test(text);
-  if (affirmative && /\b(?:start(?:ing|ed)?|launch(?:ing|ed)?|found(?:ing|ed)?)\b/.test(text) && /\b(?:business|company)\b/.test(text)) add("entrepreneurship", "startingabusiness", "smallbusinessjourney");
+  if (affirmative && /\b(?:start(?:ing|ed)?|launch(?:ing|ed)?|found(?:ing|ed)?)\b/.test(text) && /\b(?:business|company)\b/.test(text)) {
+    add("entrepreneurship", "startingabusiness");
+    if (/\b(?:small business|(?:my|our) own business)\b/.test(text)) add("smallbusinessjourney");
+  }
   if (affirmative && /\b(?:leader|leadership|manag(?:er|ement|ing))\b/.test(text)) {
     add("leadership");
     if (/\b(?:team|people|employees|staff)\b/.test(text)) add("peoplemanagement");

@@ -38,3 +38,9 @@ test('case variants of fragments and duplicate career concepts do not survive',(
  assert.doesNotMatch(tags.join(' '),/againafter/i);
  assert.equal(tags.filter(t=>/^(?:#careerchange|#careertransition|#changingcareers)$/i.test(t)).length,1);
 });
+
+test('business size is not inferred from a company launch',()=>{
+ const tags=run('We are launching a multinational company.',[]);
+ assert.ok(tags.includes('#StartingABusiness'));
+ assert.ok(!tags.includes('#SmallBusinessJourney'));
+});
