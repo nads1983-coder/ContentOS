@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { contentTypes } from "@/lib/content-config";
-import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement, paidCreatorLifetimeIsPrimary } from "@/lib/entitlements";
 import { normalizePlanId, normalizeSubscriptionStatus, planHasActiveEntitlement } from "@/lib/stripe-rest";
 import { currentUsageWindow, monthlyLimitForPlan } from "@/lib/usage";
 import { assertWorkspaceAccount, parseWorkspaceGeneration, profileArray } from "@/lib/workspace-contract";
@@ -81,6 +81,7 @@ function admitTextAttempt(data: Document, now: Date) {
 export function effectiveGenerationPlan(data: UserProfile, now = new Date()): PlanId {
   const profile = { ...data, plan: normalizePlanId(data.plan), subscription_status: normalizeSubscriptionStatus(data.subscription_status) };
   if (hasLifetimeEntitlement(profile)) return profile.plan;
+  if (paidCreatorLifetimeIsPrimary(profile, now)) return "pro_creator";
   if (!planHasActiveEntitlement(profile.plan, profile.subscription_status)) return "free";
   // A stale active billing record must not extend an expired paid subscription.
   if (profile.subscription_current_period_end && !(Date.parse(profile.subscription_current_period_end) > now.getTime())) return "free";
@@ -197,7 +198,8 @@ export function reserveGenerationInProfile(data: Document, userId: string, reque
   if (entries.filter(r => r.status === "reserved").length >= GENERATION_RETENTION.concurrentRequests) throw new GenerationReservationError("Too many generations are in progress. Wait for them to finish before starting another.", 429, "generation_concurrency_limit");
   const plan = effectiveGenerationPlan(data, now);
   if (plan === "free" && request.selectedTypes.some(id => contentTypes.find(type => type.id === id)?.paidOnly)) throw new GenerationReservationError("These outputs require a paid plan.", 403, "paid_output_required");
-  const { periodStart, periodEnd } = currentUsageWindow(now, hasLifetimeEntitlement(data) ? null : data.subscription_current_period_end);
+  const { periodStart, periodEnd } = currentUsageWindow(now,
+    hasLifetimeEntitlement(data) || paidCreatorLifetimeIsPrimary(data, now) ? null : data.subscription_current_period_end);
   const used = usageInWindow(data, userId, periodStart, periodEnd);
   const pending = entries.filter(r => r.status === "reserved" && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
   if (used.text + used.other + pending >= monthlyLimitForPlan(plan)) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
