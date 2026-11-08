@@ -10,6 +10,9 @@ export type PaidLifetimeReservation = {
   earlyBirdSlot: number | null;
   attemptKey: string;
   status: string;
+  stripeCheckoutSessionId: string | null;
+  stripeCheckoutUrl: string | null;
+  createdAt: string;
 };
 
 type ReservationRow = {
@@ -19,6 +22,9 @@ type ReservationRow = {
   early_bird_slot: number | null;
   attempt_key: string;
   status: string;
+  stripe_checkout_session_id: string | null;
+  stripe_checkout_url: string | null;
+  created_at: string | Date;
 };
 
 function mapReservation(row: ReservationRow): PaidLifetimeReservation {
@@ -28,8 +34,42 @@ function mapReservation(row: ReservationRow): PaidLifetimeReservation {
     pricePence: row.price_pence,
     earlyBirdSlot: row.early_bird_slot,
     attemptKey: row.attempt_key,
-    status: row.status
+    status: row.status,
+    stripeCheckoutSessionId: row.stripe_checkout_session_id,
+    stripeCheckoutUrl: row.stripe_checkout_url,
+    createdAt: new Date(row.created_at).toISOString()
   };
+}
+
+export async function getPaidLifetimeReservation(purchaseId: string) {
+  const row = (await getPool().query<ReservationRow>(
+    `SELECT * FROM contentos_app.paid_creator_lifetime_purchases WHERE id=$1`, [purchaseId]
+  )).rows[0];
+  return row ? mapReservation(row) : null;
+}
+
+export async function recordPaidLifetimeCheckoutSession(purchaseId: string, sessionId: string, url: string, expiresAt: string) {
+  const row = (await getPool().query<ReservationRow>(
+    `UPDATE contentos_app.paid_creator_lifetime_purchases
+     SET status='open',stripe_checkout_session_id=$2,stripe_checkout_url=$3,
+         expires_at=$4,updated_at=now()
+     WHERE id=$1 AND status IN ('preparing','open')
+       AND (stripe_checkout_session_id IS NULL OR stripe_checkout_session_id=$2)
+     RETURNING *`, [purchaseId,sessionId,url,expiresAt]
+  )).rows[0];
+  if (!row) throw new Error("Checkout reservation could not be recorded.");
+  return mapReservation(row);
+}
+
+/** Caller must prove Stripe session is terminal (or that no POST was attempted). */
+export async function terminatePaidLifetimeReservation(purchaseId: string, status: "expired" | "canceled" | "invalid" | "failed") {
+  const row = (await getPool().query<ReservationRow>(
+    `UPDATE contentos_app.paid_creator_lifetime_purchases
+     SET status=$2,updated_at=now()
+     WHERE id=$1 AND status IN ('preparing','open') RETURNING *`, [purchaseId,status]
+  )).rows[0];
+  if (!row) throw new Error("Checkout reservation may have been completed or reversed.");
+  return mapReservation(row);
 }
 
 /**
