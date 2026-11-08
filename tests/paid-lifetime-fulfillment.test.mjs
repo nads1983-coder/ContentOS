@@ -69,6 +69,22 @@ test("unmatched refund survives stale completion and duplicate events",async()=>
   assert.equal(h.state.profile.paid_creator_lifetime_status,"refunded");
 });
 
+test("partial refund preserves existing access but cannot activate an unfulfilled payment",async()=>{
+  const active=harness();
+  await active.api.completePaidCreatorLifetimePurchase("purchase1",session,intent);
+  assert.equal((await active.api.reversePaidCreatorLifetimePurchase("pi_123","review","evt_partial")).status,"review");
+  assert.equal(active.state.profile.paid_creator_lifetime_status,"active");
+  assert.equal((await active.api.completePaidCreatorLifetimePurchase("purchase1",session,intent)).status,"review");
+  await active.api.reversePaidCreatorLifetimePurchase("pi_123","refunded","evt_full");
+  assert.equal(active.state.profile.paid_creator_lifetime_status,"refunded");
+  await active.api.reversePaidCreatorLifetimePurchase("pi_123","review","evt_partial_late");
+  assert.equal(active.state.profile.paid_creator_lifetime_status,"refunded");
+  const pending=harness();
+  await pending.api.reversePaidCreatorLifetimePurchase("pi_123","review","evt_early_partial");
+  assert.equal((await pending.api.completePaidCreatorLifetimePurchase("purchase1",session,intent)).status,"reversed");
+  assert.equal(pending.state.profile.paid_creator_lifetime_status,"review");
+});
+
 test("incorrect payment cannot grant a lifetime entitlement",async()=>{
   const h=harness();
   await assert.rejects(h.api.completePaidCreatorLifetimePurchase("purchase1",{...session,amount_total:14900},intent));

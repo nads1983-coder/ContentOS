@@ -1,0 +1,46 @@
+PASS 1: actual migration runner applies 0004/0005 exactly once over journal 0000–0002 plus externally managed 0003
+PASS 2: runtime cannot delete purchases, change price, or remove reversal evidence
+PASS 3: 26 concurrent customers receive exactly 25 £99 holds; £149 starts only after 25 paid customers
+PASS 4: concurrent activation/refund submissions in both orders retain no paid access; stale success and duplicate reversal are safe
+PASS 5: partial refund preserves access pending review; dispute and full refund take precedence
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 10,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 10,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+PASS 6: recurring guard checks rotate across batches without starving lifetime purchases
+PASS 7: recurring checkout guard serializes with lifetime allocation; canceled subscription may transition; Creator rebilling denied and Studio permitted
+[Lifetime reconciliation] Operator review required {
+  checked: 8,
+  terminal: 3,
+  uncertain: 5,
+  guardsChecked: 10,
+  guardFailures: 10,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 5,
+  terminal: 0,
+  uncertain: 5,
+  guardsChecked: 10,
+  guardFailures: 10,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+PASS 8: reconciliation recovers abandoned and lost-response sessions, preserves uncertain payments and reuses expired slots
+PASS 9: real monetary ledger serializes final shared text/image capacity and retains uncertain holds
+All 9 isolated PostgreSQL checks passed. No Stripe/AI network calls.

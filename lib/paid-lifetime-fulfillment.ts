@@ -34,6 +34,19 @@ async function revoke(c: PoolClient, row: Purchase, reason: Reason) {
   await c.query("UPDATE contentos_app.profiles SET data=$2::jsonb,updated_at=now() WHERE id=$1",[row.user_id,JSON.stringify(next)]);
 }
 
+// A partial refund requires review but does not, by itself, change existing
+// access. A review recorded before activation must never grant access.
+async function applyRisk(c: PoolClient, row: Purchase, reason: Reason) {
+  if (reason === "review" && row.status === "completed") {
+    const profile = (await c.query<{data:UserProfile}>(
+      "SELECT data FROM contentos_app.profiles WHERE id=$1 FOR UPDATE",[row.user_id])).rows[0];
+    if (profile?.data.paid_creator_lifetime_status === "active" &&
+        profile.data.paid_creator_lifetime_purchase_id === row.id) return {status:"review"};
+  }
+  await revoke(c,row,reason);
+  return {status:"reversed"};
+}
+
 // Signed Stripe events are retained even before the purchase's PI is bound.
 // The inbox and activation use the SAME lock. Terminal risk never auto-clears.
 export async function reversePaidCreatorLifetimePurchase(intent: string, reason: Reason, eventId = `reconciliation:${intent}:${reason}`, type = "reconciliation") {
@@ -42,8 +55,7 @@ export async function reversePaidCreatorLifetimePurchase(intent: string, reason:
     await record(c,intent,reason,eventId,type);
     const row = (await c.query<Purchase>("SELECT * FROM contentos_app.paid_creator_lifetime_purchases WHERE stripe_payment_intent_id=$1 FOR UPDATE",[intent])).rows[0];
     if (!row) return {status: "retained"};
-    await revoke(c,row,(await risk(c,intent))!);
-    return {status: "reversed"};
+    return applyRisk(c,row,(await risk(c,intent))!);
   });
 }
 
@@ -59,7 +71,7 @@ export async function completePaidCreatorLifetimePurchase(purchaseId: string, se
     const observed: Reason | undefined = charge?.refunded ? "refunded" : charge?.disputed ? "disputed" : (charge?.amount_refunded ?? 0) > 0 ? "review" : undefined;
     if (observed) await record(c,intentId,observed,`snapshot:${intentId}:${observed}`,"payment_snapshot");
     const blocked = await risk(c,intentId);
-    if (blocked) { await revoke(c,row,blocked); return {status:"reversed"}; }
+    if (blocked) return applyRisk(c,row,blocked);
     if (["refunded","disputed","review"].includes(row.status)) return {status:"reversed"};
     if (!validateLifetimePaymentIntent(intent,session,row.price_pence)) throw new Error("Unverified lifetime payment.");
     const p = (await c.query<{data:UserProfile}>("SELECT data FROM contentos_app.profiles WHERE id=$1 FOR UPDATE",[row.user_id])).rows[0];

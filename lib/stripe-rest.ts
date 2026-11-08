@@ -195,7 +195,7 @@ async function stripeRequest<T>(path: string, body: URLSearchParams, options: { 
   return data;
 }
 
-async function stripeGet<T>(path: string, query?: URLSearchParams) {
+async function stripeGet<T>(path: string, query?: URLSearchParams, signal?: AbortSignal) {
   const env = getEnv();
 
   if (!isStripeConfigured()) {
@@ -211,7 +211,7 @@ async function stripeGet<T>(path: string, query?: URLSearchParams) {
       Authorization: `Bearer ${env.stripeSecretKey}`,
       "Stripe-Version": apiVersion
     },
-    signal: AbortSignal.timeout(stripeRequestTimeoutMs),
+    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(stripeRequestTimeoutMs)]) : AbortSignal.timeout(stripeRequestTimeoutMs),
     cache: "no-store"
   });
 
@@ -375,12 +375,12 @@ export function hasActiveUnknownPaidSubscription(state: StripeSubscriptionState)
   );
 }
 
-export async function retrieveStripeSubscription(subscriptionId: string) {
+export async function retrieveStripeSubscription(subscriptionId: string, signal?: AbortSignal) {
   return stripeGet<StripeSubscription>(
     `subscriptions/${subscriptionId}`,
     new URLSearchParams({
       "expand[]": "items.data.price"
-    })
+    }), signal
   );
 }
 
@@ -728,14 +728,14 @@ export type StripeCheckoutSession = {
   };
 };
 
-export async function retrieveCheckoutSession(sessionId: string) {
+export async function retrieveCheckoutSession(sessionId: string, signal?: AbortSignal) {
   const query = new URLSearchParams();
   query.append("expand[]", "line_items.data.price");
   query.append("expand[]", "discounts.promotion_code");
 
   return stripeGet<StripeCheckoutSession>(
     `checkout/sessions/${encodeURIComponent(sessionId)}`,
-    query
+    query, signal
   );
 }
 
@@ -786,10 +786,10 @@ export async function createPaidLifetimeCheckoutSession(input: {
 }
 
 /** Read back the authoritative payment and expanded charge before fulfillment. */
-export async function retrievePaidLifetimePaymentIntent(paymentIntentId: string) {
+export async function retrievePaidLifetimePaymentIntent(paymentIntentId: string, signal?: AbortSignal) {
   if (!/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) throw new Error("Invalid payment intent ID.");
   return stripeGet<LifetimePaymentIntent>(`payment_intents/${encodeURIComponent(paymentIntentId)}`,
-    new URLSearchParams({ "expand[]": "latest_charge" }));
+    new URLSearchParams({ "expand[]": "latest_charge" }),signal);
 }
 
 // Recover older recurring checkouts created before the durable guard existed.
@@ -923,14 +923,15 @@ export function verifyStripeSignature(payload: string, signatureHeader: string |
 }
 
 /** Exhaustive bounded listing; never treat a truncated/failed lookup as absence. */
-export async function findLifetimeCheckoutSessions(claim: {id:string; attemptKey:string; createdAt:string}) {
+export async function findLifetimeCheckoutSessions(claim: {id:string; attemptKey:string; createdAt:string}, signal?: AbortSignal) {
   const matches: StripeCheckoutSession[] = [];
   let cursor: string | undefined;
   for (let page=0; page<100; page++) {
     const query = new URLSearchParams({limit:"100", "created[gte]":String(Math.floor(Date.parse(claim.createdAt)/1000)-60)});
     if (cursor) query.set("starting_after",cursor);
-    const list = await stripeGet<StripeList<StripeCheckoutSession>>("checkout/sessions",query);
-    for (const session of list.data) if (session.metadata?.purchase_id === claim.id && session.metadata?.attempt_key === claim.attemptKey) matches.push(await retrieveCheckoutSession(session.id));
+    signal?.throwIfAborted();
+    const list = await stripeGet<StripeList<StripeCheckoutSession>>("checkout/sessions",query,signal);
+    for (const session of list.data) if (session.metadata?.purchase_id === claim.id && session.metadata?.attempt_key === claim.attemptKey) matches.push(await retrieveCheckoutSession(session.id,signal));
     if (!list.has_more) return matches;
     cursor = list.data.at(-1)?.id;
     if (!cursor) break;

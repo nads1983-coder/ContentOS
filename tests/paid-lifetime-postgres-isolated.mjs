@@ -54,14 +54,18 @@ try {
   const budgetBefore=(await pool.query("SELECT * FROM contentos_app.ai_budget_configuration")).rows;
   const urlFile=join(dir,"url");writeFileSync(urlFile,url.href,{mode:0o600});
   const runner=()=>promisify(execFile)(process.execPath,["scripts/migrations/migrate-postgres.mjs",urlFile],{cwd:root});
-  await check("actual migration runner applies 0004 exactly once over journal 0000–0002 plus externally managed 0003",async()=>{
+  await check("actual migration runner applies 0004/0005 exactly once over journal 0000–0002 plus externally managed 0003",async()=>{
     await pool.query("CREATE TABLE contentos_app.paid_lifetime_payment_events(blocker text)");
     await assert.rejects(runner());
     assert.equal((await pool.query("SELECT to_regclass('contentos_app.paid_creator_lifetime_purchases') n")).rows[0].n,null);
     assert.equal((await pool.query("SELECT count(*) FROM drizzle.__drizzle_migrations")).rows[0].count,"3");
     await pool.query("DROP TABLE contentos_app.paid_lifetime_payment_events");
-    await runner();await runner();
+    cpSync(join(root,"drizzle/0004_paid_creator_lifetime.sql"),join(dir,"0004_paid_creator_lifetime.sql"));
+    writeFileSync(join(dir,"meta/_journal.json"),JSON.stringify({...journal,entries:journal.entries.slice(0,4)}));
+    await migrate(drizzle(pool),{migrationsFolder:dir});
     assert.equal((await pool.query("SELECT count(*) FROM drizzle.__drizzle_migrations")).rows[0].count,"4");
+    await runner();await runner();
+    assert.equal((await pool.query("SELECT count(*) FROM drizzle.__drizzle_migrations")).rows[0].count,"5");
     assert.deepEqual((await pool.query("SELECT * FROM contentos_app.ai_budget_configuration")).rows,budgetBefore);
     assert.deepEqual(await readProfile(founder.id),founder);
     assert.equal((await pool.query("SELECT to_regclass('contentos_app.paid_lifetime_payment_events') n")).rows[0].n,"contentos_app.paid_lifetime_payment_events");
@@ -104,16 +108,31 @@ try {
       assert.equal((await pool.query("SELECT count(*) FROM contentos_app.paid_lifetime_payment_events WHERE event_id=$1",[`evt_${x.claim.id}`])).rows[0].count,"1");
     }
   });
-  await check("partial refund quarantine, dispute and full refund are monotonic; refunded slots never recycle",async()=>{
+  await check("partial refund preserves access pending review; dispute and full refund take precedence",async()=>{
     const x=await payment();await fulfillment.completePaidCreatorLifetimePurchase(x.claim.id,x.session,x.intent);
     await fulfillment.reversePaidCreatorLifetimePurchase(x.intent.id,"review","evt_partial");
-    assert.equal((await readProfile(x.p.id)).paid_creator_lifetime_status,"review");
+    assert.equal((await readProfile(x.p.id)).paid_creator_lifetime_status,"active");
+    assert.equal((await fulfillment.completePaidCreatorLifetimePurchase(x.claim.id,x.session,x.intent)).status,"review");
+    assert.equal((await readProfile(x.p.id)).paid_creator_lifetime_status,"active");
     await fulfillment.reversePaidCreatorLifetimePurchase(x.intent.id,"disputed","evt_dispute");
     await fulfillment.reversePaidCreatorLifetimePurchase(x.intent.id,"refunded","evt_full");
     await fulfillment.reversePaidCreatorLifetimePurchase(x.intent.id,"disputed","evt_late_dispute");
     assert.equal((await readProfile(x.p.id)).paid_creator_lifetime_status,"refunded");
     const next=await payment();assert.notEqual(next.claim.earlyBirdSlot,x.claim.earlyBirdSlot);
     await assert.rejects(reservations.reservePaidLifetimePurchase(x.p.id,x.p.email));
+  });
+  await check("recurring guard checks rotate across batches without starving lifetime purchases",async()=>{
+    const people=await Promise.all(Array.from({length:11},()=>account()));
+    for(const [i,p] of people.entries()) await pool.query("INSERT INTO contentos_app.lifetime_recurring_checkout_guards(user_id,session_id) VALUES($1,$2)",[p.id,`cs_guard${i}`]);
+    const seen=[];
+    const reconcile=loadTs("lib/paid-lifetime-reconciliation.ts",{...allocationMocks,"@/lib/stripe-rest":{
+      retrieveCheckoutSession:async id=>{if(id.startsWith("cs_guard")){seen.push(id);return {id,status:"open"};}throw Error("simulated outage");},
+      findLifetimeCheckoutSessions:async()=>[],retrievePaidLifetimePaymentIntent:async()=>undefined
+    }});
+    const first=await reconcile.reconcileLifetimeCheckouts();
+    assert.ok(first.checked>0,"lifetime rows were checked even when guards remain");
+    await reconcile.reconcileLifetimeCheckouts();
+    assert.equal(new Set(seen).size,11);
   });
   await check("recurring checkout guard serializes with lifetime allocation; canceled subscription may transition; Creator rebilling denied and Studio permitted",async()=>{
     const p=await account();await billing.reserveRecurringCheckout(p.id,"pro_creator");await assert.rejects(reservations.reservePaidLifetimePurchase(p.id,p.email));
