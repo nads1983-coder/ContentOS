@@ -20,6 +20,15 @@ function paymentIntentId(session: LifetimeStripeSession) {
   return typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
 }
 
+export async function isPaidCreatorLifetimePaymentIntent(paymentIntent: string) {
+  if (!/^pi_[A-Za-z0-9]+$/.test(paymentIntent)) return false;
+  const row = await getPool().query<{ exists: boolean }>(
+    `SELECT EXISTS(SELECT 1 FROM contentos_app.paid_creator_lifetime_purchases
+      WHERE stripe_payment_intent_id=$1) AS exists`,[paymentIntent]
+  );
+  return row.rows[0]?.exists === true;
+}
+
 /**
  * The caller must freshly retrieve Stripe Checkout AND verify current refund,
  * dispute and charge state before calling this. No webhook route is wired yet.
