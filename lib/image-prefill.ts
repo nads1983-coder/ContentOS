@@ -1,31 +1,24 @@
 import { imageCopy } from "@/lib/image-design";
 
-// Extract a small amount of the post itself rather than guessing facts or
-// making a second model request. The full (bounded) source travels separately.
+// Local, deliberately conservative concepts; the full post remains separate context.
 export function suggestImageDescription(post: string): string {
-  const clean = imageCopy(post, post.length).replace(/\r/g, "").trim();
+  const clean = imageCopy(post, post.length).replace(/\s+/g, " ").trim();
   if (!clean) return "";
-  const sentences = clean.split(/(?<=[.!?])\s+|\n+/u)
-    .map(s => s.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, "").trim())
-    .filter(s => s.length >= 12 && !/^(?:cta|call to action|hashtags?|keywords?)\s*:/i.test(s));
-  if (!sentences.length) return `Communicate visually: ${clean.slice(0, 400)}`;
-  const words = (s: string) => (s.toLowerCase().match(/[\p{L}\p{N}']{4,}/gu) ?? []);
-  const stop = new Set(["that", "this", "with", "from", "your", "have", "will", "what", "when", "about", "into", "they", "their", "there", "more", "than", "just", "been", "were", "some", "would", "could", "should", "because", "through"]);
-  const frequencies = new Map<string, number>();
-  for (const s of sentences) for (const word of new Set(words(s))) if (!stop.has(word)) frequencies.set(word, (frequencies.get(word) ?? 0) + 1);
-  const ranked = sentences.map((text, index) => ({ text, index, score:
-    words(text).reduce((sum, word) => sum + Math.min((frequencies.get(word) ?? 0) - 1, 3), 0) / Math.sqrt(Math.max(words(text).length, 1)) +
-    (/\b(?:but|instead|rather|means|matter|because|learn|change|transition|leadership|growth|team|career|skills|journey|future|next chapter)\b/i.test(text) ? 2 : 0) -
-    (/\b(?:follow|comment|share|subscribe|click|let me know)\b/i.test(text) ? 4 : 0)
-  })).sort((a, b) => b.score - a.score || a.index - b.index);
-  const chosen: typeof ranked = [];
-  let length = 0;
-  for (const item of ranked) {
-    if (chosen.length === 3) break;
-    if (length + item.text.length > 430 && chosen.length) continue;
-    chosen.push(item); length += item.text.length;
+  const has = (pattern: RegExp) => pattern.test(clean);
+  if (has(/\b(?:career|profession|job)\b/i) && has(/\b(?:chang(?:e|ing)|transition|next chapter|leav(?:e|ing)|moving|shift)\b/i)) {
+    const skills = has(/\b(?:skills?|experience|listening|calm)\b/i) ? ", carrying existing skills into the next chapter" : "";
+    return `A conceptual visual of a career transition${skills}, reflecting the feelings in the post.`;
   }
-  const message = chosen.sort((a, b) => a.index - b.index).map(item => item.text).join(" ");
-  const bounded = message.length > 430 ? `${message.slice(0, 427).replace(/\s+\S*$/, "")}...` : message;
-  return `Create a visual that communicates this idea: ${bounded}`;
+  if (has(/\b(?:leadership|leader|leading)\b/i)) {
+    const listening = has(/\b(?:listen|listening)\b/i) ? " through listening" : has(/\b(?:ideas|voices)\b/i) ? " and sharing ideas" : "";
+    return `A conceptual visual expressing leadership${listening}, grounded in the post's message.`;
+  }
+  if (has(/\b(?:seed|seeds|planting|garden|roots)\b/i) && has(/\b(?:growth|grow|growing)\b/i)) {
+    const relationships = has(/\brelationships?\b/i) ? " and relationships" : "";
+    return `A visual metaphor of seeds and growth, expressing the post's ideas${relationships}.`;
+  }
+  if (has(/\b(?:personal development|self-development|confidence|self-growth)\b/i)) {
+    return "A conceptual visual of personal growth, reflecting the challenges and progress described in the post.";
+  }
+  return "A conceptual visual expressing the central message and emotional context of the source post, using details grounded in it.";
 }

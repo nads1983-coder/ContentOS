@@ -39,6 +39,14 @@ function shorten(value: string, max: number): string {
   const clipped = clean.slice(0, max - 3);
   return `${clipped.slice(0, Math.max(clipped.lastIndexOf(" "), Math.floor(max / 2)))}...`;
 }
+// Never turn a paragraph into a visibly unfinished sentence.
+function completeSupportingText(value: string, explicit = false): string {
+  const clean = imageCopy(value).replace(/\s+/g, " ").trim();
+  if (!clean || (!explicit && /(?:\.{3}|…)\s*$/.test(clean))) return "";
+  if (clean.length <= 120) return clean;
+  const sentence = clean.match(/^.{1,120}?[.!?](?=\s|$)/)?.[0];
+  return sentence ?? "";
+}
 function directive(value: string, label: string): string | undefined {
   const nextLabel = "headline|quote|support(?:ing text)?|brand(?: name)?";
   return value.match(new RegExp(`(?:^|\\n|[.!?;]\\s+)\\s*(?:${label})\\s*:\\s*([^\\n]+?)(?=\\n|[.!?;]\\s+(?:${nextLabel})\\s*:|$)`, "i"))?.[1]?.replace(/^["“]|["”]$/g, "");
@@ -90,11 +98,12 @@ export function buildCreativeBrief(input: BuildPosterInput) {
   const selected = appearance?.colours.length ? appearance.colours : explicitPalette.length ? explicitPalette : palette(brand.brandColors ?? "");
   const paragraphs = source.split(/\n+/).map(s => s.trim()).filter(s => s && !/^(?:cta|call to action)\s*:/i.test(s));
   const headline = resolveTextHeadline(input.outputText, input.creativeInstructions ?? "", input.mode);
-  const supporting = directive(instructions, "support(?:ing text)?") ?? (instructionOnly ? "" : paragraphs.slice(1).find(s => !s.includes(headline))) ?? "";
+  const explicitSupporting = directive(instructions, "support(?:ing text)?");
+  const supporting = explicitSupporting ?? (instructionOnly ? "" : paragraphs.slice(1).find(s => !s.includes(headline))) ?? "";
   const defaults = { minimal: ["#ffffff", "#111116"], premium: ["#ffffff", "#245c4a"], corporate: ["#ffffff", "#2356bc"],
     bold: ["#f1d34f", "#111116"], dark: ["#111116", "#a88ee5"], modern: ["#ffffff", "#087e83"] }[input.style];
   const design: ImageDesign = {
-    mode, headline, body: shorten(supporting, 120), brand: shorten(directive(instructions, "brand(?: name)?") ?? (scope.identity ? brand.brandName ?? "" : ""), 36),
+    mode, headline, body: mode === "image" ? "" : completeSupportingText(supporting, explicitSupporting !== undefined), brand: shorten(directive(instructions, "brand(?: name)?") ?? (scope.identity ? brand.brandName ?? "" : ""), 36),
     background: selected[0] ?? defaults[0], accent: selected[1] ?? defaults[1],
     align: /\bcent(?:er|re)(?:d)?\b/i.test(instructions) ? "center" : "left",
     font: /\b(?:luxury|elegant|serif|editorial)\b/i.test(selectedStyle || direction) ? "editorial" : "sans"
@@ -116,6 +125,7 @@ export function buildCreativeBrief(input: BuildPosterInput) {
     "Saved colours and style are aesthetic preferences, not permission to add a brand, product, competition, offer or promotional subject.",
     `Palette: ${design.background.replace("#", "hex ")}, ${design.accent.replace("#", "hex ")}.`,
     `Platform: ${imageCopy(input.platform, 80)}. Orientation: ${input.format}.`,
+    "Unless a close-up or artistic crop is explicitly requested, frame people and important subjects with balanced space around essential features; keep heads, faces and important objects within the visible image area. Respect explicitly requested crops and the selected format and layout.",
     composition || (mode === "mixed" ? "Keep the subject in the upper half; the app adds a solid text panel in the lower half. Keep the focal point clear of that panel." : "Use a clear focal point and full-frame composition suited to the supplied content."),
     "Mandatory: no visible text, letters, captions, hashtag symbols, typography, watermarks, logos, signage or UI. All requested words are rendered separately by the app.",
     "Do not invent products, packaging, logos, business facts, offers or brand assets. Depict concepts rather than fabricate a branded product. No decorative orbs."
