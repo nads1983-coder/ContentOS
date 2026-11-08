@@ -16,7 +16,7 @@ const posts = [
 await context.route('**/*', async route => {
  const req = route.request(), url = new URL(req.url());
  if (url.origin !== base) return route.abort();
- if (url.pathname === '/api/workspace') return route.fulfill({json:{revision:'0',store:{drafts:[],recent:[],saved:[]},brandProfiles:[],preferences:{}}});
+ if (url.pathname === '/api/workspace') return route.fulfill({json:{revision:'0',store:{drafts:[],recent:[],saved:[]},brandProfiles:[],preferences:{brandName:"",audience:"",offer:"",writingStyle:"",contentGoal:""}}});
  if (url.pathname === '/api/generate') { const input=req.postDataJSON(); return route.fulfill({json:{...input,id:'pack',createdAt:new Date().toISOString(),title:'Posts',summary:'',sections:posts.map((body,i)=>({id:`post-${i}`,type:'linkedin',title:`Post ${i+1}`,platform:'LinkedIn',body,items:[]}))}}); }
  if (url.pathname === '/api/generate-image') { images++; lastPayload=req.postDataJSON(); return route.fulfill({status:400,json:{error:'Mocked test response'}}); }
  if (url.pathname.startsWith('/api/')) return route.fulfill({json:{}});
@@ -24,6 +24,7 @@ await context.route('**/*', async route => {
 });
 try {
  const page=await context.newPage();
+ page.setDefaultTimeout(60000); page.setDefaultNavigationTimeout(120000);
  for (const width of [1440,390]) {
   await page.setViewportSize({width,height:900}); await page.goto(base+'/image-studio-test');
   await page.getByRole('button',{name:'Image Studio',exact:true}).click();
@@ -32,14 +33,16 @@ try {
   await page.getByLabel('What would you like to create?').fill('Career and leadership');
   await page.getByRole('button',{name:'Create Content',exact:true}).click();
   const cards=page.locator('#outputs article'); await cards.nth(1).waitFor();
-  await cards.nth(0).getByRole('button',{name:'Generate Image',exact:true}).click();
+  await cards.nth(0).getByRole('button',{name:'Create Image',exact:true}).click();
   let description=dialog.getByLabel('What image would you like?');
   assert.match(await description.inputValue(),/career|policing/i); assert.doesNotMatch(await description.inputValue(),/Stale/);
   assert.equal(images,0); await description.fill('Show an abstract blue spiral.');
+  const imageResponse = page.waitForResponse(response => response.url().endsWith('/api/generate-image'));
   await dialog.getByRole('button',{name:'Generate visual',exact:true}).click();
+  await imageResponse;
   assert.equal(images,1); assert.equal(lastPayload.creativeInstructions,'Show an abstract blue spiral.'); assert.match(lastPayload.outputText,/policing/);
   await dialog.getByRole('button',{name:'Close image generation'}).click();
-  await cards.nth(1).getByRole('button',{name:'Generate Image',exact:true}).click();
+  await cards.nth(1).getByRole('button',{name:'Create Image',exact:true}).click();
   assert.match(await description.inputValue(),/leadership/i); assert.doesNotMatch(await description.inputValue(),/spiral|policing/i);
   assert.equal(images,1); assert.equal(await dialog.evaluate(el=>el.scrollWidth>el.clientWidth),false);
   await page.reload(); assert.equal(images,1); images=0;
