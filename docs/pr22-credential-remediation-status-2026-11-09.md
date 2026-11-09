@@ -28,3 +28,9 @@ The four Preview diagnostic tests passed. TypeScript and lint passed. The full s
 2. Inventory users of the existing project-wide Vercel bypass and coordinate its replacement and revocation; verify legitimate automation afterwards. Avoid putting bypass secrets in logs, command arguments, reports, or URL output.
 3. Re-establish a narrowly scoped protected test webhook, reprove the exact Preview runtime database and test-credential identities, and execute the genuine payment and operational checklist using isolated test accounts and an explicitly safe fulfillment test path.
 4. Keep lifetime and top-up sales disabled and retain the £30 budget. Launch remains NO-GO until these checks and the independent financial and AI quality gates pass.
+
+## Restricted test-key replacement prepared
+
+A new Stripe test-mode restricted key named `GetContentOS PR22 isolated sandbox QA – Nov 2026` was created on 9 November. Its selected permissions are Checkout Sessions write, Charges and Refunds write, Payment Disputes write, Payment Intents read, Events read, Webhook Endpoints and Event Destinations write, Customers read, and Subscriptions read. Read-only requests to Stripe test events, Checkout Sessions, and webhook endpoints returned HTTP 200. No live credential was created. The temporary local copy was deleted.
+
+The PR-specific Preview `STRIPE_SECRET_KEY` editor was located with the exact branch scope and is awaiting account-owner entry of the new credential. Until that change is completed and a new deployment is verified, the Preview has not been migrated to the replacement key. Existing exposed credentials remain active and must be treated as compromised. The standard test key's dashboard shows historical test API reads involving charges, Checkout Sessions, events and webhook endpoints; their consumers have not been conclusively identified. No old credential was revoked in this pass.
