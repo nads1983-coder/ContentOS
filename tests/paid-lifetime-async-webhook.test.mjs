@@ -16,7 +16,7 @@ const claim = {
   stripeCheckoutSessionId: "cs_test_abc"
 };
 
-function harness(overrides = {}) {
+function harness(overrides = {}, fulfillmentStatus = "activated") {
   const calls = [];
   const current = { ...session, ...overrides };
   const { POST } = loadTs("app/api/billing/webhook/route.ts", {
@@ -31,7 +31,8 @@ function harness(overrides = {}) {
     "@/lib/founder-claim-repository": { founderClaimRepository: {} },
     "@/lib/founder-checkout-service": {},
     "@/lib/paid-lifetime-fulfillment": {
-      completePaidCreatorLifetimePurchase: async () => { calls.push("activate"); },
+      getLifetimeDecisionRevision: async () => "0",
+      completePaidCreatorLifetimePurchase: async () => { calls.push("activate"); return { status: fulfillmentStatus }; },
       reversePaidCreatorLifetimePurchase: async () => { throw new Error("Unexpected reversal"); },
       isPaidCreatorLifetimePaymentIntent: async () => false
     },
@@ -58,6 +59,12 @@ test("a subsequent asynchronous payment success activates through verified Strip
   const h = harness({ payment_status: "paid" });
   const response = await h.send("checkout.session.async_payment_succeeded");
   assert.equal(response.status, 200);
+  assert.deepEqual(h.calls, ["retrieveIntent", "activate"]);
+});
+
+test("a Stripe snapshot overtaken by an administrator decision is retried", async () => {
+  const h = harness({ payment_status: "paid" }, "stale_snapshot");
+  assert.equal((await h.send("checkout.session.async_payment_succeeded")).status, 503);
   assert.deepEqual(h.calls, ["retrieveIntent", "activate"]);
 });
 

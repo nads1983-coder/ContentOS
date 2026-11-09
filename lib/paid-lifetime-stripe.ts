@@ -46,7 +46,7 @@ export type LifetimePaymentIntent = {
 };
 
 /** A paid Checkout session alone remains paid after some later reversals. */
-export function validateLifetimePaymentIntent(intent: LifetimePaymentIntent, session: LifetimeStripeSession, pricePence: number) {
+export function validateLifetimePaymentIntent(intent: LifetimePaymentIntent, session: LifetimeStripeSession, pricePence: number, allowPartial = false) {
   const expectedId = typeof session.payment_intent === "string"
     ? session.payment_intent : session.payment_intent?.id;
   const charge = intent.latest_charge;
@@ -54,7 +54,8 @@ export function validateLifetimePaymentIntent(intent: LifetimePaymentIntent, ses
     intent.currency === PAID_LIFETIME_OFFER.currency && intent.amount === pricePence &&
     intent.amount_received === pricePence && charge?.id?.startsWith("ch_") &&
     charge.paid === true && charge.refunded === false && charge.disputed === false &&
-    charge.amount_refunded === 0);
+    (charge.amount_refunded === 0 || allowPartial && Number.isSafeInteger(charge.amount_refunded) &&
+      charge.amount_refunded! > 0 && charge.amount_refunded! < pricePence));
 }
 
 export function buildLifetimeCheckoutParams(claim: LifetimeCheckoutClaim, successUrl: string, cancelUrl: string) {

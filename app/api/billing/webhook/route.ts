@@ -23,7 +23,7 @@ import {
   isPermanentFounderActivationError
 } from "@/lib/founder-checkout-service";
 import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
-import { completePaidCreatorLifetimePurchase, reversePaidCreatorLifetimePurchase } from "@/lib/paid-lifetime-fulfillment";
+import { completePaidCreatorLifetimePurchase, reversePaidCreatorLifetimePurchase, getLifetimeDecisionRevision } from "@/lib/paid-lifetime-fulfillment";
 import { getPaidLifetimeReservation, terminatePaidLifetimeReservation } from "@/lib/paid-lifetime-reservations";
 import { validateFailedPaidLifetimeCheckout } from "@/lib/paid-lifetime-stripe";
 
@@ -85,6 +85,8 @@ export async function POST(request: Request) {
     }
     try {
       if (!object.id || !object.metadata?.purchase_id) throw new Error("Missing lifetime purchase identifier.");
+      const revision = ["checkout.session.completed","checkout.session.async_payment_succeeded"].includes(event.type)
+        ? await getLifetimeDecisionRevision(object.metadata.purchase_id) : undefined;
       const session = await retrieveCheckoutSession(object.id);
       if (event.type === "checkout.session.expired") {
         const claim = await getPaidLifetimeReservation(object.metadata.purchase_id);
@@ -114,7 +116,8 @@ export async function POST(request: Request) {
         ? session.payment_intent : session.payment_intent?.id;
       if (!intentId) throw new Error("Missing lifetime payment intent.");
       const intent = await retrievePaidLifetimePaymentIntent(intentId);
-      await completePaidCreatorLifetimePurchase(object.metadata.purchase_id, session, intent);
+      const outcome = await completePaidCreatorLifetimePurchase(object.metadata.purchase_id, session, intent, revision);
+      if (outcome.status === "stale_snapshot") throw new Error("Administrator decision changed; refresh Stripe state.");
       return NextResponse.json({ received: true });
     } catch (error) {
       console.error("[Lifetime Checkout] Payment verification or fulfillment requires retry", {
