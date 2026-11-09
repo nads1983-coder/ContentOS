@@ -33,7 +33,8 @@ for(const model of selectedModels) {
   let inaccessible=false;
   for(let repeat=1;repeat<=2 && !inaccessible;repeat++) for(const item of cases) {
     const request=normalizeGenerationRequest(item);
-    const core={model,instructions:buildInstructions(),input:buildStudioInput(request),truncation:'disabled',
+    const instructionSuffix=process.env.CONTENTOS_EVAL_GROUNDING_PROMPT === '1' ? '\n\nFor factual safety, copy each source sentence containing a price, amount, named milestone or event commitment exactly as written as a standalone sentence. Do not paraphrase, combine or abbreviate those sentences, including in titles, summaries, hashtags or scripts. Use neutral generic titles and summaries without numbers. Do not promise future updates, outcomes or attendance unless explicitly stated. Give exactly one section per requested type and put alternatives inside that section. Avoid extra factual claims; preserve uncertainty and negation.' : '';
+    const core={model,instructions:buildInstructions()+instructionSuffix,input:buildStudioInput(request),truncation:'disabled',
       ...(model==='gpt-4.1-mini'?{}:{reasoning:{effort:'none'}}),
       text:{format:{type:'json_schema',name:'social_content_generation',strict:true,schema:productionOutputSchema}}};
     const row={model,case:item.id,repeat,promptSha256:createHash('sha256').update(JSON.stringify(core)).digest('hex')};
