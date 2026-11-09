@@ -41,3 +41,7 @@ No real Stripe transaction, test webhook, refund, dispute, deployed scheduler or
 - No production routing, entitlement, price, budget, live Stripe configuration, production migration or live checkout was changed.
 
 **NO-GO.** The 15/16 AI gate, larger independent evaluation, financial funding proof, actual isolated Preview runtime, genuine Stripe payment matrix and deployed operational checks remain open. Keep both offers disabled.
+
+## Fresh Preview build
+
+After all four empty provider overrides were created, Preview deployment `dpl_Ejoxtaa5u743szspb9T7cdWp9241` for commit `4b013f7b0c14c5769cd2f2d47e83267c7b93d7b5` reached READY. The fixture guard runs during that build and would reject the wrong QA tuple, a non-test Stripe key, or nonempty AI/email credentials. This improves build-time evidence, but it does not establish runtime database identity, a valid signed test webhook, or any payment transaction. Later commits create new Preview deployments and must be verified separately.
