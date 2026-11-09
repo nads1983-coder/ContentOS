@@ -24,10 +24,12 @@ const cases = [
 for(const item of cases)normalizeGenerationRequest(item);
 const report={date:new Date().toISOString(),limits,maximumEvaluationReserveGBP:2,results:[],cases,
   note:'Synthetic briefs through unchanged production instructions/schema/parser. One attempt per sample, two independent repetitions. Token counting must succeed before generation. No invoice or blind human panel.'};
-const destination='docs/pr22-financial-evaluation-2026-11-09.json';
+const destination=process.env.CONTENTOS_EVAL_OUTPUT || 'docs/pr22-financial-evaluation-2026-11-09.json';
+const selectedModels=(process.env.CONTENTOS_EVAL_MODELS || Object.keys(rates).join(',')).split(',');
+if(selectedModels.some(model=>!Object.hasOwn(rates,model)))throw new Error('Unreviewed evaluation model');
 let reserve=0;
 function save(){writeFileSync(destination,JSON.stringify({...report,reservedUpperBoundGBP:reserve},null,2)+'\n');}
-for(const model of Object.keys(rates)) {
+for(const model of selectedModels) {
   let inaccessible=false;
   for(let repeat=1;repeat<=2 && !inaccessible;repeat++) for(const item of cases) {
     const request=normalizeGenerationRequest(item);

@@ -1,0 +1,1811 @@
+{
+  "date": "2026-11-09T18:47:54.039Z",
+  "limits": {
+    "inputTokens": 8192,
+    "outputTokens": 4096,
+    "attempts": 2
+  },
+  "maximumEvaluationReserveGBP": 2,
+  "results": [
+    {
+      "model": "gpt-6-luna",
+      "case": "milestone",
+      "repeat": 1,
+      "promptSha256": "d4b0f5fbc5e2b722f318d1ceb8a35d03dc4799689670346456d5eac23b51c97e",
+      "stage": "generation",
+      "inputTokens": 3623,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3623,
+        "input_tokens_details": {
+          "cache_write_tokens": 3620,
+          "cached_tokens": 0
+        },
+        "output_tokens": 287,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3910
+      },
+      "output": "{\"title\":\"1,000 Newsletter Subscribers\",\"summary\":\"Three Instagram caption options mark Northbank Paper reaching 1,000 newsletter subscribers and note that giveaway details are still undecided.\",\"sections\":[{\"id\":\"instagram-caption-1\",\"type\":\"instagram\",\"title\":\"Draft - details to confirm\",\"platform\":\"Instagram\",\"body\":\"Northbank Paper has reached 1,000 newsletter subscribers.\\n\\nThank you for being here. We’re planning a giveaway, but the prize, dates and eligibility are still to be decided.\",\"items\":[\"#Newsletter\",\"#Subscribers\",\"#Giveaway\"],\"cta\":\"\"},{\"id\":\"instagram-caption-2\",\"type\":\"instagram\",\"title\":\"Draft - details to confirm\",\"platform\":\"Instagram\",\"body\":\"A milestone for Northbank Paper: 1,000 newsletter subscribers.\\n\\nA giveaway is in the plans. The prize, dates and eligibility have not been decided yet.\",\"items\":[\"#Newsletter\",\"#EmailNewsletter\",\"#Giveaway\"],\"cta\":\"\"},{\"id\":\"instagram-caption-3\",\"type\":\"instagram\",\"title\":\"Draft - details to confirm\",\"platform\":\"Instagram\",\"body\":\"1,000 newsletter subscribers for Northbank Paper. Thank you for reading and being part of this milestone.\\n\\nWe’re planning a giveaway, with the prize, dates and eligibility still to be decided.\",\"items\":[\"#Newsletter\",\"#SubscriberMilestone\",\"#Giveaway\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 5122
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "practical",
+      "repeat": 1,
+      "promptSha256": "fca92be3f776fb72a7229816b3f772ac5fcf79162e0cc97ab95c39f28fa9b8cf",
+      "stage": "generation",
+      "inputTokens": 3657,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3657,
+        "input_tokens_details": {
+          "cache_write_tokens": 1904,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 316,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3973
+      },
+      "output": "{\n  \"title\": \"Three steps for a stronger design review\",\n  \"summary\": \"A practical post and concise X update show how references, sketches, and draft review can make design planning more deliberate.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-design-planning-steps\",\n      \"type\": \"linkedin\",\n      \"title\": \"Three steps for design planning\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"A useful design plan has three steps: collect references, sketch alternatives, then review the draft before publishing.\\n\\nReferences give the work a starting point. Sketching alternatives makes room to compare directions before settling on one. Reviewing the draft creates a final checkpoint before it goes public.\\n\\nKeeping these steps distinct can make the process easier to follow and the final review more deliberate.\",\n      \"items\": [\n        \"#DesignProcess #GraphicDesign #DesignThinking #CreativeWorkflow\"\n      ],\n      \"cta\": \"Which step is most useful in your process?\"\n    },\n    {\n      \"id\": \"x-design-planning-steps\",\n      \"type\": \"twitter\",\n      \"title\": \"A simple design planning sequence\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"Collect references. Sketch alternatives. Review the draft before publishing. Three distinct steps make a design process easier to follow.\",\n      \"items\": [\n        \"#DesignProcess #GraphicDesign\"\n      ],\n      \"cta\": \"Which step do you rely on most?\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-design-planning-steps",
+          "type": "linkedin",
+          "title": "Three steps for design planning",
+          "platform": "LinkedIn",
+          "body": "A useful design plan has three steps: collect references, sketch alternatives, then review the draft before publishing.\n\nReferences give the work a starting point. Sketching alternatives makes room to compare directions before settling on one. Reviewing the draft creates a final checkpoint before it goes public.\n\nKeeping these steps distinct can make the process easier to follow and the final review more deliberate.",
+          "items": [],
+          "cta": "Which step is most useful in your process?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-design-planning-steps",
+          "type": "twitter",
+          "title": "A simple design planning sequence",
+          "platform": "X/Twitter",
+          "body": "Collect references. Sketch alternatives. Review the draft before publishing. Three distinct steps make a design process easier to follow.",
+          "items": [],
+          "cta": "Which step do you rely on most?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 4978
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "limited-claim",
+      "repeat": 1,
+      "promptSha256": "928cd3bd61510392803b5678bd5df5ace89f88b0039eb84bc52c657c21724e2c",
+      "stage": "generation",
+      "inputTokens": 3724,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3724,
+        "input_tokens_details": {
+          "cache_write_tokens": 1971,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 380,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4104
+      },
+      "output": "{\"title\":\"Repair Cafe Pilot Posts\",\"summary\":\"Three platform-ready posts introduce the volunteer group’s planned monthly repair cafe without implying the first session has happened or predicting its results.\",\"sections\":[{\"id\":\"tiktok-captions\",\"type\":\"tiktok\",\"title\":\"TikTok caption alternatives\",\"platform\":\"TikTok\",\"body\":\"1. A monthly repair cafe is in the works. The first session is planned for Saturday.\\n\\n2. What can a repair cafe make possible? Our volunteer group is piloting one, with its first session planned for Saturday.\\n\\n3. One Saturday, one first session: our volunteer group is piloting a monthly repair cafe.\",\"items\":[\"#RepairCafe #RepairAndReuse #RepairCulture\"],\"cta\":\"What would you bring to a repair cafe?\"},{\"id\":\"facebook-repair-cafe\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Our volunteer group is piloting a monthly repair cafe, with the first session planned for Saturday.\\n\\nIt’s a chance to try out the idea of gathering around repair. Attendance and outcomes are still unknown, so this first session will be a starting point for the pilot.\",\"items\":[\"#RepairCafe #RepairAndReuse #RepairCulture\"],\"cta\":\"What questions or ideas come to mind when you hear “repair cafe”?\"},{\"id\":\"youtube-shorts-repair-cafe\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"What Is a Repair Cafe? A Volunteer Group’s Monthly Pilot\\n\\nA volunteer group is piloting a monthly repair cafe. The first session is planned for Saturday; attendance and outcomes are not yet known.\",\"items\":[\"#RepairCafe #RepairAndReuse #RepairCulture\"],\"cta\":\"What would you like to know about a repair cafe?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "tiktok-captions",
+          "type": "tiktok",
+          "title": "TikTok caption alternatives",
+          "platform": "TikTok",
+          "body": "1. A monthly repair cafe is in the works. The first session is planned for Saturday.\n\n2. What can a repair cafe make possible? Our volunteer group is piloting one, with its first session planned for Saturday.\n\n3. One Saturday, one first session: our volunteer group is piloting a monthly repair cafe.",
+          "items": [
+            "#RepairCafe"
+          ],
+          "cta": "What would you bring to a repair cafe?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "facebook-repair-cafe",
+          "type": "facebook",
+          "title": "Facebook post",
+          "platform": "Facebook",
+          "body": "Our volunteer group is piloting a monthly repair cafe, with the first session planned for Saturday.\n\nIt’s a chance to try out the idea of gathering around repair. Attendance and outcomes are still unknown, so this first session will be a starting point for the pilot.",
+          "items": [
+            "#RepairCafe"
+          ],
+          "cta": "What questions or ideas come to mind when you hear “repair cafe”?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "youtube-shorts-repair-cafe",
+          "type": "youtubeShorts",
+          "title": "YouTube Shorts caption",
+          "platform": "YouTube Shorts",
+          "body": "What Is a Repair Cafe? A Volunteer Group’s Monthly Pilot\n\nA volunteer group is piloting a monthly repair cafe. The first session is planned for Saturday; attendance and outcomes are not yet known.",
+          "items": [
+            "#RepairCafe"
+          ],
+          "cta": "What would you like to know about a repair cafe?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 5216
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "all-formats",
+      "repeat": 1,
+      "promptSha256": "ee85c1ae6cc90f285cd30adce734076999b703b56b0f812f38b38b3f328805c9",
+      "stage": "generation",
+      "inputTokens": 4266,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4266,
+        "input_tokens_details": {
+          "cache_write_tokens": 2513,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 1996,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 6262
+      },
+      "output": "{\"title\":\"Elm Studio Drawing Workshop Content\",\"summary\":\"Platform-ready promotion for Elm Studio’s beginner drawing workshop, highlighting what it covers, what to bring, and how to book.\",\"sections\":[{\"id\":\"linkedin\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"A beginner drawing workshop can start with three practical skills: observation, outlines and shading.\\n\\nElm Studio runs a beginner drawing workshop on 14 December at 2pm in York. Bring a pencil and sketchbook. Tickets cost £12.\\n\\nTo book, email hello@example.invalid.\",\"items\":[\"#DrawingWorkshop\",\"#BeginnerDrawing\",\"#Drawing\",\"#Sketching\"],\"cta\":\"What would you most like to practise: observation, outlines or shading?\"},{\"id\":\"instagram\",\"type\":\"instagram\",\"title\":\"Instagram caption\",\"platform\":\"Instagram\",\"body\":\"Observation, outlines and shading: a beginner-friendly place to practise drawing.\\n\\nElm Studio’s workshop is on 14 December at 2pm in York. Bring a pencil and sketchbook. Tickets are £12.\\n\\nBook by emailing hello@example.invalid.\",\"items\":[\"#DrawingWorkshop\",\"#BeginnerDrawing\",\"#DrawingPractice\",\"#Sketchbook\"],\"cta\":\"Which of the three topics would you most like to try?\"},{\"id\":\"tiktok\",\"type\":\"tiktok\",\"title\":\"TikTok caption\",\"platform\":\"TikTok\",\"body\":\"Want to practise the basics of drawing? Elm Studio’s beginner workshop covers observation, outlines and shading. 14 December, 2pm, York. Tickets £12. Bring a pencil and sketchbook.\",\"items\":[\"#DrawingWorkshop\",\"#BeginnerDrawing\",\"#DrawingTips\",\"#Sketching\"],\"cta\":\"Save the details if you’re considering joining.\"},{\"id\":\"twitter\",\"type\":\"twitter\",\"title\":\"X post\",\"platform\":\"X/Twitter\",\"body\":\"Elm Studio’s beginner drawing workshop covers observation, outlines and shading. 14 December at 2pm in York. Tickets are £12. Bring a pencil and sketchbook. Book by email: hello@example.invalid.\",\"items\":[\"#DrawingWorkshop\"],\"cta\":\"\"},{\"id\":\"facebook\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Looking to get started with drawing? Elm Studio is running a beginner workshop in York on 14 December at 2pm.\\n\\nThe session covers observation, outlines and shading. Bring a pencil and sketchbook. Tickets cost £12, and booking is by email to hello@example.invalid.\",\"items\":[\"#DrawingWorkshop\",\"#BeginnerDrawing\",\"#Drawing\",\"#Sketching\"],\"cta\":\"Which drawing skill are you most interested in practising?\"},{\"id\":\"youtube-shorts\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"Beginner Drawing Workshop in York | Elm Studio\\n\\nPractise observation, outlines and shading at Elm Studio’s beginner drawing workshop on 14 December at 2pm in York. Tickets cost £12. Bring a pencil and sketchbook. Book by emailing hello@example.invalid.\",\"items\":[\"#DrawingWorkshop\",\"#BeginnerDrawing\",\"#Drawing\",\"#Sketching\"],\"cta\":\"\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"X thread\",\"platform\":\"X/Twitter\",\"body\":\"A beginner drawing workshop can focus on three concrete skills: observation, outlines and shading. Elm Studio’s workshop takes place in York on 14 December at 2pm.\",\"items\":[\"1/ The workshop covers observation: looking closely at what you’re drawing.\",\"2/ It also covers outlines, a practical part of building a drawing.\",\"3/ Shading is the third topic in the session.\",\"4/ It’s a beginner workshop, with no prior experience requirement stated.\",\"5/ Bring a pencil and sketchbook.\",\"6/ Tickets cost £12. To book, email hello@example.invalid.\",\"7/ Three subjects, one clear starting point for a drawing session: observation, outlines and shading.\"],\"cta\":\"\"},{\"id\":\"short-video-script\",\"type\":\"shortVideoScript\",\"title\":\"Short video script\",\"platform\":\"Video\",\"body\":\"Hook, spoken: “Observation, outlines and shading: three drawing basics in one beginner workshop.”\\n\\nSpoken beat: “Elm Studio is running the workshop on 14 December at 2pm in York.”\\n\\nOn-screen cue: “14 December | 2pm | York”\\n\\nSpoken beat: “Bring a pencil and sketchbook. Tickets cost £12.”\\n\\nOn-screen cue: “Pencil + sketchbook | £12”\\n\\nClose, spoken: “To book, email hello@example.invalid.”\\n\\nSuggested staging: Face the camera for the hook and spoken beats. Show the date, location and booking email as on-screen text.\",\"items\":[],\"cta\":\"\"},{\"id\":\"carousel\",\"type\":\"carousel\",\"title\":\"Drawing workshop carousel\",\"platform\":\"Carousel\",\"body\":\"A beginner drawing workshop in York, with three skills to practise.\",\"items\":[\"Slide 1: Start with the basics. Elm Studio beginner drawing workshop, 14 December at 2pm in York.\",\"Slide 2: Observation. One of the topics covered in the workshop.\",\"Slide 3: Outlines. Another practical focus of the session.\",\"Slide 4: Shading. The third topic in the workshop.\",\"Slide 5: What to bring. A pencil and sketchbook.\",\"Slide 6: Tickets cost £12. Book by emailing hello@example.invalid.\"],\"cta\":\"Which topic would you like to practise first?\"},{\"id\":\"email-newsletter\",\"type\":\"emailNewsletter\",\"title\":\"Workshop email\",\"platform\":\"Email\",\"body\":\"Subject options:\\nBeginner drawing workshop in York, 14 December\\nPractise observation, outlines and shading with Elm Studio\\n\\nHello,\\n\\nElm Studio is running a beginner drawing workshop on 14 December at 2pm in York.\\n\\nThe workshop covers observation, outlines and shading. Bring a pencil and sketchbook. Tickets cost £12.\\n\\nTo book, email hello@example.invalid.\",\"items\":[],\"cta\":\"\"},{\"id\":\"repurpose-pack\",\"type\":\"repurposePack\",\"title\":\"Platform repurpose pack\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nObservation, outlines and shading are three practical topics for a beginner drawing workshop.\\n\\nElm Studio runs its workshop on 14 December at 2pm in York. Bring a pencil and sketchbook. Tickets cost £12. Book by emailing hello@example.invalid.\\n\\nInstagram:\\nThree drawing basics to practise: observation, outlines and shading.\\n\\nJoin Elm Studio’s beginner workshop on 14 December at 2pm in York. Bring a pencil and sketchbook. Tickets are £12. Book by emailing hello@example.invalid.\\n\\nTikTok:\\nObservation, outlines, shading. Elm Studio’s beginner drawing workshop is 14 December at 2pm in York. Bring a pencil and sketchbook. Tickets £12. Book by email: hello@example.invalid.\\n\\nX/Twitter:\\nElm Studio’s beginner drawing workshop covers observation, outlines and shading. 14 December, 2pm in York. Bring a pencil and sketchbook. Tickets £12. Book: hello@example.invalid.\\n\\nCarousel:\\nSlide 1: Beginner drawing workshop, Elm Studio, 14 December at 2pm in York.\\nSlide 2: Practise observation.\\nSlide 3: Explore outlines.\\nSlide 4: Cover shading.\\nSlide 5: Bring a pencil and sketchbook. Tickets cost £12. Book by emailing hello@example.invalid.\\n\\nShort video:\\nHook: “Three drawing basics in one beginner workshop: observation, outlines and shading.”\\nBeat: “Elm Studio’s workshop is on 14 December at 2pm in York.”\\nBeat: “Bring a pencil and sketchbook. Tickets cost £12.”\\nClose: “Book by emailing hello@example.invalid.”\\nSuggested staging: Deliver to camera, with the date, location, price and email shown on screen.\\n\\nEmail:\\nSubject: Beginner drawing workshop in York\\n\\nHello,\\n\\nElm Studio runs a beginner drawing workshop on 14 December at 2pm in York. It covers observation, outlines and shading. Bring a pencil and sketchbook. Tickets cost £12.\\n\\nBook by emailing hello@example.invalid.\",\"items\":[],\"cta\":\"\"},{\"id\":\"hooks\",\"type\":\"hooks\",\"title\":\"Hook options\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"Observation, outlines and shading: three topics in Elm Studio’s beginner drawing workshop.\",\"A beginner drawing workshop in York on 14 December.\",\"Practise observation, outlines and shading with Elm Studio.\",\"Bring a pencil and sketchbook to Elm Studio’s beginner drawing workshop.\",\"Drawing workshop details: 14 December, 2pm, York.\",\"Tickets for Elm Studio’s beginner drawing workshop cost £12.\",\"Which would you like to practise: observation, outlines or shading?\",\"Looking for a beginner drawing workshop in York? Elm Studio’s takes place on 14 December at 2pm.\"],\"cta\":\"\"},{\"id\":\"ctas\",\"type\":\"ctas\",\"title\":\"Soft CTA options\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"Which topic would you most like to practise: observation, outlines or shading?\",\"Save the workshop details if you’re considering joining.\",\"Share this with someone who might enjoy a beginner drawing workshop.\",\"What drawing skill would you like to explore first?\",\"Keep the date handy: 14 December at 2pm in York.\"],\"cta\":\"\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag ideas\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"#DrawingClass\",\"#LearnToDraw\",\"#DrawingSkills\",\"#PencilDrawing\",\"#ArtWorkshop\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 15002
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "repurpose",
+      "repeat": 1,
+      "promptSha256": "bf7cb3eff109f64eb7b3fffc82417dfc87139c29c7811ee6838ac0c283720a17",
+      "stage": "generation",
+      "inputTokens": 3833,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3833,
+        "input_tokens_details": {
+          "cache_write_tokens": 2080,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 999,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4832
+      },
+      "output": "{\n  \"title\": \"Three-step bicycle check content pack\",\n  \"summary\": \"A practical, platform-adapted reminder to inspect tyres, test brakes, and check lights before a journey.\",\n  \"sections\": [\n    {\n      \"id\": \"repurpose-pack\",\n      \"type\": \"repurposePack\",\n      \"title\": \"Repurpose pack\",\n      \"platform\": \"General\",\n      \"body\": \"LinkedIn:\\nA simple bicycle check has three steps: inspect the tyres, test the brakes, then check the lights before a journey.\\n\\nKeeping the order clear makes the checklist easy to remember. Each step covers a different part of a pre-ride check.\\n\\nInstagram:\\nBefore a journey, take a moment for this three-step bicycle check:\\n\\nInspect the tyres.\\nTest the brakes.\\nCheck the lights.\\n\\nA short checklist to run through before you set off.\\n\\nTikTok:\\nThree checks before a bicycle journey: tyres, brakes, lights. In that order.\\n\\nX/Twitter:\\nBefore a bicycle journey: inspect the tyres, test the brakes, then check the lights.\\n\\nCarousel:\\n1. Cover: Three checks before a bicycle journey\\n2. Inspect the tyres\\n3. Test the brakes\\n4. Check the lights\\n5. Before you set off, run through all three\\n\\nShort video:\\nHook: Before a bicycle journey, remember three checks.\\nBeat 1: Inspect the tyres.\\nBeat 2: Test the brakes.\\nBeat 3: Check the lights.\\nClose: Tyres, brakes, lights. A simple checklist before you set off.\\n\\nEmail:\\nSubject: A three-step bicycle check\\n\\nBefore your next journey, run through this simple checklist:\\n\\n1. Inspect the tyres.\\n2. Test the brakes.\\n3. Check the lights.\\n\\nThree checks to remember before you set off.\",\n      \"items\": [\n        \"LinkedIn tags: #BicycleSafety #CyclingSafety #BikeCheck\",\n        \"Instagram tags: #BikeCheck #BicycleSafety #CyclingTips #BikeSafety\",\n        \"TikTok tags: #BikeCheck #BicycleSafety #CyclingTips #BikeSafety\",\n        \"X/Twitter tags: #BikeSafety\",\n        \"Carousel tags: #BikeCheck #BicycleSafety #CyclingSafety\",\n        \"Short-video tags: #BikeCheck #BicycleSafety #CyclingTips\",\n        \"Suggested short-video staging: Speak to camera; use brief on-screen cues for “Inspect tyres,” “Test brakes,” and “Check lights.” These are directions, not events that happened.\"\n      ],\n      \"cta\": \"Save this checklist for before your next journey.\"\n    },\n    {\n      \"id\": \"bicycle-check-carousel\",\n      \"type\": \"carousel\",\n      \"title\": \"Three checks before a bicycle journey\",\n      \"platform\": \"Carousel\",\n      \"body\": \"A concise, five-slide checklist that separates each pre-journey check.\",\n      \"items\": [\n        \"Slide 1, Cover: Three checks before a bicycle journey\",\n        \"Slide 2, Inspect the tyres. Give the tyres a visual check before setting off.\",\n        \"Slide 3, Test the brakes. Check that the brakes work before the journey.\",\n        \"Slide 4, Check the lights. Make sure the lights are checked before setting off.\",\n        \"Slide 5, Before you go: tyres, brakes, lights. Run through all three.\"\n      ],\n      \"cta\": \"Save the checklist for a future ride.\"\n    },\n    {\n      \"id\": \"short-video-script\",\n      \"type\": \"shortVideoScript\",\n      \"title\": \"Three checks before you set off\",\n      \"platform\": \"TikTok\",\n      \"body\": \"Hook, spoken: “Before a bicycle journey, remember three checks.”\\n\\nBeat 1, spoken: “Start by inspecting the tyres.”\\nOn-screen cue: “1. Inspect tyres”\\n\\nBeat 2, spoken: “Next, test the brakes.”\\nOn-screen cue: “2. Test brakes”\\n\\nBeat 3, spoken: “Then check the lights.”\\nOn-screen cue: “3. Check lights”\\n\\nClose, spoken: “Tyres, brakes, lights. A simple checklist before you set off.”\\n\\nSuggested staging: Face the camera for the hook and close. Add short on-screen text cues for each step. These are directions, not events that happened.\",\n      \"items\": [\n        \"#BikeCheck\",\n        \"#BicycleSafety\",\n        \"#CyclingTips\",\n        \"#BikeSafety\"\n      ],\n      \"cta\": \"Save the checklist for before your next journey.\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "repurpose-pack",
+          "type": "repurposePack",
+          "title": "Repurpose pack",
+          "platform": "General",
+          "body": "LinkedIn:\nA simple bicycle check has three steps: inspect the tyres, test the brakes, then check the lights before a journey.\n\nKeeping the order clear makes the checklist easy to remember. Each step covers a different part of a pre-ride check.\n\nInstagram:\nBefore a journey, take a moment for this three-step bicycle check:\n\nInspect the tyres.\nTest the brakes.\nCheck the lights.\n\nA short checklist to run through before you set off.\n\nTikTok:\nThree checks before a bicycle journey: tyres, brakes, lights. In that order.\n\nX/Twitter:\nBefore a bicycle journey: inspect the tyres, test the brakes, then check the lights.\n\nCarousel:\n1. Cover: Three checks before a bicycle journey\n2. Inspect the tyres\n3. Test the brakes\n4. Check the lights\n5. Before you set off, run through all three\n\nShort video:\nHook: Before a bicycle journey, remember three checks.\nBeat 1: Inspect the tyres.\nBeat 2: Test the brakes.\nBeat 3: Check the lights.\nClose: Tyres, brakes, lights. A simple checklist before you set off.\n\nEmail:\nSubject: A three-step bicycle check\n\nBefore your next journey, run through this simple checklist:\n\n1. Inspect the tyres.\n2. Test the brakes.\n3. Check the lights.\n\nThree checks to remember before you set off.",
+          "items": [
+            "Suggested short-video staging: Speak to camera; use brief on-screen cues for “Inspect tyres,” “Test brakes,” and “Check lights.” These are directions, not events that happened."
+          ],
+          "cta": "Save this checklist for before your next journey.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "bicycle-check-carousel",
+          "type": "carousel",
+          "title": "Three checks before a bicycle journey",
+          "platform": "Carousel",
+          "body": "A concise, five-slide checklist that separates each pre-journey check.",
+          "items": [
+            "Slide 1, Cover: Three checks before a bicycle journey",
+            "Slide 2, Inspect the tyres. Give the tyres a visual check before setting off.",
+            "Slide 3, Test the brakes. Check that the brakes work before the journey.",
+            "Slide 4, Check the lights. Make sure the lights are checked before setting off.",
+            "Slide 5, Before you go: tyres, brakes, lights. Run through all three."
+          ],
+          "cta": "Save the checklist for a future ride.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "short-video-script",
+          "type": "shortVideoScript",
+          "title": "Three checks before you set off",
+          "platform": "TikTok",
+          "body": "Hook, spoken: “Before a bicycle journey, remember three checks.”\n\nBeat 1, spoken: “Start by inspecting the tyres.”\nOn-screen cue: “1. Inspect tyres”\n\nBeat 2, spoken: “Next, test the brakes.”\nOn-screen cue: “2. Test brakes”\n\nBeat 3, spoken: “Then check the lights.”\nOn-screen cue: “3. Check lights”\n\nClose, spoken: “Tyres, brakes, lights. A simple checklist before you set off.”\n\nSuggested staging: Face the camera for the hook and close. Add short on-screen text cues for each step. These are directions, not events that happened.",
+          "items": [],
+          "cta": "Save the checklist for before your next journey.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 8538
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "newsletter",
+      "repeat": 1,
+      "promptSha256": "6d2cb0c8840e8359ef2b0c00f2fdbe2f4692b1d2057c04e42fc162997b9806a0",
+      "stage": "generation",
+      "inputTokens": 3902,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3902,
+        "input_tokens_details": {
+          "cache_write_tokens": 2149,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 807,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4709
+      },
+      "output": "{\n  \"title\": \"Library Poetry Reading Content\",\n  \"summary\": \"Promote the free 18 December poetry reading with clear booking details and restrained, low-friction invitations to engage.\",\n  \"sections\": [\n    {\n      \"id\": \"email-newsletter\",\n      \"type\": \"emailNewsletter\",\n      \"title\": \"Email: Poetry reading announcement\",\n      \"platform\": \"Email\",\n      \"body\": \"Subject line options:\\n1. Free poetry reading at the library on 18 December\\n2. Poetry reading, 18 December at 6pm\\n\\nA free poetry reading will take place at the local library on 18 December at 6pm.\\n\\nCapacity is limited to 30 people. Booking opens on 1 December. No authors have been announced.\",\n      \"items\": [],\n      \"cta\": \"If you plan to attend, consider booking when reservations open on 1 December.\"\n    },\n    {\n      \"id\": \"x-thread\",\n      \"type\": \"xThread\",\n      \"title\": \"X thread: Reading details\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"\",\n      \"items\": [\n        \"1/ A free poetry reading is coming to the local library on 18 December at 6pm.\",\n        \"2/ Admission is free.\",\n        \"3/ Capacity is 30 people.\",\n        \"4/ Booking opens on 1 December.\",\n        \"5/ No authors have been announced, so the event details are set while the reader lineup remains unannounced.\",\n        \"6/ The key dates: booking opens 1 December; the reading is 18 December at 6pm.\",\n        \"7/ Takeaway: if you would like to attend, note the booking date. The event is free, with space for 30 people.\"\n      ],\n      \"cta\": \"\"\n    },\n    {\n      \"id\": \"hooks\",\n      \"type\": \"hooks\",\n      \"title\": \"Eight promotional hooks\",\n      \"platform\": \"General\",\n      \"body\": \"\",\n      \"items\": [\n        \"A free poetry reading is coming to the local library on 18 December.\",\n        \"Poetry at the library: 18 December at 6pm.\",\n        \"Free entry, 30 places: a poetry reading at the local library.\",\n        \"Booking for the 18 December poetry reading opens on 1 December.\",\n        \"A library evening with poetry, set for 6pm on 18 December.\",\n        \"The reading is free. Capacity is 30 people.\",\n        \"Save the date for a free poetry reading at the local library.\",\n        \"Authors have not been announced yet. The reading date and time are set: 18 December at 6pm.\"\n      ],\n      \"cta\": \"\"\n    },\n    {\n      \"id\": \"ctas\",\n      \"type\": \"ctas\",\n      \"title\": \"Soft CTA options\",\n      \"platform\": \"General\",\n      \"body\": \"\",\n      \"items\": [\n        \"Make a note of the 1 December booking date if you plan to attend.\",\n        \"Save the event details for 18 December at 6pm.\",\n        \"Share the date with someone who might enjoy a poetry reading.\",\n        \"If poetry readings are your kind of evening, consider booking when reservations open.\",\n        \"Which detail is most useful to know in advance: the date, the time, or the booking date?\"\n      ],\n      \"cta\": \"\"\n    },\n    {\n      \"id\": \"platform-hashtags\",\n      \"type\": \"platformHashtags\",\n      \"title\": \"Additional subject-relevant hashtags\",\n      \"platform\": \"General\",\n      \"body\": \"\",\n      \"items\": [\n        \"#PoetryCommunity\",\n        \"#PoetryEvent\",\n        \"#LivePoetry\",\n        \"#PoetryLovers\",\n        \"#LibraryEvents\"\n      ],\n      \"cta\": \"\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "email-newsletter",
+          "type": "emailNewsletter",
+          "title": "Email: Poetry reading announcement",
+          "platform": "Email",
+          "body": "Subject line options:\n1. Free poetry reading at the library on 18 December\n2. Poetry reading, 18 December at 6pm\n\nA free poetry reading will take place at the local library on 18 December at 6pm.\n\nCapacity is limited to 30 people. Booking opens on 1 December. No authors have been announced.",
+          "items": [],
+          "cta": "If you plan to attend, consider booking when reservations open on 1 December.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-thread",
+          "type": "xThread",
+          "title": "X thread: Reading details",
+          "platform": "X/Twitter",
+          "body": "",
+          "items": [
+            "1/ A free poetry reading is coming to the local library on 18 December at 6pm.",
+            "2/ Admission is free.",
+            "3/ Capacity is 30 people.",
+            "4/ Booking opens on 1 December.",
+            "5/ No authors have been announced, so the event details are set while the reader lineup remains unannounced.",
+            "6/ The key dates: booking opens 1 December; the reading is 18 December at 6pm.",
+            "7/ Takeaway: if you would like to attend, note the booking date. The event is free, with space for 30 people."
+          ],
+          "cta": "",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "hooks",
+          "type": "hooks",
+          "title": "Eight promotional hooks",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "A free poetry reading is coming to the local library on 18 December.",
+            "Poetry at the library: 18 December at 6pm.",
+            "Free entry, 30 places: a poetry reading at the local library.",
+            "Booking for the 18 December poetry reading opens on 1 December.",
+            "A library evening with poetry, set for 6pm on 18 December.",
+            "The reading is free. Capacity is 30 people.",
+            "Save the date for a free poetry reading at the local library.",
+            "Authors have not been announced yet. The reading date and time are set: 18 December at 6pm."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "ctas",
+          "type": "ctas",
+          "title": "Soft CTA options",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "Make a note of the 1 December booking date if you plan to attend.",
+            "Save the event details for 18 December at 6pm.",
+            "Share the date with someone who might enjoy a poetry reading.",
+            "If poetry readings are your kind of evening, consider booking when reservations open.",
+            "Which detail is most useful to know in advance: the date, the time, or the booking date?"
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "platform-hashtags",
+          "type": "platformHashtags",
+          "title": "Additional subject-relevant hashtags",
+          "platform": "General",
+          "body": "No additional relevant hashtags could be established from this brief.",
+          "items": [],
+          "cta": "",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 7039
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "unicode",
+      "repeat": 1,
+      "promptSha256": "c61fc139bd32e7621c315aaefc6f179dd41352f8019e9dbeade4a160e7cf4d48",
+      "stage": "generation",
+      "inputTokens": 3664,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3664,
+        "input_tokens_details": {
+          "cache_write_tokens": 1911,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 410,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4074
+      },
+      "output": "{\"title\":\"Saturday Café Instagram Copy\",\"summary\":\"Three conversational Instagram captions highlight Café Étoile’s Saturday café con leche, croissants, and £5 breakfast option, alongside five additional relevant hashtag ideas.\",\"sections\":[{\"id\":\"instagram-caption-alternatives\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Option 1\\nSaturday breakfast at Café Étoile: café con leche, croissants, and a £5 breakfast option.\\n\\nA simple way to start the day. Which would you pick first, café con leche or a croissant?\",\"items\":[\"#CafeConLeche #Croissants #Breakfast #CafeBreakfast\"],\"cta\":\"Tell us which you’d choose first.\"},{\"id\":\"instagram-caption-alternatives-2\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Option 2\\nCafé con leche and croissants are on the Saturday menu at Café Étoile.\\n\\nThere’s also a £5 breakfast option if you’re after breakfast at the café.\",\"items\":[\"#CafeConLeche #Croissant #BreakfastMenu #Cafe\"],\"cta\":\"Save this for a Saturday breakfast idea.\"},{\"id\":\"instagram-caption-alternatives-3\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Option 3\\nSaturday menu, kept simple: café con leche, croissants, and a £5 breakfast option at Café Étoile.\\n\\nWhat sounds good to you this weekend?\",\"items\":[\"#CafeConLeche #Croissants #BreakfastIdeas #CoffeeAndBreakfast\"],\"cta\":\"Share your Saturday breakfast pick.\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag ideas\",\"platform\":\"Instagram\",\"body\":\"Five additional subject-relevant hashtag options, distinct from the caption tags.\",\"items\":[\"#CoffeeAndCroissants\",\"#MorningCoffee\",\"#BreakfastTime\",\"#CafeMenu\",\"#CoffeeBreak\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 4391
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "long-brief",
+      "repeat": 1,
+      "promptSha256": "97c7714162fd9175fde7da8f746e72b5274ae02a1813d54af50676cd8c86563c",
+      "stage": "generation",
+      "inputTokens": 4757,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4757,
+        "input_tokens_details": {
+          "cache_write_tokens": 3004,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 390,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5147
+      },
+      "output": "{\n  \"title\": \"Editorial Checklist\",\n  \"summary\": \"Two practical drafts show how fact-checking, preserving qualifications, plain language, and review can guide professional communication.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-editorial-checklist\",\n      \"type\": \"linkedin\",\n      \"title\": \"LinkedIn post: A practical editorial checklist\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"A useful editorial checklist is simple: verify facts, retain qualifications, use plain language, and review before publication.\\n\\nEach step protects a different part of the message. Fact-checking guards accuracy. Retaining qualifications keeps claims in proportion. Plain language makes the meaning easier to follow. A final review gives the whole piece another chance to meet those standards.\\n\\nKeep these checks visible in the drafting process, not just at the final edit.\",\n      \"items\": [\n        \"#Editing\",\n        \"#FactChecking\",\n        \"#PlainLanguage\",\n        \"#ContentStrategy\"\n      ],\n      \"cta\": \"Which check is easiest to overlook in your process?\"\n    },\n    {\n      \"id\": \"email-newsletter-editorial-checklist\",\n      \"type\": \"emailNewsletter\",\n      \"title\": \"Email: A short checklist for clear, accurate writing\",\n      \"platform\": \"Email\",\n      \"body\": \"Subject line options:\\n1. Four checks before publication\\n2. A practical editorial checklist\\n\\nA reliable editorial checklist does not need to be complicated.\\n\\nBefore publication, verify the facts, retain qualifications, use plain language, and review the piece. These checks help keep the writing accurate, proportionate, clear, and ready to share.\\n\\nKeep the list close during drafting and return to it in the final review.\",\n      \"items\": [],\n      \"cta\": \"Save this checklist for your next review.\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-editorial-checklist",
+          "type": "linkedin",
+          "title": "LinkedIn post: A practical editorial checklist",
+          "platform": "LinkedIn",
+          "body": "A useful editorial checklist is simple: verify facts, retain qualifications, use plain language, and review before publication.\n\nEach step protects a different part of the message. Fact-checking guards accuracy. Retaining qualifications keeps claims in proportion. Plain language makes the meaning easier to follow. A final review gives the whole piece another chance to meet those standards.\n\nKeep these checks visible in the drafting process, not just at the final edit.",
+          "items": [
+            "#PlainLanguage"
+          ],
+          "cta": "Which check is easiest to overlook in your process?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "email-newsletter-editorial-checklist",
+          "type": "emailNewsletter",
+          "title": "Email: A short checklist for clear, accurate writing",
+          "platform": "Email",
+          "body": "Subject line options:\n1. Four checks before publication\n2. A practical editorial checklist\n\nA reliable editorial checklist does not need to be complicated.\n\nBefore publication, verify the facts, retain qualifications, use plain language, and review the piece. These checks help keep the writing accurate, proportionate, clear, and ready to share.\n\nKeep the list close during drafting and return to it in the final review.",
+          "items": [],
+          "cta": "Save this checklist for your next review.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 4494
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "milestone",
+      "repeat": 2,
+      "promptSha256": "d4b0f5fbc5e2b722f318d1ceb8a35d03dc4799689670346456d5eac23b51c97e",
+      "stage": "generation",
+      "inputTokens": 3623,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3623,
+        "input_tokens_details": {
+          "cached_tokens": 3620,
+          "cache_write_tokens": 0
+        },
+        "output_tokens": 259,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3882
+      },
+      "output": "{\n  \"title\": \"Northbank Paper subscriber milestone\",\n  \"summary\": \"Three Instagram caption alternatives share Northbank Paper’s 1,000-subscriber milestone and note that giveaway details are still undecided.\",\n  \"sections\": [\n    {\n      \"id\": \"instagram-caption-alternatives\",\n      \"type\": \"instagram\",\n      \"title\": \"Instagram caption alternatives\",\n      \"platform\": \"Instagram\",\n      \"body\": \"1. Northbank Paper has reached 1,000 newsletter subscribers.\\n\\nThank you for being here. We’re planning a giveaway, but the prize, dates and eligibility are still to be decided.\\n\\n2. A milestone for Northbank Paper: 1,000 newsletter subscribers.\\n\\nWe appreciate everyone who’s subscribed. A giveaway is in the works, with the prize, dates and eligibility still undecided.\\n\\n3. 1,000 newsletter subscribers. Thank you for being part of this milestone for Northbank Paper.\\n\\nWe’re planning a giveaway, but haven’t decided the prize, dates or eligibility yet.\",\n      \"items\": [\n        \"#Newsletter #EmailNewsletter #SubscriberMilestone #Giveaway\"\n      ],\n      \"cta\": \"\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 4324
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "practical",
+      "repeat": 2,
+      "promptSha256": "fca92be3f776fb72a7229816b3f772ac5fcf79162e0cc97ab95c39f28fa9b8cf",
+      "stage": "generation",
+      "inputTokens": 3657,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3657,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3654
+        },
+        "output_tokens": 315,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3972
+      },
+      "output": "{\n  \"title\": \"Three-Step Design Planning\",\n  \"summary\": \"A practical post for design professionals on using references, sketches, and draft review to plan before publishing.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-design-planning\",\n      \"type\": \"linkedin\",\n      \"title\": \"LinkedIn post\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"A useful design plan has three steps: collect references, sketch alternatives, and review the draft before publishing.\\n\\nReferences give you material to consider. Sketching alternatives creates room to compare directions before committing. Reviewing the draft gives you a final chance to check the work before it goes out.\\n\\nKeeping these steps distinct makes the process easier to follow from early ideas through final review.\",\n      \"items\": [\n        \"#DesignProcess #DesignPlanning #GraphicDesign #CreativeWorkflow\"\n      ],\n      \"cta\": \"Which step do you find most useful in your own process?\"\n    },\n    {\n      \"id\": \"x-design-planning\",\n      \"type\": \"twitter\",\n      \"title\": \"X post\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"A simple design planning sequence: collect references, sketch alternatives, then review the draft before publishing. Each step gives you a chance to think before the work goes live.\",\n      \"items\": [\n        \"#DesignProcess #DesignPlanning\"\n      ],\n      \"cta\": \"Save this sequence for your next project.\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-design-planning",
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "A useful design plan has three steps: collect references, sketch alternatives, and review the draft before publishing.\n\nReferences give you material to consider. Sketching alternatives creates room to compare directions before committing. Reviewing the draft gives you a final chance to check the work before it goes out.\n\nKeeping these steps distinct makes the process easier to follow from early ideas through final review.",
+          "items": [
+            "#DesignPlanning"
+          ],
+          "cta": "Which step do you find most useful in your own process?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-design-planning",
+          "type": "twitter",
+          "title": "X post",
+          "platform": "X/Twitter",
+          "body": "A simple design planning sequence: collect references, sketch alternatives, then review the draft before publishing. Each step gives you a chance to think before the work goes live.",
+          "items": [
+            "#DesignPlanning"
+          ],
+          "cta": "Save this sequence for your next project.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 4387
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "limited-claim",
+      "repeat": 2,
+      "promptSha256": "928cd3bd61510392803b5678bd5df5ace89f88b0039eb84bc52c657c21724e2c",
+      "stage": "generation",
+      "inputTokens": 3724,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3724,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3721
+        },
+        "output_tokens": 363,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4087
+      },
+      "output": "{\"title\":\"Repair Cafe Pilot Posts\",\"summary\":\"Three platform-native posts introduce the volunteer group’s planned monthly repair cafe without assuming attendance or outcomes.\",\"sections\":[{\"id\":\"tiktok\",\"type\":\"tiktok\",\"title\":\"TikTok caption alternatives\",\"platform\":\"TikTok\",\"body\":\"A repair cafe is taking shape: our volunteer group is piloting a monthly session, with the first planned for Saturday.\\n\\nA monthly repair cafe, starting with a first session planned for Saturday.\\n\\nWhat does a repair cafe pilot look like? Our volunteer group is planning its first session for Saturday.\",\"items\":[\"#RepairCafe #RepairAndReuse #RepairCulture\",\"#RepairCafe #CommunityRepair #RepairAndReuse\",\"#RepairCafe #RepairCulture #Reuse\"],\"cta\":\"What would you want to know about a repair cafe?\"},{\"id\":\"facebook\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Our volunteer group is piloting a monthly repair cafe, with the first session planned for Saturday.\\n\\nIt’s a new monthly idea for the group, and this first session is a chance to begin the pilot. Attendance and outcomes are still unknown.\",\"items\":[\"#RepairCafe #RepairAndReuse #CommunityRepair #Reuse\"],\"cta\":\"What would you be curious to see at a repair cafe?\"},{\"id\":\"youtube-shorts\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"What Is a Repair Cafe? A Monthly Pilot Starts Saturday\\n\\nA volunteer group is piloting a monthly repair cafe. The first session is planned for Saturday.\",\"items\":[\"#RepairCafe #RepairAndReuse #CommunityRepair #RepairCulture\"],\"cta\":\"What would you like to know about the pilot?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "tiktok",
+          "type": "tiktok",
+          "title": "TikTok caption alternatives",
+          "platform": "TikTok",
+          "body": "A repair cafe is taking shape: our volunteer group is piloting a monthly session, with the first planned for Saturday.\n\nA monthly repair cafe, starting with a first session planned for Saturday.\n\nWhat does a repair cafe pilot look like? Our volunteer group is planning its first session for Saturday.",
+          "items": [
+            "#RepairCafe"
+          ],
+          "cta": "What would you want to know about a repair cafe?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "facebook",
+          "type": "facebook",
+          "title": "Facebook post",
+          "platform": "Facebook",
+          "body": "Our volunteer group is piloting a monthly repair cafe, with the first session planned for Saturday.\n\nIt’s a new monthly idea for the group, and this first session is a chance to begin the pilot. Attendance and outcomes are still unknown.",
+          "items": [
+            "#RepairCafe"
+          ],
+          "cta": "What would you be curious to see at a repair cafe?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "youtube-shorts",
+          "type": "youtubeShorts",
+          "title": "YouTube Shorts caption",
+          "platform": "YouTube Shorts",
+          "body": "What Is a Repair Cafe? A Monthly Pilot Starts Saturday\n\nA volunteer group is piloting a monthly repair cafe. The first session is planned for Saturday.",
+          "items": [
+            "#RepairCafe"
+          ],
+          "cta": "What would you like to know about the pilot?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 5458
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "all-formats",
+      "repeat": 2,
+      "promptSha256": "ee85c1ae6cc90f285cd30adce734076999b703b56b0f812f38b38b3f328805c9",
+      "stage": "generation",
+      "inputTokens": 4266,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4266,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 4263
+        },
+        "output_tokens": 1903,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 6169
+      },
+      "output": "{\"title\":\"Elm Studio Drawing Workshop Content Pack\",\"summary\":\"A platform-ready set promoting Elm Studio’s beginner drawing workshop with its confirmed date, location, price, materials and booking details.\",\"sections\":[{\"id\":\"linkedin\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"A beginner drawing workshop can start with three practical skills: observation, outlines and shading.\\n\\nElm Studio is running a beginner drawing workshop in York on 14 December at 2pm. Bring a pencil and sketchbook. Tickets cost £12.\\n\\nThe session focuses on the building blocks listed above, making the workshop details clear before you book.\",\"items\":[\"#Drawing\",\"#DrawingWorkshop\",\"#BeginnerArt\",\"#Sketching\"],\"cta\":\"For booking, email hello@example.invalid.\"},{\"id\":\"instagram\",\"type\":\"instagram\",\"title\":\"Instagram caption\",\"platform\":\"Instagram\",\"body\":\"Observation, outlines and shading: a beginner drawing workshop in York.\\n\\nJoin Elm Studio on 14 December at 2pm. Bring a pencil and sketchbook. Tickets are £12.\",\"items\":[\"#Drawing\",\"#DrawingWorkshop\",\"#BeginnerArt\",\"#Sketching\",\"#York\"],\"cta\":\"Email hello@example.invalid to book.\"},{\"id\":\"tiktok\",\"type\":\"tiktok\",\"title\":\"TikTok caption\",\"platform\":\"TikTok\",\"body\":\"Three drawing basics, one beginner workshop: observation, outlines and shading. York, 14 December at 2pm. Tickets £12.\",\"items\":[\"#Drawing\",\"#BeginnerArt\",\"#Sketching\",\"#DrawingWorkshop\"],\"cta\":\"Book by emailing hello@example.invalid.\"},{\"id\":\"twitter\",\"type\":\"twitter\",\"title\":\"X post\",\"platform\":\"X/Twitter\",\"body\":\"Elm Studio’s beginner drawing workshop covers observation, outlines and shading. In York on 14 December at 2pm. Bring a pencil and sketchbook; tickets cost £12.\",\"items\":[\"#Drawing\",\"#Sketching\"],\"cta\":\"Book by emailing hello@example.invalid.\"},{\"id\":\"facebook\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Looking to try drawing? Elm Studio is running a beginner workshop in York on 14 December at 2pm.\\n\\nThe workshop covers observation, outlines and shading. Bring a pencil and sketchbook. Tickets cost £12.\",\"items\":[\"#Drawing\",\"#BeginnerArt\",\"#Sketching\",\"#York\"],\"cta\":\"To book, email hello@example.invalid.\"},{\"id\":\"youtube-shorts\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"Beginner Drawing Workshop in York | Elm Studio\\n\\nElm Studio’s beginner drawing workshop covers observation, outlines and shading. It takes place in York on 14 December at 2pm. Bring a pencil and sketchbook. Tickets cost £12.\",\"items\":[\"#Drawing\",\"#DrawingWorkshop\",\"#BeginnerArt\",\"#Sketching\"],\"cta\":\"Book by emailing hello@example.invalid.\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"X thread\",\"platform\":\"X/Twitter\",\"body\":\"A beginner drawing workshop can focus on three useful foundations: observation, outlines and shading.\",\"items\":[\"1/ Elm Studio is running a beginner drawing workshop in York on 14 December at 2pm.\",\"2/ The first focus is observation.\",\"3/ The workshop also covers outlines.\",\"4/ Shading is the third topic.\",\"5/ Bring a pencil and sketchbook.\",\"6/ Tickets cost £12. To book, email hello@example.invalid.\",\"7/ Three clear topics, one beginner workshop: observation, outlines and shading.\"],\"cta\":\"\"},{\"id\":\"short-video-script\",\"type\":\"shortVideoScript\",\"title\":\"Short video script\",\"platform\":\"Video\",\"body\":\"Hook, spoken: “Observation, outlines and shading are the focus of Elm Studio’s beginner drawing workshop.”\\n\\nBeat, spoken: “It’s in York on 14 December at 2pm.”\\n\\nBeat, spoken: “Bring a pencil and sketchbook. Tickets cost £12.”\\n\\nClose, spoken: “To book, email hello@example.invalid.”\",\"items\":[\"[Direction: Face the camera for the opening.]\",\"[On-screen text: Observation • Outlines • Shading]\",\"[On-screen text: York | 14 December | 2pm]\",\"[Direction: Show a pencil and sketchbook, if available.]\",\"[On-screen text: Tickets £12 | hello@example.invalid]\"],\"cta\":\"\"},{\"id\":\"carousel\",\"type\":\"carousel\",\"title\":\"Drawing workshop carousel\",\"platform\":\"Carousel\",\"body\":\"A beginner drawing workshop in York, from Elm Studio.\",\"items\":[\"Slide 1: Start with drawing basics. Elm Studio’s beginner workshop, York, 14 December at 2pm.\",\"Slide 2: Observation. One of the workshop’s three topics.\",\"Slide 3: Outlines. Another focus of the session.\",\"Slide 4: Shading. The third topic covered.\",\"Slide 5: Bring a pencil and sketchbook. Tickets cost £12.\",\"Slide 6: To book, email hello@example.invalid.\"],\"cta\":\"\"},{\"id\":\"email-newsletter\",\"type\":\"emailNewsletter\",\"title\":\"Workshop email\",\"platform\":\"Email\",\"body\":\"Subject options:\\nBeginner drawing workshop in York, 14 December\\nElm Studio drawing workshop: tickets £12\\n\\nElm Studio is running a beginner drawing workshop in York on 14 December at 2pm.\\n\\nThe workshop covers observation, outlines and shading. Please bring a pencil and sketchbook. Tickets cost £12.\\n\\nTo book, email hello@example.invalid.\",\"items\":[],\"cta\":\"\"},{\"id\":\"repurpose-pack\",\"type\":\"repurposePack\",\"title\":\"Cross-platform repurpose pack\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nObservation, outlines and shading are the focus of Elm Studio’s beginner drawing workshop.\\n\\nThe workshop takes place in York on 14 December at 2pm. Bring a pencil and sketchbook. Tickets cost £12.\\n\\n#Drawing #DrawingWorkshop #BeginnerArt\\n\\nInstagram:\\nThree drawing basics, in one beginner workshop: observation, outlines and shading.\\n\\nElm Studio in York, 14 December at 2pm. Bring a pencil and sketchbook. Tickets are £12.\\n\\n#Drawing #BeginnerArt #Sketching #York\\n\\nTikTok:\\nObservation, outlines, shading. Elm Studio’s beginner drawing workshop is in York on 14 December at 2pm. Tickets £12.\\n\\n#Drawing #DrawingWorkshop #Sketching\\n\\nX/Twitter:\\nElm Studio’s beginner drawing workshop covers observation, outlines and shading. York, 14 December at 2pm. Bring a pencil and sketchbook; tickets cost £12.\\n\\n#Drawing\\n\\nCarousel:\\n1. Beginner drawing workshop, Elm Studio, York, 14 December at 2pm.\\n2. Topic one: observation.\\n3. Topic two: outlines.\\n4. Topic three: shading.\\n5. Bring a pencil and sketchbook. Tickets cost £12.\\n6. Book by emailing hello@example.invalid.\\n\\nShort video:\\nSpoken: “Elm Studio’s beginner drawing workshop covers observation, outlines and shading.”\\nSpoken: “It’s in York on 14 December at 2pm. Bring a pencil and sketchbook. Tickets cost £12.”\\nClose: “To book, email hello@example.invalid.”\\nOn-screen cues: “Observation • Outlines • Shading” and “York | 14 December | 2pm | £12”.\\n\\nEmail:\\nSubject: Beginner drawing workshop in York, 14 December\\n\\nElm Studio is running a beginner drawing workshop in York on 14 December at 2pm. It covers observation, outlines and shading. Bring a pencil and sketchbook. Tickets cost £12.\\n\\nTo book, email hello@example.invalid.\",\"items\":[],\"cta\":\"\"},{\"id\":\"hooks\",\"type\":\"hooks\",\"title\":\"Hook options\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"Observation, outlines and shading are the focus of Elm Studio’s beginner drawing workshop.\",\"Three drawing topics, covered in one beginner workshop.\",\"A beginner drawing workshop in York on 14 December at 2pm.\",\"Start with observation, then explore outlines and shading.\",\"What does Elm Studio’s beginner drawing workshop cover? Observation, outlines and shading.\",\"Bring a pencil and sketchbook to Elm Studio’s York workshop.\",\"Elm Studio’s beginner workshop takes place in York at 2pm on 14 December.\",\"Tickets for Elm Studio’s beginner drawing workshop cost £12.\"],\"cta\":\"\"},{\"id\":\"ctas\",\"type\":\"ctas\",\"title\":\"CTA options\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"For booking, email hello@example.invalid.\",\"Interested in the workshop? Email hello@example.invalid to book.\",\"To book a place, contact hello@example.invalid by email.\",\"Have a question about the workshop? Email hello@example.invalid.\",\"Share this workshop with someone who might enjoy a beginner drawing session.\"],\"cta\":\"\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag set\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"#DrawingPractice\",\"#ArtWorkshop\",\"#DrawingSkills\",\"#PencilDrawing\",\"#ArtInYork\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 13860
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "repurpose",
+      "repeat": 2,
+      "promptSha256": "bf7cb3eff109f64eb7b3fffc82417dfc87139c29c7811ee6838ac0c283720a17",
+      "stage": "generation",
+      "inputTokens": 3833,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3833,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3830
+        },
+        "output_tokens": 1190,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5023
+      },
+      "output": "{\n  \"title\": \"Three-step bicycle check repurpose pack\",\n  \"summary\": \"A platform-adapted set of posts and scripts sharing a simple pre-journey bicycle check: tyres, brakes, then lights.\",\n  \"sections\": [\n    {\n      \"id\": \"repurpose-pack\",\n      \"type\": \"repurposePack\",\n      \"title\": \"Three-step bicycle check across platforms\",\n      \"platform\": \"General\",\n      \"body\": \"LinkedIn:\\nA useful pre-journey bicycle check can be kept to three steps:\\n\\n1. Inspect the tyres.\\n2. Test the brakes.\\n3. Check the lights.\\n\\nA simple sequence makes it easier to remember what to check before setting off.\\n\\nInstagram:\\nBefore a journey, check your bike in this order: tyres, brakes, lights.\\n\\nThree simple checks to run through before you set off.\\n\\nTikTok:\\nTyres. Brakes. Lights. Three quick checks before a bicycle journey.\\n\\nX/Twitter:\\nBefore a bicycle journey: inspect the tyres, test the brakes, then check the lights. Three checks, in order.\\n\\nCarousel:\\nSlide 1: Before you ride\\nA three-step bicycle check\\n\\nSlide 2: 1. Inspect the tyres\\nCheck your tyres before the journey.\\n\\nSlide 3: 2. Test the brakes\\nTest the brakes before setting off.\\n\\nSlide 4: 3. Check the lights\\nCheck your lights before the journey.\\n\\nSlide 5: Tyres. Brakes. Lights.\\nRun through all three before you set off.\\n\\nShort video:\\nHook, spoken: Before a bicycle journey, run through these three checks.\\nOn-screen text: Before you ride\\nDirection: Face the camera. Hold up three fingers.\\n\\nBeat 1, spoken: First, inspect the tyres.\\nOn-screen text: 1. Tyres\\nDirection: Gesture towards a tyre or show a close-up.\\n\\nBeat 2, spoken: Next, test the brakes.\\nOn-screen text: 2. Brakes\\nDirection: Gesture towards the brake levers.\\n\\nBeat 3, spoken: Then, check the lights.\\nOn-screen text: 3. Lights\\nDirection: Gesture towards the lights.\\n\\nClose, spoken: Tyres, brakes, lights. That’s the check before your journey.\\nOn-screen text: Tyres. Brakes. Lights.\\n\\nEmail:\\nSubject: Three checks before a bicycle journey\\n\\nBefore setting off, run through this simple three-step bicycle check:\\n\\n1. Inspect the tyres.\\n2. Test the brakes.\\n3. Check the lights.\\n\\nKeep the sequence in mind for your next journey.\",\n      \"items\": [\n        \"LinkedIn hashtags: #CyclingSafety #BikeSafety #Cycling #Bicycle\",\n        \"Instagram hashtags: #BikeSafety #CyclingSafety #BikeCheck #Cycling\",\n        \"TikTok hashtags: #BikeSafety #BikeCheck #CyclingTips #CyclingSafety\",\n        \"X/Twitter hashtags: #BikeSafety #Cycling\",\n        \"Carousel hashtags: #BikeSafety #CyclingSafety #BikeCheck #Cycling\",\n        \"Short-video hashtags: #BikeSafety #BikeCheck #CyclingTips #Cycling\",\n        \"Email tags omitted for this format.\"\n      ],\n      \"cta\": \"Save the three-step order to check before your next journey.\"\n    },\n    {\n      \"id\": \"bicycle-check-carousel\",\n      \"type\": \"carousel\",\n      \"title\": \"Carousel: Before you ride\",\n      \"platform\": \"Carousel\",\n      \"body\": \"A concise, five-slide bicycle check, with one distinct step per slide and a simple closing reminder.\",\n      \"items\": [\n        \"Slide 1, Cover: Before you ride. A three-step bicycle check.\",\n        \"Slide 2: 1. Inspect the tyres. Make tyre inspection your first check.\",\n        \"Slide 3: 2. Test the brakes. Check the brakes before moving on.\",\n        \"Slide 4: 3. Check the lights. Finish the sequence with a light check.\",\n        \"Slide 5, Close: Tyres. Brakes. Lights. Run through all three before your journey.\"\n      ],\n      \"cta\": \"Save this checklist for your next bicycle journey.\"\n    },\n    {\n      \"id\": \"short-video-script\",\n      \"type\": \"shortVideoScript\",\n      \"title\": \"Short video: Three checks before a journey\",\n      \"platform\": \"Video\",\n      \"body\": \"Hook, spoken: Before a bicycle journey, run through these three checks.\\nOn-screen text: Before you ride\\nDirection: Face the camera and hold up three fingers.\\n\\nBeat 1, spoken: First, inspect the tyres.\\nOn-screen text: 1. Tyres\\nDirection: Gesture towards a tyre or show a close-up.\\n\\nBeat 2, spoken: Next, test the brakes.\\nOn-screen text: 2. Brakes\\nDirection: Gesture towards the brake levers.\\n\\nBeat 3, spoken: Then, check the lights.\\nOn-screen text: 3. Lights\\nDirection: Gesture towards the lights.\\n\\nClose, spoken: Tyres, brakes, lights. That’s the check before your journey.\\nOn-screen text: Tyres. Brakes. Lights.\",\n      \"items\": [\n        \"Suggested staging only: these directions are optional and do not describe events that happened.\"\n      ],\n      \"cta\": \"Save the sequence as a reminder before your next journey.\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "repurpose-pack",
+          "type": "repurposePack",
+          "title": "Three-step bicycle check across platforms",
+          "platform": "General",
+          "body": "LinkedIn:\nA useful pre-journey bicycle check can be kept to three steps:\n\n1. Inspect the tyres.\n2. Test the brakes.\n3. Check the lights.\n\nA simple sequence makes it easier to remember what to check before setting off.\n\nInstagram:\nBefore a journey, check your bike in this order: tyres, brakes, lights.\n\nThree simple checks to run through before you set off.\n\nTikTok:\nTyres. Brakes. Lights. Three quick checks before a bicycle journey.\n\nX/Twitter:\nBefore a bicycle journey: inspect the tyres, test the brakes, then check the lights. Three checks, in order.\n\nCarousel:\nSlide 1: Before you ride\nA three-step bicycle check\n\nSlide 2: 1. Inspect the tyres\nCheck your tyres before the journey.\n\nSlide 3: 2. Test the brakes\nTest the brakes before setting off.\n\nSlide 4: 3. Check the lights\nCheck your lights before the journey.\n\nSlide 5: Tyres. Brakes. Lights.\nRun through all three before you set off.\n\nShort video:\nHook, spoken: Before a bicycle journey, run through these three checks.\nOn-screen text: Before you ride\nDirection: Face the camera. Hold up three fingers.\n\nBeat 1, spoken: First, inspect the tyres.\nOn-screen text: 1. Tyres\nDirection: Gesture towards a tyre or show a close-up.\n\nBeat 2, spoken: Next, test the brakes.\nOn-screen text: 2. Brakes\nDirection: Gesture towards the brake levers.\n\nBeat 3, spoken: Then, check the lights.\nOn-screen text: 3. Lights\nDirection: Gesture towards the lights.\n\nClose, spoken: Tyres, brakes, lights. That’s the check before your journey.\nOn-screen text: Tyres. Brakes. Lights.\n\nEmail:\nSubject: Three checks before a bicycle journey\n\nBefore setting off, run through this simple three-step bicycle check:\n\n1. Inspect the tyres.\n2. Test the brakes.\n3. Check the lights.\n\nKeep the sequence in mind for your next journey.",
+          "items": [
+            "LinkedIn hashtags: #Bicycle",
+            "Email tags omitted for this format."
+          ],
+          "cta": "Save the three-step order to check before your next journey.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "bicycle-check-carousel",
+          "type": "carousel",
+          "title": "Carousel: Before you ride",
+          "platform": "Carousel",
+          "body": "A concise, five-slide bicycle check, with one distinct step per slide and a simple closing reminder.",
+          "items": [
+            "Slide 1, Cover: Before you ride. A three-step bicycle check.",
+            "Slide 2: 1. Inspect the tyres. Make tyre inspection your first check.",
+            "Slide 3: 2. Test the brakes. Check the brakes before moving on.",
+            "Slide 4: 3. Check the lights. Finish the sequence with a light check.",
+            "Slide 5, Close: Tyres. Brakes. Lights. Run through all three before your journey."
+          ],
+          "cta": "Save this checklist for your next bicycle journey.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "short-video-script",
+          "type": "shortVideoScript",
+          "title": "Short video: Three checks before a journey",
+          "platform": "Video",
+          "body": "Hook, spoken: Before a bicycle journey, run through these three checks.\nOn-screen text: Before you ride\nDirection: Face the camera and hold up three fingers.\n\nBeat 1, spoken: First, inspect the tyres.\nOn-screen text: 1. Tyres\nDirection: Gesture towards a tyre or show a close-up.\n\nBeat 2, spoken: Next, test the brakes.\nOn-screen text: 2. Brakes\nDirection: Gesture towards the brake levers.\n\nBeat 3, spoken: Then, check the lights.\nOn-screen text: 3. Lights\nDirection: Gesture towards the lights.\n\nClose, spoken: Tyres, brakes, lights. That’s the check before your journey.\nOn-screen text: Tyres. Brakes. Lights.",
+          "items": [
+            "Suggested staging only: these directions are optional and do not describe events that happened."
+          ],
+          "cta": "Save the sequence as a reminder before your next journey.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 9515
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "newsletter",
+      "repeat": 2,
+      "promptSha256": "6d2cb0c8840e8359ef2b0c00f2fdbe2f4692b1d2057c04e42fc162997b9806a0",
+      "stage": "generation",
+      "inputTokens": 3902,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3902,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3899
+        },
+        "output_tokens": 764,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4666
+      },
+      "output": "{\n  \"title\": \"Library Poetry Reading\",\n  \"summary\": \"Promote the free 18 December poetry reading with clear booking details and a gentle invitation to explore poetry together.\",\n  \"sections\": [\n    {\n      \"id\": \"email-newsletter\",\n      \"type\": \"emailNewsletter\",\n      \"title\": \"Email newsletter and subject options\",\n      \"platform\": \"Email\",\n      \"body\": \"Subject options:\\n1. Free poetry reading at the library, 18 December\\n2. Poetry reading on 18 December: booking opens 1 December\\n\\nA free poetry reading will take place at the local library on 18 December at 6pm.\\n\\nCapacity is limited to 30 people. Booking opens on 1 December. No authors have been announced.\",\n      \"items\": [],\n      \"cta\": \"If poetry readings are your kind of evening, consider saving the booking date: 1 December.\"\n    },\n    {\n      \"id\": \"x-thread\",\n      \"type\": \"xThread\",\n      \"title\": \"X thread\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"A free poetry reading is coming to the local library on 18 December at 6pm. Here are the details to know:\",\n      \"items\": [\n        \"1/5 The event is free to attend.\",\n        \"2/5 It takes place at the local library on 18 December.\",\n        \"3/5 The reading starts at 6pm.\",\n        \"4/5 Capacity is 30 people.\",\n        \"5/5 Booking opens on 1 December. No authors have been announced. Takeaway: note the booking date if you’d like to attend.\"\n      ],\n      \"cta\": \"Save 1 December as the booking date.\"\n    },\n    {\n      \"id\": \"hooks\",\n      \"type\": \"hooks\",\n      \"title\": \"Eight hook options\",\n      \"platform\": \"General\",\n      \"body\": \"\",\n      \"items\": [\n        \"A free poetry reading is coming to the local library on 18 December.\",\n        \"Poetry at the library: 18 December, 6pm.\",\n        \"A library evening with poetry, free to attend.\",\n        \"The date is set: a free poetry reading on 18 December.\",\n        \"Looking for a poetry reading? The local library hosts one on 18 December at 6pm.\",\n        \"30 places are available for the free library poetry reading.\",\n        \"Booking for the 18 December poetry reading opens on 1 December.\",\n        \"A free reading, a local library, and an evening set aside for poetry.\"\n      ],\n      \"cta\": \"\"\n    },\n    {\n      \"id\": \"ctas\",\n      \"type\": \"ctas\",\n      \"title\": \"Soft CTA options\",\n      \"platform\": \"General\",\n      \"body\": \"\",\n      \"items\": [\n        \"Save 1 December as the booking date.\",\n        \"Mark 18 December at 6pm in your calendar.\",\n        \"Share the date with someone who enjoys poetry.\",\n        \"Consider what poem you’d hope to hear at a reading.\",\n        \"Keep an eye out for booking details when booking opens on 1 December.\"\n      ],\n      \"cta\": \"\"\n    },\n    {\n      \"id\": \"platform-hashtags\",\n      \"type\": \"platformHashtags\",\n      \"title\": \"Additional hashtag suggestions\",\n      \"platform\": \"General\",\n      \"body\": \"\",\n      \"items\": [\n        \"#PoetryReading\",\n        \"#PoetryEvent\",\n        \"#LibraryEvents\",\n        \"#LivePoetry\",\n        \"#PoetryLovers\"\n      ],\n      \"cta\": \"\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 6609
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "unicode",
+      "repeat": 2,
+      "promptSha256": "c61fc139bd32e7621c315aaefc6f179dd41352f8019e9dbeade4a160e7cf4d48",
+      "stage": "generation",
+      "inputTokens": 3664,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3664,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3661
+        },
+        "output_tokens": 313,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3977
+      },
+      "output": "{\"title\":\"Saturday Café Caption Set\",\"summary\":\"Three Instagram caption angles highlight Café Étoile’s Saturday café con leche, croissants, and £5 breakfast option, plus a separate set of additional food-related hashtags.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"1. Saturday breakfast, sorted: café con leche and croissants at Café Étoile. The menu also includes a £5 breakfast option.\\n\\nWhich would you choose?\\n\\n2. Café con leche, croissants, and a £5 breakfast option. Find them on Saturday at Café Étoile.\\n\\nA simple way to start the weekend.\\n\\n3. Make room for a Saturday breakfast at Café Étoile: café con leche and croissants are on offer, with a £5 breakfast option on the menu.\\n\\nWhat’s your breakfast pick?\",\"items\":[\"#CafeConLeche #Croissant #Breakfast #SaturdayBreakfast\",\"#CafeConLeche #Croissant #Breakfast #WeekendBreakfast\",\"#CafeConLeche #Croissant #Breakfast #BreakfastTime\"],\"cta\":\"Which would you choose for Saturday breakfast?\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag suggestions\",\"platform\":\"Instagram\",\"body\":\"Additional relevant hashtags, distinct from the caption tags.\",\"items\":[\"#CoffeeAndCroissants\",\"#MorningCoffee\",\"#CoffeeBreak\",\"#BreakfastIdeas\",\"#CafeMenu\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 3948
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "long-brief",
+      "repeat": 2,
+      "promptSha256": "97c7714162fd9175fde7da8f746e72b5274ae02a1813d54af50676cd8c86563c",
+      "stage": "generation",
+      "inputTokens": 4757,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4757,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 4754
+        },
+        "output_tokens": 342,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5099
+      },
+      "output": "{\"title\":\"Editorial Checklist Posts\",\"summary\":\"Two platform-specific drafts turn the editorial checklist into a practical standard for accurate, clear publishing.\",\"sections\":[{\"id\":\"linkedin-editorial-checklist\",\"type\":\"linkedin\",\"title\":\"LinkedIn Post: A Practical Editorial Checklist\",\"platform\":\"LinkedIn\",\"body\":\"A reliable editorial checklist comes down to four steps: verify facts, retain qualifications, use plain language, and review before publication.\\n\\nEach step protects a different part of the work. Fact-checking keeps claims grounded. Retaining qualifications preserves what a statement does and does not say. Plain language helps readers follow the point. A final review catches issues before the content goes out.\\n\\nUse the checklist in order, then make the last review part of the publishing process.\",\"items\":[\"#Editing\",\"#FactChecking\",\"#PlainLanguage\",\"#ContentWriting\"],\"cta\":\"Which of these four checks is easiest to overlook in your process?\"},{\"id\":\"editorial-checklist-email\",\"type\":\"emailNewsletter\",\"title\":\"Email: A Four-Step Editorial Checklist\",\"platform\":\"Email\",\"body\":\"Subject line options:\\n1. A four-step check before you publish\\n2. Verify, clarify, review\\n\\nA useful editorial checklist can be simple: verify facts, retain qualifications, use plain language, and review before publication.\\n\\nThese steps help keep claims accurate, preserve important context, make the writing easier to understand, and give the finished piece a final quality check.\\n\\nBefore publishing, run through all four. It is a straightforward way to make the review process more deliberate.\",\"items\":[],\"cta\":\"Which step would you add to your own review process?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-editorial-checklist",
+          "type": "linkedin",
+          "title": "LinkedIn Post: A Practical Editorial Checklist",
+          "platform": "LinkedIn",
+          "body": "A reliable editorial checklist comes down to four steps: verify facts, retain qualifications, use plain language, and review before publication.\n\nEach step protects a different part of the work. Fact-checking keeps claims grounded. Retaining qualifications preserves what a statement does and does not say. Plain language helps readers follow the point. A final review catches issues before the content goes out.\n\nUse the checklist in order, then make the last review part of the publishing process.",
+          "items": [
+            "#PlainLanguage"
+          ],
+          "cta": "Which of these four checks is easiest to overlook in your process?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "editorial-checklist-email",
+          "type": "emailNewsletter",
+          "title": "Email: A Four-Step Editorial Checklist",
+          "platform": "Email",
+          "body": "Subject line options:\n1. A four-step check before you publish\n2. Verify, clarify, review\n\nA useful editorial checklist can be simple: verify facts, retain qualifications, use plain language, and review before publication.\n\nThese steps help keep claims accurate, preserve important context, make the writing easier to understand, and give the finished piece a final quality check.\n\nBefore publishing, run through all four. It is a straightforward way to make the review process more deliberate.",
+          "items": [],
+          "cta": "Which step would you add to your own review process?",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3895
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "milestone",
+      "repeat": 1,
+      "promptSha256": "13e6cf249d59baa064c728d234982abfaa0d4bd6c93314d05cba7d66a3f92478",
+      "stage": "generation",
+      "inputTokens": 3623,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3623,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 427,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4050
+      },
+      "output": "{\"title\":\"Instagram captions: 1,000 subscribers + giveaway (details TBD)\",\"summary\":\"Announce the 1,000-subscriber milestone and mention an upcoming giveaway without inventing prize, dates, or eligibility.\",\"sections\":[{\"id\":\"instagram-captions-1000-subs\",\"type\":\"instagram\",\"title\":\"Draft - details to confirm: Three Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Option 1\\n1,000 newsletter subscribers.\\n\\nThat number still feels a little unreal.\\n\\nIf you have ever opened an issue, forwarded one, or simply hit subscribe, thank you.\\n\\nTo mark the moment, we are planning a giveaway soon. Prize, dates, and eligibility are still being decided, so we will share specifics once they are locked.\\n\\n\\nOption 2\\nA small milestone with a big impact: 1,000 subscribers.\\n\\nNorthbank Paper’s newsletter is now 1,000 people strong. Appreciate everyone who has been reading along.\\n\\nWe are also putting together a giveaway to celebrate. We are finalising the prize, dates, and eligibility, and will share confirmed details when ready.\\n\\n\\nOption 3\\nThe newsletter just hit 1,000 subscribers, and we are celebrating in a practical way.\\n\\nNorthbank Paper is planning a giveaway. We have not finalised the prize, dates, or eligibility yet, so nothing to announce beyond this: it is coming.\\n\\nGenuinely grateful for the support that got us here.\",\"items\":[\"Option 1 hashtags:\\n#Newsletter #SmallBusiness #Giveaway #Milestone #NorthbankPaper\",\"Option 2 hashtags:\\n#NewsletterSubscribers #SmallBusinessOwner #EmailMarketing #Giveaway #NorthbankPaper\",\"Option 3 hashtags:\\n#NewsletterGrowth #BusinessUpdate #Giveaway #SmallBusinessCommunity #NorthbankPaper\",\"Optional extra hashtag set (5 unique alternatives):\\n#EmailNewsletter #SubscriberMilestone #BusinessMilestones #BrandUpdate #CommunitySupport\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 8115
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "practical",
+      "repeat": 1,
+      "promptSha256": "9a9e8886aec6f5994180ea919e8bf7871db30eb091d56dadb7c62f9933257d3d",
+      "stage": "generation",
+      "inputTokens": 3657,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3657,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 373,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4030
+      },
+      "output": "{\"title\":\"3-step planning workflow for design publishing\",\"summary\":\"Turn a simple three-step studio planning process into platform-native posts that emphasize clarity and quality control before publishing.\",\"sections\":[{\"id\":\"linkedin-planning-steps\",\"type\":\"linkedin\",\"title\":\"LinkedIn post: 3 planning steps before you publish\",\"platform\":\"LinkedIn\",\"body\":\"Planning isn’t the extra step. It’s the quality control step.\\n\\nA simple workflow a small design studio uses before publishing:\\n\\n1) Collect references\\nStart by gathering examples of what you want the work to feel like. This keeps the direction clear and reduces subjective back and forth later.\\n\\n2) Sketch alternatives\\nDon’t commit to the first idea. Put a few options on paper so you can compare strengths, spot gaps, and choose intentionally.\\n\\n3) Review the draft before publishing\\nTreat the draft like a checkpoint, not a formality. A quick review pass catches avoidable issues and tightens the final output.\\n\\nIf you’re moving fast, this is the difference between “done” and “ready.”\",\"items\":[\"#DesignProcess #CreativeWorkflow #ContentQuality #BrandConsistency #ProjectPlanning\"],\"cta\":\"If you want, save this and run your next post or design through the three steps once before you hit publish.\"},{\"id\":\"twitter-planning-steps\",\"type\":\"twitter\",\"title\":\"X/Twitter post: plan before publish\",\"platform\":\"X/Twitter\",\"body\":\"Before you publish, do 3 quick passes:\\n\\nCollect references, sketch alternatives, review the draft.\\n\\nIt’s a small process that prevents avoidable rework.\",\"items\":[\"#DesignProcess\",\"#CreativeWorkflow\"],\"cta\":\"Save it and use it as a simple pre-publish checklist next time.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-planning-steps",
+          "type": "linkedin",
+          "title": "LinkedIn post: 3 planning steps before you publish",
+          "platform": "LinkedIn",
+          "body": "Planning isn’t the extra step. It’s the quality control step.\n\nA simple workflow a small design studio uses before publishing:\n\n1) Collect references\nStart by gathering examples of what you want the work to feel like. This keeps the direction clear and reduces subjective back and forth later.\n\n2) Sketch alternatives\nDon’t commit to the first idea. Put a few options on paper so you can compare strengths, spot gaps, and choose intentionally.\n\n3) Review the draft before publishing\nTreat the draft like a checkpoint, not a formality. A quick review pass catches avoidable issues and tightens the final output.\n\nIf you’re moving fast, this is the difference between “done” and “ready.”",
+          "items": [],
+          "cta": "If you want, save this and run your next post or design through the three steps once before you hit publish.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "twitter-planning-steps",
+          "type": "twitter",
+          "title": "X/Twitter post: plan before publish",
+          "platform": "X/Twitter",
+          "body": "Before you publish, do 3 quick passes:\n\nCollect references, sketch alternatives, review the draft.\n\nIt’s a small process that prevents avoidable rework.",
+          "items": [],
+          "cta": "Save it and use it as a simple pre-publish checklist next time.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 7384
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "limited-claim",
+      "repeat": 1,
+      "promptSha256": "f7f303e4a93f61bf7db643c333c3ed75c7b0a125b49fae46f7f898d0d6b03b36",
+      "stage": "generation",
+      "inputTokens": 3724,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3724,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 447,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4171
+      },
+      "output": "{\"title\":\"Monthly Repair Cafe pilot: first session announcement set for Saturday\",\"summary\":\"Professional, platform-native captions announcing a volunteer group’s pilot monthly repair cafe, with the first session planned for Saturday and no assumed outcomes.\",\"sections\":[{\"id\":\"tiktok-captions\",\"type\":\"tiktok\",\"title\":\"TikTok: 3 caption alternatives\",\"platform\":\"TikTok\",\"body\":\"Option 1: Before you throw it out, try a repair cafe. First pilot session is this Saturday.\\n\\nOption 2: We’re piloting a monthly repair cafe. First session is Saturday. Bring a broken item and see what’s fixable.\\n\\nOption 3: A volunteer group is testing a monthly repair cafe, starting this Saturday.\",\"items\":[\"#RepairCafe #Repair #FixIt #Sustainability #Community\"],\"cta\":\"Which item would you try to repair first?\"},{\"id\":\"facebook-post\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"We’re piloting a monthly repair cafe run by volunteers.\\n\\nThe first session is planned for Saturday. The idea is simple: bring something broken and we’ll do our best to repair it together, instead of it going straight in the bin.\\n\\nIf you’ve never been to a repair cafe before, it’s a practical way to learn a bit, reduce waste, and keep useful things in use longer.\",\"items\":[\"#RepairCafe #Repair #FixIt #ReduceWaste #Sustainability\"],\"cta\":\"What’s one item you’ve been meaning to fix but haven’t gotten around to?\"},{\"id\":\"youtube-shorts-caption\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"Title: Repair Cafe Pilot Starts Saturday (Monthly Volunteer Event)\\n\\nDescription: A volunteer group is piloting a monthly repair cafe, with the first session planned for Saturday. A simple way to try repairing broken items instead of tossing them.\",\"items\":[\"#RepairCafe #Repair #FixIt #ReduceWaste #Sustainability\"],\"cta\":\"If you’d watch one quick repair tip video, what should it be on?\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 8556
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "all-formats",
+      "repeat": 1,
+      "promptSha256": "b6dea83db2c27f95f59ee45518f59df85dd1e8252e15f63f69b414a5d07b8ff2",
+      "stage": "generation",
+      "inputTokens": 4266,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4266,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 2793,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 7059
+      },
+      "output": "{\"title\":\"Elm Studio beginner drawing workshop promo pack\",\"summary\":\"Platform-ready posts promoting Elm Studio’s beginner drawing workshop with clear logistics, what’s covered, and a soft invitation to email to book.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"Most people think they need “talent” to start drawing. Usually, they just need a simple process.\\n\\nElm Studio is running a beginner drawing workshop on 14 December at 2pm in York.\\n\\nWe’ll cover three foundations you can practise straight away:\\n- Observation (what to look for)\\n- Outlines (how to place shapes with confidence)\\n- Shading (how to add depth)\\n\\nBring a pencil and a sketchbook. Tickets are £12.\\n\\nBooking is by email: hello@example.invalid\",\"items\":[\"#DrawingWorkshop #DrawingBasics #ArtWorkshop #CreativeSkills #York\"],\"cta\":\"If you’d like to come along, email to book and I’ll send the details.\"},{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram captions (3 alternatives)\",\"platform\":\"Instagram\",\"body\":\"Option 1:\\nBeginner drawing workshop, York, 14 Dec at 2pm.\\n\\nIf you’ve been meaning to get back to the basics (or start properly), this is a simple session focused on:\\nObservation, outlines, and shading.\\n\\nBring a pencil and a sketchbook. Tickets are £12.\\n\\nTo book, email hello@example.invalid\\n\\nOption 2:\\nYou don’t need fancy materials to start drawing.\\n\\nFor Elm Studio’s beginner workshop in York (14 December, 2pm), all you need is:\\n- a pencil\\n- a sketchbook\\n\\nWe’ll work through observation, outlines, and shading. Tickets are £12.\\n\\nBooking: hello@example.invalid\\n\\nOption 3:\\nA clear, low-pressure way to practise drawing fundamentals.\\n\\nElm Studio’s beginner workshop in York is on 14 December at 2pm.\\n\\nWhat we’re covering: observation, outlines, shading.\\nBring a pencil and sketchbook.\\nTickets: £12.\\n\\nBook by email: hello@example.invalid\",\"items\":[\"Option 1 hashtags: #DrawingWorkshop #BeginnerDrawing #York #ArtClass #Sketching\",\"Option 2 hashtags: #LearnToDraw #DrawingBasics #ArtWorkshop #YorkUK #Sketchbook\",\"Option 3 hashtags: #DrawingPractice #BeginnerArt #YorkEvents #SketchingTips #ArtClass\"],\"cta\":\"Save this if you want an easy date in the diary for some creative practice.\"},{\"id\":\"tiktok-captions\",\"type\":\"tiktok\",\"title\":\"TikTok captions (3 alternatives)\",\"platform\":\"TikTok\",\"body\":\"Option 1:\\nIf you can observe it, you can draw it. Beginner workshop in York, 14 Dec, 2pm. £12.\\n\\nOption 2:\\nBring a pencil + sketchbook. That’s it. Beginner drawing workshop, York, 14 Dec at 2pm.\\n\\nOption 3:\\nQuick way to practise the fundamentals: observation, outlines, shading. York, 14 Dec, 2pm. £12.\",\"items\":[\"Option 1 tags: #BeginnerDrawing #DrawingWorkshop #York #Sketching #ArtClass\",\"Option 2 tags: #LearnToDraw #Sketchbook #PencilDrawing #YorkUK #ArtWorkshop\",\"Option 3 tags: #DrawingBasics #Shading #SketchingTips #YorkEvents #BeginnerArt\"],\"cta\":\"Want the booking email in one place? It’s hello@example.invalid.\"},{\"id\":\"twitter-post\",\"type\":\"twitter\",\"title\":\"X/Twitter post\",\"platform\":\"X/Twitter\",\"body\":\"Beginner drawing workshop in York, 14 Dec at 2pm.\\n\\n£12 ticket. Bring a pencil + sketchbook.\\nCovering observation, outlines, and shading.\\n\\nBook by email: hello@example.invalid\",\"items\":[\"#York\"],\"cta\":\"If you know someone who’s been saying “I want to learn to draw”, feel free to pass this on.\"},{\"id\":\"facebook-post\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Elm Studio is running a beginner drawing workshop in York on 14 December at 2pm.\\n\\nTickets are £12, and you just need to bring a pencil and a sketchbook.\\n\\nThe session covers three core skills: observation, outlines, and shading.\\n\\nTo book, email hello@example.invalid\",\"items\":[\"#York #ArtWorkshop #DrawingWorkshop #BeginnerDrawing\"],\"cta\":\"Know someone local who’d enjoy a beginner-friendly drawing session? Send them the details.\"},{\"id\":\"youtube-shorts\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"Title: Beginner Drawing Workshop (York) | Observation, Outlines, Shading\\n\\nDescription: Elm Studio is running a beginner drawing workshop in York on 14 December at 2pm. Tickets are £12. Bring a pencil and a sketchbook. The workshop covers observation, outlines, and shading. Booking is by email: hello@example.invalid\",\"items\":[\"#BeginnerDrawing #DrawingWorkshop #York #Sketching #PencilDrawing\"],\"cta\":\"If you’re in York and want to join, email to book.\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"X/Twitter thread\",\"platform\":\"X/Twitter\",\"body\":\"Thread: Beginner drawing workshop details, clearly and simply.\",\"items\":[\"1) Most “I can’t draw” problems are really “I don’t have a process yet.”\",\"2) Elm Studio is running a beginner drawing workshop in York: 14 December at 2pm.\",\"3) It’s focused on three fundamentals you can practise anywhere: observation, outlines, and shading.\",\"4) Observation: what to actually look for before your pencil hits the page.\",\"5) Outlines: placing shapes with a bit more confidence, instead of guessing.\",\"6) Shading: adding depth using simple light and dark, no fancy materials required.\",\"7) Practical bits: tickets are £12. Bring a pencil and a sketchbook. Book by email: hello@example.invalid\\n\\nTakeaway: start simple, practise the fundamentals, and let consistency do the heavy lifting.\"],\"cta\":\"If you’re York-based, this is an easy way to get a focused practice session in.\"},{\"id\":\"short-video-script\",\"type\":\"shortVideoScript\",\"title\":\"Short-form video script\",\"platform\":\"Video\",\"body\":\"[Direction: Face to camera. Hold a pencil and sketchbook in frame.]\\n\\nSpoken hook: If you’ve ever said “I can’t draw”, you probably just haven’t been shown a simple process.\\n\\n[On-screen text: Beginner Drawing Workshop, York | 14 Dec, 2pm]\\n\\nSpoken: Elm Studio is running a beginner drawing workshop in York on 14 December at 2pm.\\n\\n[On-screen text: £12 ticket]\\n\\nSpoken: Tickets are £12.\\n\\n[Direction: Quick cut to sketchbook page.]\\n\\nSpoken: We’re covering three foundations: observation, outlines, and shading.\\n\\n[On-screen text: Observation | Outlines | Shading]\\n\\nSpoken: And you don’t need loads of equipment. Bring a pencil and a sketchbook.\\n\\n[On-screen text: Bring: pencil + sketchbook]\\n\\nSpoken close: If you want to book a place, email hello@example.invalid.\",\"items\":[\"Alt on-screen line (optional): Simple materials. Clear fundamentals.\",\"Alt spoken line (optional): No pressure, just practice on the basics.\"],\"cta\":\"Save this if you want the details handy later.\"},{\"id\":\"carousel\",\"type\":\"carousel\",\"title\":\"Carousel outline\",\"platform\":\"Carousel\",\"body\":\"Carousel: Beginner drawing workshop promo (Elm Studio)\",\"items\":[\"Slide 1 (Cover): Beginner Drawing Workshop (York)\",\"Slide 2: Date + time: 14 December, 2pm\",\"Slide 3: Cost: £12 ticket\",\"Slide 4: Bring: pencil + sketchbook\",\"Slide 5: What we’ll cover: observation (seeing shapes, edges, and proportions)\",\"Slide 6: Outlines: placing forms before adding detail\",\"Slide 7: Shading: simple light and dark to add depth\",\"Slide 8 (Final): To book: email hello@example.invalid\"],\"cta\":\"Send this to a friend in York who’s been wanting to start drawing.\"},{\"id\":\"email-newsletter\",\"type\":\"emailNewsletter\",\"title\":\"Email/newsletter draft\",\"platform\":\"Email\",\"body\":\"Subject options:\\n1) Beginner drawing workshop in York (14 Dec, 2pm)\\n2) York: beginner drawing workshop, £12 (14 December)\\n3) Drawing fundamentals workshop: observation, outlines, shading\\n\\nBody:\\nElm Studio is running a beginner drawing workshop in York on 14 December at 2pm.\\n\\nIt’s a practical session covering three core drawing skills:\\n- Observation\\n- Outlines\\n- Shading\\n\\nTickets are £12. Please bring a pencil and a sketchbook.\\n\\nTo book a place, email hello@example.invalid.\",\"items\":[],\"cta\":\"If you’re considering it, reply with any quick question before you book.\"},{\"id\":\"repurpose-pack\",\"type\":\"repurposePack\",\"title\":\"Repurpose pack (same facts, adapted per platform)\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nMost people think they need “talent” to start drawing. Usually, they just need a simple process.\\n\\nElm Studio is running a beginner drawing workshop on 14 December at 2pm in York.\\n\\nWe’ll cover observation, outlines, and shading.\\n\\nBring a pencil and a sketchbook. Tickets are £12.\\n\\nBooking is by email: hello@example.invalid\\n\\nInstagram:\\nBeginner drawing workshop, York, 14 Dec at 2pm.\\n\\nA simple session on observation, outlines, and shading.\\nBring a pencil + sketchbook. Tickets are £12.\\n\\nBook: hello@example.invalid\\n\\nTikTok:\\nBring a pencil + sketchbook. Beginner drawing workshop in York, 14 Dec, 2pm. £12. Book: hello@example.invalid\\n\\nX/Twitter:\\nBeginner drawing workshop in York, 14 Dec at 2pm. £12. Bring a pencil + sketchbook. Observation, outlines, shading. Book: hello@example.invalid\\n\\nCarousel:\\n1) Beginner Drawing Workshop (York)\\n2) 14 Dec, 2pm\\n3) £12 ticket\\n4) Bring: pencil + sketchbook\\n5) Observation\\n6) Outlines\\n7) Shading\\n8) Book: hello@example.invalid\\n\\nShort video script (talking head):\\nHook: If you’ve ever said “I can’t draw”, you probably just haven’t been shown a simple process.\\nDetails: Beginner workshop, York, 14 Dec, 2pm. £12. Bring pencil + sketchbook. Covers observation, outlines, shading.\\nClose: Email hello@example.invalid to book.\\n\\nEmail:\\nSubject: Beginner drawing workshop in York (14 Dec, 2pm)\\nBody: Elm Studio workshop. Covers observation, outlines, shading. £12. Bring pencil + sketchbook. Book by emailing hello@example.invalid.\",\"items\":[],\"cta\":\"Pick one platform to post first, then reuse the same details in the formats above.\"},{\"id\":\"hooks\",\"type\":\"hooks\",\"title\":\"Hook options (8)\",\"platform\":\"General\",\"body\":\"Use any of these as the first line for a post or video:\",\"items\":[\"You don’t need fancy materials to start drawing, just a pencil and a sketchbook.\",\"Beginner drawing workshop in York, 14 December at 2pm. Simple, focused, practical.\",\"If you struggle with drawing, start with observation before you start “trying to be good”.\",\"Outlines get easier when you stop guessing and start placing simple shapes first.\",\"Shading isn’t magic. It’s light and dark, applied on purpose.\",\"A £12 workshop that covers the three basics: observation, outlines, shading.\",\"If “I can’t draw” is your default, try one session built for beginners.\",\"York: want a relaxed way to practise drawing fundamentals this December?\"],\"cta\":\"\"},{\"id\":\"ctas\",\"type\":\"ctas\",\"title\":\"Soft CTA options (5)\",\"platform\":\"General\",\"body\":\"CTA options you can swap into posts:\",\"items\":[\"Save this for later if you might go.\",\"Forward this to someone in York who’d enjoy it.\",\"If you’re thinking of coming, email hello@example.invalid to book.\",\"Reply with one thing you’d like to get better at, observation, outlines, or shading.\",\"If you want the details in one place, screenshot this post.\"],\"cta\":\"\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag set (5, not used above)\",\"platform\":\"General\",\"body\":\"Optional extra hashtags (unique, subject-relevant):\",\"items\":[\"#Yorkshire\",\"%23LocalWorkshops\",\"%23ArtInYork\",\"%23CreativeWorkshop\",\"%23DrawingClass\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 41803
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "repurpose",
+      "repeat": 1,
+      "promptSha256": "c859c73486a224e7ad8053c7e41af15b25286aeabbefb7413d5e495259e9397c",
+      "stage": "generation",
+      "inputTokens": 3833,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3833,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 1221,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5054
+      },
+      "output": "{\"title\":\"3-step pre-ride bike check repurpose pack\",\"summary\":\"Platform-native content that turns a simple 3-step pre-journey bike safety check into posts, a carousel, a short video, and an email without implying a repair service offer.\",\"sections\":[{\"id\":\"repurpose-pack\",\"type\":\"repurposePack\",\"title\":\"Repurpose Pack: 3-step pre-journey bike check\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nBefore any ride, do this 30-second bike check.\\n\\n1) Inspect tyres\\nA quick look for cuts, low pressure, or anything that looks off.\\n\\n2) Test brakes\\nSqueeze both levers. You want a firm feel and a confident stop.\\n\\n3) Check lights\\nIf you have them, make sure they turn on and are visible.\\n\\nIt is a simple sequence, but it catches the issues that ruin rides fast.\\n\\n\\nInstagram:\\nQuick pre-ride ritual that saves headaches later:\\n\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nIt is a checklist, not a deep dive. Just enough to spot the obvious before you set off.\\n\\n\\nTikTok:\\n30-second pre-ride check:\\nTyres. Brakes. Lights.\\n\\nDo it in that order before you roll out.\\n\\n\\nX/Twitter:\\nPre-ride bike check (takes about 30 seconds):\\n1) Tyres\\n2) Brakes\\n3) Lights\\n\\nSimple, repeatable, worth it.\\n\\n\\nFacebook:\\nA quick before-you-go bike check:\\n\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nIt is an easy habit to build, especially if you ride early mornings or after work.\\n\\n\\nYouTube Shorts:\\nTitle: The 3-Step Bike Check Before Any Ride\\nDescription:\\nBefore you ride, run this quick checklist: inspect tyres, test brakes, then check lights. Simple, fast, and easy to remember.\\n\\n\\nEmail:\\nSubject: A 3-step bike check before you head out\\n\\nHi,\\n\\nBefore a journey, a quick bike check can help you catch obvious issues early.\\n\\nHere is a simple three-step checklist:\\n\\n1) Inspect tyres\\nLook over both tyres for anything that looks off.\\n\\n2) Test brakes\\nGive both brakes a quick squeeze to confirm they feel solid.\\n\\n3) Check lights\\nIf you use lights, make sure they switch on and are visible.\\n\\nIt is quick, repeatable, and easy to do right before you roll out.\\n\",\"items\":[\"LinkedIn hashtags: #CyclingSafety #BikeMaintenance #RoadSafety #Cycling\",\"Instagram hashtags: #BikeCheck #CyclingTips #BikeSafety #BicycleMaintenance #CyclingLife\",\"TikTok hashtags: #BikeCheck #CyclingTips #BikeSafety #BicycleTok\",\"X/Twitter hashtags: #CyclingSafety\",\"Facebook hashtags: #CyclingSafety #BikeSafety #BikeMaintenance\",\"YouTube Shorts hashtags: #CyclingSafety #BikeCheck #BikeMaintenance\",\"YouTube keywords (non-hashtag): bike check, pre ride checklist, cycling safety, bicycle brakes, bike tyres, bike lights\"],\"cta\":\"Save this checklist for your next ride.\"},{\"id\":\"carousel-3-step-check\",\"type\":\"carousel\",\"title\":\"Carousel: 3-step bicycle check before a journey\",\"platform\":\"Carousel\",\"body\":\"Use as a simple, swipeable checklist. Each slide keeps one clear action so it is easy to remember on the go.\",\"items\":[\"Slide 1 (Cover): The 3-step bike check before you ride\",\"Slide 2: 1) Inspect tyres\\nQuick look for obvious damage or anything that looks off.\",\"Slide 3: Tyres, continued\\nCheck both tyres, front and back, before you set off.\",\"Slide 4: 2) Test brakes\\nSqueeze both levers. You want a solid, reliable feel.\",\"Slide 5: 3) Check lights\\nIf you have lights, make sure they turn on and are visible.\",\"Slide 6 (Final): Quick checklist recap\\nTyres\\nBrakes\\nLights\"],\"cta\":\"Save this carousel so you can run the check in 30 seconds before your next journey.\"},{\"id\":\"short-video-script\",\"type\":\"shortVideoScript\",\"title\":\"Short-form video script: 3-step pre-ride bike check\",\"platform\":\"Video\",\"body\":\"[Direction: Face to camera, holding a bike or standing next to one]\\n\\nHook (spoken): Before you ride, do this three-step bike check.\\n[On-screen text: 3-step bike check]\\n\\nBeat 1 (spoken): First, inspect your tyres.\\n[On-screen text: 1) Tyres]\\n[Direction: Point to front tyre, then rear tyre]\\n\\nBeat 2 (spoken): Second, test your brakes.\\n[On-screen text: 2) Brakes]\\n[Direction: Squeeze both brake levers]\\n\\nBeat 3 (spoken): Third, check your lights.\\n[On-screen text: 3) Lights]\\n[Direction: Tap the light button or gesture to where lights would be]\\n\\nClose (spoken): Tyres, brakes, lights. Quick, simple, and worth doing before every journey.\\n[On-screen text: Tyres. Brakes. Lights.]\",\"items\":[\"Alt on-screen opener options:\\n- Before you roll out: tyres, brakes, lights\\n- 30-second bike check\\n- The simplest pre-ride checklist\",\"Suggested pacing: Keep each step to one sentence, with a quick visual gesture for each.\"],\"cta\":\"If you ride regularly, save this and make it part of your pre-ride routine.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "repurpose-pack",
+          "type": "repurposePack",
+          "title": "Repurpose Pack: 3-step pre-journey bike check",
+          "platform": "General",
+          "body": "LinkedIn:\nBefore any ride, do this 30-second bike check.\n\n1) Inspect tyres\nA quick look for cuts, low pressure, or anything that looks off.\n\n2) Test brakes\nSqueeze both levers. You want a firm feel and a confident stop.\n\n3) Check lights\nIf you have them, make sure they turn on and are visible.\n\nIt is a simple sequence, but it catches the issues that ruin rides fast.\n\nInstagram:\nQuick pre-ride ritual that saves headaches later:\n\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nIt is a checklist, not a deep dive. Just enough to spot the obvious before you set off.\n\nTikTok:\n30-second pre-ride check:\nTyres. Brakes. Lights.\n\nDo it in that order before you roll out.\n\nX/Twitter:\nPre-ride bike check (takes about 30 seconds):\n1) Tyres\n2) Brakes\n3) Lights\n\nSimple, repeatable, worth it.\n\nFacebook:\nA quick before-you-go bike check:\n\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nIt is an easy habit to build, especially if you ride early mornings or after work.\n\nYouTube Shorts:\nTitle: The 3-Step Bike Check Before Any Ride\nDescription:\nBefore you ride, run this quick checklist: inspect tyres, test brakes, then check lights. Simple, fast, and easy to remember.\n\nEmail:\nSubject: A 3-step bike check before you head out\n\nHi\n\nBefore a journey, a quick bike check can help you catch obvious issues early.\n\nHere is a simple three-step checklist:\n\n1) Inspect tyres\nLook over both tyres for anything that looks off.\n\n2) Test brakes\nGive both brakes a quick squeeze to confirm they feel solid.\n\n3) Check lights\nIf you use lights, make sure they switch on and are visible.\n\nIt is quick, repeatable, and easy to do right before you roll out.",
+          "items": [
+            "YouTube keywords (non-hashtag): bike check, pre ride checklist, cycling safety, bicycle brakes, bike tyres, bike lights"
+          ],
+          "cta": "Save this checklist for your next ride.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "carousel-3-step-check",
+          "type": "carousel",
+          "title": "Carousel: 3-step bicycle check before a journey",
+          "platform": "Carousel",
+          "body": "Use as a simple, swipeable checklist. Each slide keeps one clear action so it is easy to remember on the go.",
+          "items": [
+            "Slide 1 (Cover): The 3-step bike check before you ride",
+            "Slide 2: 1) Inspect tyres\nQuick look for obvious damage or anything that looks off.",
+            "Slide 3: Tyres, continued\nCheck both tyres, front and back, before you set off.",
+            "Slide 4: 2) Test brakes\nSqueeze both levers. You want a solid, reliable feel.",
+            "Slide 5: 3) Check lights\nIf you have lights, make sure they turn on and are visible.",
+            "Slide 6 (Final): Quick checklist recap\nTyres\nBrakes\nLights"
+          ],
+          "cta": "Save this carousel so you can run the check in 30 seconds before your next journey.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "short-video-script",
+          "type": "shortVideoScript",
+          "title": "Short-form video script: 3-step pre-ride bike check",
+          "platform": "Video",
+          "body": "[Direction: Face to camera, holding a bike or standing next to one]\n\nHook (spoken): Before you ride, do this three-step bike check.\n[On-screen text: 3-step bike check]\n\nBeat 1 (spoken): First, inspect your tyres.\n[On-screen text: 1) Tyres]\n[Direction: Point to front tyre, then rear tyre]\n\nBeat 2 (spoken): Second, test your brakes.\n[On-screen text: 2) Brakes]\n[Direction: Squeeze both brake levers]\n\nBeat 3 (spoken): Third, check your lights.\n[On-screen text: 3) Lights]\n[Direction: Tap the light button or gesture to where lights would be]\n\nClose (spoken): Tyres, brakes, lights. Quick, simple, and worth doing before every journey.\n[On-screen text: Tyres. Brakes. Lights.]",
+          "items": [
+            "Alt on-screen opener options:\n- Before you roll out: tyres, brakes, lights\n- 30-second bike check\n- The simplest pre-ride checklist",
+            "Suggested pacing: Keep each step to one sentence, with a quick visual gesture for each."
+          ],
+          "cta": "If you ride regularly, save this and make it part of your pre-ride routine.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 19907
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "newsletter",
+      "repeat": 1,
+      "promptSha256": "1a0b30c2fa3c33417f191d0ac9e4c9a59bab0a6a6c07d12eafcb7a22e7cfca53",
+      "stage": "generation",
+      "inputTokens": 3902,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3902,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 855,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4757
+      },
+      "output": "{\"title\":\"Local library poetry reading promo pack\",\"summary\":\"Professional, source-grounded announcements and prompts for a free library poetry reading with limited capacity and clear booking timing.\",\"sections\":[{\"id\":\"email-newsletter\",\"type\":\"emailNewsletter\",\"title\":\"Email/newsletter draft\",\"platform\":\"Email\",\"body\":\"Subject line options:\\n1) Free poetry reading at the library, 18 Dec (booking opens 1 Dec)\\n2) Poetry reading: 18 December, 6pm, free entry (30 places)\\n3) Library event: free poetry reading, 18 Dec at 6pm\\n\\nHello,\\n\\nA local library is hosting a free poetry reading on 18 December at 6pm.\\n\\nCapacity is limited to 30 people, and bookings open on 1 December. No authors have been announced yet, so if you enjoy hearing new voices and discovering poems live, this is an easy one to put on your calendar.\\n\\nPractical details\\n- What: Free poetry reading\\n- When: 18 December, 6pm\\n- Where: Local library\\n- Capacity: 30 people\\n- Booking opens: 1 December\",\"items\":[],\"cta\":\"If you might go, save the date now and consider sharing this with someone who would enjoy an hour of poetry.\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"X thread (5 to 7 posts)\",\"platform\":\"X/Twitter\",\"body\":\"\",\"items\":[\"1) A local library is hosting a free poetry reading on 18 December at 6pm.\",\"2) Capacity is 30 people, so it is the kind of event that can fill up quickly once booking opens.\",\"3) Booking opens on 1 December. If you want to go, it is worth putting that date in your calendar now.\",\"4) No authors have been announced yet, which is a good reminder that you do not need a famous name for a strong evening of live poetry.\",\"5) Practical recap: free entry, 18 Dec, 6pm, library venue, 30 seats, booking from 1 Dec.\",\"6) Takeaway: small, local arts events are easiest to attend when you treat booking dates like deadlines for your calendar, not your memory.\"],\"cta\":\"Want a one-line reminder you can copy into your calendar note? I can write one.\"},{\"id\":\"hooks\",\"type\":\"hooks\",\"title\":\"Hook options (8)\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"30 seats. Free poetry reading. One evening at the library.\",\"If you have been meaning to go to a poetry reading, this is the simplest plan: 18 Dec, 6pm, free.\",\"Booking opens 1 December for a free poetry reading at the local library.\",\"No authors announced, and that is kind of the point. Show up for the poems.\",\"A small room, a live reading, and 30 people max. Library poetry night, 18 Dec.\",\"Calendar check: free poetry reading on 18 December at 6pm (bookings from 1 Dec).\",\"Local library events are easy to miss. Here is one worth saving: poetry reading, 18 Dec.\",\"If you prefer quieter weeknight plans, a library poetry reading is hard to beat. Free, 18 Dec, 6pm.\"],\"cta\":\"\"},{\"id\":\"ctas\",\"type\":\"ctas\",\"title\":\"Soft CTA options (5)\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"Save this for later so you remember booking opens on 1 December.\",\"Know someone who loves poetry readings? Send this their way.\",\"If you go to one local arts event this month, let it be this, add it to your calendar.\",\"Reply with a book or poet you have been reading lately, I am building a reading list.\",\"If you want, I can format these details into a single text you can forward.\"],\"cta\":\"\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag set (5)\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"#PoetryReading\",\"#LibraryEvent\",\"#CommunityArts\",\"#LiteraryEvents\",\"#FreeEvent\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "email-newsletter",
+          "type": "emailNewsletter",
+          "title": "Email/newsletter draft",
+          "platform": "Email",
+          "body": "Subject line options:\n1) Free poetry reading at the library, 18 Dec (booking opens 1 Dec)\n2) Poetry reading: 18 December, 6pm, free entry (30 places)\n3) Library event: free poetry reading, 18 Dec at 6pm\n\nHello\n\nA local library is hosting a free poetry reading on 18 December at 6pm.\n\nCapacity is limited to 30 people, and bookings open on 1 December. No authors have been announced yet, so if you enjoy hearing new voices and discovering poems live, this is an easy one to put on your calendar.\n\nPractical details\n- What: Free poetry reading\n- When: 18 December, 6pm\n- Where: Local library\n- Capacity: 30 people\n- Booking opens: 1 December",
+          "items": [],
+          "cta": "If you might go, save the date now and consider sharing this with someone who would enjoy an hour of poetry.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-thread",
+          "type": "xThread",
+          "title": "X thread (5 to 7 posts)",
+          "platform": "X/Twitter",
+          "body": "",
+          "items": [
+            "1) A local library is hosting a free poetry reading on 18 December at 6pm.",
+            "2) Capacity is 30 people, so it is the kind of event that can fill up quickly once booking opens.",
+            "3) Booking opens on 1 December. If you want to go, it is worth putting that date in your calendar now.",
+            "4) No authors have been announced yet, which is a good reminder that you do not need a famous name for a strong evening of live poetry.",
+            "5) Practical recap: free entry, 18 Dec, 6pm, library venue, 30 seats, booking from 1 Dec.",
+            "6) Takeaway: small, local arts events are easiest to attend when you treat booking dates like deadlines for your calendar, not your memory."
+          ],
+          "cta": "Want a one-line reminder you can copy into your calendar note? I can write one.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "hooks",
+          "type": "hooks",
+          "title": "Hook options (8)",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "30 seats. Free poetry reading. One evening at the library.",
+            "If you have been meaning to go to a poetry reading, this is the simplest plan: 18 Dec, 6pm, free.",
+            "Booking opens 1 December for a free poetry reading at the local library.",
+            "No authors announced, and that is kind of the point. Show up for the poems.",
+            "A small room, a live reading, and 30 people max. Library poetry night, 18 Dec.",
+            "Calendar check: free poetry reading on 18 December at 6pm (bookings from 1 Dec).",
+            "Local library events are easy to miss. Here is one worth saving: poetry reading, 18 Dec.",
+            "If you prefer quieter weeknight plans, a library poetry reading is hard to beat. Free, 18 Dec, 6pm."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "ctas",
+          "type": "ctas",
+          "title": "Soft CTA options (5)",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "Save this for later so you remember booking opens on 1 December.",
+            "Know someone who loves poetry readings? Send this their way.",
+            "If you go to one local arts event this month, let it be this, add it to your calendar.",
+            "Reply with a book or poet you have been reading lately, I am building a reading list.",
+            "If you want, I can format these details into a single text you can forward."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "platform-hashtags",
+          "type": "platformHashtags",
+          "title": "Additional hashtag set (5)",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "#PoetryReading"
+          ],
+          "cta": "",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 15519
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "unicode",
+      "repeat": 1,
+      "promptSha256": "9d0fb166d71fce559cc47e2e43dd60a13d7d271ed73dd16708fa7da4d27e627f",
+      "stage": "generation",
+      "inputTokens": 3664,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3664,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 398,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4062
+      },
+      "output": "{\"title\":\"Café Étoile Saturday breakfast Instagram + extra hashtags\",\"summary\":\"Three Instagram caption alternatives promoting Saturday café con leche and croissants with a £5 breakfast option, plus an extra set of distinct relevant hashtags.\",\"sections\":[{\"id\":\"instagram-cafe-etoile-sat-breakfast\",\"type\":\"instagram\",\"title\":\"Instagram captions (3 alternatives)\",\"platform\":\"Instagram\",\"body\":\"Option 1:\\nSaturday plans: café con leche + a croissant at Café Étoile.\\n\\nIf you want something simple that still feels like a proper morning, we have a £5 breakfast option on the menu.\\n\\nOption 2:\\nCafé con leche and croissants, this Saturday at Café Étoile.\\n\\nQuick, classic, and easy to keep on your weekend routine. £5 breakfast option available.\\n\\nOption 3:\\nA good Saturday morning does not need a long list.\\n\\nCafé con leche. Croissant.\\n\\nCafé Étoile is serving both this Saturday, plus a £5 breakfast option on the menu.\",\"items\":[\"Option 1 hashtags:\\n#CafeConLeche #Croissant #SaturdayBreakfast #CafeBreakfast #WeekendTreat\",\"Option 2 hashtags:\\n#BreakfastMenu #CoffeeAndCroissant #SaturdayBrunch #CoffeeLovers #BreakfastSpot\",\"Option 3 hashtags:\\n#MorningCoffee #WeekendBreakfast #CafeMorning #BreakfastDeal #CoffeeShopVibes\"],\"cta\":\"If you stop by on Saturday, which are you grabbing first, café con leche or croissant?\"},{\"id\":\"platformhashtags-cafe-etoile-sat-breakfast\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag set (5, distinct from caption tags)\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"#BreakfastTime\",\"#PastryLovers\",\"#CoffeeBreak\",\"#CafeLife\",\"#BrunchPlans\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 7604
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "long-brief",
+      "repeat": 1,
+      "promptSha256": "9c5961b0b0bcfaaff47dd714eb11a3504ce9499de06d1d730d2407bc0ce0f2c4",
+      "stage": "generation",
+      "inputTokens": 4757,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4757,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 626,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5383
+      },
+      "output": "{\n  \"title\": \"Editorial checklist as a quality standard\",\n  \"summary\": \"Turn the four-point editorial checklist into a clear, professional standard creators and small teams can apply before publishing.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-editorial-checklist-post\",\n      \"type\": \"linkedin\",\n      \"title\": \"LinkedIn post: The four-step editorial checklist\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"Publishing fast is easy.\\n\\nPublishing something you can stand behind a week later takes a checklist.\\n\\nOur editorial checklist is simple on purpose:\\n\\n1) Verify facts.\\nIf you cannot confirm it, do not state it as a fact.\\n\\n2) Retain qualifications.\\nKeep the “may”, “often”, “in this case”, and “for most teams” that make advice accurate.\\n\\n3) Use plain language.\\nSwap jargon for the clearest words you would use in a real conversation.\\n\\n4) Review before publication.\\nOne last read for accuracy, clarity, and tone, before it becomes permanent.\\n\\nThis is not about sounding formal.\\nIt is about being trusted.\",\n      \"items\": [\n        \"#ContentStrategy #Editing #ClearWriting #BrandTrust #Marketing\"\n      ],\n      \"cta\": \"If you want, save this checklist and run your next post through it before you hit publish.\"\n    },\n    {\n      \"id\": \"email-editorial-checklist-newsletter\",\n      \"type\": \"emailNewsletter\",\n      \"title\": \"Email/newsletter: A simple pre-publish checklist\",\n      \"platform\": \"Email\",\n      \"body\": \"Subject line options:\\n1) Our pre-publish checklist (4 steps)\\n2) Before you hit publish, run this\\n3) A simple editorial checklist for clearer content\\n\\nHi,\\n\\nWhen content misses the mark, it is rarely because the idea was bad. Most of the time, it is a process problem.\\n\\nHere is the editorial checklist we use:\\n\\n1) Verify facts\\nIf you cannot verify it, rephrase it as an opinion, remove it, or add the missing context.\\n\\n2) Retain qualifications\\nKeep the qualifiers that make a statement true. Words like “sometimes” and “often” are not weak, they are accurate.\\n\\n3) Use plain language\\nWrite for the reader who is busy. Short sentences. Specific words. Minimal jargon.\\n\\n4) Review before publication\\nDo one final read focused on accuracy, clarity, and tone.\\n\\nSimple, but it prevents a lot of avoidable edits and backtracking.\",\n      \"items\": [\n        \"Optional hashtags (for a footer or cross-post): #Editing #ClearWriting #ContentMarketing #Proofreading #ContentProcess\"\n      ],\n      \"cta\": \"If this is useful, reply with the kind of content you publish most, and I will suggest where this checklist catches the most mistakes.\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-editorial-checklist-post",
+          "type": "linkedin",
+          "title": "LinkedIn post: The four-step editorial checklist",
+          "platform": "LinkedIn",
+          "body": "Publishing fast is easy.\n\nPublishing something you can stand behind a week later takes a checklist.\n\nOur editorial checklist is simple on purpose:\n\n1) Verify facts.\nIf you cannot confirm it, do not state it as a fact.\n\n2) Retain qualifications.\nKeep the “may”, “often”, “in this case”, and “for most teams” that make advice accurate.\n\n3) Use plain language.\nSwap jargon for the clearest words you would use in a real conversation.\n\n4) Review before publication.\nOne last read for accuracy, clarity, and tone, before it becomes permanent.\n\nThis is not about sounding formal.\nIt is about being trusted.",
+          "items": [],
+          "cta": "If you want, save this checklist and run your next post through it before you hit publish.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "email-editorial-checklist-newsletter",
+          "type": "emailNewsletter",
+          "title": "Email/newsletter: A simple pre-publish checklist",
+          "platform": "Email",
+          "body": "Subject line options:\n1) Our pre-publish checklist (4 steps)\n2) Before you hit publish, run this\n3) A simple editorial checklist for clearer content\n\nHi\n\nWhen content misses the mark, it is rarely because the idea was bad. Most of the time, it is a process problem.\n\nHere is the editorial checklist we use:\n\n1) Verify facts\nIf you cannot verify it, rephrase it as an opinion, remove it, or add the missing context.\n\n2) Retain qualifications\nKeep the qualifiers that make a statement true. Words like “sometimes” and “often” are not weak, they are accurate.\n\n3) Use plain language\nWrite for the reader who is busy. Short sentences. Specific words. Minimal jargon.\n\n4) Review before publication\nDo one final read focused on accuracy, clarity, and tone.\n\nSimple, but it prevents a lot of avoidable edits and backtracking.",
+          "items": [
+            "Optional hashtags (for a footer or cross-post):"
+          ],
+          "cta": "If this is useful, reply with the kind of content you publish most, and I will suggest where this checklist catches the most mistakes.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 10902
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "milestone",
+      "repeat": 2,
+      "promptSha256": "13e6cf249d59baa064c728d234982abfaa0d4bd6c93314d05cba7d66a3f92478",
+      "stage": "generation",
+      "inputTokens": 3623,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3623,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 327,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3950
+      },
+      "output": "{\"title\":\"Instagram caption set: 1,000 subscribers + giveaway teaser\",\"summary\":\"Announce the 1,000-subscriber milestone and mention an upcoming giveaway without inventing prize, dates, or eligibility.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Draft - details to confirm\",\"platform\":\"Instagram\",\"body\":\"Three quick caption options for the same update.\\n\\nOption 1\\n1,000 newsletter subscribers.\\n\\nThat number still feels a little unreal. Thank you for reading, sharing, and sticking with Northbank Paper.\\n\\nTo mark it, we’re planning a giveaway. Prize, dates, and eligibility are still being decided, so we’ll share details once they’re locked in.\\n\\nOption 2\\nWe just hit 1,000 newsletter subscribers at Northbank Paper.\\n\\nIf you’ve been reading for a while, thank you. If you joined recently, welcome.\\n\\nWe’re also putting together a giveaway to celebrate, and we’re finalising the prize, dates, and eligibility now.\\n\\nOption 3\\nA small milestone that means a lot: 1,000 newsletter subscribers.\\n\\nNorthbank Paper exists because people choose to give it a few minutes of their week, and I don’t take that lightly.\\n\\nGiveaway note: one is coming. We have not decided the prize, dates, or eligibility yet, but we’re working on it.\",\"items\":[\"#Newsletter\",\"#NewsletterGrowth\",\"#SmallBusiness\",\"#BusinessUpdates\",\"#Giveaway\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 7179
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "practical",
+      "repeat": 2,
+      "promptSha256": "9a9e8886aec6f5994180ea919e8bf7871db30eb091d56dadb7c62f9933257d3d",
+      "stage": "generation",
+      "inputTokens": 3657,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3657,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 399,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4056
+      },
+      "output": "{\"title\":\"3-step planning workflow for design posts\",\"summary\":\"A practical, professional reminder that better design output comes from a simple planning sequence: references, alternatives, review.\",\"sections\":[{\"id\":\"linkedin-planning-steps\",\"type\":\"linkedin\",\"title\":\"LinkedIn post: 3 planning steps before you publish\",\"platform\":\"LinkedIn\",\"body\":\"Good design looks effortless. The process rarely is.\\n\\nA simple planning pass can save you from the two most common problems: publishing too early, or polishing the wrong direction.\\n\\n1) Collect references\\nPull examples that match the vibe, layout, type, color, or pacing you want. References give you a target, and they help you explain your choices to clients or teammates.\\n\\n2) Sketch alternatives\\nDo not marry the first draft. Put a few options on the table so you can compare tradeoffs, not guesses.\\n\\n3) Review the draft before publishing\\nStep away, then review with fresh eyes. Check the basics (spacing, hierarchy, clarity) and the context (where it will be seen, on what device, by whom).\\n\\nIt is a small loop, but it keeps the work intentional all the way to publish.\",\"items\":[\"#DesignProcess #ContentDesign #CreativeWorkflow #BrandDesign #DesignTips\"],\"cta\":\"If you want, save this and run your next post through the 3 steps before you hit publish.\"},{\"id\":\"x-planning-steps\",\"type\":\"twitter\",\"title\":\"X/Twitter post: planning loop for stronger design\",\"platform\":\"X/Twitter\",\"body\":\"Before you publish a design, run this quick loop:\\n\\nCollect references.\\nSketch alternatives.\\nReview the draft.\\n\\nIt is the difference between shipping something finished vs. shipping your first thought.\",\"items\":[\"#DesignProcess\",\"#CreativeWorkflow\"],\"cta\":\"Save it and try the loop on your next draft.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-planning-steps",
+          "type": "linkedin",
+          "title": "LinkedIn post: 3 planning steps before you publish",
+          "platform": "LinkedIn",
+          "body": "Good design looks effortless. The process rarely is.\n\nA simple planning pass can save you from the two most common problems: publishing too early, or polishing the wrong direction.\n\n1) Collect references\nPull examples that match the vibe, layout, type, color, or pacing you want. References give you a target, and they help you explain your choices to clients or teammates.\n\n2) Sketch alternatives\nDo not marry the first draft. Put a few options on the table so you can compare tradeoffs, not guesses.\n\n3) Review the draft before publishing\nStep away, then review with fresh eyes. Check the basics (spacing, hierarchy, clarity) and the context (where it will be seen, on what device, by whom).\n\nIt is a small loop, but it keeps the work intentional all the way to publish.",
+          "items": [
+            "#DesignTips"
+          ],
+          "cta": "If you want, save this and run your next post through the 3 steps before you hit publish.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-planning-steps",
+          "type": "twitter",
+          "title": "X/Twitter post: planning loop for stronger design",
+          "platform": "X/Twitter",
+          "body": "Before you publish a design, run this quick loop:\n\nCollect references.\nSketch alternatives.\nReview the draft.\n\nIt is the difference between shipping something finished vs. shipping your first thought.",
+          "items": [],
+          "cta": "Save it and try the loop on your next draft.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 7879
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "limited-claim",
+      "repeat": 2,
+      "promptSha256": "f7f303e4a93f61bf7db643c333c3ed75c7b0a125b49fae46f7f898d0d6b03b36",
+      "stage": "generation",
+      "inputTokens": 3724,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3724,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 431,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4155
+      },
+      "output": "{\"title\":\"Monthly repair cafe pilot: first session announcement set\",\"summary\":\"Professional, source-grounded captions announcing a volunteer group’s pilot monthly repair cafe with the first session planned for Saturday, without assuming outcomes.\",\"sections\":[{\"id\":\"tiktok-captions-3x\",\"type\":\"tiktok\",\"title\":\"TikTok captions (3 alternatives)\",\"platform\":\"TikTok\",\"body\":\"Option 1: We’re piloting a monthly Repair Cafe, and the first session is this Saturday.\\n\\nOption 2:Got something that’s broken? A volunteer group is testing a monthly Repair Cafe, starting this Saturday.\\n\\nOption 3:New pilot in town: a monthly Repair Cafe. First session is planned for Saturday.\",\"items\":[\"#RepairCafe #Repair #FixIt #Volunteer #Community\"],\"cta\":\"Save this if you might need it this weekend.\"},{\"id\":\"facebook-post-01\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"A volunteer group is piloting a monthly Repair Cafe, and the first session is planned for this Saturday.\\n\\nIf you’ve never been to one, the basic idea is simple: bring an item that needs fixing and work on repairs together in a practical, low-pressure setting.\\n\\nIf you’re curious, what’s one thing you’ve been meaning to repair instead of replacing?\",\"items\":[\"#RepairCafe #Repair #FixIt #Volunteer #Community\"],\"cta\":\"If this is the kind of project you’d like to see more of, share it with someone who loves fixing things.\"},{\"id\":\"youtube-shorts-caption-01\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"Title: Monthly Repair Cafe Pilot: First Session This Saturday\\n\\nDescription: A volunteer group is piloting a monthly Repair Cafe, with the first session planned for Saturday. A simple way to try repairs and learn together.\",\"items\":[\"#RepairCafe #Repair #FixIt #Volunteer #Community\"],\"cta\":\"What would you try to fix first?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "tiktok-captions-3x",
+          "type": "tiktok",
+          "title": "TikTok captions (3 alternatives)",
+          "platform": "TikTok",
+          "body": "Option 1: We’re piloting a monthly Repair Cafe, and the first session is this Saturday.\n\nOption 2:Got something that’s broken? A volunteer group is testing a monthly Repair Cafe, starting this Saturday.\n\nOption 3:New pilot in town: a monthly Repair Cafe. First session is planned for Saturday.",
+          "items": [
+            "#RepairCafe",
+            "#Repair",
+            "#Volunteer"
+          ],
+          "cta": "Save this if you might need it this weekend.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "facebook-post-01",
+          "type": "facebook",
+          "title": "Facebook post",
+          "platform": "Facebook",
+          "body": "A volunteer group is piloting a monthly Repair Cafe, and the first session is planned for this Saturday.\n\nIf you’ve never been to one, the basic idea is simple: bring an item that needs fixing and work on repairs together in a practical, low-pressure setting.\n\nIf you’re curious, what’s one thing you’ve been meaning to repair instead of replacing?",
+          "items": [
+            "#RepairCafe",
+            "#Repair",
+            "#Volunteer"
+          ],
+          "cta": "If this is the kind of project you’d like to see more of, share it with someone who loves fixing things.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "youtube-shorts-caption-01",
+          "type": "youtubeShorts",
+          "title": "YouTube Shorts caption",
+          "platform": "YouTube Shorts",
+          "body": "Title: Monthly Repair Cafe Pilot: First Session This Saturday\n\nDescription: A volunteer group is piloting a monthly Repair Cafe, with the first session planned for Saturday. A simple way to try repairs and learn together.",
+          "items": [
+            "#RepairCafe",
+            "#Repair",
+            "#Volunteer"
+          ],
+          "cta": "What would you try to fix first?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 7754
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "all-formats",
+      "repeat": 2,
+      "promptSha256": "b6dea83db2c27f95f59ee45518f59df85dd1e8252e15f63f69b414a5d07b8ff2",
+      "stage": "generation",
+      "inputTokens": 4266,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4266,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3712
+        },
+        "output_tokens": 3007,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 7273
+      },
+      "output": "{\"title\":\"Elm Studio beginner drawing workshop promo pack (York, 14 Dec)\",\"summary\":\"Platform-native promos for a beginner drawing workshop with clear logistics, what’s covered, and a soft email-booking CTA.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"Beginner drawing gets easier the moment you stop trying to draw what you think you see.\\n\\nElm Studio is running a beginner drawing workshop on 14 December at 2pm in York.\\n\\nWe’ll cover three fundamentals you can practise straight away:\\n- Observation (what to look for)\\n- Outlines (how to simplify shapes)\\n- Shading (how to suggest form)\\n\\nTickets are £12. Please bring a pencil and a sketchbook.\\n\\nIf you’re looking for a calm, practical way to build confidence with the basics, this is a good place to start.\",\"items\":[\"#Drawing\",\"#BeginnerDrawing\",\"#ArtWorkshop\",\"#York\",\"#CreativeSkills\"],\"cta\":\"To book a ticket, email hello@example.invalid.\"},{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram captions (3 alternatives)\",\"platform\":\"Instagram\",\"body\":\"Option 1:\\nBeginner drawing workshop in York, 14 December at 2pm.\\n\\nWe’re keeping it practical and friendly, focusing on:\\nObservation, outlines, and shading.\\n\\nTickets are £12.\\nBring a pencil and a sketchbook.\\n\\nBooking by email: hello@example.invalid\\n\\nOption 2:\\nIf you’ve got a pencil and a sketchbook, you’re ready.\\n\\nBeginner drawing workshop with Elm Studio\\n14 December, 2pm, York\\n\\nWhat we’ll cover:\\n- Observation\\n- Outlines\\n- Shading\\n\\nTickets: £12\\nBook: hello@example.invalid\\n\\nOption 3:\\nA simple plan for better sketches: look carefully, draw the big shapes, then shade.\\n\\nThat’s the focus of Elm Studio’s beginner drawing workshop:\\n14 December at 2pm, York\\n\\n£12 ticket\\nBring a pencil and sketchbook\\nBook via hello@example.invalid\",\"items\":[\"Option 1 hashtags:\\n#DrawingWorkshop #YorkEvents #BeginnerDrawing #Sketching #LearnToDraw\",\"Option 2 hashtags:\\n#ArtWorkshop #DrawingBasics #YorkUK #Sketchbook #DrawingPractice\",\"Option 3 hashtags:\\n#Shading #ObservationDrawing #OutlineDrawing #York #DrawingClass\"],\"cta\":\"If you want the details in one place, save this and email hello@example.invalid when you’re ready to book.\"},{\"id\":\"tiktok-captions\",\"type\":\"tiktok\",\"title\":\"TikTok captions (3 alternatives)\",\"platform\":\"TikTok\",\"body\":\"Option 1:\\nBeginner drawing workshop in York, 14 Dec at 2pm. We’re covering observation, outlines, and shading.\\n\\nOption 2:\\nStop guessing. Start observing. Beginner drawing workshop, York, 14 Dec, 2pm. £12.\\n\\nOption 3:\\nBring a pencil and sketchbook. That’s it. Beginner drawing workshop in York, 14 Dec at 2pm.\",\"items\":[\"Option 1 tags:\\n#drawingworkshop #beginnerdrawing #sketching #york #drawingbasics\",\"Option 2 tags:\\n#learntodraw #observationdrawing #drawingpractice #yorkuk #artclass\",\"Option 3 tags:\\n#drawingtips #shading #sketchbook #york #drawing\"],\"cta\":\"Want the booking email handy? Save this, then email hello@example.invalid.\"},{\"id\":\"twitter-post\",\"type\":\"twitter\",\"title\":\"X/Twitter post\",\"platform\":\"X/Twitter\",\"body\":\"Beginner drawing workshop in York (14 Dec, 2pm): observation, outlines, shading. £12. Bring a pencil + sketchbook. Book by email: hello@example.invalid\",\"items\":[\"#Drawing\",\"#York\"],\"cta\":\"Save this if you might go.\"},{\"id\":\"facebook-post\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Elm Studio is running a beginner drawing workshop in York on 14 December at 2pm.\\n\\nIt’s a practical session covering observation, outlines, and shading.\\n\\nTickets are £12. Please bring a pencil and a sketchbook.\\n\\nTo book, email hello@example.invalid.\\n\\nIf you’re local, what do you find hardest about drawing, getting shapes right or shading?\",\"items\":[\"#York\",\"#YorkEvents\",\"#Drawing\",\"#ArtWorkshop\",\"#Sketching\"],\"cta\":\"If you’d like to come along, drop an email to hello@example.invalid.\"},{\"id\":\"youtube-shorts\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"Title: Beginner Drawing Workshop in York (14 Dec, 2pm) | Observation, Outlines, Shading\\n\\nDescription: Elm Studio is hosting a beginner drawing workshop on 14 December at 2pm in York. We’ll cover observation, outlines, and shading. Tickets are £12. Bring a pencil and a sketchbook. Booking via email: hello@example.invalid\",\"items\":[\"#BeginnerDrawing\",\"#DrawingWorkshop\",\"#Sketching\",\"#York\",\"#DrawingBasics\"],\"cta\":\"Save this and email hello@example.invalid if you want to book.\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"X/Twitter thread (6 posts)\",\"platform\":\"X/Twitter\",\"body\":\"Thread copy (post 1 to 6):\",\"items\":[\"1) Beginner drawing gets simpler when you focus on 3 basics: observation, outlines, and shading.\",\"2) Observation: slow down and draw what’s actually there, not what you assume is there.\",\"3) Outlines: start with the big shapes first. Clean details come later.\",\"4) Shading: use light and dark to suggest form, even with a simple pencil.\",\"5) If you want to practise those fundamentals in a focused session, Elm Studio has a beginner drawing workshop in York on 14 Dec at 2pm.\",\"6) £12 ticket. Bring a pencil and sketchbook. Booking by email: hello@example.invalid. Takeaway: master the basics, and everything you draw gets easier to build.\"],\"cta\":\"Save this thread if you want the details handy.\"},{\"id\":\"short-video-script\",\"type\":\"shortVideoScript\",\"title\":\"Short-form video script\",\"platform\":\"Video\",\"body\":\"[Direction: Face to camera, simple background. Hold up a pencil and sketchbook.]\\n\\nHook (spoken): If you can bring these two things, you can start drawing.\\n[On-screen text: Pencil + sketchbook]\\n\\nBeat 1 (spoken): Elm Studio is running a beginner drawing workshop in York on 14 December at 2pm.\\n[On-screen text: York | 14 Dec | 2pm]\\n\\nBeat 2 (spoken): We’re keeping it practical. We’ll cover observation, outlines, and shading.\\n[On-screen text: Observation | Outlines | Shading]\\n\\nBeat 3 (spoken): Tickets are £12, and you’ll want to bring a pencil and a sketchbook.\\n[On-screen text: £12 | Bring your own]\\n\\nClose (spoken): If you’d like to book, email hello@example.invalid.\\n[On-screen text: hello@example.invalid]\\n\\n[Direction: End card with the email and the date/time.]\",\"items\":[\"Optional cutaway B-roll ideas (directions, not events):\\n- Close-up of pencil shading a simple sphere\\n- Quick outline of a mug using big shapes first\\n- Short shot of sketchbook pages flipping\"],\"cta\":\"If you’re interested, save this and email hello@example.invalid to book.\"},{\"id\":\"carousel\",\"type\":\"carousel\",\"title\":\"Carousel outline\",\"platform\":\"Carousel\",\"body\":\"Carousel slides (copy-ready):\",\"items\":[\"Slide 1 (Cover): Beginner Drawing Workshop (York)\\n14 Dec, 2pm | £12\",\"Slide 2: What we’re covering\\nObservation, outlines, and shading\",\"Slide 3: Observation\\nTrain your eye to draw what’s there, not what you think is there\",\"Slide 4: Outlines\\nStart with big shapes first, then refine\",\"Slide 5: Shading\\nUse light and dark to suggest form with a pencil\",\"Slide 6: What to bring\\nA pencil + a sketchbook\",\"Slide 7 (Final): Book your place\\nEmail: hello@example.invalid\\nYork | 14 December | 2pm | £12\"],\"cta\":\"Save this carousel if you want the details handy.\"},{\"id\":\"email-newsletter\",\"type\":\"emailNewsletter\",\"title\":\"Email/newsletter draft\",\"platform\":\"Email\",\"body\":\"Subject options:\\n1) Beginner drawing workshop in York (14 Dec, 2pm)\\n2) Learn the basics of drawing: York workshop, 14 Dec\\n3) Drawing workshop: observation, outlines, shading (York)\\n\\nEmail body:\\nHi there,\\n\\nElm Studio is running a beginner drawing workshop on 14 December at 2pm in York.\\n\\nIn the session we’ll cover:\\n- Observation\\n- Outlines\\n- Shading\\n\\nTickets are £12. Please bring a pencil and a sketchbook.\\n\\nTo book a place, email hello@example.invalid.\\n\\nBest,\\nElm Studio\",\"items\":[],\"cta\":\"If you’re thinking of joining, reply by emailing hello@example.invalid to book.\"},{\"id\":\"repurpose-pack\",\"type\":\"repurposePack\",\"title\":\"Repurpose pack (all assets in one place)\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nBeginner drawing gets easier the moment you stop trying to draw what you think you see.\\n\\nElm Studio is running a beginner drawing workshop on 14 December at 2pm in York.\\n\\nWe’ll cover three fundamentals you can practise straight away:\\n- Observation\\n- Outlines\\n- Shading\\n\\nTickets are £12. Please bring a pencil and a sketchbook.\\n\\nIf you’re looking for a calm, practical way to build confidence with the basics, this is a good place to start.\\n\\nInstagram:\\nBeginner drawing workshop in York, 14 December at 2pm.\\n\\nWe’re keeping it practical and friendly, focusing on:\\nObservation, outlines, and shading.\\n\\nTickets are £12.\\nBring a pencil and a sketchbook.\\n\\nBooking by email: hello@example.invalid\\n\\nTikTok:\\nStop guessing. Start observing. Beginner drawing workshop, York, 14 Dec, 2pm. £12. Book: hello@example.invalid\\n\\nX/Twitter:\\nBeginner drawing workshop in York (14 Dec, 2pm): observation, outlines, shading. £12. Bring a pencil + sketchbook. Book by email: hello@example.invalid\\n\\nCarousel (slides):\\n1) Beginner Drawing Workshop (York) | 14 Dec, 2pm | £12\\n2) What we’re covering: Observation, outlines, shading\\n3) Observation: draw what’s there\\n4) Outlines: big shapes first\\n5) Shading: light and dark for form\\n6) What to bring: pencil + sketchbook\\n7) Book: hello@example.invalid\\n\\nShort video script (spoken beats):\\nHook: If you can bring a pencil and a sketchbook, you can start drawing.\\nInfo: Elm Studio workshop, York, 14 Dec, 2pm.\\nContent: Observation, outlines, shading.\\nLogistics: £12. Bring pencil + sketchbook.\\nClose: Email hello@example.invalid to book.\\n\\nEmail:\\nSubject: Beginner drawing workshop in York (14 Dec, 2pm)\\nBody: Elm Studio is running a beginner drawing workshop on 14 December at 2pm in York. We’ll cover observation, outlines, and shading. Tickets are £12. Bring a pencil and a sketchbook. Book via hello@example.invalid.\",\"items\":[\"Hashtags for each platform asset (optional to paste):\\nLinkedIn: #Drawing #BeginnerDrawing #ArtWorkshop #York #CreativeSkills\\nInstagram: #DrawingWorkshop #YorkEvents #BeginnerDrawing #Sketching #LearnToDraw\\nTikTok: #drawingworkshop #beginnerdrawing #sketching #york #drawingbasics\\nX/Twitter: #Drawing #York\"],\"cta\":\"If you want, tell me which platform you’re prioritising and I’ll tighten the strongest version for that audience.\"},{\"id\":\"hooks\",\"type\":\"hooks\",\"title\":\"Hook ideas (8)\",\"platform\":\"General\",\"body\":\"8 hook options (mix and match across platforms):\",\"items\":[\"Beginner drawing gets easier when you stop drawing what you think you see.\",\"All you need for this workshop is a pencil and a sketchbook.\",\"Three basics that improve almost any sketch: observation, outlines, shading.\",\"York: beginner drawing workshop on 14 December at 2pm.\",\"If your sketches feel “off”, start with observation, not detail.\",\"Outlines first, details later. We’re practising that in York on 14 Dec.\",\"Shading doesn’t have to be complicated, we’ll keep it simple and usable.\",\"A £12 session focused on drawing fundamentals (no fancy materials required).\"],\"cta\":\"\"},{\"id\":\"ctas\",\"type\":\"ctas\",\"title\":\"Soft CTA options (5)\",\"platform\":\"General\",\"body\":\"CTA options (soft, low friction):\",\"items\":[\"Save this for later, then email hello@example.invalid if you decide to book.\",\"If you’re local to York and want to join, email hello@example.invalid.\",\"Know someone who’s been meaning to start drawing? Feel free to pass this on.\",\"If you’re on the fence, jot the date down: 14 Dec, 2pm in York.\",\"Reply with what you want to get better at (outlines, shading, or observation) and I’ll point you to the right part of the workshop info.\"],\"cta\":\"\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag set (5, unique)\",\"platform\":\"General\",\"body\":\"Extra subject-relevant hashtags (not used above):\",\"items\":[\"#PencilDrawing\",\"#SketchbookPractice\",\"#DrawingLessons\",\"#UrbanSketching\",\"#ArtInYork\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 40109
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "repurpose",
+      "repeat": 2,
+      "promptSha256": "c859c73486a224e7ad8053c7e41af15b25286aeabbefb7413d5e495259e9397c",
+      "stage": "generation",
+      "inputTokens": 3833,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3833,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 1143,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4976
+      },
+      "output": "{\"title\":\"3-step bike check repurpose pack\",\"summary\":\"Turn the same three-step pre-ride checklist into platform-native posts, a carousel, a short video script, and a simple email.\",\"sections\":[{\"id\":\"repurpose-pack\",\"type\":\"repurposePack\",\"title\":\"Repurpose Pack (LinkedIn, Instagram, TikTok, X, Facebook, YouTube Shorts, Carousel, Short Video, Email)\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nBefore you roll out, do a 30-second bike check.\\n\\n1) Inspect tyres\\nLook for obvious wear or damage before you trust the ride.\\n\\n2) Test brakes\\nA quick squeeze now beats a surprise later.\\n\\n3) Check lights\\nIf you are riding near traffic or low light, confirm they work before you move.\\n\\nSimple checklist, fewer avoidable problems.\\n\\n\\nInstagram:\\nQuick pre-ride bike check (takes about a minute).\\n\\nTyres: inspect them before you set off.\\nBrakes: test them while you are still standing still.\\nLights: check they work before the road does.\\n\\nWorth doing even for a short journey.\\n\\n\\nTikTok:\\nPre-ride bike check: tyres, brakes, lights. Do it before every journey.\\n\\n\\nX/Twitter:\\nBefore a journey: inspect tyres, test brakes, check lights. Quick habit, fewer surprises.\\n\\n\\nFacebook:\\nSmall habit that helps: do a quick bike check before a journey.\\n\\nInspect tyres.\\nTest brakes.\\nCheck lights.\\n\\nTakes a moment, and it is easier than dealing with issues mid-ride.\\n\\n\\nYouTube Shorts:\\nTitle: 3-step bike check before a journey (tyres, brakes, lights)\\nDescription: A quick, practical checklist to do before you set off: inspect tyres, test brakes, then check lights.\\n\\n\\nEmail:\\nSubject: A quick 3-step bike check before you set off\\n\\nBody:\\nBefore a journey, run this simple bicycle check:\\n\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nIt is a quick routine that can help you catch obvious issues before you are already on the road.\",\"items\":[\"LinkedIn hashtags: #CyclingSafety #BikeMaintenance #RoadSafety #CommuterCycling #Cycling\",\"Instagram hashtags: #BikeCheck #CyclingSafety #BikeMaintenance #CyclingLife #CommuterCycling\",\"TikTok hashtags: #BikeCheck #CyclingTips #BikeSafety #BikeMaintenance #Cycling\",\"X/Twitter hashtags: #CyclingSafety #BikeMaintenance\",\"Facebook hashtags: #CyclingSafety #BikeCheck #BikeMaintenance #RoadSafety #CommuterCycling\",\"YouTube Shorts hashtags: #CyclingSafety #BikeMaintenance #BikeCheck #CyclingTips #RoadSafety\"],\"cta\":\"Save this checklist for your next ride.\"},{\"id\":\"carousel\",\"type\":\"carousel\",\"title\":\"Carousel: 3-step pre-journey bicycle check\",\"platform\":\"Carousel\",\"body\":\"Carousel slide plan with distinct, source-grounded points and a clear close.\",\"items\":[\"Slide 1 (Cover): Before your journey: a 3-step bicycle check\",\"Slide 2: Step 1, Inspect tyres\\n- Quick look for obvious wear or damage\\n- Do this before you roll out\",\"Slide 3: Step 2, Test brakes\\n- Squeeze the brakes while stationary\\n- Make sure they respond the way you expect\",\"Slide 4: Step 3, Check lights\\n- Confirm your lights work before you need them\\n- Especially useful around traffic or low light\",\"Slide 5 (Final): 30-second habit\\nTyres. Brakes. Lights.\\nA simple checklist to run before every journey.\"],\"cta\":\"Save this carousel so you can run the check in seconds.\"},{\"id\":\"short-video-script\",\"type\":\"shortVideoScript\",\"title\":\"Short-form video script: tyres, brakes, lights\",\"platform\":\"Video\",\"body\":\"[Direction: Face-to-camera, bike beside you or you mime the checks with your hands.]\\n\\nHook (say): Before any journey, I do this quick 3-step bike check.\\nOn-screen text: 3-step bike check\\n\\nBeat 1 (say): Step one: inspect your tyres.\\nOn-screen text: 1) Tyres\\n[Direction: Point to tyres, scan with your eyes.]\\n\\nBeat 2 (say): Step two: test your brakes.\\nOn-screen text: 2) Brakes\\n[Direction: Mime squeezing brake levers.]\\n\\nBeat 3 (say): Step three: check your lights.\\nOn-screen text: 3) Lights\\n[Direction: Tap the light or mime pressing the power button.]\\n\\nClose (say): Tyres, brakes, lights. Takes a moment before you set off, and it can prevent problems mid-ride.\\nOn-screen text: Tyres. Brakes. Lights.\",\"items\":[\"On-screen text options (short):\\n- Tyres, Brakes, Lights\\n- Quick pre-ride check\\n- Do this before every journey\",\"Suggested shot list:\\n- Medium shot hook\\n- Cut-in to tyre point\\n- Cut-in to brake lever mime\\n- Cut-in to light button mime\\n- Return to medium for close\"],\"cta\":\"Try it once today and see how fast it becomes a habit.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "repurpose-pack",
+          "type": "repurposePack",
+          "title": "Repurpose Pack (LinkedIn, Instagram, TikTok, X, Facebook, YouTube Shorts, Carousel, Short Video, Email)",
+          "platform": "General",
+          "body": "LinkedIn:\nBefore you roll out, do a 30-second bike check.\n\n1) Inspect tyres\nLook for obvious wear or damage before you trust the ride.\n\n2) Test brakes\nA quick squeeze now beats a surprise later.\n\n3) Check lights\nIf you are riding near traffic or low light, confirm they work before you move.\n\nSimple checklist, fewer avoidable problems.\n\nInstagram:\nQuick pre-ride bike check (takes about a minute).\n\nTyres: inspect them before you set off.\nBrakes: test them while you are still standing still.\nLights: check they work before the road does.\n\nWorth doing even for a short journey.\n\nTikTok:\nPre-ride bike check: tyres, brakes, lights. Do it before every journey.\n\nX/Twitter:\nBefore a journey: inspect tyres, test brakes, check lights. Quick habit, fewer surprises.\n\nFacebook:\nSmall habit that helps: do a quick bike check before a journey.\n\nInspect tyres.\nTest brakes.\nCheck lights.\n\nTakes a moment, and it is easier than dealing with issues mid-ride.\n\nYouTube Shorts:\nTitle: 3-step bike check before a journey (tyres, brakes, lights)\nDescription: A quick, practical checklist to do before you set off: inspect tyres, test brakes, then check lights.\n\nEmail:\nSubject: A quick 3-step bike check before you set off\n\nBody:\nBefore a journey, run this simple bicycle check:\n\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nIt is a quick routine that can help you catch obvious issues before you are already on the road.",
+          "items": [],
+          "cta": "Save this checklist for your next ride.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "carousel",
+          "type": "carousel",
+          "title": "Carousel: 3-step pre-journey bicycle check",
+          "platform": "Carousel",
+          "body": "Carousel slide plan with distinct, source-grounded points and a clear close.",
+          "items": [
+            "Slide 1 (Cover): Before your journey: a 3-step bicycle check",
+            "Slide 2: Step 1, Inspect tyres\n- Quick look for obvious wear or damage\n- Do this before you roll out",
+            "Slide 3: Step 2, Test brakes\n- Squeeze the brakes while stationary\n- Make sure they respond the way you expect",
+            "Slide 4: Step 3, Check lights\n- Confirm your lights work before you need them\n- Especially useful around traffic or low light",
+            "Slide 5 (Final): 30-second habit\nTyres. Brakes. Lights.\nA simple checklist to run before every journey."
+          ],
+          "cta": "Save this carousel so you can run the check in seconds.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "short-video-script",
+          "type": "shortVideoScript",
+          "title": "Short-form video script: tyres, brakes, lights",
+          "platform": "Video",
+          "body": "[Direction: Face-to-camera, bike beside you or you mime the checks with your hands.]\n\nHook (say): Before any journey, I do this quick 3-step bike check.\nOn-screen text: 3-step bike check\n\nBeat 1 (say): Step one: inspect your tyres.\nOn-screen text: 1) Tyres\n[Direction: Point to tyres, scan with your eyes.]\n\nBeat 2 (say): Step two: test your brakes.\nOn-screen text: 2) Brakes\n[Direction: Mime squeezing brake levers.]\n\nBeat 3 (say): Step three: check your lights.\nOn-screen text: 3) Lights\n[Direction: Tap the light or mime pressing the power button.]\n\nClose (say): Tyres, brakes, lights. Takes a moment before you set off, and it can prevent problems mid-ride.\nOn-screen text: Tyres. Brakes. Lights.",
+          "items": [
+            "On-screen text options (short):\n- Tyres, Brakes, Lights\n- Quick pre-ride check\n- Do this before every journey",
+            "Suggested shot list:\n- Medium shot hook\n- Cut-in to tyre point\n- Cut-in to brake lever mime\n- Cut-in to light button mime\n- Return to medium for close"
+          ],
+          "cta": "Try it once today and see how fast it becomes a habit.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 18342
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "newsletter",
+      "repeat": 2,
+      "promptSha256": "1a0b30c2fa3c33417f191d0ac9e4c9a59bab0a6a6c07d12eafcb7a22e7cfca53",
+      "stage": "generation",
+      "inputTokens": 3902,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3902,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3712
+        },
+        "output_tokens": 783,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4685
+      },
+      "output": "{\"title\":\"Local library poetry reading promo pack\",\"summary\":\"Professional, source-grounded announcements and prompts for a free library poetry reading with limited capacity and clear booking date.\",\"sections\":[{\"id\":\"email-newsletter\",\"type\":\"emailNewsletter\",\"title\":\"Email/newsletter draft\",\"platform\":\"Email\",\"body\":\"Subject line options:\\n1) Free poetry reading at the library, 18 Dec at 6pm\\n2) Poetry reading at the library (free, limited seats)\\n3) Save the date: Library poetry reading on 18 December\\n\\nHello,\\n\\nA local library is hosting a free poetry reading on 18 December at 6pm.\\n\\nCapacity is limited to 30 people, and booking opens on 1 December. No authors have been announced yet.\\n\\nIf you have been meaning to get to an in-person literary event before the year wraps up, this is an easy one to put in the diary.\\n\",\"items\":[],\"cta\":\"If you know someone who would enjoy a calm weekday evening of poetry, feel free to pass this along.\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"X thread (5 to 7 posts)\",\"platform\":\"X/Twitter\",\"body\":\"\",\"items\":[\"1) A simple December plan: a free poetry reading at the local library on 18 December at 6pm.\",\"2) Seats are limited. Capacity is 30 people, so it is worth being ready to book.\",\"3) Booking opens on 1 December. If you want to go, put that date in your calendar now.\",\"4) No authors have been announced yet, so this is more about the experience than a specific name.\",\"5) If you have not been to a poetry reading before, a library event is a low-pressure place to start.\",\"6) Takeaway: save 18 Dec 6pm, and check back on 1 Dec when booking opens.\"],\"cta\":\"If you would like, reply with the kind of poetry you enjoy (or want to explore) and I will share a couple of reading prompts you can bring to the night.\"},{\"id\":\"hooks\",\"type\":\"hooks\",\"title\":\"8 hooks\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"A free poetry reading at the local library, 18 December at 6pm.\",\"Only 30 seats, booking opens 1 December. If you want to go, note the date.\",\"A calm December evening plan that costs nothing: poetry at the library.\",\"If you keep saying you will go to more local events, start with this one.\",\"No headline author announced, just a simple poetry reading. Sometimes that is the point.\",\"One hour, one room, 30 people. A poetry reading is more intimate than you think.\",\"Save this: 18 Dec, 6pm. Booking opens 1 Dec for a free library poetry reading.\",\"Want an easy, low-pressure way to try a poetry reading? The library is hosting one.\"] ,\"cta\":\"\"},{\"id\":\"ctas\",\"type\":\"ctas\",\"title\":\"5 soft CTA options\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"Save the date now, and check booking when it opens on 1 December.\",\"Know someone who would go with you? Send this to them.\",\"If you are planning to attend, reply with “going” and I will remind you of the key details.\",\"Which do you prefer at readings, classic poems or contemporary work?\",\"Add it to your calendar: 18 Dec at 6pm (free, 30 seats).\"],\"cta\":\"\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag set (5)\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"#PoetryReading\",\"#LibraryEvents\",\"#LiteraryEvents\",\"#ArtsAndCulture\",\"#CommunityCalendar\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "email-newsletter",
+          "type": "emailNewsletter",
+          "title": "Email/newsletter draft",
+          "platform": "Email",
+          "body": "Subject line options:\n1) Free poetry reading at the library, 18 Dec at 6pm\n2) Poetry reading at the library (free, limited seats)\n3) Save the date: Library poetry reading on 18 December\n\nHello\n\nA local library is hosting a free poetry reading on 18 December at 6pm.\n\nCapacity is limited to 30 people, and booking opens on 1 December. No authors have been announced yet.\n\nIf you have been meaning to get to an in-person literary event before the year wraps up, this is an easy one to put in the diary.",
+          "items": [],
+          "cta": "If you know someone who would enjoy a calm weekday evening of poetry, feel free to pass this along.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-thread",
+          "type": "xThread",
+          "title": "X thread (5 to 7 posts)",
+          "platform": "X/Twitter",
+          "body": "",
+          "items": [
+            "1) A simple December plan: a free poetry reading at the local library on 18 December at 6pm.",
+            "2) Seats are limited. Capacity is 30 people, so it is worth being ready to book.",
+            "3) Booking opens on 1 December. If you want to go, put that date in your calendar now.",
+            "4) No authors have been announced yet, so this is more about the experience than a specific name.",
+            "5) If you have not been to a poetry reading before, a library event is a low-pressure place to start.",
+            "6) Takeaway: save 18 Dec 6pm, and check back on 1 Dec when booking opens."
+          ],
+          "cta": "If you would like, reply with the kind of poetry you enjoy (or want to explore) and I will share a couple of reading prompts you can bring to the night.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "hooks",
+          "type": "hooks",
+          "title": "8 hooks",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "A free poetry reading at the local library, 18 December at 6pm.",
+            "Only 30 seats, booking opens 1 December. If you want to go, note the date.",
+            "A calm December evening plan that costs nothing: poetry at the library.",
+            "If you keep saying you will go to more local events, start with this one.",
+            "No headline author announced, just a simple poetry reading. Sometimes that is the point.",
+            "One hour, one room, 30 people. A poetry reading is more intimate than you think.",
+            "Save this: 18 Dec, 6pm. Booking opens 1 Dec for a free library poetry reading.",
+            "Want an easy, low-pressure way to try a poetry reading? The library is hosting one."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "ctas",
+          "type": "ctas",
+          "title": "5 soft CTA options",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "Save the date now, and check booking when it opens on 1 December.",
+            "Know someone who would go with you? Send this to them.",
+            "If you are planning to attend, reply with “going” and I will remind you of the key details.",
+            "Which do you prefer at readings, classic poems or contemporary work?",
+            "Add it to your calendar: 18 Dec at 6pm (free, 30 seats)."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "platform-hashtags",
+          "type": "platformHashtags",
+          "title": "Additional hashtag set (5)",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "#PoetryReading"
+          ],
+          "cta": "",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 12478
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "unicode",
+      "repeat": 2,
+      "promptSha256": "9d0fb166d71fce559cc47e2e43dd60a13d7d271ed73dd16708fa7da4d27e627f",
+      "stage": "generation",
+      "inputTokens": 3664,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3664,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 325,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3989
+      },
+      "output": "{\"title\":\"Café Étoile Saturday breakfast IG captions + extra hashtag set\",\"summary\":\"Three Instagram caption options promoting Saturday café con leche and croissants, plus a separate set of additional topic hashtags.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram captions (3 alternatives)\",\"platform\":\"Instagram\",\"body\":\"Caption option 1:\\nSaturday breakfast, sorted.\\n\\nCafé Étoile is serving café con leche and croissants this Saturday, plus a £5 breakfast option on the menu.\\n\\n\\nCaption option 2:\\nCafé con leche + croissant is a strong start to Saturday.\\n\\nIf you are keeping it simple, Café Étoile has you covered, and there is a £5 breakfast option on the menu too.\\n\\n\\nCaption option 3:\\nIf your Saturday plan is “something warm, something flaky”, this is it.\\n\\nCafé Étoile is offering café con leche and croissants on Saturday. There is also a £5 breakfast option on the menu.\",\"items\":[\"#CafeConLeche #Croissant #SaturdayBreakfast #CafeBreakfast #BreakfastTime\"],\"cta\":\"Which one are you picking, café con leche + croissant or the £5 breakfast option?\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtags (unique set)\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"#CoffeeAndPastries #WeekendBrunch #BreakfastDeal #MorningCoffee #CoffeeLovers\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 5481
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "long-brief",
+      "repeat": 2,
+      "promptSha256": "9c5961b0b0bcfaaff47dd714eb11a3504ce9499de06d1d730d2407bc0ce0f2c4",
+      "stage": "generation",
+      "inputTokens": 4757,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4757,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3712
+        },
+        "output_tokens": 666,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5423
+      },
+      "output": "{\n  \"title\": \"Editorial checklist content: LinkedIn post + email draft\",\n  \"summary\": \"A practical, professional reminder that a simple editorial checklist prevents avoidable mistakes and builds trust.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-editorial-checklist-post\",\n      \"type\": \"linkedin\",\n      \"title\": \"LinkedIn post: The 4-step editorial checklist we use every time\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"Most content problems are not creativity problems. They are editing problems.\\n\\nWhen you publish fast, small errors slip through. And the fix is rarely complicated.\\n\\nOur editorial checklist is simple:\\n1) Verify facts\\n2) Retain qualifications\\n3) Use plain language\\n4) Review before publication\\n\\nVerify facts means you do not let a confident sentence replace a true one.\\n\\nRetain qualifications means you keep the “often”, “in this case”, and “may” when they are doing real work. Removing them can turn a careful point into a misleading claim.\\n\\nUse plain language means the reader should not have to translate your message before they can apply it.\\n\\nReview before publication means you give yourself one last pass to catch what you stopped seeing while writing.\\n\\nIf you create content for a business, a client, or a personal brand, this checklist is a quiet advantage.\",\n      \"items\": [\n        \"#Editing\",\n        \"#ContentMarketing\",\n        \"#Copywriting\",\n        \"#BusinessWriting\",\n        \"#FactChecking\"\n      ],\n      \"cta\": \"If you want, save this and run it against your next post before you hit publish.\"\n    },\n    {\n      \"id\": \"email-editorial-checklist-newsletter\",\n      \"type\": \"emailNewsletter\",\n      \"title\": \"Email draft: A simple editorial checklist to reduce mistakes\",\n      \"platform\": \"Email\",\n      \"body\": \"Subject line options:\\n1) The editorial checklist we use every time\\n2) A 4-step edit that prevents avoidable mistakes\\n3) Before you hit publish, run this quick checklist\\n\\nHi there,\\n\\nMost writing does not fall apart because the idea is bad. It falls apart in the last 10 percent, when a draft turns into a published post without a clean edit.\\n\\nHere is the editorial checklist we use:\\n\\n1) Verify facts\\nCheck names, numbers, dates, and any concrete claim.\\n\\n2) Retain qualifications\\nKeep the qualifiers that make your statement accurate, like “often”, “may”, “in our case”, or “depending on context”. Removing them can change the meaning.\\n\\n3) Use plain language\\nTrade complicated phrasing for direct sentences your reader can act on.\\n\\n4) Review before publication\\nDo one final read for clarity, missing context, and anything that could be misunderstood.\\n\\nIt is not fancy, but it reliably reduces corrections, walk-backs, and unclear messaging.\\n\\nBest,\\n[CONFIRM: name/sign-off]\",\n      \"items\": [],\n      \"cta\": \"Want this turned into a one-page checklist your team can paste into your doc template?\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-editorial-checklist-post",
+          "type": "linkedin",
+          "title": "LinkedIn post: The 4-step editorial checklist we use every time",
+          "platform": "LinkedIn",
+          "body": "Most content problems are not creativity problems. They are editing problems.\n\nWhen you publish fast, small errors slip through. And the fix is rarely complicated.\n\nOur editorial checklist is simple:\n1) Verify facts\n2) Retain qualifications\n3) Use plain language\n4) Review before publication\n\nVerify facts means you do not let a confident sentence replace a true one.\n\nRetain qualifications means you keep the “often”, “in this case”, and “may” when they are doing real work. Removing them can turn a careful point into a misleading claim.\n\nUse plain language means the reader should not have to translate your message before they can apply it.\n\nReview before publication means you give yourself one last pass to catch what you stopped seeing while writing.\n\nIf you create content for a business, a client, or a personal brand, this checklist is a quiet advantage.",
+          "items": [],
+          "cta": "If you want, save this and run it against your next post before you hit publish.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "email-editorial-checklist-newsletter",
+          "type": "emailNewsletter",
+          "title": "Email draft: A simple editorial checklist to reduce mistakes",
+          "platform": "Email",
+          "body": "Subject line options:\n1) The editorial checklist we use every time\n2) A 4-step edit that prevents avoidable mistakes\n3) Before you hit publish, run this quick checklist\n\nHi there\n\nMost writing does not fall apart because the idea is bad. It falls apart in the last 10 percent, when a draft turns into a published post without a clean edit.\n\nHere is the editorial checklist we use:\n\n1) Verify facts\nCheck names, numbers, dates, and any concrete claim.\n\n2) Retain qualifications\nKeep the qualifiers that make your statement accurate, like “often”, “may”, “in our case”, or “depending on context”. Removing them can change the meaning.\n\n3) Use plain language\nTrade complicated phrasing for direct sentences your reader can act on.\n\n4) Review before publication\nDo one final read for clarity, missing context, and anything that could be misunderstood.\n\nIt is not fancy, but it reliably reduces corrections, walk-backs, and unclear messaging.\n\nBest\n[CONFIRM: name/sign-off]",
+          "items": [],
+          "cta": "Want this turned into a one-page checklist your team can paste into your doc template?",
+          "review": {
+            "status": "needs_confirmation",
+            "notes": [
+              "Complete the labelled confirmation details before publication."
+            ]
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 11485
+    }
+  ],
+  "cases": [
+    {
+      "id": "milestone",
+      "source": "Northbank Paper has reached 1,000 newsletter subscribers. Announce an upcoming giveaway, but prize, dates and eligibility have not been decided.",
+      "selectedTypes": [
+        "instagram"
+      ],
+      "ctaMode": "none",
+      "automaticSettings": []
+    },
+    {
+      "id": "practical",
+      "source": "A small design studio shares three planning steps: collect references, sketch alternatives, and review the draft before publishing.",
+      "selectedTypes": [
+        "linkedin",
+        "twitter"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "limited-claim",
+      "source": "A volunteer group is piloting a monthly repair cafe. The first session is planned for Saturday; attendance and outcomes are not yet known.",
+      "selectedTypes": [
+        "tiktok",
+        "facebook",
+        "youtubeShorts"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "all-formats",
+      "source": "Elm Studio runs a beginner drawing workshop on 14 December at 2pm in York. Tickets cost £12. Bring a pencil and sketchbook. The workshop covers observation, outlines, and shading. Booking is by email to hello@example.invalid. No other benefits or results are claimed.",
+      "selectedTypes": [
+        "linkedin",
+        "instagram",
+        "tiktok",
+        "twitter",
+        "facebook",
+        "youtubeShorts",
+        "xThread",
+        "shortVideoScript",
+        "carousel",
+        "emailNewsletter",
+        "repurposePack",
+        "hooks",
+        "ctas",
+        "platformHashtags"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "repurpose",
+      "source": "Fern Repairs shares a three-step bicycle check: inspect tyres, test brakes, then check lights before a journey. This is a checklist, not a repair service offer.",
+      "selectedTypes": [
+        "repurposePack",
+        "carousel",
+        "shortVideoScript"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "newsletter",
+      "source": "A local library will host a free poetry reading on 18 December at 6pm. Capacity is 30 people. Booking opens on 1 December. No authors have been announced.",
+      "selectedTypes": [
+        "emailNewsletter",
+        "xThread",
+        "hooks",
+        "ctas",
+        "platformHashtags"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "unicode",
+      "source": "Café Étoile is offering café con leche and croissants on Saturday. The menu includes a £5 breakfast option. No delivery service or discount is offered.",
+      "selectedTypes": [
+        "instagram",
+        "platformHashtags"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "long-brief",
+      "source": "Our editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\nOur editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\n",
+      "selectedTypes": [
+        "linkedin",
+        "emailNewsletter"
+      ],
+      "length": "detailed",
+      "automaticSettings": []
+    }
+  ],
+  "note": "Synthetic briefs through unchanged production instructions/schema/parser. One attempt per sample, two independent repetitions. Token counting must succeed before generation. No invoice or blind human panel.",
+  "reservedUpperBoundGBP": 1.4352384000000005
+}
