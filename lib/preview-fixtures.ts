@@ -6,10 +6,14 @@ export function previewFixturesEnabled() {
   const url = new URL(process.env.DATABASE_URL ?? "http://invalid");
   const stripeKey=process.env.STRIPE_SECRET_KEY;
   const stripeTest=process.env.CONTENTOS_PREVIEW_STRIPE_TEST === "1" && /^(sk|rk)_test_/.test(stripeKey ?? "");
+  const originalQa = process.env.CONTENTOS_ISOLATED_BRANCH === "br-divine-term-b2rihbxv" &&
+    ["ep-proud-field-b291xbnc.c-6.eu-central-1.aws.neon.tech", "ep-proud-field-b291xbnc-pooler.c-6.eu-central-1.aws.neon.tech"].includes(url.hostname) && url.pathname === "/contentos";
+  const paymentQa = process.env.VERCEL_GIT_COMMIT_REF === "feat/paid-creator-lifetime-2026" &&
+    process.env.CONTENTOS_ISOLATED_BRANCH === "br-hidden-recipe-b9yqeimn" &&
+    ["ep-bold-scene-b9by9k7z.c-7.eu-central-1.aws.neon.tech", "ep-bold-scene-b9by9k7z-pooler.c-7.eu-central-1.aws.neon.tech"].includes(url.hostname) &&
+    url.pathname === "/pr22_payments_qa" && stripeTest;
   if (process.env.VERCEL_ENV !== "preview" ||
-      process.env.CONTENTOS_ISOLATED_BRANCH !== "br-divine-term-b2rihbxv" ||
-      !["ep-proud-field-b291xbnc.c-6.eu-central-1.aws.neon.tech", "ep-proud-field-b291xbnc-pooler.c-6.eu-central-1.aws.neon.tech"].includes(url.hostname) ||
-      url.pathname !== "/contentos" ||
+      !(originalQa || paymentQa) ||
       ["OPENAI_API_KEY", "RESEND_API_KEY"].some(key => Boolean(process.env[key])) ||
       Boolean(stripeKey) && !stripeTest || process.env.CONTENTOS_PREVIEW_STRIPE_TEST === "1" && !stripeTest) {
     throw new Error("Preview isolation is not configured safely.");
