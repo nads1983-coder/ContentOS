@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import OpenAI from 'openai';
 import { loadTs } from '../../tests/image-test-helpers.mjs';
 import { assertTokenCount, callBound, limits, rates } from './lifetime-candidate-config.mjs';
+import { independentCases } from './independent-quality-cases.mjs';
 process.loadEnvFile('.env.local');
 if (process.env.CONTENTOS_SEPARATE_EVAL_APPROVED !== '1' || !process.env.OPENAI_API_KEY) throw new Error('Separately funded evaluation approval required');
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, maxRetries: 0, timeout: 45000, logLevel: 'off' });
@@ -11,7 +12,7 @@ const { normalizeGenerationRequest, parseGenerationOutput } = loadTs('lib/genera
 const { buildStudioInput, productionOutputSchema } = loadTs('lib/production-generation.ts');
 const { buildInstructions } = loadTs('lib/prompts.ts');
 const { contentTypes } = loadTs('lib/content-config.ts');
-const cases = [
+const originalCases = [
   { id: 'milestone', source: 'Northbank Paper has reached 1,000 newsletter subscribers. Announce an upcoming giveaway, but prize, dates and eligibility have not been decided.', selectedTypes: ['instagram'], ctaMode: 'none' },
   { id: 'practical', source: 'A small design studio shares three planning steps: collect references, sketch alternatives, and review the draft before publishing.', selectedTypes: ['linkedin','twitter'] },
   { id: 'limited-claim', source: 'A volunteer group is piloting a monthly repair cafe. The first session is planned for Saturday; attendance and outcomes are not yet known.', selectedTypes: ['tiktok','facebook','youtubeShorts'] },
@@ -21,6 +22,7 @@ const cases = [
   { id: 'unicode', source: 'Café Étoile is offering café con leche and croissants on Saturday. The menu includes a £5 breakfast option. No delivery service or discount is offered.', selectedTypes: ['instagram','platformHashtags'] },
   { id: 'long-brief', source: ('Our editorial checklist: verify facts, retain qualifications, use plain language, and review before publication.\n').repeat(60), selectedTypes: ['linkedin','emailNewsletter'], length:'detailed' }
 ].map(c=>({...c,automaticSettings:[]}));
+const cases = process.env.CONTENTOS_EVAL_CASES === 'independent' ? independentCases : originalCases;
 for(const item of cases)normalizeGenerationRequest(item);
 const report={date:new Date().toISOString(),limits,maximumEvaluationReserveGBP:2,results:[],cases,
   note:'Synthetic briefs through unchanged production instructions/schema/parser. One attempt per sample, two independent repetitions. Token counting must succeed before generation. No invoice or blind human panel.'};
