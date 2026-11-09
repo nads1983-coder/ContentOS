@@ -7,3 +7,11 @@ On deployment `dpl_FY9Qbhmrd3dgCR9N5E4E4hJcwbYu` for `e8288788a07928e507d09fcd56
 No production database or Stripe configuration was modified. No migration, real payment or webhook was executed. Lifetime and top-up sales remain disabled. A temporary Vercel share link was expressly authorised to access the protected diagnostic and is being revoked after use. Diagnostic bearer secrets and connection strings are not stored in this report.
 
 **Runtime isolation remains UNPROVEN until the updated deployment returns an authenticated verified result and its Stripe settings are reviewed.** The webhook remains unconfigured and no Stripe payment scenario has passed in this pass.
+
+## Authenticated runtime result
+
+The subsequent deployment `dpl_7eHi1rVaM4HpjgYXHe4Y74QgNFAN` at commit `aa55ddc92149e7ea1baf9a3905dcce16862ae406` returned HTTP 401 without the diagnostic bearer and HTTP 200 with `verified: true` with it. The authenticated, no-store, read-only query matched database `pr22_payments_qa` and role `neondb_owner`; the configured endpoint also matched the designated QA Neon project and branch, distinct from production. At that moment the guard confirmed a test-mode Stripe secret-key prefix and empty webhook and publishable-key overrides. This proves the stated runtime isolation for that deployment and configuration; it is not proof for later deployments or configuration changes.
+
+A test-mode Stripe webhook endpoint was subsequently created for the isolated Preview, and its signing secret installed only in the PR-specific Preview environment. Signed delivery and payment fulfillment remain unverified; the code intentionally fails closed for lifetime and top-up fulfillment. The original diagnostic intentionally rejects a nonempty webhook secret, so a later deployment must independently verify the provenance and scope of that secret rather than treating the earlier result as current proof. No remote migration or real payment has been run.
+
+Security incident: an inspection command and the Stripe test dashboard accessibility output inadvertently displayed secrets in tool output. The temporary automation bypass will be revoked. The pre-existing Vercel automation bypass and the exposed Stripe test keys need owner-led rotation and impact assessment. No live Stripe key was displayed in this verification.
