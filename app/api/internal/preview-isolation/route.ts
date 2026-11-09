@@ -16,15 +16,22 @@ export async function GET(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401, headers });
   try {
     if (process.env.VERCEL_ENV !== "preview" || process.env.VERCEL_GIT_COMMIT_REF !== "feat/paid-creator-lifetime-2026" ||
-        process.env.CONTENTOS_ISOLATED_BRANCH !== "br-hidden-recipe-b9yqeimn" || !previewFixturesEnabled())
+        process.env.CONTENTOS_ISOLATED_BRANCH !== "br-hidden-recipe-b9yqeimn")
       return Response.json({ verified: false, stage: "isolation_guard" }, { status: 503, headers });
+    try {
+      if (!previewFixturesEnabled()) return Response.json({ verified: false, stage: "isolation_guard" }, { status: 503, headers });
+    } catch {
+      return Response.json({ verified: false, stage: "isolation_guard" }, { status: 503, headers });
+    }
     if (process.env.STRIPE_WEBHOOK_SECRET || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
       return Response.json({ verified: false, stage: "stripe_overrides" }, { status: 503, headers });
     const result = await getPool().query("SELECT current_database() = $1 AND current_user = $2 AS database_matches", ["pr22_payments_qa", "neondb_owner"]);
     if (result.rows.length !== 1 || result.rows[0].database_matches !== true)
       return Response.json({ verified: false, stage: "database_identity" }, { status: 503, headers });
     return Response.json({ verified: true }, { headers });
-  } catch {
-    return Response.json({ verified: false, stage: "guard_or_database_error" }, { status: 503, headers });
+  } catch (error) {
+    const code = typeof error === "object" && error !== null && "code" in error ? error.code : undefined;
+    const safeCode = ["28P01", "28000", "3D000", "ENOTFOUND", "ECONNREFUSED", "ETIMEDOUT", "ECONNRESET", "SELF_SIGNED_CERT_IN_CHAIN", "CERT_HAS_EXPIRED", "UNABLE_TO_VERIFY_LEAF_SIGNATURE"].includes(String(code)) ? code : "other";
+    return Response.json({ verified: false, stage: "database_unavailable", code: safeCode }, { status: 503, headers });
   }
 }
