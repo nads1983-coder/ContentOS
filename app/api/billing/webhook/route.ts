@@ -5,6 +5,7 @@ import {
   getStripeSubscriptionState,
   scheduleFounderSubscriptionCancellation,
   retrievePaidLifetimePaymentIntent,
+  retrieveLifetimeDisputes,
   verifyStripeSignature
 } from "@/lib/stripe-rest";
 import { updateSubscriptionStatus } from "@/lib/repository";
@@ -83,6 +84,8 @@ export async function POST(request: Request) {
     if(!AI_TOPUP_OFFER.fulfillmentEnabled || event.livemode!==false)return NextResponse.json({error:"Top-up fulfillment is disabled."},{status:503});
     try {
       if(!object.id || !object.metadata?.purchase_id)throw new Error("Missing purchase identity.");
+      const review=await import("@/lib/ai-topup-review");
+      const revision=await review.getTopupDecisionRevision(object.metadata.purchase_id);
       const session=await retrieveCheckoutSession(object.id);
       const api=await import("@/lib/ai-topup-payments");
       if(event.type==="checkout.session.expired") {
@@ -94,7 +97,7 @@ export async function POST(request: Request) {
         if(!pi)throw new Error("Missing payment identity.");
         const intent=await retrievePaidLifetimePaymentIntent(pi);
         if(event.type==="checkout.session.async_payment_failed")await api.terminateTopup(object.metadata.purchase_id,session,"failed",intent);
-        else await api.fulfillTopup(object.metadata.purchase_id,session,intent);
+        else await api.fulfillTopup(object.metadata.purchase_id,session,intent,revision,intent.latest_charge?.disputed && !intent.latest_charge.refunded?await retrieveLifetimeDisputes(pi):[]);
       }
       return NextResponse.json({received:true});
     } catch {return NextResponse.json({error:"Top-up payment requires reconciliation."},{status:503});}
@@ -106,7 +109,11 @@ export async function POST(request: Request) {
       const intent=await retrievePaidLifetimePaymentIntent(object.payment_intent);
       if(intent.livemode!==false || intent.id!==object.payment_intent)throw new Error("Test payment identity mismatch.");
       const api=await import("@/lib/ai-topup-payments");
-      await api.reverseTopup(object.payment_intent,event.id,event.type);
+      const review=await import("@/lib/ai-topup-review");
+      const disputes=!intent.latest_charge?.refunded && (event.type.startsWith("charge.dispute.") || intent.latest_charge?.disputed) ? await retrieveLifetimeDisputes(object.payment_intent) : [];
+      const evidence=review.topupEvidence(intent,disputes);
+      if(!evidence.length)throw new Error("Reversal evidence unavailable.");
+      for(const e of evidence)await api.reverseTopup(object.payment_intent,event.id,event.type,e);
     } catch {return NextResponse.json({error:"Top-up reversal requires reconciliation."},{status:503});}
   }
 

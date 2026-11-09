@@ -820,10 +820,10 @@ export async function retrievePaidLifetimePaymentIntent(paymentIntentId: string,
 }
 
 /** Fail closed if Stripe cannot return all disputes for this PaymentIntent. */
-export async function retrieveLifetimeDisputes(paymentIntentId: string) {
+export async function retrieveLifetimeDisputes(paymentIntentId: string, signal?: AbortSignal) {
   if (!/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) throw new Error("Invalid payment intent ID.");
   const list = await stripeGet<StripeList<{id:string; status:string; charge:string; payment_intent:string | null}>>(
-    "disputes",new URLSearchParams({payment_intent:paymentIntentId,limit:"100"}));
+    "disputes",new URLSearchParams({payment_intent:paymentIntentId,limit:"100"}),signal);
   if (list.has_more !== false) throw new Error("Dispute list is incomplete.");
   return list.data;
 }

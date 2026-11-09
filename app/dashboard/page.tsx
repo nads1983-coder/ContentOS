@@ -64,7 +64,8 @@ function formatDate(value?: string | null) {
 
 function topupStatus(status:string) {
   if(status==="paid")return "Payment confirmed; credits added";
-  if(status==="reversed")return "Payment reversed; unused credits are unavailable";
+  if(status==="reversed")return "Credits frozen for administrator review";
+  if(status==="revoked")return "Fully refunded; unused credits revoked";
   if(status==="expired")return "Checkout expired";
   if(status==="failed")return "Payment failed";
   return "Awaiting payment confirmation";
@@ -340,7 +341,7 @@ export default async function DashboardPage() {
 
         {topups && (plan!=="free" || topups.history.length>0) ? <section className="mt-6 rounded border border-white/10 bg-coal/86 p-5">
           <h2 className="text-xl font-semibold">Prepaid text generations</h2>
-          <p className="mt-2 text-sm text-muted">Optional one-time purchases. No automatic renewal. Purchased credits are separate from monthly included credits; sales are not open yet.</p>
+          <p className="mt-2 text-sm text-muted">Optional one-time purchases. No automatic renewal. Purchased credits do not expire while your account remains active. Monthly included credits are used first. Full refunds revoke unused credits; partial refunds and disputes freeze affected credits for administrator review. Usage requires an eligible paid membership and available funded capacity. Sales are not open yet.</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">{Object.entries(AI_TOPUP_OFFER.packages).map(([id,pkg])=><div key={id} className="rounded border border-white/10 p-3"><p className="capitalize">{id}: £{(pkg.pricePence/100).toFixed(0)} for {pkg.credits}</p><TopupCheckoutButton accountId={user.id} packageId={id} enabled={AI_TOPUP_OFFER.checkoutEnabled}/></div>)}</div>
           <h3 className="mt-5 font-semibold">Purchase history</h3>
           {topups.history.length ? <ul className="mt-2 space-y-1 text-sm text-muted">{topups.history.map(p=><li key={p.id}>{new Date(p.createdAt).toLocaleDateString("en-GB")} · {p.package} · {p.credits} credits · {topupStatus(p.status)} · {p.consumed} used{p.reserved ? ` · ${p.reserved} reserved` : ""}</li>)}</ul> : <p className="mt-2 text-sm text-muted">No top-up purchases yet.</p>}

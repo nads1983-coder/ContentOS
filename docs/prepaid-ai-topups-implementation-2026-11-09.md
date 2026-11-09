@@ -1,5 +1,7 @@
 # Prepaid AI top-ups: implementation and funding review
 
+Follow-up: [approved policies and financial evaluation](lifetime-ai-financial-readiness-2026-11-09.md) supersede the pending expiry/reinstatement policy in this historical report. Sales remain disabled.
+
 9 November 2026. Starting PR commit `c1aaae7`. **NO-GO for live sales.** Both lifetime and prepaid Checkout and fulfillment switches remain false; the new Checkout adapter additionally refuses non-test Stripe keys. No production deployment, database migration, Stripe change, budget increase or model routing change was made. The monthly shared application ceiling remains £30. This report does not claim real Stripe sandbox verification.
 
 ## Implemented path and boundaries

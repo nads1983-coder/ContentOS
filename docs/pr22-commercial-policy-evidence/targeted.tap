@@ -1,0 +1,532 @@
+TAP version 13
+# Subtest: financial reporting is restricted to authenticated administrators
+ok 1 - financial reporting is restricted to authenticated administrators
+  ---
+  duration_ms: 94.240041
+  type: 'test'
+  ...
+# Subtest: report labels estimates, opening balance and holds without claiming invoice totals
+ok 2 - report labels estimates, opening balance and holds without claiming invoice totals
+  ---
+  duration_ms: 204.119833
+  type: 'test'
+  ...
+# Subtest: account capacity is opt-in and invalid limits fail closed
+ok 3 - account capacity is opt-in and invalid limits fail closed
+  ---
+  duration_ms: 505.81
+  type: 'test'
+  ...
+# Subtest: included credits precede purchased credits and reset without spending a top-up
+ok 4 - included credits precede purchased credits and reset without spending a top-up
+  ---
+  duration_ms: 379.639042
+  type: 'test'
+  ...
+# Subtest: top-up webhook fetches Stripe state, waits for payment and handles reversal events
+ok 5 - top-up webhook fetches Stripe state, waits for payment and handles reversal events
+  ---
+  duration_ms: 18.605834
+  type: 'test'
+  ...
+# Subtest: top-up checkout remains closed even before authentication
+ok 6 - top-up checkout remains closed even before authentication
+  ---
+  duration_ms: 4.0575
+  type: 'test'
+  ...
+# Subtest: checkout is account-bound and takes price only from the reserved server package
+ok 7 - checkout is account-bound and takes price only from the reserved server package
+  ---
+  duration_ms: 2.315291
+  type: 'test'
+  ...
+# Subtest: the test Checkout adapter refuses a live key before any provider call
+ok 8 - the test Checkout adapter refuses a live key before any provider call
+  ---
+  duration_ms: 52.9035
+  type: 'test'
+  ...
+# Subtest: top-up operational status is restricted to authenticated administrators
+ok 9 - top-up operational status is restricted to authenticated administrators
+  ---
+  duration_ms: 8.218375
+  type: 'test'
+  ...
+# Subtest: top-up catalog preserves the three approved one-time GBP packages
+ok 10 - top-up catalog preserves the three approved one-time GBP packages
+  ---
+  duration_ms: 0.556916
+  type: 'test'
+  ...
+# Subtest: unfinished top-ups cannot be enabled or resolved through a prototype key
+ok 11 - unfinished top-ups cannot be enabled or resolved through a prototype key
+  ---
+  duration_ms: 0.192959
+  type: 'test'
+  ...
+# Subtest: top-up evidence separates partial freeze, terminal refund and won dispute review
+ok 12 - top-up evidence separates partial freeze, terminal refund and won dispute review
+  ---
+  duration_ms: 0.749542
+  type: 'test'
+  ...
+# Subtest: administrator approval cannot use client identity or bypass authorization/CSRF
+ok 13 - administrator approval cannot use client identity or bypass authorization/CSRF
+  ---
+  duration_ms: 71.511584
+  type: 'test'
+  ...
+# Subtest: evaluation refuses missing, invalid or excessive input token counts
+ok 14 - evaluation refuses missing, invalid or excessive input token counts
+  ---
+  duration_ms: 0.18375
+  type: 'test'
+  ...
+# Subtest: pinned replacement reserves conservatively and settles official Flare usage
+ok 15 - pinned replacement reserves conservatively and settles official Flare usage
+  ---
+  duration_ms: 0.923083
+  type: 'test'
+  ...
+# Subtest: integer worst-case bounds remain within the shared monthly policy
+ok 16 - integer worst-case bounds remain within the shared monthly policy
+  ---
+  duration_ms: 0.072333
+  type: 'test'
+  ...
+# Subtest: production image configuration reserves and settles the same model-specific price
+ok 17 - production image configuration reserves and settles the same model-specific price
+  ---
+  duration_ms: 0.229333
+  type: 'test'
+  ...
+# Subtest: production image policy refuses unbounded or unreviewed parameters
+ok 18 - production image policy refuses unbounded or unreviewed parameters
+  ---
+  duration_ms: 0.140583
+  type: 'test'
+  ...
+# Subtest: published Image 1 shutdown stops new reservations without blocking settlement or text
+ok 19 - published Image 1 shutdown stops new reservations without blocking settlement or text
+  ---
+  duration_ms: 0.096
+  type: 'test'
+  ...
+# Subtest: full serialized payload including schema is priced; UTF-8 bytes are not character counts
+ok 20 - full serialized payload including schema is priced; UTF-8 bytes are not character counts
+  ---
+  duration_ms: 0.155917
+  type: 'test'
+  ...
+# Subtest: unknown models, stale prices, tools, unbounded outputs and unreviewed image configurations fail closed
+ok 21 - unknown models, stale prices, tools, unbounded outputs and unreviewed image configurations fail closed
+  ---
+  duration_ms: 0.112708
+  type: 'test'
+  ...
+# Subtest: known usage reconciles conservatively; uncertain and malformed usage never releases money
+ok 22 - known usage reconciles conservatively; uncertain and malformed usage never releases money
+  ---
+  duration_ms: 0.074334
+  type: 'test'
+  ...
+# Subtest: GPT-5.2 default and pinned model use their own verified rates, including fractional input pricing
+ok 23 - GPT-5.2 default and pinned model use their own verified rates, including fractional input pricing
+  ---
+  duration_ms: 0.083875
+  type: 'test'
+  ...
+# Subtest: effective paid tier rejects expired or canceled access and preserves both lifetime sources
+ok 24 - effective paid tier rejects expired or canceled access and preserves both lifetime sources
+  ---
+  duration_ms: 0.594958
+  type: 'test'
+  ...
+# Subtest: paid output selection is enforced server-side without changing the billing record
+ok 25 - paid output selection is enforced server-side without changing the billing record
+  ---
+  duration_ms: 12.228417
+  type: 'test'
+  ...
+# Subtest: request IDs, tenant identity, fingerprint and extended model inputs are validated
+ok 26 - request IDs, tenant identity, fingerprint and extended model inputs are validated
+  ---
+  duration_ms: 0.229084
+  type: 'test'
+  ...
+# Subtest: same request and concurrent identical fingerprints cannot trigger a second provider call
+ok 27 - same request and concurrent identical fingerprints cannot trigger a second provider call
+  ---
+  duration_ms: 0.242042
+  type: 'test'
+  ...
+# Subtest: completion atomically appends history and usage once and replays the stored result
+ok 28 - completion atomically appends history and usage once and replays the stored result
+  ---
+  duration_ms: 0.574625
+  type: 'test'
+  ...
+# Subtest: failures remain terminal for the same request and cannot later be completed
+ok 29 - failures remain terminal for the same request and cannot later be completed
+  ---
+  duration_ms: 0.148666
+  type: 'test'
+  ...
+# Subtest: ambiguous reservations never expire into automatic regeneration
+ok 30 - ambiguous reservations never expire into automatic regeneration
+  ---
+  duration_ms: 0.122083
+  type: 'test'
+  ...
+# Subtest: quota includes concurrent reservations, legacy history and image usage
+ok 31 - quota includes concurrent reservations, legacy history and image usage
+  ---
+  duration_ms: 0.150958
+  type: 'test'
+  ...
+# Subtest: lifetime text allowance ignores past Studio images, counts text and pending, resets UTC month
+ok 32 - lifetime text allowance ignores past Studio images, counts text and pending, resets UTC month
+  ---
+  duration_ms: 0.163542
+  type: 'test'
+  ...
+# Subtest: durable counter enforces quota after history/event pruning and resets with monthly window
+ok 33 - durable counter enforces quota after history/event pruning and resets with monthly window
+  ---
+  duration_ms: 0.145708
+  type: 'test'
+  ...
+# Subtest: completion charges the original admission month across a boundary
+ok 34 - completion charges the original admission month across a boundary
+  ---
+  duration_ms: 0.131334
+  type: 'test'
+  ...
+# Subtest: repository row-lock serializes duplicate admission and completion across callers
+ok 35 - repository row-lock serializes duplicate admission and completion across callers
+  ---
+  duration_ms: 172.749917
+  type: 'test'
+  ...
+# Subtest: repository refuses nonexistent account and never reports success when commit fails
+ok 36 - repository refuses nonexistent account and never reports success when commit fails
+  ---
+  duration_ms: 132.053917
+  type: 'test'
+  ...
+# Subtest: failed completion commit retains reservation, with no history or usage to claim success
+ok 37 - failed completion commit retains reservation, with no history or usage to claim success
+  ---
+  duration_ms: 129.418625
+  type: 'test'
+  ...
+# Subtest: legacy 2000-entry ledger compacts terminal identities and admits new requests
+ok 38 - legacy 2000-entry ledger compacts terminal identities and admits new requests
+  ---
+  duration_ms: 22.762208
+  type: 'test'
+  ...
+# Subtest: 30-day replay expiry rejects old IDs, leaves history/usage untouched and accepts a fresh ID
+ok 39 - 30-day replay expiry rejects old IDs, leaves history/usage untouched and accepts a fresh ID
+  ---
+  duration_ms: 0.778583
+  type: 'test'
+  ...
+# Subtest: abandoned slots expire terminally after grace period, never into retry leases
+ok 40 - abandoned slots expire terminally after grace period, never into retry leases
+  ---
+  duration_ms: 0.985958
+  type: 'test'
+  ...
+# Subtest: concurrency limit is temporary and failed slots reopen without losing failed-ID protection
+ok 41 - concurrency limit is temporary and failed slots reopen without losing failed-ID protection
+  ---
+  duration_ms: 5.179667
+  type: 'test'
+  ...
+# Subtest: cache pressure evicts only replay bodies, not history or terminal identity
+ok 42 - cache pressure evicts only replay bodies, not history or terminal identity
+  ---
+  duration_ms: 58.553208
+  type: 'test'
+  ...
+# Subtest: malformed tombstones fail closed and failed compaction commits leave original ledger intact
+ok 43 - malformed tombstones fail closed and failed compaction commits leave original ledger intact
+  ---
+  duration_ms: 97.162708
+  type: 'test'
+  ...
+# Subtest: workspace CAS uses the same repository lock and leaves only one concurrent winner
+ok 44 - workspace CAS uses the same repository lock and leaves only one concurrent winner
+  ---
+  duration_ms: 81.299583
+  type: 'test'
+  ...
+# Subtest: usage summary uses durable text count even after recent event truncation
+ok 45 - usage summary uses durable text count even after recent event truncation
+  ---
+  duration_ms: 130.310208
+  type: 'test'
+  ...
+# Subtest: durable attempt budget counts failures without charging successful credits
+ok 46 - durable attempt budget counts failures without charging successful credits
+  ---
+  duration_ms: 0.959083
+  type: 'test'
+  ...
+# Subtest: replays and rejected duplicate IDs never consume attempt capacity
+ok 47 - replays and rejected duplicate IDs never consume attempt capacity
+  ---
+  duration_ms: 0.159666
+  type: 'test'
+  ...
+# Subtest: attempt budget is rolling, bounded, fail-closed, and does not reset on backwards clock
+ok 48 - attempt budget is rolling, bounded, fail-closed, and does not reset on backwards clock
+  ---
+  duration_ms: 0.223417
+  type: 'test'
+  ...
+# Subtest: repository serializes the last attempt slot across callers and preserves it on failed completion
+ok 49 - repository serializes the last attempt slot across callers and preserves it on failed completion
+  ---
+  duration_ms: 37.010125
+  type: 'test'
+  ...
+# Subtest: monthly total uses the image event/counter maximum plus other events without double-counting
+ok 50 - monthly total uses the image event/counter maximum plus other events without double-counting
+  ---
+  duration_ms: 0.356708
+  type: 'test'
+  ...
+# Subtest: malformed durable image accounting fails closed before text admission or completion
+ok 51 - malformed durable image accounting fails closed before text admission or completion
+  ---
+  duration_ms: 0.39475
+  type: 'test'
+  ...
+# Subtest: durable image accounting preserves all existing monthly plan limits and lifetime entitlements
+ok 52 - durable image accounting preserves all existing monthly plan limits and lifetime entitlements
+  ---
+  duration_ms: 0.412667
+  type: 'test'
+  ...
+# Subtest: 100 daily attempts include failures across minute windows while replay and success credits stay independent
+ok 53 - 100 daily attempts include failures across minute windows while replay and success credits stay independent
+  ---
+  duration_ms: 4.707291
+  type: 'test'
+  ...
+# Subtest: UTC daily rollover preserves rolling cap and Retry-After covers both limits
+ok 54 - UTC daily rollover preserves rolling cap and Retry-After covers both limits
+  ---
+  duration_ms: 0.155875
+  type: 'test'
+  ...
+# Subtest: daily budget fails closed for corruption or backwards days and seeds known legacy attempts
+ok 55 - daily budget fails closed for corruption or backwards days and seeds known legacy attempts
+  ---
+  duration_ms: 0.267042
+  type: 'test'
+  ...
+# Subtest: repository serializes the final daily slot and failures or failed writes never refund it
+ok 56 - repository serializes the final daily slot and failures or failed writes never refund it
+  ---
+  duration_ms: 114.811875
+  type: 'test'
+  ...
+# Subtest: a completed but unpaid lifetime session stays pending without granting access
+ok 57 - a completed but unpaid lifetime session stays pending without granting access
+  ---
+  duration_ms: 180.626917
+  type: 'test'
+  ...
+# Subtest: a subsequent asynchronous payment success activates through verified Stripe retrieval
+ok 58 - a subsequent asynchronous payment success activates through verified Stripe retrieval
+  ---
+  duration_ms: 56.087334
+  type: 'test'
+  ...
+# Subtest: a Stripe snapshot overtaken by an administrator decision is retried
+ok 59 - a Stripe snapshot overtaken by an administrator decision is retried
+  ---
+  duration_ms: 67.04325
+  type: 'test'
+  ...
+# Subtest: an asynchronous failure releases only a matching unpaid reservation
+ok 60 - an asynchronous failure releases only a matching unpaid reservation
+  ---
+  duration_ms: 59.319083
+  type: 'test'
+  ...
+# Subtest: current shared budget cannot fund even one worst-case lifetime allowance
+ok 61 - current shared budget cannot fund even one worst-case lifetime allowance
+  ---
+  duration_ms: 0.456208
+  type: 'test'
+  ...
+# Subtest: new checkout saves only a verified session; never a browser-supplied total
+ok 62 - new checkout saves only a verified session; never a browser-supplied total
+  ---
+  duration_ms: 1.450833
+  type: 'test'
+  ...
+# Subtest: existing open checkout is reused without a second Stripe create
+ok 63 - existing open checkout is reused without a second Stripe create
+  ---
+  duration_ms: 0.42
+  type: 'test'
+  ...
+# Subtest: unverified, aged, and completed attempts fail closed
+ok 64 - unverified, aged, and completed attempts fail closed
+  ---
+  duration_ms: 0.618042
+  type: 'test'
+  ...
+# Subtest: disabled lifetime checkout refuses requests before account, database or Stripe work
+ok 65 - disabled lifetime checkout refuses requests before account, database or Stripe work
+  ---
+  duration_ms: 68.823
+  type: 'test'
+  ...
+# Subtest: paid lifetime access is separate from retired Founder and recurring billing
+ok 66 - paid lifetime access is separate from retired Founder and recurring billing
+  ---
+  duration_ms: 0.393292
+  type: 'test'
+  ...
+# Subtest: active Pro Studio subscription wins until expiry; lifetime Creator then takes over
+ok 67 - active Pro Studio subscription wins until expiry; lifetime Creator then takes over
+  ---
+  duration_ms: 0.075958
+  type: 'test'
+  ...
+# Subtest: verified payment grants once and preserves subscription records
+ok 68 - verified payment grants once and preserves subscription records
+  ---
+  duration_ms: 142.746292
+  type: 'test'
+  ...
+# Subtest: unmatched refund survives stale completion and duplicate events
+ok 69 - unmatched refund survives stale completion and duplicate events
+  ---
+  duration_ms: 45.059167
+  type: 'test'
+  ...
+# Subtest: partial refund preserves existing access but cannot activate an unfulfilled payment
+ok 70 - partial refund preserves existing access but cannot activate an unfulfilled payment
+  ---
+  duration_ms: 83.923917
+  type: 'test'
+  ...
+# Subtest: incorrect payment cannot grant a lifetime entitlement
+ok 71 - incorrect payment cannot grant a lifetime entitlement
+  ---
+  duration_ms: 28.7755
+  type: 'test'
+  ...
+# Subtest: new paid lifetime identity cannot be mistaken for retired Founding 100
+ok 72 - new paid lifetime identity cannot be mistaken for retired Founding 100
+  ---
+  duration_ms: 0.309042
+  type: 'test'
+  ...
+# Subtest: first 25 completed purchases get £99 and later buyers £149
+ok 73 - first 25 completed purchases get £99 and later buyers £149
+  ---
+  duration_ms: 0.200084
+  type: 'test'
+  ...
+# Subtest: reconciliation requires a secret even when fulfillment is disabled
+ok 74 - reconciliation requires a secret even when fulfillment is disabled
+  ---
+  duration_ms: 45.346709
+  type: 'test'
+  ...
+# Subtest: enabled lifetime route rejects anonymous, existing subscriptions and old open subscription checkouts; ignores browser identity/price
+ok 75 - enabled lifetime route rejects anonymous, existing subscriptions and old open subscription checkouts; ignores browser identity/price
+  ---
+  duration_ms: 36.728333
+  type: 'test'
+  ...
+# Subtest: refund and all dispute lifecycle webhooks retain unmatched events and retry persistence failure
+ok 76 - refund and all dispute lifecycle webhooks retain unmatched events and retry persistence failure
+  ---
+  duration_ms: 149.252458
+  type: 'test'
+  ...
+# Subtest: historical unpaid recurring checkout blocks only until its subscription is definitively ended
+ok 77 - historical unpaid recurring checkout blocks only until its subscription is definitively ended
+  ---
+  duration_ms: 99.971291
+  type: 'test'
+  ...
+# Subtest: an interrupted lost-session search stops before contacting Stripe
+ok 78 - an interrupted lost-session search stops before contacting Stripe
+  ---
+  duration_ms: 18.124708
+  type: 'test'
+  ...
+# Subtest: lifetime Checkout has exactly one payment-mode item and account-bound metadata
+ok 79 - lifetime Checkout has exactly one payment-mode item and account-bound metadata
+  ---
+  duration_ms: 0.465292
+  type: 'test'
+  ...
+# Subtest: asynchronous failure releases only the matching unpaid one-time checkout
+ok 80 - asynchronous failure releases only the matching unpaid one-time checkout
+  ---
+  duration_ms: 0.119833
+  type: 'test'
+  ...
+# Subtest: only fully paid, exact-amount account-bound one-time sessions qualify
+ok 81 - only fully paid, exact-amount account-bound one-time sessions qualify
+  ---
+  duration_ms: 0.150459
+  type: 'test'
+  ...
+# Subtest: later refunds, disputes, partial payments and charge mismatches block activation
+ok 82 - later refunds, disputes, partial payments and charge mismatches block activation
+  ---
+  duration_ms: 0.097667
+  type: 'test'
+  ...
+# Subtest: direct recurring Creator checkout is refused for lifetime; deliberate Studio upgrade remains possible
+ok 83 - direct recurring Creator checkout is refused for lifetime; deliberate Studio upgrade remains possible
+  ---
+  duration_ms: 63.305708
+  type: 'test'
+  ...
+# Subtest: server billing refreshes delayed Studio renewal before lifetime fallback and retains lifetime during outage
+ok 84 - server billing refreshes delayed Studio renewal before lifetime fallback and retains lifetime during outage
+  ---
+  duration_ms: 39.40325
+  type: 'test'
+  ...
+# Subtest: subscription cancellation preserves lifetime and image generation cannot consume lifetime allowance
+ok 85 - subscription cancellation preserves lifetime and image generation cannot consume lifetime allowance
+  ---
+  duration_ms: 108.215834
+  type: 'test'
+  ...
+# Subtest: Studio page reconciles renewal and requests text-only usage on lifetime fallback
+ok 86 - Studio page reconciles renewal and requests text-only usage on lifetime fallback
+  ---
+  duration_ms: 22.876
+  type: 'test'
+  ...
+# Subtest: success message is account bound and distinguishes pending, active and reversed purchases
+ok 87 - success message is account bound and distinguishes pending, active and reversed purchases
+  ---
+  duration_ms: 6.578625
+  type: 'test'
+  ...
+1..87
+# tests 87
+# suites 0
+# pass 87
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1894.502708

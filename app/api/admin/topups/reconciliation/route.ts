@@ -9,12 +9,14 @@ export async function GET() {
   const user=await getCurrentUser();if(!user || !isAdminEmail(user.email))return Response.json({error:"Forbidden"},{status:403});
   try {
     const db=getPool();
-    const [jobs,alerts,holds]=await Promise.all([
+    const [jobs,alerts,holds,reviews,decisions]=await Promise.all([
       db.query("SELECT purchase_id,attempts,state,next_attempt_at,error_code,updated_at FROM contentos_app.ai_topup_reconciliation_jobs WHERE state='attention' OR error_code IS NOT NULL ORDER BY updated_at LIMIT 100"),
       db.query("SELECT purchase_id,code,created_at,delivered_at,delivery_attempts,last_attempt_at FROM contentos_app.ai_topup_reconciliation_alerts ORDER BY created_at DESC LIMIT 100"),
-      db.query("SELECT purchase_id,account_id,request_id,created_at FROM contentos_app.ai_topup_reservations WHERE state='reserved' AND created_at<now()-interval '15 minutes' ORDER BY created_at LIMIT 100")
+      db.query("SELECT purchase_id,account_id,request_id,created_at FROM contentos_app.ai_topup_reservations WHERE state='reserved' AND created_at<now()-interval '15 minutes' ORDER BY created_at LIMIT 100"),
+      db.query("SELECT id,account_id,status,stripe_payment_intent_id,updated_at FROM contentos_app.ai_topup_purchases WHERE status IN ('reversed','revoked') ORDER BY updated_at LIMIT 100"),
+      db.query("SELECT purchase_id,administrator_id,administrator_email,decision,reason,created_at FROM contentos_app.ai_topup_adjudications ORDER BY created_at DESC LIMIT 100")
     ]);
-    return Response.json({jobs:jobs.rows,alerts:alerts.rows,staleReservations:holds.rows},{headers:{"Cache-Control":"no-store"}});
+    return Response.json({jobs:jobs.rows,alerts:alerts.rows,staleReservations:holds.rows,paymentReviews:reviews.rows,decisions:decisions.rows},{headers:{"Cache-Control":"no-store"}});
   }catch{return Response.json({error:"Reconciliation status is unavailable."},{status:503});}
 }
 export async function POST(request:Request) {

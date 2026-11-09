@@ -22,8 +22,9 @@ test("top-up webhook fetches Stripe state, waits for payment and handles reversa
   const {POST}=loadTs("app/api/billing/webhook/route.ts",{
     "next/server":{NextResponse:Response},"@/lib/ai-topup-offer":{AI_TOPUP_OFFER:{code:"prepaid_text_2026",fulfillmentEnabled:true}},
     "@/lib/paid-lifetime-offer":{PAID_LIFETIME_OFFER:{code:"creator_lifetime_2026",fulfillmentEnabled:false}},
-    "@/lib/stripe-rest":{verifyStripeSignature:()=>true,retrieveCheckoutSession:async()=>session,retrievePaidLifetimePaymentIntent:async()=>({id:"pi_test123",livemode:false})},
+    "@/lib/stripe-rest":{verifyStripeSignature:()=>true,retrieveCheckoutSession:async()=>session,retrievePaidLifetimePaymentIntent:async()=>({id:"pi_test123",livemode:false}),retrieveLifetimeDisputes:async()=>[]},
     "@/lib/repository":{},"@/lib/founder-claim-repository":{},"@/lib/founder-checkout-service":{},"@/lib/paid-lifetime-fulfillment":{},"@/lib/paid-lifetime-reservations":{},
+    "@/lib/ai-topup-review":{getTopupDecisionRevision:async()=>"0",topupEvidence:()=>[{reason:"dispute",key:"dispute:du_test:needs_response"}]},
     "@/lib/ai-topup-payments":{fulfillTopup:async()=>calls.push("grant"),terminateTopup:async(_id,_session,reason)=>calls.push(reason),reverseTopup:async()=>calls.push("reverse")}
   });
   async function send(type,object,livemode=false){return POST(new Request("https://example.invalid/api/billing/webhook",{method:"POST",body:JSON.stringify({id:"evt_test1",livemode,type,data:{object}})}));}
@@ -78,6 +79,6 @@ test("top-up operational status is restricted to authenticated administrators",a
       "@/lib/db/client":{getPool:()=>({query:async()=>{reads++;return {rows:[]};}})},
       "@/lib/request-security":{},"@/lib/admin-json":{},"server-only":{}
     });
-    const response=await GET();assert.equal(response.status,mode==="admin"?200:403);assert.equal(reads,mode==="admin"?3:0);
+    const response=await GET();assert.equal(response.status,mode==="admin"?200:403);assert.equal(reads,mode==="admin"?5:0);
   }
 });

@@ -8,6 +8,8 @@ import {join,resolve} from "node:path";
 import {execFile} from "node:child_process";
 import {promisify} from "node:util";
 import {Pool} from "pg";
+import {createServer} from "node:https";
+import {once} from "node:events";
 import {drizzle} from "drizzle-orm/node-postgres";
 import {migrate} from "drizzle-orm/node-postgres/migrator";
 import {loadTs} from "./image-test-helpers.mjs";
@@ -54,7 +56,7 @@ try {
   const budgetBefore=(await pool.query("SELECT * FROM contentos_app.ai_budget_configuration")).rows;
   const urlFile=join(dir,"url");writeFileSync(urlFile,url.href,{mode:0o600});
   const runner=()=>promisify(execFile)(process.execPath,["scripts/migrations/migrate-postgres.mjs",urlFile],{cwd:root});
-  await check("actual migration runner applies 0004–0009 exactly once over journal 0000–0002 plus externally managed 0003",async()=>{
+  await check("actual migration runner applies 0004–0010 exactly once over journal 0000–0002 plus externally managed 0003",async()=>{
     await pool.query("CREATE TABLE contentos_app.paid_lifetime_payment_events(blocker text)");
     await assert.rejects(runner());
     assert.equal((await pool.query("SELECT to_regclass('contentos_app.paid_creator_lifetime_purchases') n")).rows[0].n,null);
@@ -67,8 +69,20 @@ try {
     await pool.query(`INSERT INTO contentos_app.ai_spend_requests
       (account_id,kind,request_id,fingerprint,month,quote,reserved_microgbp,accounted_microgbp,state)
       VALUES($1,'text','legacy-before-cohort','legacy','2026-10','{}',1,0,'released')`,[founder.id]);
-    await runner();await runner();
+    // Explicitly upgrade the existing prepaid schema and prove 0010 rollback.
+    for(const e of journal.entries.slice(4,9))cpSync(join(root,`drizzle/${e.tag}.sql`),join(dir,`${e.tag}.sql`));
+    writeFileSync(join(dir,"meta/_journal.json"),JSON.stringify({...journal,entries:journal.entries.slice(0,9)}));
+    await migrate(drizzle(pool),{migrationsFolder:dir});
+    const legacyTopup=randomUUID();
+    await pool.query("INSERT INTO contentos_app.ai_topup_purchases(id,account_id,package,price_pence,credits,attempt_key,status) VALUES($1,$2,'starter',500,25,'legacy-frozen','reversed')",[legacyTopup,founder.id]);
+    await pool.query("CREATE TABLE contentos_app.ai_topup_adjudications(blocker text)");
+    await assert.rejects(runner());
     assert.equal((await pool.query("SELECT count(*) FROM drizzle.__drizzle_migrations")).rows[0].count,"9");
+    assert.equal((await pool.query("SELECT count(*) FROM information_schema.columns WHERE table_schema='contentos_app' AND table_name='ai_topup_reversals' AND column_name='reason'")).rows[0].count,"0");
+    await pool.query("DROP TABLE contentos_app.ai_topup_adjudications");
+    await runner();await runner();
+    assert.equal((await pool.query("SELECT status FROM contentos_app.ai_topup_purchases WHERE id=$1",[legacyTopup])).rows[0].status,"reversed");
+    assert.equal((await pool.query("SELECT count(*) FROM drizzle.__drizzle_migrations")).rows[0].count,"10");
     assert.deepEqual((await pool.query("SELECT * FROM contentos_app.ai_budget_configuration")).rows,budgetBefore);
     assert.deepEqual(await readProfile(founder.id),founder);
     assert.equal((await pool.query("SELECT customer_cohort FROM contentos_app.ai_spend_requests WHERE account_id=$1 AND request_id='legacy-before-cohort'",[founder.id])).rows[0].customer_cohort,"unknown");
@@ -379,7 +393,7 @@ try {
     assert.equal((await topup.topupAccountSummary(p.id)).history[0].consumed,24);
   });
   await check("top-up reconciliation retains uncertainty, retries fairly and delivers durable operator alerts",async()=>{
-    await pool.query("TRUNCATE contentos_app.ai_topup_reconciliation_actions,contentos_app.ai_topup_reconciliation_alerts,contentos_app.ai_topup_reconciliation_jobs,contentos_app.ai_topup_ledger,contentos_app.ai_topup_reservations,contentos_app.ai_topup_reversals,contentos_app.ai_topup_purchases");
+    await pool.query("TRUNCATE contentos_app.ai_topup_adjudications,contentos_app.ai_topup_reconciliation_actions,contentos_app.ai_topup_reconciliation_alerts,contentos_app.ai_topup_reconciliation_jobs,contentos_app.ai_topup_ledger,contentos_app.ai_topup_reservations,contentos_app.ai_topup_reversals,contentos_app.ai_topup_purchases");
     const topup=loadTs("lib/ai-topup-payments.ts",mocks),p=await account({plan:"pro_creator",subscription_status:"active"}),pMissing=await account(),pPaid=await account();
     const expired=await topup.prepareTopup(p.id,"starter","expired-test"),missing=await topup.prepareTopup(pMissing.id,"starter","missing-test"),paid=await topup.prepareTopup(pPaid.id,"starter","paid-refunded");
     const sid=`cs_test_${randomUUID().replaceAll('-','')}`;
@@ -395,7 +409,7 @@ try {
     });
     await worker.reconcileTopups();
     assert.equal((await pool.query("SELECT status FROM contentos_app.ai_topup_purchases WHERE id=$1",[expired.id])).rows[0].status,"expired");
-    assert.equal((await pool.query("SELECT status FROM contentos_app.ai_topup_purchases WHERE id=$1",[paid.id])).rows[0].status,"reversed");
+    assert.equal((await pool.query("SELECT status FROM contentos_app.ai_topup_purchases WHERE id=$1",[paid.id])).rows[0].status,"revoked");
     for(let i=1;i<8;i++){
       await pool.query("UPDATE contentos_app.ai_topup_reconciliation_jobs SET next_attempt_at=now()-interval '1 second' WHERE purchase_id=$1",[missing.id]);
       await worker.reconcileTopups();
@@ -405,6 +419,112 @@ try {
     respond=true;await worker.deliverTopupAlerts();
     assert.ok((await pool.query("SELECT delivered_at FROM contentos_app.ai_topup_reconciliation_alerts WHERE purchase_id=$1",[missing.id])).rows[0].delivered_at);
     assert.equal((await pool.query("SELECT status FROM contentos_app.ai_topup_purchases WHERE id=$1",[missing.id])).rows[0].status,"preparing");
+  });
+  async function topupPayment() {
+    const topup=loadTs("lib/ai-topup-payments.ts",mocks),p=await account({plan:"pro_creator",subscription_status:"active"});
+    const row=await topup.prepareTopup(p.id,"starter",randomUUID());
+    const pi=`pi_${randomUUID().replaceAll('-','')}`,sid=`cs_test_${randomUUID().replaceAll('-','')}`;
+    const session={livemode:false,id:sid,mode:"payment",status:"complete",payment_status:"paid",amount_total:500,amount_subtotal:500,currency:"gbp",payment_intent:pi,client_reference_id:p.id,
+      metadata:{offer:"prepaid_text_2026",purchase_id:row.id,user_id:p.id,attempt_key:row.attempt_key},total_details:{amount_discount:0},line_items:{has_more:false,data:[{quantity:1,amount_total:500,price:{currency:"gbp",unit_amount:500,type:"one_time"}}]}};
+    const intent={livemode:false,id:pi,status:"succeeded",amount:500,amount_received:500,currency:"gbp",latest_charge:{id:"ch_test",paid:true,refunded:false,disputed:false,amount_refunded:0}};
+    return {topup,p,row,session,intent};
+  }
+  function topupReviewer(x,intent,disputes=[],onRead=async()=>{}) {
+    return loadTs("lib/ai-topup-review.ts",{...mocks,"@/lib/auth":{isAdminEmail:e=>e==="admin@example.invalid"},"@/lib/stripe-rest":{
+      retrieveCheckoutSession:async()=>x.session,retrievePaidLifetimePaymentIntent:async()=>intent,
+      retrieveLifetimeDisputes:async()=>{await onRead();return disputes;}
+    }});
+  }
+  const adminIdentity={id:"admin-audit",email:"admin@example.invalid"};
+  await check("partial top-up refunds freeze only the affected package; auditable review survives reconciliation and monthly aging",async()=>{
+    const x=await topupPayment();await x.topup.fulfillTopup(x.row.id,x.session,x.intent);
+    const credits=loadTs("lib/ai-topup-credit-ledger.ts",mocks),transaction=loadTs("lib/commercial-ledger.ts",mocks).commercialTransaction;
+    await transaction(async c=>{await credits.reserveTopupCredit(c,x.p.id,"used-before-refund");await credits.finishTopupCredit(c,x.p.id,"used-before-refund",true,true);});
+    const partial={...x.intent,latest_charge:{...x.intent.latest_charge,amount_refunded:100}};
+    await x.topup.reverseTopup(x.intent.id,"evt_partial","charge.refunded",{reason:"review",key:"refund:100"});
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,0);
+    const reviewer=topupReviewer(x,partial);
+    await assert.rejects(reviewer.reviewTopup(x.row.id,{id:"bad",email:"user@example.invalid"},"Reviewed partial refund","reinstate"));
+    await reviewer.reviewTopup(x.row.id,adminIdentity,"Keep frozen pending evidence","retain_freeze");
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,0);
+    const stale=await reviewer.getTopupDecisionRevision(x.row.id);
+    await reviewer.reviewTopup(x.row.id,adminIdentity,"Approved remaining unused credits","reinstate");
+    await assert.rejects(x.topup.fulfillTopup(x.row.id,x.session,partial,stale));
+    await x.topup.fulfillTopup(x.row.id,x.session,partial,await reviewer.getTopupDecisionRevision(x.row.id));
+    await x.topup.reverseTopup(x.intent.id,"evt_delayed_partial","charge.refunded",{reason:"review",key:"refund:100"});
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,24);
+    await pool.query("UPDATE contentos_app.ai_topup_purchases SET created_at=now()-interval '3 years' WHERE id=$1",[x.row.id]);
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,24);
+    assert.equal((await pool.query("SELECT count(*) FROM contentos_app.ai_topup_ledger WHERE purchase_id=$1 AND action='grant'",[x.row.id])).rows[0].count,"1");
+    const audit=(await pool.query("SELECT * FROM contentos_app.ai_topup_adjudications WHERE purchase_id=$1 ORDER BY created_at",[x.row.id])).rows;
+    assert.equal(audit.length,2);assert.equal(audit[1].administrator_id,adminIdentity.id);assert.ok(audit[1].created_at);assert.equal(audit[1].decision,"reinstate");
+    for(const verb of ["DELETE FROM","UPDATE"])await assert.rejects(runtimePool.query(verb==="UPDATE"?"UPDATE contentos_app.ai_topup_adjudications SET reason='tamper'":"DELETE FROM contentos_app.ai_topup_adjudications"),e=>e.code==="42501");
+    await x.topup.reverseTopup(x.intent.id,"evt_larger_partial","charge.refunded",{reason:"review",key:"refund:200"});
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,0);
+  });
+  await check("won disputes require explicit review; lost/open disputes and full refunds never auto-reinstate",async()=>{
+    const x=await topupPayment();await x.topup.fulfillTopup(x.row.id,x.session,x.intent);
+    const d={id:"du_policy",status:"needs_response",payment_intent:x.intent.id,charge:"ch_test"};
+    await x.topup.reverseTopup(x.intent.id,"evt_dispute","charge.dispute.created",{reason:"dispute",key:"dispute:du_policy:needs_response"});
+    for(const status of ["needs_response","lost"])await assert.rejects(topupReviewer(x,x.intent,[{...d,status}]).reviewTopup(x.row.id,adminIdentity,"Review provider dispute outcome","reinstate"));
+    const won={...d,status:"won"},disputed={...x.intent,latest_charge:{...x.intent.latest_charge,disputed:true}};
+    await x.topup.fulfillTopup(x.row.id,x.session,disputed,undefined,[won]);
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,0);
+    const reviewer=topupReviewer(x,disputed,[won]);
+    await reviewer.reviewTopup(x.row.id,adminIdentity,"Verified won dispute in Stripe","reinstate");
+    await x.topup.fulfillTopup(x.row.id,x.session,disputed,await reviewer.getTopupDecisionRevision(x.row.id),[won]);
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,25);
+    await x.topup.reverseTopup(x.intent.id,"evt_dispute","charge.refunded",{reason:"full_refund",key:"full_refund"});
+    await x.topup.fulfillTopup(x.row.id,x.session,x.intent);
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,0);
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).history[0].status,"revoked");
+    await assert.rejects(reviewer.reviewTopup(x.row.id,adminIdentity,"Try to undo full refund","reinstate"));
+  });
+  await check("refund racing review aborts approval; reversal before grant can only be restored by reviewed evidence",async()=>{
+    const x=await topupPayment(),partial={...x.intent,latest_charge:{...x.intent.latest_charge,amount_refunded:100}};
+    await x.topup.reverseTopup(x.intent.id,"evt_before","charge.refunded",{reason:"review",key:"refund:100"});
+    await x.topup.fulfillTopup(x.row.id,x.session,partial);
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,0);
+    await topupReviewer(x,partial).reviewTopup(x.row.id,adminIdentity,"Reviewed partial refund before issuance","reinstate");
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,25);
+    await x.topup.reverseTopup(x.intent.id,"evt_next","charge.refunded",{reason:"review",key:"refund:200"});
+    const reviewer=topupReviewer(x,{...partial,latest_charge:{...partial.latest_charge,amount_refunded:200}},[],async()=>{
+      await x.topup.reverseTopup(x.intent.id,"evt_race_full","charge.refunded",{reason:"full_refund",key:"full_refund"});
+    });
+    await assert.rejects(reviewer.reviewTopup(x.row.id,adminIdentity,"Concurrent refund during review","reinstate"));
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,0);
+    assert.equal((await pool.query("SELECT count(*) FROM contentos_app.ai_topup_adjudications WHERE purchase_id=$1",[x.row.id])).rows[0].count,"1");
+  });
+  if(process.env.CONTENTOS_LOCAL_ALERT_TLS_DIR)await check("real localhost HTTPS alert failure retries and records acknowledgement; authenticated cron dispatch is protected",async()=>{
+    const tlsDir=process.env.CONTENTOS_LOCAL_ALERT_TLS_DIR;
+    let accepted=false;const deliveries=[];
+    const server=createServer({key:readFileSync(join(tlsDir,"key.pem")),cert:readFileSync(join(tlsDir,"cert.pem"))},(req,res)=>{
+      let body="";req.on("data",chunk=>{body+=chunk;});req.on("end",()=>{deliveries.push(JSON.parse(body));res.writeHead(accepted?204:503);res.end();});
+    });
+    server.listen(0,"127.0.0.1");await once(server,"listening");
+    try {
+      await pool.query("UPDATE contentos_app.ai_topup_reconciliation_alerts SET delivered_at=now()");
+      await pool.query("UPDATE contentos_app.lifetime_reconciliation_alerts SET delivered_at=now()");
+      const x=await topupPayment();
+      await pool.query("INSERT INTO contentos_app.ai_topup_reconciliation_alerts(purchase_id,code) VALUES($1,'local_delivery_probe')",[x.row.id]);
+      const alertUrl=`https://127.0.0.1:${server.address().port}/alerts`;
+      const worker=loadTs("lib/ai-topup-reconciliation.ts",mocks,new Map(),{process:{env:{CONTENTOS_RECONCILIATION_ALERT_URL:alertUrl}},fetch:globalThis.fetch});
+      let ticks=0;
+      const cron=loadTs("app/api/lifetime/reconcile/route.ts",{
+        "@/lib/paid-lifetime-offer":{PAID_LIFETIME_OFFER:{fulfillmentEnabled:false}},"@/lib/paid-lifetime-reconciliation":{},
+        "@/lib/ai-topup-offer":{AI_TOPUP_OFFER:{fulfillmentEnabled:true}},
+        "@/lib/ai-topup-reconciliation":{reconcileTopups:async()=>{ticks++;return worker.deliverTopupAlerts();}}
+      },new Map(),{process:{env:{CRON_SECRET:"isolated-cron-test"}}});
+      assert.equal((await cron.GET(new Request("https://example.invalid/api/lifetime/reconcile"))).status,401);assert.equal(ticks,0);
+      const tick=()=>cron.GET(new Request("https://example.invalid/api/lifetime/reconcile",{headers:{authorization:"Bearer isolated-cron-test"}}));
+      await tick();
+      let alert=(await pool.query("SELECT * FROM contentos_app.ai_topup_reconciliation_alerts WHERE purchase_id=$1",[x.row.id])).rows[0];
+      assert.equal(alert.delivered_at,null);assert.equal(alert.delivery_attempts,1);
+      accepted=true;await new Promise(resolve=>setTimeout(resolve,25));await tick();
+      alert=(await pool.query("SELECT * FROM contentos_app.ai_topup_reconciliation_alerts WHERE purchase_id=$1",[x.row.id])).rows[0];
+      assert.ok(alert.delivered_at);assert.equal(alert.delivery_attempts,2);assert.equal(ticks,2);
+      assert.deepEqual(deliveries,[{kind:"topup_reconciliation",purchaseId:x.row.id,code:"local_delivery_probe"},{kind:"topup_reconciliation",purchaseId:x.row.id,code:"local_delivery_probe"}]);
+    }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
   });
   console.log(`All ${count} isolated PostgreSQL checks passed. No Stripe/AI network calls.`);
 } finally {

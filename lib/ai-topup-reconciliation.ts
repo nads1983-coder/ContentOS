@@ -1,8 +1,10 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { getPool } from "@/lib/db/client";
-import { retrieveCheckoutSession, retrievePaidLifetimePaymentIntent } from "@/lib/stripe-rest";
-import { fulfillTopup, reverseTopup, terminateTopup, validateTopupSession } from "@/lib/ai-topup-payments";
+import { retrieveCheckoutSession, retrievePaidLifetimePaymentIntent, retrieveLifetimeDisputes } from "@/lib/stripe-rest";
+import { fulfillTopup, terminateTopup } from "@/lib/ai-topup-payments";
+
+import { getTopupDecisionRevision } from "@/lib/ai-topup-review";
 
 type Job={purchase_id:string;lease_token:string;attempts:number};
 async function claim():Promise<Job | undefined> {
@@ -75,6 +77,7 @@ export async function reconcileTopups() {
       const row=(await db.query("SELECT * FROM contentos_app.ai_topup_purchases WHERE id=$1",[job.purchase_id])).rows[0];
       if(!row || !["preparing","open","paid"].includes(row.status)){await finish(job,"done");continue;}
       if(!row.stripe_session_id)throw new Error("Unknown Checkout session; operator reconciliation required.");
+      const revision=await getTopupDecisionRevision(row.id);
       const session=await retrieveCheckoutSession(row.stripe_session_id,signal);
       if(session.status==="expired" && session.payment_status==="unpaid" && !session.payment_intent){await terminateTopup(row.id,session,"expired");await finish(job,"done");continue;}
       if(session.status==="open" && session.payment_status==="unpaid"){await finish(job,"pending");continue;}
@@ -84,13 +87,9 @@ export async function reconcileTopups() {
       if(session.status==="complete" && session.payment_status==="unpaid") {
         await terminateTopup(row.id,session,"failed",intent);await finish(job,"done");continue;
       }
-      if(!validateTopupSession(row,session) || intent.id!==pi || intent.livemode!==false || intent.amount!==row.price_pence)throw new Error("Payment identity uncertain.");
-      const charge=intent.latest_charge;
-      if(charge?.refunded || charge?.disputed || (charge?.amount_refunded??0)>0) {
-        await reverseTopup(pi,`snapshot:${pi}:${charge?.amount_refunded??0}:${Boolean(charge?.disputed)}:${Boolean(charge?.refunded)}`,"payment_snapshot");
-        await fulfillTopup(row.id,session,intent);
-        await finish(job,"done");
-      } else {await fulfillTopup(row.id,session,intent);await finish(job,"paid");}
+      const disputes=intent.latest_charge?.disputed && !intent.latest_charge.refunded ? await retrieveLifetimeDisputes(pi,signal) : [];
+      const result=await fulfillTopup(row.id,session,intent,revision,disputes);
+      await finish(job,["reversed","revoked","terminal"].includes(result.status)?"done":"paid");
     } catch {uncertain++;await finish(job,"error");}
   }
   const delivery=await deliverTopupAlerts().catch(()=>({configured:false,delivered:0}));
