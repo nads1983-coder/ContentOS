@@ -1,5 +1,5 @@
 import type { GenerateRequest } from "@/types/content";
-import { careerDurationEvidence, channelClaims, channelEvidence, milestoneEvidence, promotionEvidence, subjectText, sourceEvidence } from "@/lib/claim-evidence";
+import { careerDurationEvidence, channelClaims, channelEvidence, milestoneEvidence, promotionEvidence, subjectText, sourceEvidence, ticketPriceEvidence } from "@/lib/claim-evidence";
 import { plainPostText, socialHashtag } from "@/lib/post-format";
 import { brandContextScope, mentionsBrand } from "@/lib/brand-context";
 
@@ -95,6 +95,8 @@ export function reviewBusinessFacts(value: unknown, request: GenerateRequest): G
       current.source === "brief" && classify(current.text) === claimCategory && /\b(?:not|never|no longer|do not|don't)\b/.test(current.text))));
     if (supported) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: supported.source, index: supported.index } };
     if (claimCategory === "high_risk") {
+      const ticket = ticketPriceEvidence(sentence, request);
+      if (ticket) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: ticket.source, index: ticket.index } };
       const career = careerDurationEvidence(sentence, request);
       if (career) return { ...base, category: claimCategory, classification: "source_supported", evidence: career };
     }

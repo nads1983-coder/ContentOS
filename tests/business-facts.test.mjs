@@ -99,3 +99,19 @@ test("explicitly requested saved offer supports an unchanged specification, not 
   assert.doesNotThrow(() => check(offer, context));
   assert.throws(() => check(`${offer} Our notebooks come with a lifetime warranty.`, context), GenerationGroundingError);
 });
+
+test("ticket-price paraphrases preserve exact price and reject ambiguous evidence", () => {
+  const source = "A drawing workshop is planned in York. Tickets cost £12.";
+  assert.equal(check("Tickets are £12.", { source }).sections[0].body, "Tickets are £12.");
+  for (const [brief, claim] of [
+    [source, "Tickets are £13."],
+    [source, "Tickets are $12."],
+    [source, "Children's tickets are £12."],
+    [source, "Tickets are £12 for members."],
+    ["Tickets cost £12 for members.", "Tickets are £12."],
+    ["Tickets do not cost £12.", "Tickets are £12."],
+    ["Tickets cost £12. Tickets are not available.", "Tickets are £12."],
+    ["Tickets cost £12. Admission is free.", "Tickets are £12."],
+    ["Tickets might cost £12.", "Tickets are £12."]
+  ]) assert.throws(() => check(claim, { source: brief }), GenerationGroundingError);
+});
