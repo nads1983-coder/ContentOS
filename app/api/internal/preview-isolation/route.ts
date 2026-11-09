@@ -23,6 +23,13 @@ export async function GET(request: Request) {
     } catch {
       return Response.json({ verified: false, stage: "isolation_guard" }, { status: 503, headers });
     }
+    const expectedStripeHash = request.headers.get("x-preview-stripe-key-sha256");
+    if (expectedStripeHash !== null) {
+      const stripeKey = process.env.STRIPE_SECRET_KEY ?? "";
+      if (!/^(sk|rk)_test_/.test(stripeKey) || !/^[a-f0-9]{64}$/.test(expectedStripeHash) ||
+          !timingSafeEqual(Buffer.from(createHash("sha256").update(stripeKey).digest("hex")), Buffer.from(expectedStripeHash)))
+        return Response.json({ verified: false, stage: "stripe_key_identity" }, { status: 503, headers });
+    }
     const webhook = process.env.STRIPE_WEBHOOK_SECRET ?? "";
     const expectedWebhookHash = request.headers.get("x-preview-webhook-sha256") ?? "";
     const validWebhook = !webhook || (webhook.startsWith("whsec_") && /^[a-f0-9]{64}$/.test(expectedWebhookHash) &&
@@ -32,7 +39,7 @@ export async function GET(request: Request) {
     const result = await getPool().query("SELECT current_database() = $1 AND current_user = $2 AS database_matches", ["pr22_payments_qa", "neondb_owner"]);
     if (result.rows.length !== 1 || result.rows[0].database_matches !== true)
       return Response.json({ verified: false, stage: "database_identity" }, { status: 503, headers });
-    return Response.json({ verified: true }, { headers });
+    return Response.json(expectedStripeHash === null ? { verified: true } : { verified: true, stripeKeyMatches: true }, { headers });
   } catch (error) {
     const code = typeof error === "object" && error !== null && "code" in error ? error.code : undefined;
     const safeCode = ["28P01", "28000", "3D000", "ENOTFOUND", "ECONNREFUSED", "ETIMEDOUT", "ECONNRESET", "SELF_SIGNED_CERT_IN_CHAIN", "CERT_HAS_EXPIRED", "UNABLE_TO_VERIFY_LEAF_SIGNATURE"].includes(String(code)) ? code : "other";
