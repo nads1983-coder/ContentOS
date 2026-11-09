@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {loadTs} from './image-test-helpers.mjs';
 const secret='a'.repeat(48);
 const env={CONTENTOS_PREVIEW_DIAGNOSTIC_SECRET:secret,VERCEL_ENV:'preview',VERCEL_GIT_COMMIT_REF:'feat/paid-creator-lifetime-2026',CONTENTOS_ISOLATED_BRANCH:'br-hidden-recipe-b9yqeimn'};
@@ -9,3 +10,5 @@ test('diagnostic authenticates before performing one read-only query',async()=>{
 test('diagnostic fails closed on unsafe environment or mismatched database',async()=>{for(const p of [{VERCEL_ENV:'production'},{VERCEL_GIT_COMMIT_REF:'main'},{CONTENTOS_ISOLATED_BRANCH:'production'},{STRIPE_WEBHOOK_SECRET:'unexpected'},{NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:'pk_live_unexpected'}]){let h=harness(p);let r=await h.GET(req(secret));assert.equal(r.status,503);assert.equal(h.count(),0)}let h=harness({},false);let r=await h.GET(req(secret));assert.equal(r.status,503);assert.deepEqual(await r.json(),{verified:false,stage:'database_identity'});let blocked=harness({},true,false);assert.equal((await blocked.GET(req(secret))).status,503);assert.equal(blocked.count(),0)});
 
 test('database exceptions are sanitised to allowlisted codes',async()=>{let e=Object.assign(new Error('sensitive connection text'),{code:'28P01'});let r=await harness({},e).GET(req(secret));assert.deepEqual(await r.json(),{verified:false,stage:'database_unavailable',code:'28P01'});let other=Object.assign(new Error('sensitive connection text'),{code:'private'});let v=await harness({},other).GET(req(secret));assert.deepEqual(await v.json(),{verified:false,stage:'database_unavailable',code:'other'});});
+
+test('configured webhook must match the independently known test endpoint secret',async()=>{const webhook='whsec_test_example';const hash=createHash('sha256').update(webhook).digest('hex');const request=h=>new Request('https://example.invalid',{headers:{authorization:`Bearer ${secret}`,'x-preview-webhook-sha256':h}});for(const value of ['', 'f'.repeat(64), 'bad'])assert.equal((await harness({STRIPE_WEBHOOK_SECRET:webhook}).GET(request(value))).status,503);assert.equal((await harness({STRIPE_WEBHOOK_SECRET:webhook}).GET(request(hash))).status,200);assert.equal((await harness({STRIPE_WEBHOOK_SECRET:'live_secret'}).GET(request(createHash('sha256').update('live_secret').digest('hex')))).status,503)});
