@@ -15,22 +15,26 @@ export async function currentFinancialReport() {
   if (!config || month < config.starts_month) throw new Error("Financial budget is not initialised.");
   const commitments=Number((await pool.query<{count:string}>(`SELECT count(*) FROM contentos_app.paid_creator_lifetime_purchases
     WHERE status IN ('preparing','open','completed','review','disputed')`)).rows[0].count);
-  const groups = await pool.query<{cohort:string;customers:string;text_generations:string;image_generations:string;input_tokens:string;output_tokens:string;estimated_settled_microgbp:string;reserved_or_uncertain_microgbp:string}>(`
+  const groups = await pool.query<{cohort:string;customers:string;text_generations:string;image_generations:string;input_tokens:string;output_tokens:string;estimated_settled_microgbp:string;reserved_or_uncertain_microgbp:string;prepaid_generations:string;prepaid_estimated_microgbp:string}>(`
     SELECT s.customer_cohort AS cohort,
       count(DISTINCT s.account_id)::text AS customers,
       count(*) FILTER (WHERE s.kind='text' AND s.delivered)::text AS text_generations,
       count(*) FILTER (WHERE s.kind='image' AND s.delivered)::text AS image_generations,
+      count(*) FILTER (WHERE s.kind='text' AND s.delivered AND r.state='consumed')::text AS prepaid_generations,
+      COALESCE(sum(s.accounted_microgbp) FILTER (WHERE r.purchase_id IS NOT NULL AND s.state='settled'),0)::text AS prepaid_estimated_microgbp,
       COALESCE(sum(CASE WHEN s.provider_usage->>'input_tokens' ~ '^[0-9]{1,12}$' THEN (s.provider_usage->>'input_tokens')::bigint ELSE 0 END),0)::text AS input_tokens,
       COALESCE(sum(CASE WHEN s.provider_usage->>'output_tokens' ~ '^[0-9]{1,12}$' THEN (s.provider_usage->>'output_tokens')::bigint ELSE 0 END),0)::text AS output_tokens,
       COALESCE(sum(s.accounted_microgbp) FILTER (WHERE s.state='settled'),0)::text AS estimated_settled_microgbp,
       COALESCE(sum(s.accounted_microgbp) FILTER (WHERE s.state IN ('reserved','dispatched','uncertain')),0)::text AS reserved_or_uncertain_microgbp
     FROM contentos_app.ai_spend_requests s
+    LEFT JOIN contentos_app.ai_topup_reservations r ON r.account_id=s.account_id AND r.request_id=s.request_id AND s.kind='text'
     WHERE s.month=$1 GROUP BY 1 ORDER BY 1`,[month]);
   const cohorts = groups.rows.map(row => {
     const customers=Number(row.customers), settled=Number(row.estimated_settled_microgbp), held=Number(row.reserved_or_uncertain_microgbp);
     return {cohort:row.cohort, customersWithSpendRequests:customers, textGenerations:Number(row.text_generations), imageGenerations:Number(row.image_generations),
       reportedInputTokens:Number(row.input_tokens),reportedOutputTokens:Number(row.output_tokens),
       estimatedSettledMicroGBP:settled, reservedOrUncertainMicroGBP:held,
+      prepaidGenerations:Number(row.prepaid_generations ?? 0),prepaidEstimatedSettledMicroGBP:Number(row.prepaid_estimated_microgbp ?? 0),
       averageEstimatedSettledMicroGBP:customers ? Math.round(settled/customers) : 0};
   });
   const opening = month === config.starts_month ? Number(config.opening_microgbp) : 0;

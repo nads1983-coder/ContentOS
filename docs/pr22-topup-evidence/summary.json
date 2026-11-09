@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-09",
+  "startingCommit": "c1aaae7",
+  "targeted": {
+    "total": 140,
+    "passed": 140
+  },
+  "fullSuite": {
+    "total": 493,
+    "passed": 481,
+    "failed": 10,
+    "skipped": 2,
+    "failureNamesMatchProductionBaseline": true
+  },
+  "postgres": {
+    "compoundChecks": 18,
+    "passed": 18,
+    "providerCalls": false
+  },
+  "typescript": "passed",
+  "lint": "passed",
+  "stripeSandbox": "not verified",
+  "previewIsolation": "not verified",
+  "lifetimeAndTopupSales": "disabled"
+}

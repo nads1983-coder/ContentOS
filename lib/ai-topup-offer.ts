@@ -1,8 +1,9 @@
-/** Approved package definitions. Checkout and credit issuance are not implemented.
- * Never enable sales until the ledger, reversal handling and funding are verified. */
+/** Proposed packages. Sales and fulfillment remain closed pending verification. */
 export const AI_TOPUP_OFFER = {
   currency: "gbp",
   checkoutEnabled: false,
+  fulfillmentEnabled: false,
+  code: "prepaid_text_2026",
   packages: {
     starter: { pricePence: 500, credits: 25 },
     popular: { pricePence: 900, credits: 50 },

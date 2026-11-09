@@ -138,6 +138,9 @@ export async function POST(nextRequest: NextRequest) {
     }
     logGenerationFailure(error, "provider");
     report("failure");
+    if(error instanceof GenerationReservationError && error.code==="credit_reversed") {
+      return NextResponse.json({error:error.message,code:error.code,requestId},{status:error.status,headers});
+    }
     const invalidOutput = error instanceof GenerationOutputError;
     const timedOut = error instanceof APIConnectionTimeoutError || error instanceof APIUserAbortError ||
       (error instanceof Error && ["AbortError", "TimeoutError", "APIConnectionTimeoutError", "APIUserAbortError"].includes(error.name));
@@ -163,6 +166,10 @@ export async function POST(nextRequest: NextRequest) {
     // reservation intact so retrying this ID can replay, never start another call.
     logGenerationFailure(error, "completion");
     report("failure");
+    if(error instanceof GenerationReservationError && error.code==="credit_reversed") {
+      try {await failTextGeneration(user.id,requestId,admission.fingerprint,quote);} catch { /* keep uncertainty for review */ }
+      return NextResponse.json({error:error.message,code:error.code,requestId},{status:error.status,headers});
+    }
     return NextResponse.json({
       error: "The generation finished but its save could not be confirmed. Retry with the same request ID to check its status.",
       code: "generation_save_uncertain",

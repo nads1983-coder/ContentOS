@@ -50,7 +50,7 @@ async function routeFixture(options = {}) {
   const gateCalls = [];
   const financialCalls = [];
   const route = loadTs("app/api/generate/route.ts", {
-    "@/lib/commercial-ledger": { dispatchCommercial: async () => { financialCalls.push("dispatch"); }, settleCommercialUsage: async () => { financialCalls.push("settle"); } },
+    "@/lib/commercial-ledger": { dispatchCommercial: async () => { financialCalls.push("dispatch"); if(options.dispatchError)throw options.dispatchError; }, settleCommercialUsage: async () => { financialCalls.push("settle"); } },
     "@/lib/request-security": { rejectUnsafeWrite: () => options.unsafe ? Response.json({ error: "Unsafe origin." }, { status: 403 }) : null },
     "@/lib/auth": { getCurrentUser: async () => options.anonymous ? null : { id: "user-test", email: "test@example.invalid" } },
     "@/lib/backend": { isDatabaseConfigured: () => { gateCalls.push("database_config"); return !options.noDatabase; } },
@@ -74,6 +74,7 @@ async function routeFixture(options = {}) {
       completeTextGeneration: async (_userId, _id, fingerprint, result) => {
         calls.push("complete");
         assert.equal(fingerprint, "fixture-fingerprint");
+        if (options.completionError) throw options.completionError;
         if (options.saveError) throw new Error("uncertain commit");
         return result;
       },
@@ -128,6 +129,14 @@ test("route reserves before a bounded provider call and completes only validated
   assert.equal(clientOptions.timeout, 90_000);
   assert.equal(providerInput.max_output_tokens, 24_000);
   assert.equal(response.headers.get("X-Request-Id"), "a189b831-43ea-479c-89ab-e639734983ab");
+});
+
+test("payment reversal blocks provider dispatch or delivery and explains the review",async()=>{
+  const error=new ReservationError("Purchased credit is under payment review.",409,"credit_reversed");
+  const before=await routeFixture({dispatchError:error});
+  assert.equal(before.response.status,409);assert.equal(before.body.code,"credit_reversed");assert.deepEqual(before.calls,["reserve","fail"]);
+  const during=await routeFixture({completionError:error});
+  assert.equal(during.response.status,409);assert.equal(during.body.code,"credit_reversed");assert.deepEqual(during.calls,["reserve","provider","complete","fail"]);
 });
 
 test("captured factual failure refuses delivery, retains provider accounting and terminal request identity", async () => {

@@ -11,6 +11,7 @@ import {
 import { PlanId, SubscriptionStatus } from "@/types/saas";
 import { LITE_PURCHASES_SUSPENDED, LITE_SUSPENDED_MESSAGE } from "@/lib/lite-availability";
 import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
+import { AI_TOPUP_OFFER } from "@/lib/ai-topup-offer";
 import { buildLifetimeCheckoutParams } from "@/lib/paid-lifetime-stripe";
 import type { LifetimeCheckoutClaim } from "@/lib/paid-lifetime-stripe";
 import type { LifetimePaymentIntent } from "@/lib/paid-lifetime-stripe";
@@ -685,6 +686,7 @@ export async function createCheckoutSession(input: {
 }
 
 export type StripeCheckoutSession = {
+  livemode?: boolean;
   id: string;
   url?: string | null;
   amount_total?: number | null;
@@ -783,6 +785,31 @@ export async function createPaidLifetimeCheckoutSession(input: {
   // A payment session may not be marked paid yet. Fulfillment must separately
   // retrieve the expanded session and validate the exact completed payment.
   return created;
+}
+
+/** Test-mode only. The persisted form ensures idempotent retries use identical parameters. */
+export async function createTestTopupCheckoutSession(input:{id:string;accountId:string;attemptKey:string;pricePence:number;credits:number;email:string}) {
+  if(!AI_TOPUP_OFFER.checkoutEnabled || !/^(sk|rk)_test_/.test(getEnv().stripeSecretKey))throw new Error("Test top-up checkout is closed.");
+  if(!Object.values(AI_TOPUP_OFFER.packages).some(p=>p.pricePence===input.pricePence && p.credits===input.credits))throw new Error("Unknown prepaid package.");
+  const body=new URLSearchParams({mode:"payment",success_url:stripeRedirectUrl("/dashboard?topup=pending"),
+    cancel_url:stripeRedirectUrl("/dashboard?topup=canceled"),client_reference_id:input.accountId,
+    customer_email:input.email,customer_creation:"always",
+    "line_items[0][price_data][currency]":"gbp","line_items[0][price_data][unit_amount]":String(input.pricePence),
+    "line_items[0][price_data][product_data][name]":`GetContentOS ${input.credits} prepaid text generations`,"line_items[0][quantity]":"1",
+    "metadata[offer]":AI_TOPUP_OFFER.code,"metadata[purchase_id]":input.id,
+    "metadata[user_id]":input.accountId,"metadata[attempt_key]":input.attemptKey});
+  const {getPool}=await import("@/lib/db/client");
+  const saved=await getPool().query<{checkout_params:string}>(`UPDATE contentos_app.ai_topup_purchases
+    SET checkout_params=COALESCE(checkout_params,$2),updated_at=now()
+    WHERE id=$1 AND account_id=$3 AND status IN ('preparing','open') AND created_at>now()-interval '23 hours'
+    RETURNING checkout_params`,[input.id,body.toString(),input.accountId]);
+  if(!saved.rows[0])throw new Error("Top-up attempt requires reconciliation.");
+  const created=await stripeRequest<StripeCheckoutSession>("checkout/sessions",new URLSearchParams(saved.rows[0].checkout_params),{idempotencyKey:input.attemptKey});
+  if(!created.id?.startsWith("cs_test_") || !created.url?.startsWith("https://checkout.stripe.com/"))throw new Error("Invalid test Checkout session.");
+  const updated=await getPool().query(`UPDATE contentos_app.ai_topup_purchases SET stripe_session_id=$2,status='open',updated_at=now()
+    WHERE id=$1 AND status IN ('preparing','open') AND (stripe_session_id IS NULL OR stripe_session_id=$2) RETURNING id`,[input.id,created.id]);
+  if(!updated.rowCount)throw new Error("Top-up session requires reconciliation.");
+  return {url:created.url};
 }
 
 /** Read back the authoritative payment and expanded charge before fulfillment. */

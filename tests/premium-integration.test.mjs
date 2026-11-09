@@ -52,3 +52,16 @@ test("Preview fixtures cannot run with production targets, paid credentials or u
   assert.equal(disabled.previewFixturesEnabled(), false);
   assert.throws(() => disabled.previewTextResponse(input), /disabled/);
 });
+
+test("Stripe sandbox Preview requires an explicit opt-in, test key and isolated target",()=>{
+  const check=patch=>loadTs("lib/preview-fixtures.ts",{},new Map(),{process:{env:{...env,...patch}}}).previewFixturesEnabled();
+  assert.equal(check({CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"rk_test_synthetic"}),true);
+  for(const patch of [
+    {STRIPE_SECRET_KEY:"rk_test_synthetic"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"sk_live_synthetic"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"sk_test_synthetic",VERCEL_ENV:"production"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"sk_test_synthetic",DATABASE_URL:"postgresql://fixture@production.invalid/contentos"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"sk_test_synthetic",OPENAI_API_KEY:"forbidden"}
+  ])assert.throws(()=>check(patch),/isolation/);
+});

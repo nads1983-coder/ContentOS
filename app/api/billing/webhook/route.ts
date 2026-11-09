@@ -26,9 +26,11 @@ import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
 import { completePaidCreatorLifetimePurchase, reversePaidCreatorLifetimePurchase, getLifetimeDecisionRevision } from "@/lib/paid-lifetime-fulfillment";
 import { getPaidLifetimeReservation, terminatePaidLifetimeReservation } from "@/lib/paid-lifetime-reservations";
 import { validateFailedPaidLifetimeCheckout } from "@/lib/paid-lifetime-stripe";
+import { AI_TOPUP_OFFER } from "@/lib/ai-topup-offer";
 
 type StripeWebhookEvent = {
   id?: string;
+  livemode?: boolean;
   type: string;
   data: {
     object: {
@@ -75,6 +77,38 @@ export async function POST(request: Request) {
     return NextResponse.json({error:"Invalid event."},{status:400});
   }
   const object = event.data.object;
+
+  const topupCheckout=["checkout.session.completed","checkout.session.async_payment_succeeded","checkout.session.async_payment_failed","checkout.session.expired"].includes(event.type) && object.metadata?.offer===AI_TOPUP_OFFER.code;
+  if(topupCheckout) {
+    if(!AI_TOPUP_OFFER.fulfillmentEnabled || event.livemode!==false)return NextResponse.json({error:"Top-up fulfillment is disabled."},{status:503});
+    try {
+      if(!object.id || !object.metadata?.purchase_id)throw new Error("Missing purchase identity.");
+      const session=await retrieveCheckoutSession(object.id);
+      const api=await import("@/lib/ai-topup-payments");
+      if(event.type==="checkout.session.expired") {
+        await api.terminateTopup(object.metadata.purchase_id,session,"expired");
+      } else if(event.type==="checkout.session.completed" && session.payment_status==="unpaid") {
+        return NextResponse.json({received:true,pending:true});
+      } else {
+        const pi=typeof session.payment_intent==="string"?session.payment_intent:session.payment_intent?.id;
+        if(!pi)throw new Error("Missing payment identity.");
+        const intent=await retrievePaidLifetimePaymentIntent(pi);
+        if(event.type==="checkout.session.async_payment_failed")await api.terminateTopup(object.metadata.purchase_id,session,"failed",intent);
+        else await api.fulfillTopup(object.metadata.purchase_id,session,intent);
+      }
+      return NextResponse.json({received:true});
+    } catch {return NextResponse.json({error:"Top-up payment requires reconciliation."},{status:503});}
+  }
+
+  if(AI_TOPUP_OFFER.fulfillmentEnabled && ["charge.refunded","charge.dispute.created","charge.dispute.updated","charge.dispute.closed"].includes(event.type) && object.payment_intent) {
+    try {
+      if(event.livemode!==false || !event.id)throw new Error("Test-mode event identity required.");
+      const intent=await retrievePaidLifetimePaymentIntent(object.payment_intent);
+      if(intent.livemode!==false || intent.id!==object.payment_intent)throw new Error("Test payment identity mismatch.");
+      const api=await import("@/lib/ai-topup-payments");
+      await api.reverseTopup(object.payment_intent,event.id,event.type);
+    } catch {return NextResponse.json({error:"Top-up reversal requires reconciliation."},{status:503});}
+  }
 
   const isLifetimeCheckoutEvent = [
     "checkout.session.completed", "checkout.session.async_payment_succeeded", "checkout.session.async_payment_failed", "checkout.session.expired"

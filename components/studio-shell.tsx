@@ -521,6 +521,8 @@ export function StudioShell({
   });
   const [hasMounted, setHasMounted] = useState(false);
   const [usageUsed, setUsageUsed] = useState(initialUsage?.used ?? 0);
+  const [purchasedBalance, setPurchasedBalance] = useState<{account?:string;available:number}>({account:accountId,available:0});
+  const purchasedRemaining = purchasedBalance.account===accountId ? purchasedBalance.available : 0;
   const [anonymousUsed, setAnonymousUsed] = useState(0);
   const [result, setResult] = useState<GenerationResult>(sampleResult);
   const [error, setError] = useState("");
@@ -558,6 +560,16 @@ export function StudioShell({
   const lastAutoScrolledIdRef = useRef("");
   const isGeneratingRef = useRef(false);
   const userInteractedDuringGenerationRef = useRef(false);
+
+  useEffect(() => {
+    let canceled=false;
+    if(authenticated && accountId) void fetch("/api/topups",{cache:"no-store"}).then(async response=>{
+      if(!response.ok)return;
+      const data=await response.json() as {available?:unknown};
+      if(!canceled && typeof data.available==="number" && Number.isSafeInteger(data.available) && data.available>=0)setPurchasedBalance({account:accountId,available:data.available});
+    }).catch(()=>{});
+    return ()=>{canceled=true;};
+  },[accountId,authenticated]);
 
   useEffect(() => {
     activeAccount.current = accountId;
@@ -791,7 +803,7 @@ export function StudioShell({
     source.trim().length > 7 &&
     selectedTypes.length > 0 &&
     !isPending &&
-    usage.remaining > 0 &&
+    (usage.remaining > 0 || isPro && purchasedRemaining > 0) &&
     (isPro || !hasPaidSelection);
 
   function persistStore(nextStore: StudioStore) {
@@ -814,10 +826,10 @@ export function StudioShell({
       return;
     }
 
-    if (usage.remaining <= 0) {
+    if (usage.remaining <= 0 && (!isPro || purchasedRemaining <= 0)) {
       setError(
         isPro
-          ? "You have used this month's generation allowance."
+          ? "You have used your included and purchased generation credits."
           : "You have used the free generation limit. Upgrade to Pro to keep generating."
       );
       return;
@@ -888,7 +900,13 @@ export function StudioShell({
         persistStore(addRecent(store, cleanedResult));
       }
       if (authenticated) {
-        setUsageUsed((current) => current + 1);
+        if(usage.remaining>0)setUsageUsed((current) => current + 1);
+        else setPurchasedBalance(current=>({account:accountId,available:Math.max(0,current.available-1)}));
+        void fetch("/api/topups",{cache:"no-store"}).then(async response=>{
+          if(!response.ok)return;
+          const balance=await response.json() as {available?:unknown};
+          if(activeAccount.current===accountId && accountEpoch.current===generationEpoch && typeof balance.available==="number" && Number.isSafeInteger(balance.available) && balance.available>=0)setPurchasedBalance({account:accountId,available:balance.available});
+        }).catch(()=>{});
       } else {
         setAnonymousUsed(monthlyStoredGenerationCount(addRecent(store, cleanedResult)));
       }
@@ -1211,6 +1229,7 @@ export function StudioShell({
               onLengthChange={setLength}
               plan={plan}
               usage={usage}
+              purchasedRemaining={purchasedRemaining}
               canGenerate={canGenerate}
               isPending={isPending}
               isLoading={!hasMounted}

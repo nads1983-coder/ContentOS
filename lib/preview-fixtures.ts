@@ -4,11 +4,14 @@ import type { GenerationInput } from "@/lib/generation-contract";
 export function previewFixturesEnabled() {
   if (process.env.CONTENTOS_PREVIEW_FIXTURES !== "1") return false;
   const url = new URL(process.env.DATABASE_URL ?? "http://invalid");
+  const stripeKey=process.env.STRIPE_SECRET_KEY;
+  const stripeTest=process.env.CONTENTOS_PREVIEW_STRIPE_TEST === "1" && /^(sk|rk)_test_/.test(stripeKey ?? "");
   if (process.env.VERCEL_ENV !== "preview" ||
       process.env.CONTENTOS_ISOLATED_BRANCH !== "br-divine-term-b2rihbxv" ||
       !["ep-proud-field-b291xbnc.c-6.eu-central-1.aws.neon.tech", "ep-proud-field-b291xbnc-pooler.c-6.eu-central-1.aws.neon.tech"].includes(url.hostname) ||
       url.pathname !== "/contentos" ||
-      ["OPENAI_API_KEY", "STRIPE_SECRET_KEY", "RESEND_API_KEY"].some(key => Boolean(process.env[key]))) {
+      ["OPENAI_API_KEY", "RESEND_API_KEY"].some(key => Boolean(process.env[key])) ||
+      Boolean(stripeKey) && !stripeTest || process.env.CONTENTOS_PREVIEW_STRIPE_TEST === "1" && !stripeTest) {
     throw new Error("Preview isolation is not configured safely.");
   }
   return true;

@@ -50,7 +50,7 @@ async function claim(kind:JobKind):Promise<Job | undefined> {
 }
 async function alert(kind:JobKind,id:string,code:string) {
   await getPool().query(`INSERT INTO contentos_app.lifetime_reconciliation_alerts(kind,entity_id,code)
-    VALUES($1,$2,$3) ON CONFLICT(kind,entity_id,code) DO UPDATE SET updated_at=now()`,[kind,id,code]);
+    VALUES($1,$2,$3) ON CONFLICT(kind,entity_id,code) DO UPDATE SET updated_at=now(),delivered_at=NULL,last_attempt_at=NULL`,[kind,id,code]);
 }
 async function finish(job:Job,outcome:"done"|"pending"|"completed"|"error",code?:string) {
   const db=getPool();

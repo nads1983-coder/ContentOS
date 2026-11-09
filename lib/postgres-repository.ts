@@ -13,8 +13,8 @@ import type { GenerateRequest, GenerationResult } from "@/types/content";
 import type { BrandProfile, OnboardingData, UserProfile, PlanId, SubscriptionStatus } from "@/types/saas";
 
 type Document = UserProfile & Record<string, unknown>;
-type UsageEvent = { id: string; user_id: string; event_type: string; created_at: string };
-type HistoryItem = { id: string; user_id: string; created_at: string; payload: unknown };
+type UsageEvent = { id: string; user_id: string; event_type: string; created_at: string; credit_source?: string };
+type HistoryItem = { id: string; user_id: string; created_at: string; payload: unknown; credit_source?: string };
 const clean = (value: Record<string, unknown>) => Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined));
 function array<T>(value: unknown): T[] {
   if (Array.isArray(value)) return value as T[];
@@ -56,7 +56,7 @@ export async function saveWorkspace(userId: string, input: unknown) {
 }
 // Each operation commits before returning; provider/network work belongs between reserve and complete.
 export async function reserveTextGeneration(userId: string, requestId: string, request: GenerateRequest, quote?: CostQuote) {
-  if (quote) return (await import("@/lib/commercial-ledger")).reserveCommercial(userId, requestId, quote, data => reserveGenerationInProfile(data, userId, requestId, request));
+  if (quote) return (await import("@/lib/commercial-ledger")).reserveCommercial(userId, requestId, quote, data => reserveGenerationInProfile(data, userId, requestId, request, new Date(), true));
   return mutate(userId, data => reserveGenerationInProfile(data, userId, requestId, request));
 }
 export async function completeTextGeneration(userId: string, requestId: string, fingerprint: string, result: GenerationResult, quote?: CostQuote) {
@@ -125,7 +125,7 @@ export async function getMonthlyUsageCount(input: {
   const inWindow = (v: { created_at: string }) => Date.parse(v.created_at) >= start && Date.parse(v.created_at) < end;
   const events = array<UsageEvent>(d?.usage_events_json).filter(inWindow);
   const counters = d?.generation_usage_json as Record<string, number> | undefined;
-  const textCount = Math.max(counters?.[periodStart] ?? 0, events.filter(e => e.event_type === "text_generation").length, array<HistoryItem>(d?.generation_history_json).filter(inWindow).length);
+  const textCount = Math.max(counters?.[periodStart] ?? 0, events.filter(e => e.event_type === "text_generation" && e.credit_source !== "purchased").length, array<HistoryItem>(d?.generation_history_json).filter(inWindow).filter(h=>h.credit_source!=="purchased").length);
   const imageCounters = d?.image_generation_usage_json as Record<string, number> | undefined;
   const imageCount = Math.max(imageCounters?.[periodStart] ?? 0, events.filter(e => e.event_type === "image_generation").length);
   if (input.eventType === "text_generation") return textCount;

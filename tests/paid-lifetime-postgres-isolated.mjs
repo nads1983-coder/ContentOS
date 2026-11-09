@@ -54,7 +54,7 @@ try {
   const budgetBefore=(await pool.query("SELECT * FROM contentos_app.ai_budget_configuration")).rows;
   const urlFile=join(dir,"url");writeFileSync(urlFile,url.href,{mode:0o600});
   const runner=()=>promisify(execFile)(process.execPath,["scripts/migrations/migrate-postgres.mjs",urlFile],{cwd:root});
-  await check("actual migration runner applies 0004–0008 exactly once over journal 0000–0002 plus externally managed 0003",async()=>{
+  await check("actual migration runner applies 0004–0009 exactly once over journal 0000–0002 plus externally managed 0003",async()=>{
     await pool.query("CREATE TABLE contentos_app.paid_lifetime_payment_events(blocker text)");
     await assert.rejects(runner());
     assert.equal((await pool.query("SELECT to_regclass('contentos_app.paid_creator_lifetime_purchases') n")).rows[0].n,null);
@@ -68,7 +68,7 @@ try {
       (account_id,kind,request_id,fingerprint,month,quote,reserved_microgbp,accounted_microgbp,state)
       VALUES($1,'text','legacy-before-cohort','legacy','2026-10','{}',1,0,'released')`,[founder.id]);
     await runner();await runner();
-    assert.equal((await pool.query("SELECT count(*) FROM drizzle.__drizzle_migrations")).rows[0].count,"8");
+    assert.equal((await pool.query("SELECT count(*) FROM drizzle.__drizzle_migrations")).rows[0].count,"9");
     assert.deepEqual((await pool.query("SELECT * FROM contentos_app.ai_budget_configuration")).rows,budgetBefore);
     assert.deepEqual(await readProfile(founder.id),founder);
     assert.equal((await pool.query("SELECT customer_cohort FROM contentos_app.ai_spend_requests WHERE account_id=$1 AND request_id='legacy-before-cohort'",[founder.id])).rows[0].customer_cohort,"unknown");
@@ -319,6 +319,92 @@ try {
       assert.ok(row.reportedInputTokens>=100);assert.ok(row.estimatedSettledMicroGBP>0);
     }
     assert.equal(report.providerInvoiceActualAvailable,false);assert.equal(report.additionalFundedLifetimePlaces,0);
+  });
+  await check("test-mode top-up issuance is idempotent and reversal before payment cannot grant credits",async()=>{
+    const topup=loadTs("lib/ai-topup-payments.ts",mocks),p=await account({plan:"pro_creator",subscription_status:"active"});
+    async function item(pkg,request){
+      const row=await topup.prepareTopup(p.id,pkg,request),sid=`cs_test_${randomUUID().replaceAll('-','')}`,pi=`pi_${randomUUID().replaceAll('-','')}`;
+      const session={livemode:false,id:sid,mode:"payment",status:"complete",payment_status:"paid",currency:"gbp",amount_total:row.price_pence,amount_subtotal:row.price_pence,
+        client_reference_id:p.id,metadata:{offer:"prepaid_text_2026",purchase_id:row.id,user_id:p.id,attempt_key:row.attempt_key},payment_intent:pi,total_details:{amount_discount:0},
+        line_items:{has_more:false,data:[{quantity:1,amount_total:row.price_pence,price:{currency:"gbp",unit_amount:row.price_pence,type:"one_time"}}]}};
+      const intent={livemode:false,id:pi,status:"succeeded",amount:row.price_pence,amount_received:row.price_pence,currency:"gbp",latest_charge:{id:"ch_test",paid:true,refunded:false,disputed:false,amount_refunded:0}};
+      return {row,session,intent};
+    }
+    for(const [pkg,price,credits] of [["starter",500,25],["popular",900,50],["power",1500,100]]) {
+      const x=await item(pkg,`test-${pkg}`);assert.equal(x.row.price_pence,price);assert.equal(x.row.credits,credits);
+      assert.equal((await topup.prepareTopup(p.id,pkg,`test-${pkg}`)).id,x.row.id);
+      assert.equal((await topup.prepareTopup(p.id,pkg,`new-tab-${pkg}`)).id,x.row.id);
+      await assert.rejects(topup.fulfillTopup(x.row.id,{...x.session,livemode:true},x.intent));
+      const statuses=await Promise.all(Array.from({length:4},()=>topup.fulfillTopup(x.row.id,x.session,x.intent)));
+      assert.equal(statuses.filter(s=>s.status==="granted").length,1);
+      assert.equal((await pool.query("SELECT count(*) FROM contentos_app.ai_topup_ledger WHERE purchase_id=$1 AND action='grant'",[x.row.id])).rows[0].count,"1");
+      await assert.rejects(runtimePool.query("DELETE FROM contentos_app.ai_topup_ledger WHERE purchase_id=$1",[x.row.id]),e=>e.code==="42501");
+      await assert.rejects(pool.query("INSERT INTO contentos_app.ai_topup_ledger(id,purchase_id,account_id,action,credits) VALUES($1,$2,$3,'grant',$4)",[randomUUID(),x.row.id,p.id,credits]),e=>e.code==="23505");
+    }
+    const stranger=await account();assert.equal((await topup.topupAccountSummary(stranger.id)).available,0);
+    const last=await item("starter","failed-payment");
+    await topup.terminateTopup(last.row.id,{...last.session,payment_status:"unpaid"},"failed",{...last.intent,status:"requires_payment_method",amount_received:0,latest_charge:null});
+    assert.equal((await topup.fulfillTopup(last.row.id,last.session,last.intent)).status,"terminal");
+    const y=await item("starter","out-of-order");
+    await topup.reverseTopup(y.intent.id,"evt_test_before","charge.refunded");
+    assert.equal((await topup.fulfillTopup(y.row.id,y.session,y.intent)).status,"reversed");
+    assert.equal((await pool.query("SELECT count(*) FROM contentos_app.ai_topup_ledger WHERE purchase_id=$1 AND action='grant'",[y.row.id])).rows[0].count,"0");
+    assert.equal((await topup.topupAccountSummary(p.id)).available,175);
+  });
+  await check("top-up credits are reserved atomically and a dispute blocks in-flight delivery",async()=>{
+    const topup=loadTs("lib/ai-topup-payments.ts",mocks),cost=loadTs("lib/ai-cost.ts"),ledger=loadTs("lib/commercial-ledger.ts",mocks);
+    const generation=loadTs("lib/generation-reservation.ts"),usage=loadTs("lib/usage.ts");
+    await pool.query("UPDATE contentos_app.ai_budget_configuration SET opening_microgbp=0,suspended=false");
+    await pool.query("UPDATE contentos_app.ai_spend_requests SET month='2000-01'");
+    const start=usage.currentUsageWindow().periodStart;
+    const p=await account({plan:"pro_creator",subscription_status:"active",generation_usage_json:{[start]:50}});
+    const row=await topup.prepareTopup(p.id,"starter","credits-test-1"),pi=`pi_${randomUUID().replaceAll('-','')}`;
+    const session={livemode:false,id:`cs_test_${randomUUID().replaceAll('-','')}`,mode:"payment",status:"complete",payment_status:"paid",currency:"gbp",amount_total:500,amount_subtotal:500,client_reference_id:p.id,payment_intent:pi,metadata:{offer:"prepaid_text_2026",purchase_id:row.id,user_id:p.id,attempt_key:row.attempt_key},total_details:{amount_discount:0},line_items:{has_more:false,data:[{quantity:1,amount_total:500,price:{currency:"gbp",unit_amount:500,type:"one_time"}}]}};
+    const intent={livemode:false,id:pi,status:"succeeded",amount:500,amount_received:500,currency:"gbp",latest_charge:{id:"ch_test",paid:true,refunded:false,disputed:false,amount_refunded:0}};
+    await topup.fulfillTopup(row.id,session,intent);
+    for(let i=0;i<24;i++)await pool.query("INSERT INTO contentos_app.ai_topup_reservations(account_id,request_id,purchase_id,state) VALUES($1,$2,$3,'consumed')",[p.id,`seed-${i}`,row.id]);
+    const quote=cost.quoteAI("text",{model:"gpt-5.2",input:"test",max_output_tokens:24000},new Date("2026-11-08"));
+    const req=n=>({source:`Original test source ${n}`,tone:"professional",sharpness:"balanced",ctaMode:"soft",presetTopic:"none",selectedTypes:["linkedin"]});
+    const attempt=n=>ledger.reserveCommercial(p.id,`credit-${n}`,quote,data=>generation.reserveGenerationInProfile(data,p.id,`credit-${n}`,req(n),new Date(),true));
+    const outcomes=await Promise.allSettled([attempt(1),attempt(2)]);
+    assert.equal(outcomes.filter(x=>x.status==="fulfilled").length,1);
+    const index=outcomes.findIndex(x=>x.status==="fulfilled")+1,id=`credit-${index}`;
+    assert.equal((await topup.topupAccountSummary(p.id)).available,0);
+    await ledger.dispatchCommercial(p.id,id,quote);
+    await topup.reverseTopup(pi,"evt_dispute","charge.dispute.created");
+    await ledger.settleCommercialUsage(p.id,id,quote,{input_tokens:20,output_tokens:20});
+    await assert.rejects(ledger.finishCommercial(p.id,id,quote,true,data=>({data,result:null})),e=>e.code==="credit_reversed");
+    assert.equal((await pool.query("SELECT state FROM contentos_app.ai_topup_reservations WHERE account_id=$1 AND request_id=$2",[p.id,id])).rows[0].state,"void");
+    assert.equal((await topup.topupAccountSummary(p.id)).available,0);
+    assert.equal((await topup.topupAccountSummary(p.id)).history[0].consumed,24);
+  });
+  await check("top-up reconciliation retains uncertainty, retries fairly and delivers durable operator alerts",async()=>{
+    await pool.query("TRUNCATE contentos_app.ai_topup_reconciliation_actions,contentos_app.ai_topup_reconciliation_alerts,contentos_app.ai_topup_reconciliation_jobs,contentos_app.ai_topup_ledger,contentos_app.ai_topup_reservations,contentos_app.ai_topup_reversals,contentos_app.ai_topup_purchases");
+    const topup=loadTs("lib/ai-topup-payments.ts",mocks),p=await account({plan:"pro_creator",subscription_status:"active"}),pMissing=await account(),pPaid=await account();
+    const expired=await topup.prepareTopup(p.id,"starter","expired-test"),missing=await topup.prepareTopup(pMissing.id,"starter","missing-test"),paid=await topup.prepareTopup(pPaid.id,"starter","paid-refunded");
+    const sid=`cs_test_${randomUUID().replaceAll('-','')}`;
+    await pool.query("UPDATE contentos_app.ai_topup_purchases SET stripe_session_id=$2,status='open' WHERE id=$1",[expired.id,sid]);
+    const session={livemode:false,id:sid,status:"expired",mode:"payment",payment_status:"unpaid",currency:"gbp",amount_total:500,amount_subtotal:500,client_reference_id:p.id,payment_intent:null,
+      metadata:{offer:"prepaid_text_2026",purchase_id:expired.id,user_id:p.id,attempt_key:expired.attempt_key},total_details:{amount_discount:0},line_items:{has_more:false,data:[{quantity:1,amount_total:500,price:{currency:"gbp",unit_amount:500,type:"one_time"}}]}};
+    const pi=`pi_${randomUUID().replaceAll('-','')}`,paidSession={...session,id:`cs_test_${randomUUID().replaceAll('-','')}`,status:"complete",payment_status:"paid",payment_intent:pi,client_reference_id:pPaid.id,metadata:{...session.metadata,user_id:pPaid.id,purchase_id:paid.id,attempt_key:paid.attempt_key}};
+    const paidIntent={livemode:false,id:pi,status:"succeeded",amount:500,amount_received:500,currency:"gbp",latest_charge:{id:"ch_test",paid:true,refunded:false,disputed:false,amount_refunded:0}};
+    await topup.fulfillTopup(paid.id,paidSession,paidIntent);
+    let delivered=0,respond=false;
+    const worker=loadTs("lib/ai-topup-reconciliation.ts",{...mocks,"@/lib/stripe-rest":{retrieveCheckoutSession:async id=>id===sid?session:paidSession,retrievePaidLifetimePaymentIntent:async()=>({...paidIntent,latest_charge:{...paidIntent.latest_charge,refunded:true,amount_refunded:500}})}},new Map(),{
+      process:{env:{CONTENTOS_RECONCILIATION_ALERT_URL:"https://alerts.example.invalid/hook"}},fetch:async()=>{delivered++;return new Response(null,{status:respond?200:503});}
+    });
+    await worker.reconcileTopups();
+    assert.equal((await pool.query("SELECT status FROM contentos_app.ai_topup_purchases WHERE id=$1",[expired.id])).rows[0].status,"expired");
+    assert.equal((await pool.query("SELECT status FROM contentos_app.ai_topup_purchases WHERE id=$1",[paid.id])).rows[0].status,"reversed");
+    for(let i=1;i<8;i++){
+      await pool.query("UPDATE contentos_app.ai_topup_reconciliation_jobs SET next_attempt_at=now()-interval '1 second' WHERE purchase_id=$1",[missing.id]);
+      await worker.reconcileTopups();
+    }
+    const job=(await pool.query("SELECT * FROM contentos_app.ai_topup_reconciliation_jobs WHERE purchase_id=$1",[missing.id])).rows[0];
+    assert.equal(job.attempts,8);assert.equal(job.state,"attention");assert.ok(delivered>=1);
+    respond=true;await worker.deliverTopupAlerts();
+    assert.ok((await pool.query("SELECT delivered_at FROM contentos_app.ai_topup_reconciliation_alerts WHERE purchase_id=$1",[missing.id])).rows[0].delivered_at);
+    assert.equal((await pool.query("SELECT status FROM contentos_app.ai_topup_purchases WHERE id=$1",[missing.id])).rows[0].status,"preparing");
   });
   console.log(`All ${count} isolated PostgreSQL checks passed. No Stripe/AI network calls.`);
 } finally {

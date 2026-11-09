@@ -21,7 +21,7 @@ export class GenerationReservationError extends Error {
   }
 }
 export type GenerationAdmission =
-  | { status: "reserved"; requestId: string; fingerprint: string; plan: PlanId }
+  | { status: "reserved"; requestId: string; fingerprint: string; plan: PlanId; funding?: "included" | "purchased" }
   | { status: "replay"; requestId: string; result: GenerationResult };
 type Reservation = {
   requestId: string;
@@ -31,12 +31,13 @@ type Reservation = {
   createdAt: string;
   periodStart: string;
   periodEnd: string;
+  funding?: "included" | "purchased";
   completedAt?: string;
   failedAt?: string;
   result?: GenerationResult;
 };
-type UsageEvent = { id: string; user_id?: string; event_type: string; created_at: string };
-type HistoryItem = { id: string; user_id?: string; created_at: string; payload: unknown };
+type UsageEvent = { id: string; user_id?: string; event_type: string; created_at: string; credit_source?: string };
+type HistoryItem = { id: string; user_id?: string; created_at: string; payload: unknown; credit_source?: string };
 type Document = UserProfile & Record<string, unknown>;
 type TombstoneStatus = "completed" | "failed" | "expired";
 type Tombstones = Record<string, TombstoneStatus>;
@@ -129,8 +130,8 @@ function counters(data: Document, field: "generation_usage_json" | "image_genera
 function usageInWindow(data: Document, userId: string, start: string, end: string) {
   const inWindow = (item: { user_id?: string; created_at: string }) => (!item.user_id || item.user_id === userId) && Date.parse(item.created_at) >= Date.parse(start) && Date.parse(item.created_at) < Date.parse(end);
   const events = profileArray<UsageEvent>(data.usage_events_json).filter(inWindow);
-  const text = events.filter(e => e.event_type === "text_generation").length;
-  const history = profileArray<HistoryItem>(data.generation_history_json).filter(inWindow).length;
+  const text = events.filter(e => e.event_type === "text_generation" && e.credit_source !== "purchased").length;
+  const history = profileArray<HistoryItem>(data.generation_history_json).filter(inWindow).filter(h=>h.credit_source!=="purchased").length;
   const images = Math.max(events.filter(e => e.event_type === "image_generation").length, counters(data, "image_generation_usage_json")[start] ?? 0);
   return { text: Math.max(text, history, counters(data)[start] ?? 0), other: images + events.filter(e => e.event_type !== "text_generation" && e.event_type !== "image_generation").length };
 }
@@ -181,7 +182,7 @@ function retainedLedger(data: Document, now: Date) {
   const updated = retained.length === entries.length ? data : { ...data, generation_reservations_json: retained, generation_tombstones_json: tombstones };
   return { data: updated, entries: retained, tombstones };
 }
-export function reserveGenerationInProfile(data: Document, userId: string, requestId: string, request: GenerateRequest, now = new Date()): { data: Document; result: GenerationAdmission } {
+export function reserveGenerationInProfile(data: Document, userId: string, requestId: string, request: GenerateRequest, now = new Date(), allowPurchased = false): { data: Document; result: GenerationAdmission } {
   assertWorkspaceAccount(data, userId);
   requestIdentity(requestId);
   const fingerprint = generationFingerprint(request), ledger = retainedLedger(data, now);
@@ -201,12 +202,14 @@ export function reserveGenerationInProfile(data: Document, userId: string, reque
   const { periodStart, periodEnd } = currentUsageWindow(now,
     hasLifetimeEntitlement(data) || paidCreatorLifetimeIsPrimary(data, now) ? null : data.subscription_current_period_end);
   const used = usageInWindow(data, userId, periodStart, periodEnd);
-  const pending = entries.filter(r => r.status === "reserved" && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
-  if (used.text + (paidCreatorLifetimeIsPrimary(data, now) ? 0 : used.other) + pending >= monthlyLimitForPlan(plan)) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
+  const pending = entries.filter(r => r.status === "reserved" && r.funding !== "purchased" && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
+  const exhausted = used.text + (paidCreatorLifetimeIsPrimary(data, now) ? 0 : used.other) + pending >= monthlyLimitForPlan(plan);
+  if (exhausted && (!allowPurchased || plan === "free")) throw new GenerationReservationError("Monthly generation limit reached.", 429, "quota_exceeded");
+  const funding = exhausted ? "purchased" : "included";
   const attempts = admitTextAttempt(data, now);
-  const reservation: Reservation = { requestId, fingerprint, plan, status: "reserved", createdAt: now.toISOString(), periodStart, periodEnd };
+  const reservation: Reservation = { requestId, fingerprint, plan, status: "reserved", createdAt: now.toISOString(), periodStart, periodEnd, funding };
   const updated = { ...data, text_generation_attempts_json: attempts.recent, text_generation_daily_attempts_json: attempts.daily, generation_reservations_json: [...entries, reservation], generation_usage_json: { ...counters(data), [periodStart]: used.text } };
-  return { data: updated, result: { status: "reserved", requestId, fingerprint, plan } };
+  return { data: updated, result: { status: "reserved", requestId, fingerprint, plan, funding } };
 }
 function matchingReservation(data: Document, userId: string, requestId: string, fingerprint: string, now: Date) {
   assertWorkspaceAccount(data, userId);
@@ -228,13 +231,14 @@ export function completeGenerationInProfile(data: Document, userId: string, requ
   const completed: Reservation = { ...entry, status: "completed", completedAt: now.toISOString(), result: clean };
   // Charge the admission window even if the provider returns after the month boundary.
   const used = usageInWindow(data, userId, entry.periodStart, entry.periodEnd);
-  const event = { id: requestId, user_id: userId, event_type: "text_generation", created_at: entry.createdAt, metadata: { generationId: clean.id, requestId } };
-  const history = { id: requestId, user_id: userId, created_at: entry.createdAt, payload: clean };
+  const creditSource = entry.funding === "purchased" ? "purchased" : "included";
+  const event = { id: requestId, user_id: userId, event_type: "text_generation", created_at: entry.createdAt, credit_source:creditSource, metadata: { generationId: clean.id, requestId } };
+  const history = { id: requestId, user_id: userId, created_at: entry.createdAt, payload: clean, credit_source:creditSource };
   return {
     data: {
       ...data,
       ...retainedLedger({ ...data, generation_reservations_json: entries.map(r => r.requestId === requestId ? completed : r) }, now).data,
-      generation_usage_json: { ...counters(data), [entry.periodStart]: used.text + 1 },
+      generation_usage_json: { ...counters(data), [entry.periodStart]: used.text + (creditSource === "included" ? 1 : 0) },
       usage_events_json: [event, ...profileArray<UsageEvent>(data.usage_events_json)].slice(0, 500),
       generation_history_json: [history, ...profileArray<HistoryItem>(data.generation_history_json)].slice(0, 100)
     }, result: clean

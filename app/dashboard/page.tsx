@@ -29,6 +29,8 @@ import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
 import { hasLifetimeEntitlement, hasPaidCreatorLifetimeEntitlement, paidCreatorLifetimeIsPrimary } from "@/lib/entitlements";
 import type { GenerationResult } from "@/types/content";
+import { AI_TOPUP_OFFER } from "@/lib/ai-topup-offer";
+import { TopupCheckoutButton } from "@/components/topup-checkout-button";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +60,14 @@ function formatDate(value?: string | null) {
     month: "short",
     year: "numeric"
   }).format(new Date(value));
+}
+
+function topupStatus(status:string) {
+  if(status==="paid")return "Payment confirmed; credits added";
+  if(status==="reversed")return "Payment reversed; unused credits are unavailable";
+  if(status==="expired")return "Checkout expired";
+  if(status==="failed")return "Payment failed";
+  return "Awaiting payment confirmation";
 }
 
 function fallbackProfileForUser(user: { id: string; email: string }): UserProfile {
@@ -230,6 +240,10 @@ export default async function DashboardPage() {
   }
 
   const usage = buildUsageSummary(plan, monthlyUsageCount, paidCreatorPrimary ? null : profile?.subscription_current_period_end);
+  let topups:Awaited<ReturnType<typeof import("@/lib/ai-topup-payments").topupAccountSummary>> | null=null;
+  if(isDatabaseConfigured()) {
+    try {topups=await (await import("@/lib/ai-topup-payments")).topupAccountSummary(user.id);} catch { /* Existing account pages remain usable before migration. */ }
+  }
   let recent: GenerationResult[] = [];
   let historyUnavailable = false;
   if (isDatabaseConfigured()) {
@@ -310,6 +324,7 @@ export default async function DashboardPage() {
             <p className="mt-2 text-sm text-muted">
               Monthly generations reset on {new Date(usage.periodEnd).toLocaleDateString()}.
             </p>
+            {topups ? <p className="mt-2 text-sm text-muted">Purchased text generations available: {topups.available}. Monthly included generations are used first.</p> : null}
           </article>
 
           <article className="min-w-0 rounded border border-white/10 bg-coal/86 p-5">
@@ -322,6 +337,14 @@ export default async function DashboardPage() {
             </p>
           </article>
         </section>
+
+        {topups && (plan!=="free" || topups.history.length>0) ? <section className="mt-6 rounded border border-white/10 bg-coal/86 p-5">
+          <h2 className="text-xl font-semibold">Prepaid text generations</h2>
+          <p className="mt-2 text-sm text-muted">Optional one-time purchases. No automatic renewal. Purchased credits are separate from monthly included credits; sales are not open yet.</p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">{Object.entries(AI_TOPUP_OFFER.packages).map(([id,pkg])=><div key={id} className="rounded border border-white/10 p-3"><p className="capitalize">{id}: £{(pkg.pricePence/100).toFixed(0)} for {pkg.credits}</p><TopupCheckoutButton accountId={user.id} packageId={id} enabled={AI_TOPUP_OFFER.checkoutEnabled}/></div>)}</div>
+          <h3 className="mt-5 font-semibold">Purchase history</h3>
+          {topups.history.length ? <ul className="mt-2 space-y-1 text-sm text-muted">{topups.history.map(p=><li key={p.id}>{new Date(p.createdAt).toLocaleDateString("en-GB")} · {p.package} · {p.credits} credits · {topupStatus(p.status)} · {p.consumed} used{p.reserved ? ` · ${p.reserved} reserved` : ""}</li>)}</ul> : <p className="mt-2 text-sm text-muted">No top-up purchases yet.</p>}
+        </section> : null}
 
         <section className="mt-4 grid gap-4 lg:grid-cols-2">
           <article className="min-w-0 rounded border border-white/10 bg-panel/78 p-5">

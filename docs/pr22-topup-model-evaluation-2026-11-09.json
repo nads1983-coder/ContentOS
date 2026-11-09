@@ -1,0 +1,160 @@
+{
+  "note": "Small synthetic evaluation, 1800 output-token cap, reasoning none; human quality review is required.",
+  "cases": [
+    {
+      "id": "milestone",
+      "source": "Northbank Paper has reached 1,000 newsletter subscribers. Announce an upcoming giveaway, but prize, dates and eligibility have not been decided.",
+      "selectedTypes": [
+        "instagram"
+      ],
+      "ctaMode": "none",
+      "automaticSettings": []
+    },
+    {
+      "id": "practical",
+      "source": "A small design studio shares three planning steps: collect references, sketch alternatives, and review the draft before publishing.",
+      "selectedTypes": [
+        "linkedin"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "limited-claim",
+      "source": "A volunteer group is piloting a monthly repair cafe. The first session is planned for Saturday; attendance and outcomes are not yet known.",
+      "selectedTypes": [
+        "tiktok"
+      ],
+      "automaticSettings": []
+    }
+  ],
+  "results": [
+    {
+      "model": "gpt-5.2",
+      "case": "milestone",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "practical",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "limited-claim",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    },
+    {
+      "model": "gpt-5.6-luna",
+      "case": "milestone",
+      "status": "completed",
+      "validation": "failed",
+      "usage": {
+        "input_tokens": 3623,
+        "input_tokens_details": {
+          "cache_write_tokens": 3620,
+          "cached_tokens": 0
+        },
+        "output_tokens": 392,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4015
+      },
+      "output": "{\"title\":\"1,000 Newsletter Subscribers\",\"summary\":\"Three Instagram caption alternatives announcing Northbank Paper’s 1,000-subscriber milestone and an upcoming giveaway while clearly noting that details are still being confirmed.\",\"sections\":[{\"id\":\"instagram-caption-1\",\"type\":\"instagram\",\"title\":\"Draft - details to confirm\",\"platform\":\"Instagram\",\"body\":\"Northbank Paper has reached 1,000 newsletter subscribers.\\n\\nThank you to everyone who has chosen to stay connected. We’re also planning an upcoming giveaway, with the prize, dates, and eligibility details still to be confirmed.\\n\\nFor now, this milestone deserves a moment of appreciation.\",\"items\":[\"#NewsletterSubscribers #GiveawayAnnouncement #SmallBusinessMilestone #PaperGoods\"],\"cta\":\"\"},{\"id\":\"instagram-caption-2\",\"type\":\"instagram\",\"title\":\"Draft - details to confirm\",\"platform\":\"Instagram\",\"body\":\"1,000 subscribers is a milestone worth marking.\\n\\nThank you for being part of Northbank Paper’s newsletter audience. To celebrate, an upcoming giveaway is in the works. The prize, dates, and eligibility have not been decided yet, so the full details will follow once confirmed.\\n\\nWe’re grateful to have reached this point together.\",\"items\":[\"#Newsletter #Giveaway #SubscriberMilestone #PaperGoods\"],\"cta\":\"\"},{\"id\":\"instagram-caption-3\",\"type\":\"instagram\",\"title\":\"Draft - details to confirm\",\"platform\":\"Instagram\",\"body\":\"A milestone for the newsletter: 1,000 subscribers.\\n\\nThank you for reading, following along, and making Northbank Paper’s newsletter part of your inbox. An upcoming giveaway is also being planned, though the prize, dates, and eligibility are still to be decided.\\n\\nMore will be shared when those details are confirmed.\",\"items\":[\"#EmailNewsletter #GiveawayAnnouncement #CreativeBusiness #SubscriberMilestone\"],\"cta\":\"\"}]}",
+      "sections": []
+    },
+    {
+      "model": "gpt-5.6-luna",
+      "case": "practical",
+      "status": "completed",
+      "validation": "passed",
+      "usage": {
+        "input_tokens": 3595,
+        "input_tokens_details": {
+          "cache_write_tokens": 1842,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 212,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3807
+      },
+      "output": "{\"title\":\"Three-Step Design Planning Process\",\"summary\":\"A practical LinkedIn perspective on using references, alternatives, and review to strengthen design decisions before publishing.\",\"sections\":[{\"id\":\"linkedin-design-planning-steps\",\"type\":\"linkedin\",\"title\":\"LinkedIn Post\",\"platform\":\"LinkedIn\",\"body\":\"Good design decisions usually happen before the final draft is published.\\n\\nA simple planning process can make the work clearer:\\n\\n1. Collect references to define the visual direction.\\n2. Sketch alternatives instead of settling on the first idea.\\n3. Review the draft before publishing to catch gaps and refine the result.\\n\\nThe value is in the sequence. References provide direction, alternatives create room for comparison, and review gives the work one final quality check.\\n\\nA polished outcome often starts with a disciplined process, not a last-minute adjustment.\",\"items\":[\"#DesignProcess\",\"#GraphicDesign\",\"#CreativeProcess\",\"#DesignThinking\"],\"cta\":\"Save this three-step process for your next design project.\"}]}",
+      "sections": [
+        {
+          "id": "linkedin-design-planning-steps",
+          "type": "linkedin",
+          "title": "LinkedIn Post",
+          "platform": "LinkedIn",
+          "body": "Good design decisions usually happen before the final draft is published.\n\nA simple planning process can make the work clearer:\n\n1. Collect references to define the visual direction.\n2. Sketch alternatives instead of settling on the first idea.\n3. Review the draft before publishing to catch gaps and refine the result.\n\nThe value is in the sequence. References provide direction, alternatives create room for comparison, and review gives the work one final quality check.\n\nA polished outcome often starts with a disciplined process, not a last-minute adjustment.",
+          "items": [],
+          "cta": "Save this three-step process for your next design project.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.6-luna",
+      "case": "limited-claim",
+      "status": "completed",
+      "validation": "passed",
+      "usage": {
+        "input_tokens": 3600,
+        "input_tokens_details": {
+          "cache_write_tokens": 1847,
+          "cached_tokens": 1750
+        },
+        "output_tokens": 147,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3747
+      },
+      "output": "{\"title\":\"Repair Cafe Pilot TikTok Captions\",\"summary\":\"Three concise TikTok caption options introduce the planned first session without implying attendance or outcomes are known.\",\"sections\":[{\"id\":\"tiktok-repair-cafe-captions\",\"type\":\"tiktok\",\"title\":\"TikTok caption alternatives\",\"platform\":\"TikTok\",\"body\":\"A monthly repair cafe is being piloted, with the first session planned for Saturday.\\n\\nBring your curiosity and see what can be repaired, reused, or learned along the way.\",\"items\":[\"#RepairCafe #RepairAndReuse #CommunityRepair #Sustainability #Mending\"],\"cta\":\"What would you most like to learn to repair?\"}]}",
+      "sections": [
+        {
+          "id": "tiktok-repair-cafe-captions",
+          "type": "tiktok",
+          "title": "TikTok caption alternatives",
+          "platform": "TikTok",
+          "body": "A monthly repair cafe is being piloted, with the first session planned for Saturday.\n\nBring your curiosity and see what can be repaired, reused, or learned along the way.",
+          "items": [
+            "#RepairCafe"
+          ],
+          "cta": "What would you most like to learn to repair?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "milestone",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "practical",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "limited-claim",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    }
+  ]
+}

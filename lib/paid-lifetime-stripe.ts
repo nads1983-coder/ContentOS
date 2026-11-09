@@ -9,6 +9,7 @@ export type LifetimeCheckoutClaim = {
 };
 
 export type LifetimeStripeSession = {
+  livemode?: boolean;
   id?: string;
   url?: string | null;
   expires_at?: number | null;
@@ -31,6 +32,7 @@ export type LifetimeStripeSession = {
 };
 
 export type LifetimePaymentIntent = {
+  livemode?: boolean;
   id?: string;
   status?: string;
   currency?: string;

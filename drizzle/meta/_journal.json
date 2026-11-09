@@ -57,6 +57,13 @@
       "when": 1794189600000,
       "tag": "0008_ai_spend_cohort",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794276000000,
+      "tag": "0009_prepaid_text_credits",
+      "breakpoints": true
     }
   ]
 }
