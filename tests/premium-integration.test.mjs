@@ -52,3 +52,23 @@ test("Preview fixtures cannot run with production targets, paid credentials or u
   assert.equal(disabled.previewFixturesEnabled(), false);
   assert.throws(() => disabled.previewTextResponse(input), /disabled/);
 });
+
+test("Stripe sandbox Preview requires an explicit opt-in, test key and isolated target",()=>{
+  const check=patch=>loadTs("lib/preview-fixtures.ts",{},new Map(),{process:{env:{...env,...patch}}}).previewFixturesEnabled();
+  assert.equal(check({CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"rk_test_synthetic"}),true);
+  for(const patch of [
+    {STRIPE_SECRET_KEY:"rk_test_synthetic"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"sk_live_synthetic"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"sk_test_synthetic",VERCEL_ENV:"production"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"sk_test_synthetic",DATABASE_URL:"postgresql://fixture@production.invalid/contentos"},
+    {CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"sk_test_synthetic",OPENAI_API_KEY:"forbidden"}
+  ])assert.throws(()=>check(patch),/isolation/);
+});
+
+test("PR22 sandbox allows only its exact branch, database and test credentials",()=>{
+  const qa={...env,VERCEL_GIT_COMMIT_REF:"feat/paid-creator-lifetime-2026",CONTENTOS_ISOLATED_BRANCH:"br-hidden-recipe-b9yqeimn",DATABASE_URL:"postgresql://qa:qa@ep-bold-scene-b9by9k7z-pooler.c-7.eu-central-1.aws.neon.tech/pr22_payments_qa",CONTENTOS_PREVIEW_STRIPE_TEST:"1",STRIPE_SECRET_KEY:"rk_test_synthetic"};
+  const check=patch=>loadTs("lib/preview-fixtures.ts",{},new Map(),{process:{env:{...qa,...patch}}}).previewFixturesEnabled();
+  assert.equal(check({}),true);
+  for(const patch of [{VERCEL_ENV:"production"},{VERCEL_GIT_COMMIT_REF:"main"},{CONTENTOS_ISOLATED_BRANCH:"other"},{DATABASE_URL:qa.DATABASE_URL.replace("pr22_payments_qa","neondb")},{DATABASE_URL:qa.DATABASE_URL.replace("ep-bold-scene-b9by9k7z-pooler","ep-other-pooler")},{STRIPE_SECRET_KEY:"sk_live_synthetic"},{CONTENTOS_PREVIEW_STRIPE_TEST:"0"},{OPENAI_API_KEY:"secret"},{RESEND_API_KEY:"secret"}])assert.throws(()=>check(patch),/isolation/);
+});

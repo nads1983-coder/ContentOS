@@ -1,0 +1,35 @@
+{
+  "recurringCreatorSoldToLifetime": {
+    "status": 200,
+    "createdPlans": [
+      "pro_creator"
+    ]
+  },
+  "refundActivationRace": {
+    "trace": [
+      "provider returns unrefunded paid snapshot",
+      "full refund occurs at Stripe",
+      "refund webhook acknowledges 200 while PI is unbound",
+      "activation commits active entitlement after refund acknowledgement"
+    ],
+    "finalStatus": "active"
+  },
+  "migration": {
+    "loaded": 3,
+    "includesLifetime": false
+  },
+  "entitlements": {
+    "text50Boundary": true,
+    "nextMonthResets": true,
+    "imagesDenied": true,
+    "oldStudioImagesCanConsumeLifetimeTextAllowance": true
+  },
+  "staleStudioRenewal": {
+    "returned": {
+      "isLoggedIn": true,
+      "plan": "pro_creator",
+      "status": "active"
+    },
+    "stripeReads": 0
+  }
+}

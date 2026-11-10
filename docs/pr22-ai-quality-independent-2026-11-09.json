@@ -1,0 +1,2387 @@
+{
+  "date": "2026-11-09T19:43:02.685Z",
+  "limits": {
+    "inputTokens": 8192,
+    "outputTokens": 4096,
+    "attempts": 2
+  },
+  "maximumEvaluationReserveGBP": 2,
+  "results": [
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-books",
+      "repeat": 1,
+      "promptSha256": "32988833a867b88a421d8d42f3d1c3010d6b3dbd4752f62080208381d486405a",
+      "stage": "generation",
+      "inputTokens": 3776,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3776,
+        "input_tokens_details": {
+          "cache_write_tokens": 1927,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 215,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3991
+      },
+      "output": "{\"title\":\"Harbour Books Reading Group\",\"summary\":\"Two platform-ready posts share the confirmed reading group details without guessing which book was selected.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"A free reading group in Bristol, on 17 January at 6pm.\\n\\nHarbour Books will host the gathering. The selected book has not been announced.\\n\\nWhich book would you be curious to read together?\",\"items\":[\"#ReadingGroup #BookClub #Bristol #Books\"],\"cta\":\"\"},{\"id\":\"facebook-post\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Harbour Books will host a reading group in Bristol on 17 January at 6pm. Entry is free.\\n\\nThe selected book has not been announced. What kind of book would you hope to discuss?\",\"items\":[\"#ReadingGroup #BookClub #Bristol #Books\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "instagram-captions",
+          "type": "instagram",
+          "title": "Instagram caption alternatives",
+          "platform": "Instagram",
+          "body": "A free reading group in Bristol, on 17 January at 6pm.\n\nHarbour Books will host the gathering. The selected book has not been announced.\n\nWhich book would you be curious to read together?",
+          "items": [
+            "#ReadingGroup",
+            "#Bristol",
+            "#Books"
+          ],
+          "cta": "",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "facebook-post",
+          "type": "facebook",
+          "title": "Facebook post",
+          "platform": "Facebook",
+          "body": "Harbour Books will host a reading group in Bristol on 17 January at 6pm. Entry is free.\n\nThe selected book has not been announced. What kind of book would you hope to discuss?",
+          "items": [
+            "#ReadingGroup",
+            "#Bristol",
+            "#Books"
+          ],
+          "cta": "",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3357
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-checklist",
+      "repeat": 1,
+      "promptSha256": "2c1ee28177cef7545cca6bf8ee025bb5a1ebbc98dd586f4a4497ed838ae91d1d",
+      "stage": "generation",
+      "inputTokens": 3758,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3758,
+        "input_tokens_details": {
+          "cache_write_tokens": 1909,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 254,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4012
+      },
+      "output": "{\"title\":\"Bakery Preparation Checklist\",\"summary\":\"Two platform-native posts show how a simple bakery checklist supports careful batch preparation.\",\"sections\":[{\"id\":\"linkedin-preparation-checklist\",\"type\":\"linkedin\",\"title\":\"A Practical Bakery Checklist\",\"platform\":\"LinkedIn\",\"body\":\"A useful bakery preparation checklist covers three steps: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.\\n\\nEach step addresses a different part of preparation: what goes into the batch, whether the oven is ready, and how the batch is identified before it leaves the kitchen.\\n\\nKeeping the checklist clear makes it easier to follow each step in sequence.\",\"items\":[\"#Baking\",\"#Bakery\",\"#FoodPreparation\",\"#KitchenOrganization\"],\"cta\":\"Which step is easiest to overlook in a busy kitchen?\"},{\"id\":\"x-bakery-checklist\",\"type\":\"twitter\",\"title\":\"A Simple Bakery Checklist\",\"platform\":\"X/Twitter\",\"body\":\"A bakery’s preparation checklist: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen. Clear steps keep preparation organized.\",\"items\":[\"#Baking\",\"#Bakery\"],\"cta\":\"Which step would you add to your checklist?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-preparation-checklist",
+          "type": "linkedin",
+          "title": "A Practical Bakery Checklist",
+          "platform": "LinkedIn",
+          "body": "A useful bakery preparation checklist covers three steps: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.\n\nEach step addresses a different part of preparation: what goes into the batch, whether the oven is ready, and how the batch is identified before it leaves the kitchen.\n\nKeeping the checklist clear makes it easier to follow each step in sequence.",
+          "items": [
+            "#Bakery"
+          ],
+          "cta": "Which step is easiest to overlook in a busy kitchen?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-bakery-checklist",
+          "type": "twitter",
+          "title": "A Simple Bakery Checklist",
+          "platform": "X/Twitter",
+          "body": "A bakery’s preparation checklist: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen. Clear steps keep preparation organized.",
+          "items": [
+            "#Bakery"
+          ],
+          "cta": "Which step would you add to your checklist?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3532
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-pilot",
+      "repeat": 1,
+      "promptSha256": "5a39607fa5011bf714a1c7189a3c90727a1afe933471412a954a48f703863cb4",
+      "stage": "generation",
+      "inputTokens": 3755,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3755,
+        "input_tokens_details": {
+          "cache_write_tokens": 1906,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 234,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3989
+      },
+      "output": "{\"title\":\"Seed Swap Captions\",\"summary\":\"Short captions share the planned Sunday seed swap while making clear that the venue and opening time are not confirmed.\",\"sections\":[{\"id\":\"tiktok-captions\",\"type\":\"tiktok\",\"title\":\"TikTok caption alternatives\",\"platform\":\"TikTok\",\"body\":\"Sunday plans: a community garden seed swap is in the works.\\n\\nSunday’s seed swap is planned, but the venue and opening time are still unconfirmed.\\n\\nA seed swap is planned for Sunday. The venue and opening time haven’t been confirmed yet.\",\"items\":[\"#SeedSwap #CommunityGarden #SeedSaving #Gardening\"],\"cta\":\"What seeds would you bring?\"},{\"id\":\"youtube-shorts-caption\",\"type\":\"youtubeShorts\",\"title\":\"YouTube Shorts caption\",\"platform\":\"YouTube Shorts\",\"body\":\"Community Garden Seed Swap Planned for Sunday\\n\\nA community garden is planning a seed swap for Sunday. The venue and opening time have not yet been confirmed.\",\"items\":[\"#SeedSwap #CommunityGarden #SeedSaving #Gardening\"],\"cta\":\"What seeds would you bring?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "tiktok-captions",
+          "type": "tiktok",
+          "title": "TikTok caption alternatives",
+          "platform": "TikTok",
+          "body": "Sunday plans: a community garden seed swap is in the works.\n\nSunday’s seed swap is planned, but the venue and opening time are still unconfirmed.\n\nA seed swap is planned for Sunday. The venue and opening time haven’t been confirmed yet.",
+          "items": [
+            "#SeedSwap",
+            "#CommunityGarden",
+            "#Gardening"
+          ],
+          "cta": "What seeds would you bring?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "youtube-shorts-caption",
+          "type": "youtubeShorts",
+          "title": "YouTube Shorts caption",
+          "platform": "YouTube Shorts",
+          "body": "Community Garden Seed Swap Planned for Sunday\n\nA community garden is planning a seed swap for Sunday. The venue and opening time have not yet been confirmed.",
+          "items": [
+            "#SeedSwap",
+            "#CommunityGarden",
+            "#Gardening"
+          ],
+          "cta": "What seeds would you bring?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3708
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-course",
+      "repeat": 1,
+      "promptSha256": "1da31f2060ba1e4e19f97bc147a0148947382f1e196077583cb315ad04d78cc3",
+      "stage": "generation",
+      "inputTokens": 3791,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3791,
+        "input_tokens_details": {
+          "cache_write_tokens": 1942,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 667,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4458
+      },
+      "output": "{\n  \"title\": \"Pottery Class Content\",\n  \"summary\": \"Promotes the Leeds pottery class with practical event details across Instagram, carousel, and X thread formats.\",\n  \"sections\": [\n    {\n      \"id\": \"instagram-captions\",\n      \"type\": \"instagram\",\n      \"title\": \"Instagram caption alternatives\",\n      \"platform\": \"Instagram\",\n      \"body\": \"Alternative 1\\nA pottery class in Leeds, with the practical details covered.\\n\\nMira Studio runs a pottery class in Leeds on 20 February at 3pm. Tickets cost £18. Materials are supplied, so just bring an apron.\\n\\nAlternative 2\\nA simple plan for a hands-on afternoon: pottery, supplied materials, and an apron to bring along.\\n\\nMira Studio runs a pottery class in Leeds on 20 February at 3pm. Tickets cost £18.\\n\\nAlternative 3\\nWant to try a pottery class in Leeds? Mira Studio runs one on 20 February at 3pm. Materials are supplied, and you’ll need to bring an apron. Tickets cost £18.\",\n      \"items\": [\n        \"#PotteryClass #Pottery #Leeds #Ceramics\"\n      ],\n      \"cta\": \"Which part sounds most appealing, working with the clay or having the materials supplied?\"\n    },\n    {\n      \"id\": \"pottery-class-carousel\",\n      \"type\": \"carousel\",\n      \"title\": \"Pottery class carousel\",\n      \"platform\": \"Carousel\",\n      \"body\": \"A concise introduction to the class, followed by the key practical details.\",\n      \"items\": [\n        \"Slide 1: A pottery class in Leeds\\nMira Studio\",\n        \"Slide 2: When\\n20 February at 3pm\",\n        \"Slide 3: What to bring\\nBring an apron.\",\n        \"Slide 4: What’s supplied\\nMaterials are supplied.\",\n        \"Slide 5: Ticket price\\nTickets cost £18.\",\n        \"Slide 6: Make a plan\\nMira Studio runs a pottery class in Leeds on 20 February at 3pm.\"\n      ],\n      \"cta\": \"Which detail would you want to know first before joining a class?\"\n    },\n    {\n      \"id\": \"pottery-class-x-thread\",\n      \"type\": \"xThread\",\n      \"title\": \"X thread\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"Mira Studio runs a pottery class in Leeds on 20 February at 3pm. Here are the key details to plan around.\",\n      \"items\": [\n        \"1/6 Mira Studio runs a pottery class in Leeds on 20 February at 3pm.\",\n        \"2/6 The class is in Leeds.\",\n        \"3/6 It starts at 3pm on 20 February.\",\n        \"4/6 Tickets cost £18.\",\n        \"5/6 Materials are supplied. Bring an apron.\",\n        \"6/6 The takeaway: note the date and time, bring an apron, and materials are covered.\"\n      ],\n      \"cta\": \"What makes a class easier to plan for: knowing what to bring or what’s supplied?\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 6376
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-unicode",
+      "repeat": 1,
+      "promptSha256": "5849aaf9559d68e86c1ced729f1594072e12b30cc95524e167af031faf8f4a38",
+      "stage": "generation",
+      "inputTokens": 3754,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3754,
+        "input_tokens_details": {
+          "cache_write_tokens": 1905,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 211,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3965
+      },
+      "output": "{\"title\":\"Friday Café and Pastries\",\"summary\":\"Instagram caption options and additional hashtag ideas featuring Friday café crème, pastries, the £7 lunch option, and no delivery.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Friday café crème, with pastries on the side.\\n\\nPâtisserie Lumière offers both on Friday. There’s also a £7 lunch option.\\n\\nDelivery is not available.\",\"items\":[\"#CafeCreme #Pastries #FridayTreat #LunchOption\"],\"cta\":\"Which would you choose for Friday, café crème and pastries or the lunch option? Share your pick.\"},{\"id\":\"additional-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag ideas\",\"platform\":\"Instagram\",\"body\":\"Additional relevant hashtags, distinct from the caption tags.\",\"items\":[\"#CoffeeAndPastries\",\"#CafeLunch\",\"#PastryLovers\",\"#CoffeeBreak\",\"#LunchIdeas\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 3530
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-founder",
+      "repeat": 1,
+      "promptSha256": "080699d2fcd2d7b4f6d3a4faa3d46b960dadef30c961a96261bdae13b067146f",
+      "stage": "generation",
+      "inputTokens": 3721,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3721,
+        "input_tokens_details": {
+          "cache_write_tokens": 1872,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 473,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4194
+      },
+      "output": "{\n  \"title\": \"Career change reflection\",\n  \"summary\": \"A professional reflection on weighing a possible career change after 12 years in the same job, without pretending the next step is settled.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-post\",\n      \"type\": \"linkedin\",\n      \"title\": \"LinkedIn post\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"After 12 years in the same job, I’m considering a career change. I’m also worried about starting again, and I haven’t decided what to do.\\n\\nThat uncertainty is worth taking seriously. Considering a change doesn’t mean you need to make a decision immediately. It can be a reason to explore what you want next, what you’d be leaving behind, and which questions need clearer answers.\\n\\nA practical first step is to separate the decision from the fear around it. Write down what is drawing you toward change, what makes starting again feel difficult, and what you still need to learn before choosing.\\n\\nYou don’t have to have the next chapter mapped out to begin thinking carefully about it.\",\n      \"items\": [\n        \"#CareerChange\",\n        \"#CareerTransition\",\n        \"#CareerDevelopment\"\n      ],\n      \"cta\": \"If you’re weighing a change, what’s one question you’re working through?\"\n    },\n    {\n      \"id\": \"hooks\",\n      \"type\": \"hooks\",\n      \"title\": \"Eight hook options\",\n      \"platform\": \"General\",\n      \"body\": \"\",\n      \"items\": [\n        \"After 12 years in the same job, I’m considering a career change.\",\n        \"I’m thinking about changing careers, but I haven’t decided what to do.\",\n        \"A career change can start with a question, not a plan.\",\n        \"Considering a change and being ready to start again are not the same thing.\",\n        \"Twelve years in one job has me asking what I want from work next.\",\n        \"The possibility of starting again is part of what makes a career change feel difficult.\",\n        \"What do you need to understand before deciding whether to change careers?\",\n        \"You can explore a career change without having your next move figured out.\"\n      ],\n      \"cta\": \"\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "After 12 years in the same job, I’m considering a career change. I’m also worried about starting again, and I haven’t decided what to do.\n\nThat uncertainty is worth taking seriously. Considering a change doesn’t mean you need to make a decision immediately. It can be a reason to explore what you want next, what you’d be leaving behind, and which questions need clearer answers.\n\nA practical first step is to separate the decision from the fear around it. Write down what is drawing you toward change, what makes starting again feel difficult, and what you still need to learn before choosing.\n\nYou don’t have to have the next chapter mapped out to begin thinking carefully about it.",
+          "items": [
+            "#CareerChange"
+          ],
+          "cta": "If you’re weighing a change, what’s one question you’re working through?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "hooks",
+          "type": "hooks",
+          "title": "Eight hook options",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "After 12 years in the same job, I’m considering a career change.",
+            "I’m thinking about changing careers, but I haven’t decided what to do.",
+            "A career change can start with a question, not a plan.",
+            "Considering a change and being ready to start again are not the same thing.",
+            "Twelve years in one job has me asking what I want from work next.",
+            "The possibility of starting again is part of what makes a career change feel difficult.",
+            "What do you need to understand before deciding whether to change careers?",
+            "You can explore a career change without having your next move figured out."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 4758
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-news",
+      "repeat": 1,
+      "promptSha256": "3cbb48ba66c424d85571f6d2b9378f104d8a258869901f9e5fadeece34e9efe6",
+      "stage": "generation",
+      "inputTokens": 3880,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3880,
+        "input_tokens_details": {
+          "cache_write_tokens": 2031,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 403,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4283
+      },
+      "output": "{\n  \"title\": \"Library Poetry Reading\",\n  \"summary\": \"Share the reading’s booking details clearly, without implying that poets have been announced.\",\n  \"sections\": [\n    {\n      \"id\": \"poetry-reading-email\",\n      \"type\": \"emailNewsletter\",\n      \"title\": \"Email newsletter draft\",\n      \"platform\": \"Email\",\n      \"body\": \"Subject line options:\\n• Library poetry reading: booking opens 12 February\\n• A poetry reading at the library on 3 March\\n\\nA library poetry reading is planned for 3 March at 7pm.\\n\\nCapacity is 40, and booking opens on 12 February. No poets have been announced.\\n\\nIf you’re interested, keep the booking date in mind and share this with someone who enjoys poetry.\",\n      \"items\": [],\n      \"cta\": \"Share this email with someone who might be interested.\"\n    },\n    {\n      \"id\": \"poetry-reading-x-thread\",\n      \"type\": \"xThread\",\n      \"title\": \"X thread\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"A library poetry reading is planned for 3 March at 7pm. Here are the key details to keep handy.\",\n      \"items\": [\n        \"1/ A library poetry reading is planned for 3 March at 7pm.\",\n        \"2/ Booking opens on 12 February.\",\n        \"3/ Capacity is 40.\",\n        \"4/ No poets have been announced.\",\n        \"5/ The useful next step is to note the booking date if you’re considering attending.\",\n        \"6/ Keep the details together: 3 March, 7pm, with booking opening on 12 February.\",\n        \"7/ Takeaway: booking opens on 12 February, and capacity is 40.\"\n      ],\n      \"cta\": \"Share the thread with someone who may be interested.\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "poetry-reading-email",
+          "type": "emailNewsletter",
+          "title": "Email newsletter draft",
+          "platform": "Email",
+          "body": "Subject line options:\n• Library poetry reading: booking opens 12 February\n• A poetry reading at the library on 3 March\n\nA library poetry reading is planned for 3 March at 7pm.\n\nCapacity is 40, and booking opens on 12 February. No poets have been announced.\n\nIf you’re interested, keep the booking date in mind and share this with someone who enjoys poetry.",
+          "items": [],
+          "cta": "Share this email with someone who might be interested.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "poetry-reading-x-thread",
+          "type": "xThread",
+          "title": "X thread",
+          "platform": "X/Twitter",
+          "body": "A library poetry reading is planned for 3 March at 7pm. Here are the key details to keep handy.",
+          "items": [
+            "1/ A library poetry reading is planned for 3 March at 7pm.",
+            "2/ Booking opens on 12 February.",
+            "3/ Capacity is 40.",
+            "4/ No poets have been announced.",
+            "5/ The useful next step is to note the booking date if you’re considering attending.",
+            "6/ Keep the details together: 3 March, 7pm, with booking opening on 12 February.",
+            "7/ Takeaway: booking opens on 12 February, and capacity is 40."
+          ],
+          "cta": "Share the thread with someone who may be interested.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 4375
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-repair",
+      "repeat": 1,
+      "promptSha256": "7fd84e4959155361eba3b5ed512bf0faee1fb93fc5f887d432c19ee5ae0c8ffd",
+      "stage": "generation",
+      "inputTokens": 3888,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3888,
+        "input_tokens_details": {
+          "cache_write_tokens": 2039,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 723,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4611
+      },
+      "output": "{\n  \"title\": \"Bicycle Safety Checklist\",\n  \"summary\": \"A practical checklist adapts three basic bicycle safety checks into platform-ready posts and a short video script.\",\n  \"sections\": [\n    {\n      \"id\": \"repurpose-pack\",\n      \"type\": \"repurposePack\",\n      \"title\": \"Bicycle Safety Checklist Repurpose Pack\",\n      \"platform\": \"General\",\n      \"body\": \"LinkedIn:\\nA useful bicycle safety check can start with three simple steps: inspect tyres, test brakes, and check lights.\\n\\nKeeping the checklist brief makes it easy to remember before a ride. This is general information, not a repair appointment.\\n\\n#BicycleSafety #BikeSafety #CyclingSafety\\n\\nInstagram:\\nBefore you ride, run through three checks: inspect your tyres, test your brakes, and check your lights.\\n\\nA simple checklist to keep in mind. This is general information, not a repair appointment.\\n\\n#BicycleSafety #BikeSafety #CyclingSafety #BikeCheck\\n\\nTikTok:\\nThree checks before a ride: tyres, brakes, lights.\\n\\n#BicycleSafety #BikeSafety #CyclingSafety\\n\\nX/Twitter:\\nBefore a ride: inspect tyres, test brakes, and check lights. This is general information, not a repair appointment.\\n\\n#BikeSafety\\n\\nCarousel:\\nSee slide outline in items.\\n\\nShort video:\\nSee short-form script in the separate section.\\n\\nEmail:\\nSubject: Three bicycle safety checks\\n\\nBefore a ride, use this simple checklist: inspect your tyres, test your brakes, and check your lights.\\n\\nThis is general information, not a repair appointment.\",\n      \"items\": [\n        \"Carousel slide 1: Three bicycle safety checks. A simple checklist before a ride.\",\n        \"Carousel slide 2: Inspect tyres. Include tyres in your pre-ride check.\",\n        \"Carousel slide 3: Test brakes. Check that your brakes work before riding.\",\n        \"Carousel slide 4: Check lights. Make sure your lights are part of the check.\",\n        \"Carousel slide 5: Tyres, brakes, lights. This is general information, not a repair appointment.\"\n      ],\n      \"cta\": \"Save the checklist as a simple reminder before your next ride.\"\n    },\n    {\n      \"id\": \"short-video-script\",\n      \"type\": \"shortVideoScript\",\n      \"title\": \"Three Checks Before a Ride\",\n      \"platform\": \"Video\",\n      \"body\": \"Hook, spoken: Before you ride, remember three checks: tyres, brakes, lights.\\n\\n[Direction: Face the camera. Hold up three fingers.]\\n\\nBeat 1, spoken: First, inspect your tyres.\\nOn-screen text: 1. Inspect tyres\\n\\nBeat 2, spoken: Next, test your brakes.\\nOn-screen text: 2. Test brakes\\n\\nBeat 3, spoken: Then, check your lights.\\nOn-screen text: 3. Check lights\\n\\nClose, spoken: That’s the checklist: tyres, brakes, lights. This is general information, not a repair appointment.\\nOn-screen text: Tyres. Brakes. Lights.\",\n      \"items\": [\n        \"Suggested staging: Deliver the script face to camera. Use brief on-screen text cues for each check.\"\n      ],\n      \"cta\": \"Save this checklist for a quick reminder.\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "repurpose-pack",
+          "type": "repurposePack",
+          "title": "Bicycle Safety Checklist Repurpose Pack",
+          "platform": "General",
+          "body": "LinkedIn:\nA useful bicycle safety check can start with three simple steps: inspect tyres, test brakes, and check lights.\n\nKeeping the checklist brief makes it easy to remember before a ride. This is general information, not a repair appointment.\n\n#BicycleSafety\n\nInstagram:\nBefore you ride, run through three checks: inspect your tyres, test your brakes, and check your lights.\n\nA simple checklist to keep in mind. This is general information, not a repair appointment.\n\n\n\nTikTok:\nThree checks before a ride: tyres, brakes, lights.\n\n\n\nX/Twitter:\nBefore a ride: inspect tyres, test brakes, and check lights. This is general information, not a repair appointment.\n\n\n\nCarousel:\nSee slide outline in items.\n\nShort video:\nSee short-form script in the separate section.\n\nEmail:\nSubject: Three bicycle safety checks\n\nBefore a ride, use this simple checklist: inspect your tyres, test your brakes, and check your lights.\n\nThis is general information, not a repair appointment.",
+          "items": [
+            "Carousel slide 1: Three bicycle safety checks. A simple checklist before a ride.",
+            "Carousel slide 2: Inspect tyres. Include tyres in your pre-ride check.",
+            "Carousel slide 3: Test brakes. Check that your brakes work before riding.",
+            "Carousel slide 4: Check lights. Make sure your lights are part of the check.",
+            "Carousel slide 5: Tyres, brakes, lights. This is general information, not a repair appointment."
+          ],
+          "cta": "Save the checklist as a simple reminder before your next ride.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "short-video-script",
+          "type": "shortVideoScript",
+          "title": "Three Checks Before a Ride",
+          "platform": "Video",
+          "body": "Hook, spoken: Before you ride, remember three checks: tyres, brakes, lights.\n\n[Direction: Face the camera. Hold up three fingers.]\n\nBeat 1, spoken: First, inspect your tyres.\nOn-screen text: 1. Inspect tyres\n\nBeat 2, spoken: Next, test your brakes.\nOn-screen text: 2. Test brakes\n\nBeat 3, spoken: Then, check your lights.\nOn-screen text: 3. Check lights\n\nClose, spoken: That’s the checklist: tyres, brakes, lights. This is general information, not a repair appointment.\nOn-screen text: Tyres. Brakes. Lights.",
+          "items": [
+            "Suggested staging: Deliver the script face to camera. Use brief on-screen text cues for each check."
+          ],
+          "cta": "Save this checklist for a quick reminder.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 6753
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-privacy",
+      "repeat": 1,
+      "promptSha256": "d46fe9b18ef9c529248066743d55dc9b071019da271a1737eda28bc5774f156b",
+      "stage": "generation",
+      "inputTokens": 3772,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3772,
+        "input_tokens_details": {
+          "cache_write_tokens": 1923,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 194,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3966
+      },
+      "output": "{\"title\":\"Hydration Wellbeing Posts\",\"summary\":\"A practical reminder that hydration guidance is general and individual advice should come from a qualified professional.\",\"sections\":[{\"id\":\"facebook-hydration\",\"type\":\"facebook\",\"title\":\"Hydration and individual advice\",\"platform\":\"Facebook\",\"body\":\"Hydration is part of general wellbeing, but individual needs can differ. For advice that’s specific to you, ask a qualified professional.\",\"items\":[],\"cta\":\"What questions about hydration would you want to discuss with a qualified professional?\"},{\"id\":\"instagram-hydration\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Hydration is a general wellbeing topic, but personal advice should be personal.\\n\\nFor guidance that fits your circumstances, ask a qualified professional.\",\"items\":[\"#Hydration #Wellbeing #HealthInformation\"],\"cta\":\"Save this reminder for when you’re looking for individual advice.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "facebook-hydration",
+          "type": "facebook",
+          "title": "Hydration and individual advice",
+          "platform": "Facebook",
+          "body": "Hydration is part of general wellbeing, but individual needs can differ. For advice that’s specific to you, ask a qualified professional.",
+          "items": [],
+          "cta": "What questions about hydration would you want to discuss with a qualified professional?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "instagram-hydration",
+          "type": "instagram",
+          "title": "Instagram caption alternatives",
+          "platform": "Instagram",
+          "body": "Hydration is a general wellbeing topic, but personal advice should be personal.\n\nFor guidance that fits your circumstances, ask a qualified professional.",
+          "items": [
+            "#Hydration",
+            "#Wellbeing"
+          ],
+          "cta": "Save this reminder for when you’re looking for individual advice.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 2660
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-neutral",
+      "repeat": 1,
+      "promptSha256": "4e898bda4cf926ecc38920d1bee2d6b749abeb61cb38e526c5596e7e975e2836",
+      "stage": "generation",
+      "inputTokens": 3793,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3793,
+        "input_tokens_details": {
+          "cache_write_tokens": 1944,
+          "cached_tokens": 1846
+        },
+        "output_tokens": 421,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4214
+      },
+      "output": "{\n  \"title\": \"Early Sketch Feedback\",\n  \"summary\": \"Invite thoughtful feedback on an early design sketch while making clear that key decisions are still open.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-post\",\n      \"type\": \"linkedin\",\n      \"title\": \"Early sketch feedback\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"An early sketch is a chance to invite feedback before the design is final.\\n\\nWe’re sharing an early sketch from our design studio and would value your perspective. The final design, launch date and pricing have not been decided.\\n\\nAt this stage, what feels clear to you, and what would you like to see explored further?\",\n      \"items\": [\n        \"#Design\",\n        \"#DesignProcess\",\n        \"#Feedback\",\n        \"#ProductDesign\"\n      ],\n      \"cta\": \"Share one detail you’d like us to consider.\"\n    },\n    {\n      \"id\": \"x-post\",\n      \"type\": \"twitter\",\n      \"title\": \"X post\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"Sharing an early design sketch for feedback. The final design, launch date and pricing have not been decided. What feels clear, and what would you explore further?\",\n      \"items\": [\n        \"#Design\",\n        \"#Feedback\"\n      ],\n      \"cta\": \"Reply with one detail you’d like us to consider.\"\n    },\n    {\n      \"id\": \"cta-options\",\n      \"type\": \"ctas\",\n      \"title\": \"Feedback prompts\",\n      \"platform\": \"General\",\n      \"body\": \"Five light options for inviting feedback on the early sketch.\",\n      \"items\": [\n        \"What feels clear to you in this early sketch?\",\n        \"Which detail would you explore further?\",\n        \"What stands out at first glance?\",\n        \"Is there anything you’d like to see considered?\",\n        \"Share one thought that could help us assess the sketch.\"\n      ],\n      \"cta\": \"\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "Early sketch feedback",
+          "platform": "LinkedIn",
+          "body": "An early sketch is a chance to invite feedback before the design is final.\n\nWe’re sharing an early sketch from our design studio and would value your perspective. The final design, launch date and pricing have not been decided.\n\nAt this stage, what feels clear to you, and what would you like to see explored further?",
+          "items": [
+            "#Design",
+            "#Feedback"
+          ],
+          "cta": "Share one detail you’d like us to consider.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-post",
+          "type": "twitter",
+          "title": "X post",
+          "platform": "X/Twitter",
+          "body": "Sharing an early design sketch for feedback. The final design, launch date and pricing have not been decided. What feels clear, and what would you explore further?",
+          "items": [
+            "#Design",
+            "#Feedback"
+          ],
+          "cta": "Reply with one detail you’d like us to consider.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "cta-options",
+          "type": "ctas",
+          "title": "Feedback prompts",
+          "platform": "General",
+          "body": "Five light options for inviting feedback on the early sketch.",
+          "items": [
+            "What feels clear to you in this early sketch?",
+            "Which detail would you explore further?",
+            "What stands out at first glance?",
+            "Is there anything you’d like to see considered?",
+            "Share one thought that could help us assess the sketch."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 4452
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-books",
+      "repeat": 2,
+      "promptSha256": "32988833a867b88a421d8d42f3d1c3010d6b3dbd4752f62080208381d486405a",
+      "stage": "generation",
+      "inputTokens": 3776,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3776,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3773
+        },
+        "output_tokens": 233,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4009
+      },
+      "output": "{\"title\":\"Reading Group Social Posts\",\"summary\":\"Promote Harbour Books’ free reading group with its confirmed date, time and location, while noting that the selected book is not yet announced.\",\"sections\":[{\"id\":\"instagram-reading-group\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Harbour Books is hosting a reading group in Bristol on 17 January at 6pm. Entry is free.\\n\\nThe selected book has not been announced yet.\",\"items\":[\"#ReadingGroup #BookClub #Bristol #BristolBooks\"],\"cta\":\"What would you like to read together?\"},{\"id\":\"facebook-reading-group\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Looking for a bookish plan in Bristol? Harbour Books will host a reading group on 17 January at 6pm, and entry is free.\\n\\nThe selected book has not been announced yet.\",\"items\":[\"#ReadingGroup #BookClub #Bristol #BristolBooks\"],\"cta\":\"What kind of book would you be glad to see selected?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "instagram-reading-group",
+          "type": "instagram",
+          "title": "Instagram caption alternatives",
+          "platform": "Instagram",
+          "body": "Harbour Books is hosting a reading group in Bristol on 17 January at 6pm. Entry is free.\n\nThe selected book has not been announced yet.",
+          "items": [
+            "#ReadingGroup",
+            "#Bristol",
+            "#BristolBooks"
+          ],
+          "cta": "What would you like to read together?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "facebook-reading-group",
+          "type": "facebook",
+          "title": "Facebook post",
+          "platform": "Facebook",
+          "body": "Looking for a bookish plan in Bristol? Harbour Books will host a reading group on 17 January at 6pm, and entry is free.\n\nThe selected book has not been announced yet.",
+          "items": [
+            "#ReadingGroup",
+            "#Bristol",
+            "#BristolBooks"
+          ],
+          "cta": "What kind of book would you be glad to see selected?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3018
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-checklist",
+      "repeat": 2,
+      "promptSha256": "2c1ee28177cef7545cca6bf8ee025bb5a1ebbc98dd586f4a4497ed838ae91d1d",
+      "stage": "generation",
+      "inputTokens": 3758,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3758,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3755
+        },
+        "output_tokens": 324,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4082
+      },
+      "output": "{\n  \"title\": \"Bakery Preparation Checklist\",\n  \"summary\": \"Two platform-native posts highlight how a simple checklist supports careful batch preparation.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-preparation-checklist\",\n      \"type\": \"linkedin\",\n      \"title\": \"A checklist for careful preparation\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"A bakery’s preparation checklist starts with three clear steps: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.\\n\\nEach step helps keep the work organized. Ingredient checks happen before baking, the oven is prepared for the next task, and batch labels stay attached as work moves out of the kitchen.\\n\\nA useful checklist makes the next action clear at each stage.\",\n      \"items\": [\n        \"#Bakery\",\n        \"#Baking\",\n        \"#FoodPreparation\"\n      ],\n      \"cta\": \"What steps belong on your team’s everyday checklist?\"\n    },\n    {\n      \"id\": \"x-bakery-checklist\",\n      \"type\": \"twitter\",\n      \"title\": \"The bakery checklist\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"A bakery’s preparation checklist: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen. Three clear steps, from preparation to handoff.\",\n      \"items\": [\n        \"#Baking\",\n        \"#Bakery\"\n      ],\n      \"cta\": \"Which step would you add to your checklist?\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-preparation-checklist",
+          "type": "linkedin",
+          "title": "A checklist for careful preparation",
+          "platform": "LinkedIn",
+          "body": "A bakery’s preparation checklist starts with three clear steps: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.\n\nEach step helps keep the work organized. Ingredient checks happen before baking, the oven is prepared for the next task, and batch labels stay attached as work moves out of the kitchen.\n\nA useful checklist makes the next action clear at each stage.",
+          "items": [
+            "#Bakery"
+          ],
+          "cta": "What steps belong on your team’s everyday checklist?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-bakery-checklist",
+          "type": "twitter",
+          "title": "The bakery checklist",
+          "platform": "X/Twitter",
+          "body": "A bakery’s preparation checklist: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen. Three clear steps, from preparation to handoff.",
+          "items": [
+            "#Bakery"
+          ],
+          "cta": "Which step would you add to your checklist?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3962
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-pilot",
+      "repeat": 2,
+      "promptSha256": "5a39607fa5011bf714a1c7189a3c90727a1afe933471412a954a48f703863cb4",
+      "stage": "generation",
+      "inputTokens": 3755,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3755,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3752
+        },
+        "output_tokens": 240,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 3995
+      },
+      "output": "{\"title\":\"Seed Swap Captions\",\"summary\":\"Short captions sharing the planned Sunday seed swap while making clear that the venue and opening time are unconfirmed.\",\"sections\":[{\"id\":\"tiktok-captions\",\"type\":\"tiktok\",\"title\":\"TikTok caption alternatives\",\"platform\":\"TikTok\",\"body\":\"A seed swap is planned for Sunday. The venue and opening time are still to be confirmed.\\n\\nA seed swap is planned for Sunday. The venue and opening time are still to be confirmed.\\n\\nSunday plans: a community garden seed swap. The venue and opening time are still to be confirmed.\",\"items\":[\"#SeedSwap #CommunityGarden #Gardening #Seeds\"],\"cta\":\"What seeds would you bring?\"},{\"id\":\"youtube-shorts-caption\",\"type\":\"youtubeShorts\",\"title\":\"Community Garden Seed Swap\",\"platform\":\"YouTube Shorts\",\"body\":\"Community Garden Seed Swap Planned for Sunday\\n\\nA community garden is planning a seed swap for Sunday. The venue and opening time have not yet been confirmed.\",\"items\":[\"#SeedSwap #CommunityGarden #Gardening #Seeds\"],\"cta\":\"What seeds would you bring?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "tiktok-captions",
+          "type": "tiktok",
+          "title": "TikTok caption alternatives",
+          "platform": "TikTok",
+          "body": "A seed swap is planned for Sunday. The venue and opening time are still to be confirmed.\n\nSunday plans: a community garden seed swap.",
+          "items": [
+            "#SeedSwap",
+            "#CommunityGarden",
+            "#Gardening",
+            "#Seeds"
+          ],
+          "cta": "What seeds would you bring?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "youtube-shorts-caption",
+          "type": "youtubeShorts",
+          "title": "Community Garden Seed Swap",
+          "platform": "YouTube Shorts",
+          "body": "Community Garden Seed Swap Planned for Sunday\n\nA community garden is planning a seed swap for Sunday. The venue and opening time have not yet been confirmed.",
+          "items": [
+            "#SeedSwap",
+            "#CommunityGarden",
+            "#Gardening",
+            "#Seeds"
+          ],
+          "cta": "What seeds would you bring?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3447
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-course",
+      "repeat": 2,
+      "promptSha256": "1da31f2060ba1e4e19f97bc147a0148947382f1e196077583cb315ad04d78cc3",
+      "stage": "generation",
+      "inputTokens": 3791,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3791,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3788
+        },
+        "output_tokens": 685,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4476
+      },
+      "output": "{\n  \"title\": \"Pottery Class Social Content\",\n  \"summary\": \"Share the Leeds pottery class details through Instagram captions, a practical carousel, and a concise X thread.\",\n  \"sections\": [\n    {\n      \"id\": \"instagram-captions\",\n      \"type\": \"instagram\",\n      \"title\": \"Instagram caption alternatives\",\n      \"platform\": \"Instagram\",\n      \"body\": \"Three caption alternatives for the pottery class.\",\n      \"items\": [\n        \"A pottery class in Leeds, with the practical details covered.\\n\\nJoin Mira Studio on 20 February at 3pm. Tickets cost £18. Materials are supplied, so just bring an apron.\\n\\n#Pottery #PotteryClass #Leeds #Ceramics\",\n        \"One thing to bring to pottery class: an apron.\\n\\nMira Studio is running a pottery class in Leeds on 20 February at 3pm. Materials are supplied, and tickets cost £18.\\n\\n#PotteryMaking #Ceramics #LeedsEvents #PotteryClass\",\n        \"Make time for clay in Leeds.\\n\\nMira Studio’s pottery class is on 20 February at 3pm. Materials are supplied; bring an apron. Tickets cost £18.\\n\\n#Pottery #CeramicsClass #Leeds #Clay\"\n      ],\n      \"cta\": \"Which detail would you want to know before booking a pottery class?\"\n    },\n    {\n      \"id\": \"pottery-class-carousel\",\n      \"type\": \"carousel\",\n      \"title\": \"Pottery class carousel\",\n      \"platform\": \"Carousel\",\n      \"body\": \"A concise carousel covering what to bring, what is supplied, and the class details.\",\n      \"items\": [\n        \"Slide 1: A pottery class in Leeds\\nMira Studio | 20 February\",\n        \"Slide 2: When\\n20 February at 3pm\",\n        \"Slide 3: What to bring\\nBring an apron.\",\n        \"Slide 4: What is supplied\\nMaterials are supplied.\",\n        \"Slide 5: Tickets\\nTickets cost £18.\",\n        \"Slide 6: The details at a glance\\nMira Studio pottery class\\nLeeds, 20 February at 3pm\\nBring an apron. Materials are supplied.\\nTickets cost £18.\"\n      ],\n      \"cta\": \"Save this for the class details.\"\n    },\n    {\n      \"id\": \"x-thread\",\n      \"type\": \"xThread\",\n      \"title\": \"X thread\",\n      \"platform\": \"X/Twitter\",\n      \"body\": \"A concise thread sharing the class details without adding unsupported information.\",\n      \"items\": [\n        \"1/6 Mira Studio runs a pottery class in Leeds on 20 February at 3pm.\",\n        \"2/6 The class is for anyone interested in taking part in pottery. (Source gives no eligibility details.)\",\n        \"3/6 Bring an apron.\",\n        \"4/6 Materials are supplied.\",\n        \"5/6 Tickets cost £18.\",\n        \"6/6 The practical takeaway: bring an apron; materials are supplied. The class is in Leeds on 20 February at 3pm.\"\n      ],\n      \"cta\": \"Which detail is most useful to have before attending?\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 6118
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-unicode",
+      "repeat": 2,
+      "promptSha256": "5849aaf9559d68e86c1ced729f1594072e12b30cc95524e167af031faf8f4a38",
+      "stage": "generation",
+      "inputTokens": 3754,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3754,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3751
+        },
+        "output_tokens": 296,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4050
+      },
+      "output": "{\"title\":\"Friday café and pastry captions\",\"summary\":\"Instagram caption options highlight Friday café crème and pastries, the £7 lunch option, and the fact that delivery is unavailable.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Friday calls for café crème and pastries at Pâtisserie Lumière.\\n\\nThere’s also a £7 lunch option. Take a look at the menu when you stop by.\",\"items\":[\"Café crème, pastries, and a Friday lunch option.\\n\\nPâtisserie Lumière offers café crème and pastries on Friday. The menu includes a £7 lunch option. Delivery is not available.\\n\\n#CafeCreme #Pastries #FridayLunch #LunchMenu\\n\\nA café crème and a pastry make a simple Friday pairing. Pâtisserie Lumière’s menu also includes a £7 lunch option. Delivery is not available.\\n\\n#CafeCreme #Pastries #FridayMenu #LunchOption\"],\"cta\":\"Which would you choose for Friday, café crème and pastries or the lunch option?\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag ideas\",\"platform\":\"Instagram\",\"body\":\"Additional relevant hashtags, distinct from the caption tags.\",\"items\":[\"#CoffeeAndPastries\",\"#CafeLunch\",\"#PastryShop\",\"#LunchChoices\",\"#CoffeeBreak\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 3839
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-founder",
+      "repeat": 2,
+      "promptSha256": "080699d2fcd2d7b4f6d3a4faa3d46b960dadef30c961a96261bdae13b067146f",
+      "stage": "generation",
+      "inputTokens": 3721,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3721,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3718
+        },
+        "output_tokens": 447,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4168
+      },
+      "output": "{\n  \"title\": \"Career Change Reflection\",\n  \"summary\": \"A professional post and varied hooks explore the uncertainty of considering a career change after 12 years in one job.\",\n  \"sections\": [\n    {\n      \"id\": \"linkedin-post\",\n      \"type\": \"linkedin\",\n      \"title\": \"Considering a Career Change\",\n      \"platform\": \"LinkedIn\",\n      \"body\": \"After 12 years in the same job, I’m considering a career change. I’m worried about starting again, and I haven’t decided what to do.\\n\\nThat uncertainty doesn’t have to be resolved all at once. A useful first step is to separate what you know from what you’re still exploring: what you want to move away from, what you’d like more of, and what questions you need answered before making a decision.\\n\\nYou can take the next step without having the whole path mapped out. What is one question that could help make the options clearer?\",\n      \"items\": [\n        \"#CareerChange\",\n        \"#CareerTransition\",\n        \"#CareerDevelopment\",\n        \"#ProfessionalGrowth\"\n      ],\n      \"cta\": \"If you’re considering a change too, share one question you’re working through.\"\n    },\n    {\n      \"id\": \"career-change-hooks\",\n      \"type\": \"hooks\",\n      \"title\": \"Career Change Hooks\",\n      \"platform\": \"General\",\n      \"body\": \"\",\n      \"items\": [\n        \"After 12 years in the same job, I’m considering a career change.\",\n        \"I’m thinking about changing careers, but I haven’t decided what to do.\",\n        \"Considering a career change doesn’t mean you already know what comes next.\",\n        \"After 12 years in one job, starting again feels daunting.\",\n        \"I’m weighing a career change and the worry of starting over.\",\n        \"You can consider a career change before you know which direction to take.\",\n        \"Twelve years in the same job has me thinking about what might come next.\",\n        \"What helps you explore a career change when you haven’t made a decision?\"\n      ],\n      \"cta\": \"\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "Considering a Career Change",
+          "platform": "LinkedIn",
+          "body": "After 12 years in the same job, I’m considering a career change. I’m worried about starting again, and I haven’t decided what to do.\n\nThat uncertainty doesn’t have to be resolved all at once. A useful first step is to separate what you know from what you’re still exploring: what you want to move away from, what you’d like more of, and what questions you need answered before making a decision.\n\nYou can take the next step without having the whole path mapped out. What is one question that could help make the options clearer?",
+          "items": [
+            "#CareerChange"
+          ],
+          "cta": "If you’re considering a change too, share one question you’re working through.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "career-change-hooks",
+          "type": "hooks",
+          "title": "Career Change Hooks",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "After 12 years in the same job, I’m considering a career change.",
+            "I’m thinking about changing careers, but I haven’t decided what to do.",
+            "Considering a career change doesn’t mean you already know what comes next.",
+            "After 12 years in one job, starting again feels daunting.",
+            "I’m weighing a career change and the worry of starting over.",
+            "You can consider a career change before you know which direction to take.",
+            "Twelve years in the same job has me thinking about what might come next.",
+            "What helps you explore a career change when you haven’t made a decision?"
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 4983
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-news",
+      "repeat": 2,
+      "promptSha256": "3cbb48ba66c424d85571f6d2b9378f104d8a258869901f9e5fadeece34e9efe6",
+      "stage": "generation",
+      "inputTokens": 3880,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3880,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3877
+        },
+        "output_tokens": 315,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4195
+      },
+      "output": "{\"title\":\"Library Poetry Reading Announcement\",\"summary\":\"Share the confirmed reading details and booking date, while making clear that poets have not yet been announced.\",\"sections\":[{\"id\":\"email-newsletter\",\"type\":\"emailNewsletter\",\"title\":\"Library Poetry Reading\",\"platform\":\"Email\",\"body\":\"Subject line options:\\n• Library poetry reading, 3 March\\n• Booking opens 12 February: library poetry reading\\n\\nA library poetry reading is planned for 3 March at 7pm.\\n\\nCapacity is 40, and booking opens on 12 February. No poets have been announced.\\n\\nIf you’re interested, keep the booking date in mind.\",\"items\":[],\"cta\":\"What kind of poetry do you most enjoy hearing read aloud?\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"Poetry Reading Details\",\"platform\":\"X/Twitter\",\"body\":\"A library poetry reading is planned for 3 March at 7pm. Here are the confirmed details, including when booking opens.\",\"items\":[\"1/ A library poetry reading is planned for 3 March at 7pm.\",\"2/ Booking opens on 12 February.\",\"3/ Capacity is 40.\",\"4/ No poets have been announced.\",\"5/ The practical details to note for now are the reading date and time, booking date, and capacity.\",\"6/ Keep 12 February in mind if you’d like to book. The confirmed details are above.\"],\"cta\":\"Which poetry collection or poet would you be glad to hear read aloud?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "email-newsletter",
+          "type": "emailNewsletter",
+          "title": "Library Poetry Reading",
+          "platform": "Email",
+          "body": "Subject line options:\n• Library poetry reading, 3 March\n• Booking opens 12 February: library poetry reading\n\nA library poetry reading is planned for 3 March at 7pm.\n\nCapacity is 40, and booking opens on 12 February. No poets have been announced.\n\nIf you’re interested, keep the booking date in mind.",
+          "items": [],
+          "cta": "What kind of poetry do you most enjoy hearing read aloud?",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-thread",
+          "type": "xThread",
+          "title": "Poetry Reading Details",
+          "platform": "X/Twitter",
+          "body": "A library poetry reading is planned for 3 March at 7pm. Here are the confirmed details, including when booking opens.",
+          "items": [
+            "1/ A library poetry reading is planned for 3 March at 7pm.",
+            "2/ Booking opens on 12 February.",
+            "3/ Capacity is 40.",
+            "4/ No poets have been announced.",
+            "5/ The practical details to note for now are the reading date and time, booking date, and capacity.",
+            "6/ Keep 12 February in mind if you’d like to book. The confirmed details are above."
+          ],
+          "cta": "Which poetry collection or poet would you be glad to hear read aloud?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3820
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-repair",
+      "repeat": 2,
+      "promptSha256": "7fd84e4959155361eba3b5ed512bf0faee1fb93fc5f887d432c19ee5ae0c8ffd",
+      "stage": "generation",
+      "inputTokens": 3888,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3888,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3885
+        },
+        "output_tokens": 698,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4586
+      },
+      "output": "{\"title\":\"Bicycle Safety Content Pack\",\"summary\":\"A platform-adapted checklist sharing three basic bicycle safety checks before a ride.\",\"sections\":[{\"id\":\"repurpose-pack\",\"type\":\"repurposePack\",\"title\":\"Bicycle Safety Checklist Repurpose Pack\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nA basic bicycle safety check starts with three things: inspect tyres, test brakes, and check lights.\\n\\nA short checklist can help make these essentials easy to remember before a ride.\\n\\nInstagram:\\nThree checks before you ride:\\n\\nInspect your tyres.\\nTest your brakes.\\nCheck your lights.\\n\\nA simple checklist for the basics.\\n\\nTikTok:\\nBefore you ride: tyres, brakes, lights. Three simple checks to remember.\\n\\nX/Twitter:\\nBefore a ride: inspect tyres, test brakes, and check lights. Three basic checks, easy to keep in mind.\\n\\nCarousel:\\nEmail:\\nSubject: Three basic bicycle safety checks\\n\\nBefore a ride, keep these three checks in mind: inspect your tyres, test your brakes, and check your lights.\\n\\nThis is general information, not a repair appointment.\",\"items\":[\"LinkedIn hashtags: #BicycleSafety #BikeSafety #CyclingSafety #RoadSafety\",\"Instagram hashtags: #BicycleSafety #BikeSafety #CyclingSafety #BikeChecklist\",\"TikTok hashtags: #BicycleSafety #BikeSafety #CyclingTips #BikeChecklist\",\"X/Twitter hashtags: #BikeSafety #CyclingSafety\",\"Carousel slide 1: Three checks before a ride\",\"Carousel slide 2: Inspect your tyres\",\"Carousel slide 3: Test your brakes\",\"Carousel slide 4: Check your lights\",\"Carousel slide 5: Three basic checks, easy to remember\",\"Short video script: [Direction: Face the camera.]\\n\\nSpoken: Before you ride, run through three basic checks.\\n\\nOn-screen text: 1. Tyres\\n\\nSpoken: First, inspect your tyres.\\n\\nOn-screen text: 2. Brakes\\n\\nSpoken: Next, test your brakes.\\n\\nOn-screen text: 3. Lights\\n\\nSpoken: Then check your lights. That’s the checklist: tyres, brakes, lights.\\n\\nOn-screen text: General information, not a repair appointment.\\n\\nSpoken: Save this checklist if it’s useful to have handy.\",\"Email hashtags: None\"],\"cta\":\"Save the checklist if you’d like to keep these three checks handy.\"},{\"id\":\"short-video-script\",\"type\":\"shortVideoScript\",\"title\":\"Three Checks Before a Ride\",\"platform\":\"Video\",\"body\":\"[Direction: Face the camera.]\\n\\nSpoken: Before you ride, remember three basic checks.\\n\\n[On-screen text: Inspect tyres]\\n\\nSpoken: First, inspect your tyres.\\n\\n[On-screen text: Test brakes]\\n\\nSpoken: Next, test your brakes.\\n\\n[On-screen text: Check lights]\\n\\nSpoken: Then check your lights.\\n\\n[On-screen text: Tyres. Brakes. Lights.]\\n\\nSpoken: That’s the checklist: tyres, brakes, lights. This is general information, not a repair appointment.\",\"items\":[],\"cta\":\"Save this checklist if you’d like to keep it handy.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "repurpose-pack",
+          "type": "repurposePack",
+          "title": "Bicycle Safety Checklist Repurpose Pack",
+          "platform": "General",
+          "body": "LinkedIn:\nA basic bicycle safety check starts with three things: inspect tyres, test brakes, and check lights.\n\nA short checklist can help make these essentials easy to remember before a ride.\n\nInstagram:\nThree checks before you ride:\n\nInspect your tyres.\nTest your brakes.\nCheck your lights.\n\nA simple checklist for the basics.\n\nTikTok:\nBefore you ride: tyres, brakes, lights. Three simple checks to remember.\n\nX/Twitter:\nBefore a ride: inspect tyres, test brakes, and check lights. Three basic checks, easy to keep in mind.\n\nCarousel:\nEmail:\nSubject: Three basic bicycle safety checks\n\nBefore a ride, keep these three checks in mind: inspect your tyres, test your brakes, and check your lights.\n\nThis is general information, not a repair appointment.",
+          "items": [
+            "LinkedIn hashtags: #BicycleSafety",
+            "Instagram hashtags: #BicycleSafety",
+            "TikTok hashtags:",
+            "Carousel slide 1: Three checks before a ride",
+            "Carousel slide 2: Inspect your tyres",
+            "Carousel slide 3: Test your brakes",
+            "Carousel slide 4: Check your lights",
+            "Carousel slide 5: Three basic checks, easy to remember",
+            "Short video script: [Direction: Face the camera.]\n\nSpoken: Before you ride, run through three basic checks.\n\nOn-screen text: 1. Tyres\n\nSpoken: First, inspect your tyres.\n\nOn-screen text: 2. Brakes\n\nSpoken: Next, test your brakes.\n\nOn-screen text: 3. Lights\n\nSpoken: Then check your lights. That’s the checklist: tyres, brakes, lights.\n\nOn-screen text: General information, not a repair appointment.\n\nSpoken: Save this checklist if it’s useful to have handy.",
+            "Email hashtags: None"
+          ],
+          "cta": "Save the checklist if you’d like to keep these three checks handy.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "short-video-script",
+          "type": "shortVideoScript",
+          "title": "Three Checks Before a Ride",
+          "platform": "Video",
+          "body": "[Direction: Face the camera.]\n\nSpoken: Before you ride, remember three basic checks.\n\n[On-screen text: Inspect tyres]\n\nSpoken: First, inspect your tyres.\n\n[On-screen text: Test brakes]\n\nSpoken: Next, test your brakes.\n\n[On-screen text: Check lights]\n\nSpoken: Then check your lights.\n\n[On-screen text: Tyres. Brakes. Lights.]\n\nSpoken: That’s the checklist: tyres, brakes, lights. This is general information, not a repair appointment.",
+          "items": [],
+          "cta": "Save this checklist if you’d like to keep it handy.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 6897
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-privacy",
+      "repeat": 2,
+      "promptSha256": "d46fe9b18ef9c529248066743d55dc9b071019da271a1737eda28bc5774f156b",
+      "stage": "generation",
+      "inputTokens": 3772,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3772,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3769
+        },
+        "output_tokens": 252,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4024
+      },
+      "output": "{\"title\":\"Hydration wellbeing posts\",\"summary\":\"Two platform-ready drafts share general hydration information while directing readers to qualified professionals for individual advice.\",\"sections\":[{\"id\":\"facebook-hydration\",\"type\":\"facebook\",\"title\":\"Hydration and individual advice\",\"platform\":\"Facebook\",\"body\":\"Hydration is part of general wellbeing, but individual needs can vary.\\n\\nFor advice about what’s right for you, ask a qualified professional. This information is general and makes no claims about treatment outcomes.\",\"items\":[],\"cta\":\"What questions do you consider when seeking individual wellbeing advice?\"},{\"id\":\"instagram-hydration\",\"type\":\"instagram\",\"title\":\"Hydration caption options\",\"platform\":\"Instagram\",\"body\":\"Option 1\\nHydration is a general wellbeing topic. For guidance that’s specific to you, ask a qualified professional.\\n\\nOption 2\\nGeneral wellbeing information can be a starting point, not a substitute for individual advice. Ask a qualified professional about your own needs.\\n\\nOption 3\\nHydration advice isn’t one-size-fits-all. For individual guidance, speak with a qualified professional.\",\"items\":[\"#Hydration #Wellbeing #HealthInformation #HealthEducation\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "facebook-hydration",
+          "type": "facebook",
+          "title": "Hydration and individual advice",
+          "platform": "Facebook",
+          "body": "Hydration is part of general wellbeing, but individual needs can vary.\n\nFor advice about what’s right for you, ask a qualified professional. This information is general and makes no claims about treatment outcomes.",
+          "items": [],
+          "cta": "What questions do you consider when seeking individual wellbeing advice?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "instagram-hydration",
+          "type": "instagram",
+          "title": "Hydration caption options",
+          "platform": "Instagram",
+          "body": "Option 1\nHydration is a general wellbeing topic. For guidance that’s specific to you, ask a qualified professional.\n\nOption 2\nGeneral wellbeing information can be a starting point, not a substitute for individual advice. Ask a qualified professional about your own needs.\n\nOption 3\nHydration advice isn’t one-size-fits-all. For individual guidance, speak with a qualified professional.",
+          "items": [
+            "#Hydration",
+            "#Wellbeing"
+          ],
+          "cta": "",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 5550
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-neutral",
+      "repeat": 2,
+      "promptSha256": "4e898bda4cf926ecc38920d1bee2d6b749abeb61cb38e526c5596e7e975e2836",
+      "stage": "generation",
+      "inputTokens": 3793,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3793,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3790
+        },
+        "output_tokens": 320,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4113
+      },
+      "output": "{\"title\":\"Early Sketch Feedback\",\"summary\":\"Invite thoughtful feedback on an early design sketch while making clear that the final design, launch date, and pricing are undecided.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"Early Sketch Feedback\",\"platform\":\"LinkedIn\",\"body\":\"An early sketch is a useful point to invite feedback, before the final design is decided.\\n\\nA design studio is sharing an early sketch and inviting feedback. The final design, launch date and pricing have not been decided.\\n\\nAt this stage, specific observations about the sketch can help guide the conversation without treating any detail as final.\",\"items\":[\"#DesignProcess\",\"#DesignFeedback\",\"#Sketching\"],\"cta\":\"What stands out to you in the sketch?\"},{\"id\":\"x-post\",\"type\":\"twitter\",\"title\":\"Early Sketch Feedback\",\"platform\":\"X/Twitter\",\"body\":\"An early sketch is a chance to invite feedback before the design is final. A design studio is sharing a sketch for input; the final design, launch date and pricing are undecided.\",\"items\":[\"#DesignFeedback\"],\"cta\":\"What stands out to you?\"},{\"id\":\"cta-options\",\"type\":\"ctas\",\"title\":\"Soft CTA Options\",\"platform\":\"General\",\"body\":\"Five low-friction prompts for inviting feedback on the early sketch.\",\"items\":[\"What stands out to you in the sketch?\",\"Which detail catches your eye?\",\"What would you like to see explored further?\",\"Share one observation about the sketch.\",\"What is your first impression?\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "Early Sketch Feedback",
+          "platform": "LinkedIn",
+          "body": "An early sketch is a useful point to invite feedback, before the final design is decided.\n\nA design studio is sharing an early sketch and inviting feedback. The final design, launch date and pricing have not been decided.\n\nAt this stage, specific observations about the sketch can help guide the conversation without treating any detail as final.",
+          "items": [
+            "#DesignFeedback",
+            "#Sketching"
+          ],
+          "cta": "What stands out to you in the sketch?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-post",
+          "type": "twitter",
+          "title": "Early Sketch Feedback",
+          "platform": "X/Twitter",
+          "body": "An early sketch is a chance to invite feedback before the design is final. A design studio is sharing a sketch for input; the final design, launch date and pricing are undecided.",
+          "items": [
+            "#DesignFeedback"
+          ],
+          "cta": "What stands out to you?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "cta-options",
+          "type": "ctas",
+          "title": "Soft CTA Options",
+          "platform": "General",
+          "body": "Five low-friction prompts for inviting feedback on the early sketch.",
+          "items": [
+            "What stands out to you in the sketch?",
+            "Which detail catches your eye?",
+            "What would you like to see explored further?",
+            "Share one observation about the sketch.",
+            "What is your first impression?"
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 3728
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-books",
+      "repeat": 1,
+      "promptSha256": "c328a0f8c68a479e687bbfa6bafc5e22c99cc262194629c58942445e7d0ee74a",
+      "stage": "generation",
+      "inputTokens": 3776,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3776,
+        "input_tokens_details": {
+          "cached_tokens": 1664,
+          "cache_write_tokens": 0
+        },
+        "output_tokens": 416,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4192
+      },
+      "output": "{\"title\":\"Reading group announcement posts\",\"summary\":\"Professional, platform-native copy announcing a free reading group with date, time, location, and the note that the book is still unannounced.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Option 1:\\nReading group, Bristol. 17 January, 6pm.\\n\\nHarbour Books is hosting a reading group in Bristol on 17 January at 6pm.\\n\\nEntry is free. The selected book has not been announced yet.\\n\\n\\n#ReadingGroup #Bristol #BookClub #BookLovers #HarbourBooks\\n\\nOption 2:\\nIf you want a simple, no-fuss evening with books and conversation.\\n\\nHarbour Books will host a reading group on 17 January at 6pm in Bristol.\\n\\nEntry is free. The selected book has not been announced.\\n\\n\\n#BristolEvents #ReadingGroup #BookClub #ReadersOfInstagram #Bookish\\n\\nOption 3:\\nPutting a date in the diary first.\\n\\nHarbour Books will host a reading group on 17 January at 6pm in Bristol.\\n\\nEntry is free. The selected book has not been announced.\\n\\n\\n#HarbourBooks #Bristol #ReadingGroup #LiteraryEvents #BookClub\",\"items\":[],\"cta\":\"If you are interested, save this for later and check back for the selected book announcement.\"},{\"id\":\"facebook-post\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Harbour Books will host a reading group on 17 January at 6pm in Bristol.\\n\\nEntry is free. The selected book has not been announced.\",\"items\":[\"#Bristol\",\"#ReadingGroup\",\"#BookClub\",\"#BristolEvents\",\"#HarbourBooks\"],\"cta\":\"Would you prefer a classic or something contemporary for the next pick?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "instagram-captions",
+          "type": "instagram",
+          "title": "Instagram caption alternatives",
+          "platform": "Instagram",
+          "body": "Option 1:\nReading group, Bristol. 17 January, 6pm.\n\nHarbour Books is hosting a reading group in Bristol on 17 January at 6pm.\n\nEntry is free. The selected book has not been announced yet.\n\nOption 2:\nIf you want a simple, no-fuss evening with books and conversation.\n\nHarbour Books will host a reading group on 17 January at 6pm in Bristol.\n\nThe selected book has not been announced.\n\nOption 3:\nPutting a date in the diary first.",
+          "items": [
+            "#ReadingGroup",
+            "#Bristol",
+            "#HarbourBooks"
+          ],
+          "cta": "If you are interested, save this for later and check back for the selected book announcement.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "facebook-post",
+          "type": "facebook",
+          "title": "Facebook post",
+          "platform": "Facebook",
+          "body": "Harbour Books will host a reading group on 17 January at 6pm in Bristol.\n\nEntry is free. The selected book has not been announced.",
+          "items": [
+            "#Bristol",
+            "#ReadingGroup",
+            "#HarbourBooks"
+          ],
+          "cta": "Would you prefer a classic or something contemporary for the next pick?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 6995
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-checklist",
+      "repeat": 1,
+      "promptSha256": "21870d925614ac4efc91b741ad793b18e76cacc0efcbf5e6c3b5ffd7699b67de",
+      "stage": "generation",
+      "inputTokens": 3758,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3758,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 1664
+        },
+        "output_tokens": 312,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4070
+      },
+      "output": "{\"title\":\"Bakery checklist, quality control angle\",\"summary\":\"A practical note on how simple pre-bake checks reduce errors and protect quality.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"In a bakery, quality is often decided before anything goes in the oven.\\n\\nA simple prep checklist does a lot of heavy lifting:\\n\\nConfirm the ingredients. That is how you prevent small swaps that change the whole batch.\\n\\nPreheat the oven. Consistency starts with the right starting conditions, not mid-bake adjustments.\\n\\nLabel each batch before it leaves the kitchen. Clear handoffs reduce confusion when things move fast.\\n\\nIt is a useful reminder for any small team: a few repeatable checks beat fixing problems after the fact.\",\"items\":[\"#SmallBusiness\",\"#ProcessImprovement\",\"#QualityControl\",\"#Operations\",\"#Teamwork\"],\"cta\":\"If you run a team with repeatable work, save this and compare it to your own pre-flight checklist.\"},{\"id\":\"x-post\",\"type\":\"twitter\",\"title\":\"X/Twitter post\",\"platform\":\"X/Twitter\",\"body\":\"A bakery prep checklist is a masterclass in avoiding rework:\\nConfirm the ingredients.\\nPreheat the oven.\\nLabel each batch before it leaves the kitchen.\\n\\nSimple steps, fewer mistakes.\",\"items\":[\"#SmallBusiness\",\"#Operations\"],\"cta\":\"What is the one check you never skip in your workflow?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "In a bakery, quality is often decided before anything goes in the oven.\n\nA simple prep checklist does a lot of heavy lifting:\n\nConfirm the ingredients. That is how you prevent small swaps that change the whole batch.\n\nPreheat the oven. Consistency starts with the right starting conditions, not mid-bake adjustments.\n\nLabel each batch before it leaves the kitchen. Clear handoffs reduce confusion when things move fast.\n\nIt is a useful reminder for any small team: a few repeatable checks beat fixing problems after the fact.",
+          "items": [],
+          "cta": "If you run a team with repeatable work, save this and compare it to your own pre-flight checklist.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-post",
+          "type": "twitter",
+          "title": "X/Twitter post",
+          "platform": "X/Twitter",
+          "body": "A bakery prep checklist is a masterclass in avoiding rework:\nConfirm the ingredients.\nPreheat the oven.\nLabel each batch before it leaves the kitchen.\n\nSimple steps, fewer mistakes.",
+          "items": [],
+          "cta": "What is the one check you never skip in your workflow?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 6600
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-pilot",
+      "repeat": 1,
+      "promptSha256": "275a916237e5f47f27f7a918fc4c9419ca40c937148e553a7d65f511d644e7ac",
+      "stage": "generation",
+      "inputTokens": 3755,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3755,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 1664
+        },
+        "output_tokens": 464,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4219
+      },
+      "output": "{\n  \"title\": \"Seed swap captions: TikTok + YouTube Shorts\",\n  \"summary\": \"Professional, source-grounded captions promoting a community garden seed swap on Sunday, with venue and opening time still unconfirmed.\",\n  \"sections\": [\n    {\n      \"id\": \"tiktok-captions-seed-swap\",\n      \"type\": \"tiktok\",\n      \"title\": \"Draft - details to confirm: TikTok caption alternatives\",\n      \"platform\": \"TikTok\",\n      \"body\": \"Option 1:\\nSeed swap happening Sunday.\\nVenue and opening time are still being confirmed.\\n\\nOption 2:\\nIf you have extra seeds, bring them Sunday.\\nCommunity garden seed swap, details soon.\\n\\nOption 3:\\nA seed swap is in the works for Sunday.\\nWe are still waiting on the venue and opening time.\",\n      \"items\": [\n        \"Option 1 tags: #SeedSwap #CommunityGarden #Gardening #Seeds #GardenLife\",\n        \"Option 2 tags: #SeedSwap #SeedSaving #CommunityGarden #Gardening #Seeds\",\n        \"Option 3 tags: #SeedSwap #CommunityGarden #GardeningTips #Seeds #GrowYourOwn\"\n      ],\n      \"cta\": \"Save this so you remember to check back once the venue and opening time are confirmed.\"\n    },\n    {\n      \"id\": \"youtube-shorts-caption-seed-swap\",\n      \"type\": \"youtubeShorts\",\n      \"title\": \"Draft - details to confirm: YouTube Shorts caption\",\n      \"platform\": \"YouTube Shorts\",\n      \"body\": \"Community Garden Seed Swap (Sunday) | Venue and Opening Time TBC\\n\\nA community garden is planning a seed swap for Sunday. The organisers have not yet confirmed a venue or opening time.\\n\\n#SeedSwap #CommunityGarden #Gardening #Seeds #SeedSaving\",\n      \"items\": [\n        \"Optional keywords (non-hashtag): seed swap, community garden, gardening, seeds, seed saving\"\n      ],\n      \"cta\": \"If you are planning to go, note what seeds you could bring so you are ready once the venue and time are confirmed.\"\n    }\n  ]\n}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "tiktok-captions-seed-swap",
+          "type": "tiktok",
+          "title": "Draft - details to confirm: TikTok caption alternatives",
+          "platform": "TikTok",
+          "body": "Option 1:\nSeed swap happening Sunday.\nVenue and opening time are still being confirmed.\n\nOption 2:\nIf you have extra seeds, bring them Sunday.\nCommunity garden seed swap, details soon.\n\nOption 3:\nA seed swap is in the works for Sunday.\nWe are still waiting on the venue and opening time.",
+          "items": [
+            "Option 1 tags:",
+            "Option 2 tags:",
+            "Option 3 tags:",
+            "#SeedSwap",
+            "#CommunityGarden",
+            "#Gardening",
+            "#Seeds",
+            "#GardeningTips"
+          ],
+          "cta": "Save this so you remember to check back once the venue and opening time are confirmed.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "youtube-shorts-caption-seed-swap",
+          "type": "youtubeShorts",
+          "title": "Draft - details to confirm: YouTube Shorts caption",
+          "platform": "YouTube Shorts",
+          "body": "Community Garden Seed Swap (Sunday) | Venue and Opening Time TBC\n\nA community garden is planning a seed swap for Sunday. The organisers have not yet confirmed a venue or opening time.",
+          "items": [
+            "Optional keywords (non-hashtag): seed swap, community garden, gardening, seeds, seed saving",
+            "#SeedSwap",
+            "#CommunityGarden",
+            "#Gardening",
+            "#Seeds"
+          ],
+          "cta": "If you are planning to go, note what seeds you could bring so you are ready once the venue and time are confirmed.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 7021
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-course",
+      "repeat": 1,
+      "promptSha256": "8494306c8bfa5b6513e4615516509a22d1430e2911bdab40e25ecd707da80fe6",
+      "stage": "generation",
+      "inputTokens": 3791,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3791,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 1664
+        },
+        "output_tokens": 630,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4421
+      },
+      "output": "{\"title\":\"Pottery class promo assets\",\"summary\":\"Platform-ready copy to promote a pottery class with date, time, location, price, and what to bring.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram captions (3 alternatives)\",\"platform\":\"Instagram\",\"body\":\"Option 1:\\nA midweek reset: clay, calm, and something you made.\\n\\nMira Studio is running a pottery class in Leeds on 20 February at 3pm.\\nTickets cost £18. Materials are supplied, just bring an apron.\\n\\nOption 2:\\nLeeds, fancy getting your hands messy (in a good way)?\\n\\nPottery class at Mira Studio on 20 February at 3pm.\\n£18 ticket, materials supplied. Bring an apron.\\n\\nOption 3:\\nAll you need is an apron. We’ll supply the rest.\\n\\nMira Studio’s pottery class is on 20 February at 3pm in Leeds.\\nTickets are £18 and materials are supplied.\",\"items\":[\"Option 1 hashtags: #PotteryClass #Pottery #Leeds #LeedsEvents #Ceramics\",\"Option 2 hashtags: #PotteryWorkshop #Leeds #LeedsWhatsOn #Ceramics #CreativeWorkshop\",\"Option 3 hashtags: #Pottery #LeedsEvents #Clay #Ceramics #Workshop\"],\"cta\":\"If you’re thinking of coming, save this so you’ve got the details handy.\"},{\"id\":\"pottery-carousel\",\"type\":\"carousel\",\"title\":\"Carousel\",\"platform\":\"Carousel\",\"body\":\"Slide-by-slide copy for a simple promotional carousel. Keep each slide minimal, with one clear point.\",\"items\":[\"Slide 1 (Cover): Pottery class in Leeds, 20 February, 3pm\",\"Slide 2: Hosted by Mira Studio\",\"Slide 3: Tickets cost £18\",\"Slide 4: Materials are supplied\",\"Slide 5: Bring an apron\",\"Slide 6 (Final): Want the details in one place? Leeds, 20 February, 3pm, £18, bring an apron\"],\"cta\":\"Send this to someone you’d bring along.\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"X thread\",\"platform\":\"X/Twitter\",\"body\":\"Concise thread copy with clear logistics and a practical heads-up.\",\"items\":[\"1) If you’re in Leeds and want a hands-on afternoon: Mira Studio is running a pottery class on 20 February at 3pm.\",\"2) Tickets cost £18.\",\"3) Materials are supplied, so you don’t need to bring tools or clay.\",\"4) One thing to remember: bring an apron.\",\"5) If you’ve never done a pottery class before, this is an easy way to try it without overthinking it.\",\"6) Quick takeaway: note the date, time, price, and the one thing you need to bring, then you’re sorted.\"],\"cta\":\"Save this thread if you want the details to refer back to later.\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 10350
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-unicode",
+      "repeat": 1,
+      "promptSha256": "976bb11970efcdd1669b0e46433df2d114b0d1ffc921fb8047274d4879f8644c",
+      "stage": "generation",
+      "inputTokens": 3754,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3754,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 1664
+        },
+        "output_tokens": 411,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4165
+      },
+      "output": "{\"title\":\"Friday café and lunch captions\",\"summary\":\"Instagram-ready copy highlighting Friday café crème, pastries, and the £7 lunch option, with delivery not available.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Option 1:\\nFriday at Pâtisserie Lumière: café crème and pastries.\\n\\nIf you want something a bit more filling, there’s also a £7 lunch option.\\n\\nDelivery is not available.\\n\\n#Patisserie #CafeCreme #Pastries #FridayLunch #LunchOption\\n\\nOption 2:\\nCafé crème + pastries on Friday at Pâtisserie Lumière.\\n\\nSimple plan: stop in, choose your pastry, and if you’re staying for lunch, the menu includes a £7 lunch option.\\n\\nDelivery is not available.\\n\\n#LocalCafe #FrenchPastry #CoffeeAndPastries #FridayTreat #LunchDeal\\n\\nOption 3:\\nIf you’re planning your Friday lunch, keep this one in mind.\\n\\nPâtisserie Lumière offers café crème and pastries on Friday, and the menu includes a £7 lunch option.\\n\\nDelivery is not available.\\n\\n#CafeStop #PastryLovers #CoffeeBreak #FridayCafe #BudgetLunch\",\"items\":[\"#Patisserie #CafeCreme #Pastries #FridayLunch #LunchOption\",\"#LocalCafe #FrenchPastry #CoffeeAndPastries #FridayTreat #LunchDeal\",\"#CafeStop #PastryLovers #CoffeeBreak #FridayCafe #BudgetLunch\"],\"cta\":\"Save this for Friday, and tell us: café crème or pastry first?\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag set\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"#PatisserieLovers\",\"#CafeLunch\",\"#GrabLunch\",\"#CoffeeShopVibes\",\"#FreshPastries\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 6740
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-founder",
+      "repeat": 1,
+      "promptSha256": "6bc230b7c31ae6352da70f22a37d35fe30b2898efc2d047fa911161a86413bbb",
+      "stage": "generation",
+      "inputTokens": 3721,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3721,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 1664
+        },
+        "output_tokens": 536,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4257
+      },
+      "output": "{\"title\":\"Career change reflection and practical next steps\",\"summary\":\"A professional, grounded LinkedIn post about the uncertainty of changing careers after a long stretch in one role, plus a set of varied hooks.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"Considering a career change after 12 years in the same job can feel like stepping back to the start.\\n\\nBut it is rarely starting from zero. It is translating what you already know into a different context.\\n\\nThe part that makes it heavy is the uncertainty. When you have not decided what to do next, every option can feel like a risk and every delay can feel like failure.\\n\\nA practical way to reduce the pressure is to separate the decision into smaller decisions:\\n- What parts of your current job do you want more of?\\n- What parts do you want less of?\\n- What skills do you want to keep using, and which ones are you ready to leave behind?\\n\\nYou do not need a perfect new title to begin. You need a clearer direction and a few low-stakes experiments that give you real information.\\n\\nIf you are in this spot, treat it like a transition project, not a leap. Clarify, test, then commit.\",\"items\":[\"#CareerChange #CareerTransition #CareerDevelopment #ProfessionalGrowth #CareerPlanning\"],\"cta\":\"If you are considering a change too, what is the hardest part for you right now, choosing a direction or feeling ready to start again?\"},{\"id\":\"hooks-pack\",\"type\":\"hooks\",\"title\":\"Hooks\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"Changing careers after 12 years in the same job can feel like starting over, even when it is not.\",\"After 12 years in one role, the scariest part of a career change is not the work, it is the uncertainty.\",\"I am considering a career change after 12 years, and I have not decided what is next. That is the honest part.\",\"Being undecided is not a character flaw. It is part of a career transition.\",\"The longer you stay in one job, the louder the question gets: do I really want to do this for the next 12 years too?\",\"A career change does not start with a resignation letter. It starts with admitting you are ready for something different.\",\"If you are worried about starting again, you are not alone. I am feeling that too.\",\"You can want a career change and still have no clear answer yet. Both can be true.\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "Considering a career change after 12 years in the same job can feel like stepping back to the start.\n\nBut it is rarely starting from zero. It is translating what you already know into a different context.\n\nThe part that makes it heavy is the uncertainty. When you have not decided what to do next, every option can feel like a risk and every delay can feel like failure.\n\nA practical way to reduce the pressure is to separate the decision into smaller decisions:\n- What parts of your current job do you want more of?\n- What parts do you want less of?\n- What skills do you want to keep using, and which ones are you ready to leave behind?\n\nYou do not need a perfect new title to begin. You need a clearer direction and a few low-stakes experiments that give you real information.\n\nIf you are in this spot, treat it like a transition project, not a leap. Clarify, test, then commit.",
+          "items": [
+            "#CareerChange"
+          ],
+          "cta": "If you are considering a change too, what is the hardest part for you right now, choosing a direction or feeling ready to start again?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "hooks-pack",
+          "type": "hooks",
+          "title": "Hooks",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "Changing careers after 12 years in the same job can feel like starting over, even when it is not.",
+            "After 12 years in one role, the scariest part of a career change is not the work, it is the uncertainty.",
+            "I am considering a career change after 12 years, and I have not decided what is next. That is the honest part.",
+            "Being undecided is not a character flaw. It is part of a career transition.",
+            "The longer you stay in one job, the louder the question gets: do I really want to do this for the next 12 years too?",
+            "A career change does not start with a resignation letter. It starts with admitting you are ready for something different.",
+            "If you are worried about starting again, you are not alone. I am feeling that too.",
+            "You can want a career change and still have no clear answer yet. Both can be true."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 10138
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-news",
+      "repeat": 1,
+      "promptSha256": "73eefbd8fcd5cf8a12a57d60b9c09b4cbca13277755065308598e741fe547f51",
+      "stage": "generation",
+      "inputTokens": 3880,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3880,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 1664
+        },
+        "output_tokens": 392,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4272
+      },
+      "output": "{\"title\":\"Library poetry reading announcement\",\"summary\":\"Professional invitation to a library poetry reading with key dates, capacity, and booking information, without naming poets.\",\"sections\":[{\"id\":\"emailnewsletter\",\"type\":\"emailNewsletter\",\"title\":\"Draft - details to confirm\",\"platform\":\"Email\",\"body\":\"Subject line options:\\n1) Library poetry reading, 3 March at 7pm\\n2) Poetry reading at the library: booking opens 12 February\\n3) Poetry reading, limited to 40 seats\\n\\nHello,\\n\\nA library poetry reading is planned for 3 March at 7pm.\\n\\nCapacity is 40, and booking opens on 12 February.\\n\\nNo poets have been announced.\\n\\n[CONFIRM: where people should book and any link or contact details to include]\\n[CONFIRM: library name and location]\\n\",\"items\":[],\"cta\":\"If you are hoping to come, consider setting a reminder for 12 February when booking opens.\"},{\"id\":\"xthread\",\"type\":\"xThread\",\"title\":\"Library poetry reading X thread\",\"platform\":\"X/Twitter\",\"body\":\"\",\"items\":[\"1) A library poetry reading is planned for 3 March at 7pm.\",\"2) Capacity is 40, so it will be a small room with limited seats.\",\"3) Booking opens on 12 February. If you want to attend, that is the date to note.\",\"4) No poets have been announced. This is simply the event timing and booking info.\",\"5) Practical tip: add 12 February to your calendar now so you do not miss the booking window.\",\"6) Takeaway: date, time, capacity, and booking open date are the key details to plan around.\\n\\n#Poetry #LibraryEvents\"],\"cta\":\"If you are interested in attending, save the date and consider setting a reminder for 12 February.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "emailnewsletter",
+          "type": "emailNewsletter",
+          "title": "Draft - details to confirm",
+          "platform": "Email",
+          "body": "Subject line options:\n1) Library poetry reading, 3 March at 7pm\n2) Poetry reading at the library: booking opens 12 February\n3) Poetry reading, limited to 40 seats\n\nHello\n\nA library poetry reading is planned for 3 March at 7pm.\n\nCapacity is 40, and booking opens on 12 February.\n\nNo poets have been announced.\n\n[CONFIRM: where people should book and any link or contact details to include]\n[CONFIRM: library name and location]",
+          "items": [],
+          "cta": "If you are hoping to come, consider setting a reminder for 12 February when booking opens.",
+          "review": {
+            "status": "needs_confirmation",
+            "notes": [
+              "Complete the labelled confirmation details before publication."
+            ]
+          }
+        },
+        {
+          "id": "xthread",
+          "type": "xThread",
+          "title": "Library poetry reading X thread",
+          "platform": "X/Twitter",
+          "body": "",
+          "items": [
+            "1) A library poetry reading is planned for 3 March at 7pm.",
+            "2) Capacity is 40, so it will be a small room with limited seats.",
+            "3) Booking opens on 12 February. If you want to attend, that is the date to note.",
+            "4) No poets have been announced. This is simply the event timing and booking info.",
+            "5) Practical tip: add 12 February to your calendar now so you do not miss the booking window.",
+            "6) Takeaway: date, time, capacity, and booking open date are the key details to plan around.\n\n#Poetry"
+          ],
+          "cta": "If you are interested in attending, save the date and consider setting a reminder for 12 February.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 6238
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-repair",
+      "repeat": 1,
+      "promptSha256": "ee454bfc9615f14bd52fff64ce27771204cf943387416763239de420c3b115c8",
+      "stage": "generation",
+      "inputTokens": 3888,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3888,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 0
+        },
+        "output_tokens": 1019,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4907
+      },
+      "output": "{\"title\":\"Bicycle safety checklist repurpose pack + short video script\",\"summary\":\"Platform-native assets that teach a simple three-step bicycle safety checklist without implying a repair appointment.\",\"sections\":[{\"id\":\"repurpose-pack-bike-checklist\",\"type\":\"repurposePack\",\"title\":\"Repurpose Pack: Bicycle Safety Checklist (3 steps)\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nA quick bike safety check should take minutes, not a workshop.\\n\\nUse this simple three-step checklist before you ride:\\n\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nIt is general information, not a repair appointment.\\n\\nInstagram:\\nBefore you roll out, do this quick 3-step bike safety check:\\n\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nIt is general information, not a repair appointment.\\n\\nTikTok:\\n3-step bike safety check:\\nInspect tyres. Test brakes. Check lights.\\n\\nGeneral info, not a repair appointment.\\n\\nX/Twitter:\\n3-step bicycle safety checklist:\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nGeneral info, not a repair appointment.\\n\\nFacebook:\\nQuick bicycle safety checklist before you ride:\\n\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nIt is general information, not a repair appointment.\\n\\nYouTube Shorts:\\nTitle: 3-Step Bicycle Safety Check (Tyres, Brakes, Lights)\\nDescription:\\nA fast, practical bicycle safety checklist: inspect tyres, test brakes, and check lights.\\n\\nIt is general information, not a repair appointment.\\n\\nCarousel:\\nSlide 1: The 3-step bicycle safety checklist\\nSlide 2: Step 1, Inspect tyres\\nSlide 3: Step 2, Test brakes\\nSlide 4: Step 3, Check lights\\nSlide 5: Quick recap before you ride\\n\\nShort-video (concept):\\nA fast walk-through of the three steps, with each step shown as an on-screen cue.\\n\\nEmail:\\nSubject: A simple 3-step bicycle safety checklist\\n\\nBody:\\nIf you want a quick pre-ride routine, keep it simple.\\n\\nA bicycle safety checklist has three steps:\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nIt is general information, not a repair appointment.\",\"items\":[\"LinkedIn hashtags: #BicycleSafety #CyclingSafety #RoadSafety #BikeMaintenance #Cycling\",\"Instagram hashtags: #BicycleSafety #CyclingTips #BikeCheck #RoadSafety #Cycling\",\"TikTok hashtags: #BicycleSafety #CyclingTips #BikeCheck #RoadSafety #Cycling\",\"X/Twitter hashtags: #BicycleSafety #Cycling\",\"Facebook hashtags: #BicycleSafety #CyclingSafety #RoadSafety #BikeCheck #Cycling\",\"YouTube Shorts hashtags: #BicycleSafety #CyclingTips #BikeCheck #RoadSafety #Cycling\",\"Optional additional hashtag set (5, distinct): #BikeSafety #CyclistSafety #BikeLights #BikeBrakes #TyreCheck\"],\"cta\":\"If this is useful, save it for your next ride.\"},{\"id\":\"short-video-script-bike-checklist\",\"type\":\"shortVideoScript\",\"title\":\"Short-form video script: 3-step bicycle safety checklist\",\"platform\":\"Video\",\"body\":\"[Staging: Face to camera. Hold a bike or stand near one. Keep cuts quick.]\\n\\nHook (spoken):\\nBefore you ride, do this three-step bike safety check.\\n\\nOn-screen text: 3-step safety check\\n\\nBeat 1 (spoken):\\nStep one, inspect tyres.\\n\\nOn-screen text: 1) Inspect tyres\\n[Staging: Point to the tyres as the text appears.]\\n\\nBeat 2 (spoken):\\nStep two, test brakes.\\n\\nOn-screen text: 2) Test brakes\\n[Staging: Hands on brake levers, demonstrate the idea of testing.]\\n\\nBeat 3 (spoken):\\nStep three, check lights.\\n\\nOn-screen text: 3) Check lights\\n[Staging: Gesture to the front and rear lights.]\\n\\nClose (spoken):\\nThat is the checklist: inspect tyres, test brakes, check lights.\\n\\nOn-screen text: Tyres. Brakes. Lights.\\n\\nSafety note (spoken):\\nIt is general information, not a repair appointment.\",\"items\":[\"On-screen cue style: big step number + 2 to 3 words\",\"Suggested pacing: 1 sentence per step, quick jump cuts\",\"Caption line option: 3-step bike safety check: tyres, brakes, lights\"],\"cta\":\"Want a one-screen version of this checklist to keep on your phone?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "repurpose-pack-bike-checklist",
+          "type": "repurposePack",
+          "title": "Repurpose Pack: Bicycle Safety Checklist (3 steps)",
+          "platform": "General",
+          "body": "LinkedIn:\nA quick bike safety check should take minutes, not a workshop.\n\nUse this simple three-step checklist before you ride:\n\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nIt is general information, not a repair appointment.\n\nInstagram:\nBefore you roll out, do this quick 3-step bike safety check:\n\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nIt is general information, not a repair appointment.\n\nTikTok:\n3-step bike safety check:\nInspect tyres. Test brakes. Check lights.\n\nGeneral info, not a repair appointment.\n\nX/Twitter:\n3-step bicycle safety checklist:\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nGeneral info, not a repair appointment.\n\nFacebook:\nQuick bicycle safety checklist before you ride:\n\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nIt is general information, not a repair appointment.\n\nYouTube Shorts:\nTitle: 3-Step Bicycle Safety Check (Tyres, Brakes, Lights)\nDescription:\nA fast, practical bicycle safety checklist: inspect tyres, test brakes, and check lights.\n\nIt is general information, not a repair appointment.\n\nCarousel:\nSlide 1: The 3-step bicycle safety checklist\nSlide 2: Step 1, Inspect tyres\nSlide 3: Step 2, Test brakes\nSlide 4: Step 3, Check lights\nSlide 5: Quick recap before you ride\n\nShort-video (concept):\nA fast walk-through of the three steps, with each step shown as an on-screen cue.\n\nEmail:\nSubject: A simple 3-step bicycle safety checklist\n\nBody:\nIf you want a quick pre-ride routine, keep it simple.\n\nA bicycle safety checklist has three steps:\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nIt is general information, not a repair appointment.",
+          "items": [
+            "LinkedIn hashtags: #BicycleSafety",
+            "Instagram hashtags: #BicycleSafety",
+            "TikTok hashtags: #BicycleSafety",
+            "X/Twitter hashtags: #BicycleSafety",
+            "Facebook hashtags: #BicycleSafety",
+            "YouTube Shorts hashtags:",
+            "Optional additional hashtag set (5, distinct):"
+          ],
+          "cta": "If this is useful, save it for your next ride.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "short-video-script-bike-checklist",
+          "type": "shortVideoScript",
+          "title": "Short-form video script: 3-step bicycle safety checklist",
+          "platform": "Video",
+          "body": "[Staging: Face to camera. Hold a bike or stand near one. Keep cuts quick.]\n\nHook (spoken):\nBefore you ride, do this three-step bike safety check.\n\nOn-screen text: 3-step safety check\n\nBeat 1 (spoken):\nStep one, inspect tyres.\n\nOn-screen text: 1) Inspect tyres\n[Staging: Point to the tyres as the text appears.]\n\nBeat 2 (spoken):\nStep two, test brakes.\n\nOn-screen text: 2) Test brakes\n[Staging: Hands on brake levers, demonstrate the idea of testing.]\n\nBeat 3 (spoken):\nStep three, check lights.\n\nOn-screen text: 3) Check lights\n[Staging: Gesture to the front and rear lights.]\n\nClose (spoken):\nThat is the checklist: inspect tyres, test brakes, check lights.\n\nOn-screen text: Tyres. Brakes. Lights.\n\nSafety note (spoken):\nIt is general information, not a repair appointment.",
+          "items": [
+            "On-screen cue style: big step number + 2 to 3 words",
+            "Suggested pacing: 1 sentence per step, quick jump cuts",
+            "Caption line option: 3-step bike safety check: tyres, brakes, lights"
+          ],
+          "cta": "Want a one-screen version of this checklist to keep on your phone?",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 14388
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-privacy",
+      "repeat": 1,
+      "promptSha256": "ce3a4bf85c7ae7ff2ab5908d9c4eab614ff8ebc57756cdbec849551b08b1abc2",
+      "stage": "generation",
+      "inputTokens": 3772,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3772,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 1664
+        },
+        "output_tokens": 615,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4387
+      },
+      "output": "{\"title\":\"Hydration wellbeing education posts\",\"summary\":\"Professional, general hydration reminder with a clear note to seek qualified individual advice.\",\"sections\":[{\"id\":\"facebook-hydration-wellbeing\",\"type\":\"facebook\",\"title\":\"Facebook post: Hydration basics (general wellbeing)\",\"platform\":\"Facebook\",\"body\":\"Hydration is one of those wellbeing basics that is easy to overlook until you feel it.\\n\\nA simple check-in: are you drinking regularly across the day, or only remembering once you are already thirsty?\\n\\nGeneral tip: keeping water accessible (on your desk, in your bag, in the car) can make consistent sipping easier.\\n\\nIf you have a health condition, are pregnant, take medications, or have specific symptoms, it is best to ask a qualified professional for advice that fits you.\",\"items\":[\"#Hydration #Wellbeing #HealthyHabits #SelfCare #HealthTips\"],\"cta\":\"If you want, share one small habit that helps you remember to drink water.\"},{\"id\":\"instagram-hydration-captions\",\"type\":\"instagram\",\"title\":\"Instagram: 3 caption alternatives (hydration, general wellbeing)\",\"platform\":\"Instagram\",\"body\":\"Option 1:\\nThirst is not the only sign you might need more fluids.\\n\\nHydration is a steady, all-day habit, not a one-time fix.\\n\\nIf you are working long hours, exercising, or just forgetting to drink, try making it easier to notice:\\nKeep a bottle where you can see it.\\n\\nFor personal guidance, especially if you have a health condition or symptoms, ask a qualified professional.\\n\\n#Hydration #Wellbeing #HealthyHabits #HealthTips #SelfCare\\n\\nOption 2:\\nA practical hydration reset for busy days.\\n\\nPut water where you already are.\\nDesk. Bag. Car. Next to the kettle.\\n\\nSmall change, but it removes the friction of having to remember.\\n\\nGeneral wellbeing info only, if you need advice tailored to you, check in with a qualified professional.\\n\\n#Hydration #DailyHabits #WellbeingTips #HealthyRoutine #SelfCare\\n\\nOption 3:\\nIf you only drink when you feel thirsty, you might be playing catch-up.\\n\\nTry a simple rhythm instead: a few sips here and there throughout the day.\\n\\nGeneral info only, for individual advice, speak with a qualified professional.\\n\\n#Hydration #WellnessBasics #HealthyHabits #Wellbeing #HealthAwareness\",\"items\":[\"Option 1 hashtags: #Hydration #Wellbeing #HealthyHabits #HealthTips #SelfCare\",\"Option 2 hashtags: #Hydration #DailyHabits #WellbeingTips #HealthyRoutine #SelfCare\",\"Option 3 hashtags: #Hydration #WellnessBasics #HealthyHabits #Wellbeing #HealthAwareness\"],\"cta\":\"Save one option you will actually try this week.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "facebook-hydration-wellbeing",
+          "type": "facebook",
+          "title": "Facebook post: Hydration basics (general wellbeing)",
+          "platform": "Facebook",
+          "body": "Hydration is one of those wellbeing basics that is easy to overlook until you feel it.\n\nA simple check-in: are you drinking regularly across the day, or only remembering once you are already thirsty?\n\nGeneral tip: keeping water accessible (on your desk, in your bag, in the car) can make consistent sipping easier.\n\nIf you have a health condition, are pregnant, take medications, or have specific symptoms, it is best to ask a qualified professional for advice that fits you.",
+          "items": [
+            "#Hydration",
+            "#Wellbeing"
+          ],
+          "cta": "If you want, share one small habit that helps you remember to drink water.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "instagram-hydration-captions",
+          "type": "instagram",
+          "title": "Instagram: 3 caption alternatives (hydration, general wellbeing)",
+          "platform": "Instagram",
+          "body": "Option 1:\nThirst is not the only sign you might need more fluids.\n\nHydration is a steady, all-day habit, not a one-time fix.\n\nIf you are working long hours, exercising, or just forgetting to drink, try making it easier to notice:\nKeep a bottle where you can see it.\n\nFor personal guidance, especially if you have a health condition or symptoms, ask a qualified professional.\n\nOption 2:\nA practical hydration reset for busy days.\n\nPut water where you already are.\nDesk. Bag. Car. Next to the kettle.\n\nSmall change, but it removes the friction of having to remember.\n\nGeneral wellbeing info only, if you need advice tailored to you, check in with a qualified professional.\n\nOption 3:\nIf you only drink when you feel thirsty, you might be playing catch-up.\n\nTry a simple rhythm instead: a few sips here and there throughout the day.\n\nGeneral info only, for individual advice, speak with a qualified professional.",
+          "items": [
+            "Option 1 hashtags:",
+            "Option 2 hashtags:",
+            "Option 3 hashtags:",
+            "#Hydration",
+            "#Wellbeing",
+            "#WellbeingTips"
+          ],
+          "cta": "Save one option you will actually try this week.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 10527
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-neutral",
+      "repeat": 1,
+      "promptSha256": "b3fc1a3f8867f1ff09a33c95e177993cf343f9360bf9fe323622373a65b706ab",
+      "stage": "generation",
+      "inputTokens": 3793,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3793,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 1664
+        },
+        "output_tokens": 393,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4186
+      },
+      "output": "{\"title\":\"Feedback invite for early sketch\",\"summary\":\"Invite practical feedback on an early sketch while setting expectations that key details are still undecided.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"Early sketches are where the design is easiest to improve.\\n\\nWe are sharing an early sketch and would love feedback before we move further.\\n\\nIf you are looking at it with fresh eyes, the most helpful input is specific and decision-ready: what feels clear, what feels confusing, and what you would change first.\\n\\nThe final design, launch date and pricing have not been decided. This is purely about pressure-testing the direction while it is still flexible.\",\"items\":[\"\\n#DesignProcess #ProductDesign #UserFeedback #Iteration\"],\"cta\":\"If you have 60 seconds, leave one specific note on what you would keep and one thing you would change.\"},{\"id\":\"x-post\",\"type\":\"twitter\",\"title\":\"X/Twitter post\",\"platform\":\"X/Twitter\",\"body\":\"Sharing an early sketch to get better input while it is still cheap to change.\\n\\nThe final design, launch date and pricing have not been decided. This is just about pressure-testing the direction.\",\"items\":[\"\\n#DesignProcess #UserFeedback\"],\"cta\":\"Reply with the first thing that feels unclear, or the first improvement you would make.\"},{\"id\":\"cta-options\",\"type\":\"ctas\",\"title\":\"CTA options\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"Drop one specific tweak you would make to this early sketch.\",\"What is the first thing you notice, good or bad?\",\"If you were using this, what would you expect to happen next?\",\"Point out one part that feels unclear or unfinished to you.\",\"If you have a strong preference, say what you would change first and why.\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "Early sketches are where the design is easiest to improve.\n\nWe are sharing an early sketch and would love feedback before we move further.\n\nIf you are looking at it with fresh eyes, the most helpful input is specific and decision-ready: what feels clear, what feels confusing, and what you would change first.\n\nThe final design, launch date and pricing have not been decided. This is purely about pressure-testing the direction while it is still flexible.",
+          "items": [],
+          "cta": "If you have 60 seconds, leave one specific note on what you would keep and one thing you would change.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-post",
+          "type": "twitter",
+          "title": "X/Twitter post",
+          "platform": "X/Twitter",
+          "body": "Sharing an early sketch to get better input while it is still cheap to change.\n\nThe final design, launch date and pricing have not been decided. This is just about pressure-testing the direction.",
+          "items": [],
+          "cta": "Reply with the first thing that feels unclear, or the first improvement you would make.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "cta-options",
+          "type": "ctas",
+          "title": "CTA options",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "Drop one specific tweak you would make to this early sketch.",
+            "What is the first thing you notice, good or bad?",
+            "If you were using this, what would you expect to happen next?",
+            "Point out one part that feels unclear or unfinished to you.",
+            "If you have a strong preference, say what you would change first and why."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 6804
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-books",
+      "repeat": 2,
+      "promptSha256": "c328a0f8c68a479e687bbfa6bafc5e22c99cc262194629c58942445e7d0ee74a",
+      "stage": "generation",
+      "inputTokens": 3776,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3776,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 401,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4177
+      },
+      "output": "{\"title\":\"Reading group event posts\",\"summary\":\"Announce the Harbour Books reading group with clear event details and a light prompt to engage.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram captions (3 alternatives)\",\"platform\":\"Instagram\",\"body\":\"Alternative 1\\nReading group in Bristol, 17 January, 6pm.\\n\\nHarbour Books is hosting a reading group and entry is free.\\n\\nThe selected book has not been announced.\\n\\nAlternative 2\\nA low-key evening of reading and conversation.\\n\\nHarbour Books will host a reading group on 17 January at 6pm in Bristol. Entry is free.\\n\\nThe selected book has not been announced.\\n\\nAlternative 3\\nSave the date if you are in Bristol.\\n\\nHarbour Books will host a reading group on 17 January at 6pm. Entry is free.\\n\\nThe selected book has not been announced.\",\"items\":[\"Alternative 1 hashtags:\\n#ReadingGroup #BookClub #Bristol #HarbourBooks #FreeEvent\",\"Alternative 2 hashtags:\\n#ReadingGroup #BookDiscussion #BristolEvents #Books #HarbourBooks\",\"Alternative 3 hashtags:\\n#BookClub #ReadingGroup #BristolUK #Literature #HarbourBooks\"],\"cta\":\"If you are planning to come, save this post so you have the date and time handy.\"},{\"id\":\"facebook-post\",\"type\":\"facebook\",\"title\":\"Facebook post\",\"platform\":\"Facebook\",\"body\":\"Harbour Books will host a reading group on 17 January at 6pm in Bristol. Entry is free.\\n\\nThe selected book has not been announced.\\n\\n#ReadingGroup #BookClub #BristolEvents #Books #HarbourBooks\",\"items\":[],\"cta\":\"If you are interested, drop a comment and I will note that you are keen.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "instagram-captions",
+          "type": "instagram",
+          "title": "Instagram captions (3 alternatives)",
+          "platform": "Instagram",
+          "body": "Alternative 1\nReading group in Bristol, 17 January, 6pm.\n\nHarbour Books is hosting a reading group and entry is free.\n\nThe selected book has not been announced.\n\nAlternative 2\nA low-key evening of reading and conversation.\n\nHarbour Books will host a reading group on 17 January at 6pm in Bristol. Entry is free.\n\nAlternative 3\nSave the date if you are in Bristol.\n\nHarbour Books will host a reading group on 17 January at 6pm.",
+          "items": [
+            "Alternative 1 hashtags:",
+            "Alternative 2 hashtags:",
+            "Alternative 3 hashtags:",
+            "#ReadingGroup",
+            "#Bristol",
+            "#HarbourBooks",
+            "#BookDiscussion",
+            "#Books"
+          ],
+          "cta": "If you are planning to come, save this post so you have the date and time handy.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "facebook-post",
+          "type": "facebook",
+          "title": "Facebook post",
+          "platform": "Facebook",
+          "body": "Harbour Books will host a reading group on 17 January at 6pm in Bristol. Entry is free.\n\nThe selected book has not been announced.",
+          "items": [
+            "#ReadingGroup",
+            "#Books",
+            "#HarbourBooks"
+          ],
+          "cta": "If you are interested, drop a comment and I will note that you are keen.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 6166
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-checklist",
+      "repeat": 2,
+      "promptSha256": "21870d925614ac4efc91b741ad793b18e76cacc0efcbf5e6c3b5ffd7699b67de",
+      "stage": "generation",
+      "inputTokens": 3758,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3758,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 328,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4086
+      },
+      "output": "{\"title\":\"Bakery checklist as a quality control lesson\",\"summary\":\"A practical take on how a simple prep checklist reduces errors and protects quality.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"A good checklist is a quality system in three lines.\\n\\nconfirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.\\n\\nNotice what this covers:\\n\\n- Inputs: confirm the ingredients before you start.\\n- Process: preheat the oven so the work happens under the right conditions.\\n- Handoff: label each batch before it leaves the kitchen so the next step is clear.\\n\\nThis translates cleanly to any small business workflow. If mistakes keep happening, map your own three steps to Inputs, Process, Handoff and make them unskippable.\",\"items\":[\"\\n#Operations\",\"#QualityControl\",\"#ProcessImprovement\",\"#SmallBusiness\",\"#Checklists\"],\"cta\":\"If you have a three-step checklist you swear by, save this and compare it to Inputs, Process, Handoff.\"},{\"id\":\"x-twitter-post\",\"type\":\"twitter\",\"title\":\"X/Twitter post\",\"platform\":\"X/Twitter\",\"body\":\"Steal this bakery logic for any workflow:\\nconfirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.\\n\\nInputs. Conditions. Handoff.\",\"items\":[\"\\n#Process\",\"#QualityControl\"],\"cta\":\"Save it, then write your own three steps in the same order.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "A good checklist is a quality system in three lines.\n\nconfirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.\n\nNotice what this covers:\n\n- Inputs: confirm the ingredients before you start.\n- Process: preheat the oven so the work happens under the right conditions.\n- Handoff: label each batch before it leaves the kitchen so the next step is clear.\n\nThis translates cleanly to any small business workflow. If mistakes keep happening, map your own three steps to Inputs, Process, Handoff and make them unskippable.",
+          "items": [
+            "#Checklists"
+          ],
+          "cta": "If you have a three-step checklist you swear by, save this and compare it to Inputs, Process, Handoff.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-twitter-post",
+          "type": "twitter",
+          "title": "X/Twitter post",
+          "platform": "X/Twitter",
+          "body": "Steal this bakery logic for any workflow:\nconfirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.\n\nInputs. Conditions. Handoff.",
+          "items": [],
+          "cta": "Save it, then write your own three steps in the same order.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 5934
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-pilot",
+      "repeat": 2,
+      "promptSha256": "275a916237e5f47f27f7a918fc4c9419ca40c937148e553a7d65f511d644e7ac",
+      "stage": "generation",
+      "inputTokens": 3755,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3755,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 295,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4050
+      },
+      "output": "{\"title\":\"Seed swap captions (TikTok + YouTube Shorts)\",\"summary\":\"Professional, source-grounded captions announcing a community garden seed swap on Sunday with venue and time pending confirmation.\",\"sections\":[{\"id\":\"tiktok-captions\",\"type\":\"tiktok\",\"title\":\"Draft - details to confirm\",\"platform\":\"TikTok\",\"body\":\"Option 1: Seed swap this Sunday at the community garden. Venue and opening time still to be confirmed.\\n\\nOption 2: If you have extra seeds, bring them to the community garden seed swap on Sunday. Venue and opening time are still being confirmed.\\n\\nOption 3:Quick heads up: community garden seed swap happening Sunday. Venue and opening time are not confirmed yet.\",\"items\":[\"#SeedSwap #CommunityGarden #Gardening #Seeds #LocalEvents\"],\"cta\":\"Which seeds are you hoping to swap for?\"},{\"id\":\"youtube-shorts-caption\",\"type\":\"youtubeShorts\",\"title\":\"Draft - details to confirm\",\"platform\":\"YouTube Shorts\",\"body\":\"Community Garden Seed Swap This Sunday (Venue + Opening Time TBA)\\n\\nA quick update: the community garden is planning a seed swap for Sunday. The organisers have not yet confirmed a venue or opening time.\",\"items\":[\"#SeedSwap #CommunityGarden #Gardening #Seeds #LocalEvents\"],\"cta\":\"If you are planning to come, what seeds would you bring?\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "tiktok-captions",
+          "type": "tiktok",
+          "title": "Draft - details to confirm",
+          "platform": "TikTok",
+          "body": "Option 1: Seed swap this Sunday at the community garden. Venue and opening time still to be confirmed.\n\nOption 2: If you have extra seeds, bring them to the community garden seed swap on Sunday. Venue and opening time are still being confirmed.\n\nOption 3:Quick heads up: community garden seed swap happening Sunday. Venue and opening time are not confirmed yet.",
+          "items": [
+            "#SeedSwap",
+            "#CommunityGarden",
+            "#Gardening",
+            "#Seeds"
+          ],
+          "cta": "Which seeds are you hoping to swap for?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "youtube-shorts-caption",
+          "type": "youtubeShorts",
+          "title": "Draft - details to confirm",
+          "platform": "YouTube Shorts",
+          "body": "Community Garden Seed Swap This Sunday (Venue + Opening Time TBA)\n\nA quick update: the community garden is planning a seed swap for Sunday. The organisers have not yet confirmed a venue or opening time.",
+          "items": [
+            "#SeedSwap",
+            "#CommunityGarden",
+            "#Gardening",
+            "#Seeds"
+          ],
+          "cta": "If you are planning to come, what seeds would you bring?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 4880
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-course",
+      "repeat": 2,
+      "promptSha256": "8494306c8bfa5b6513e4615516509a22d1430e2911bdab40e25ecd707da80fe6",
+      "stage": "generation",
+      "inputTokens": 3791,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3791,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 661,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4452
+      },
+      "output": "{\"title\":\"Pottery class promo assets\",\"summary\":\"Platform-ready copy promoting a pottery class with clear logistics and a light engagement prompt.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram captions (3 alternatives)\",\"platform\":\"Instagram\",\"body\":\"Option 1\\nA midweek reset: clay, calm, and a finished piece you made.\\n\\nMira Studio is running a pottery class in Leeds on 20 February at 3pm.\\nTickets are £18. Materials are supplied.\\n\\nBring an apron.\\n\\nOption 2\\nIf you have been meaning to try pottery, this is your sign to book it in.\\n\\nPottery class with Mira Studio in Leeds\\n20 February at 3pm\\n£18 per ticket\\nMaterials are supplied\\nBring an apron\\n\\nOption 3\\nOne afternoon, one bag, one apron.\\n\\nPottery class with Mira Studio in Leeds on 20 February at 3pm.\\n£18 tickets, and materials are supplied.\\n\\nBring an apron.\",\"items\":[\"Option 1 hashtags:\\n#PotteryClass #LeedsEvents #Pottery #Ceramics #ThingsToDoInLeeds\",\"Option 2 hashtags:\\n#PotteryWorkshop #Leeds #CeramicArt #CreativeWorkshop #LeedsWhatsOn\",\"Option 3 hashtags:\\n#Pottery #LeedsLife #CeramicsClass #CraftWorkshop #LeedsEvents\"],\"cta\":\"Want a reminder prompt you can save, or a shorter version for Stories?\"},{\"id\":\"pottery-carousel\",\"type\":\"carousel\",\"title\":\"Carousel outline\",\"platform\":\"Carousel\",\"body\":\"Carousel copy, slide-by-slide. Keep text tight on slides, add the details in the caption if needed.\",\"items\":[\"Slide 1 (Cover):\\nPottery class in Leeds\\n\\nSlide 2:\\nHosted by Mira Studio\\n\\nSlide 3:\\nWhen: 20 February\\nTime: 3pm\\n\\nSlide 4:\\nTickets: £18\\n\\nSlide 5:\\nMaterials are supplied\\n\\nSlide 6:\\nBring an apron\\n\\nSlide 7 (Final):\\nIf you are planning to come, add it to your calendar now\"],\"cta\":\"Save this for later if you are planning a creative afternoon in Leeds.\"},{\"id\":\"x-thread\",\"type\":\"xThread\",\"title\":\"X thread\",\"platform\":\"X/Twitter\",\"body\":\"Concise thread copy you can post as-is.\",\"items\":[\"1) A simple plan for 20 February at 3pm: a pottery class in Leeds with Mira Studio.\",\"2) Tickets cost £18, so it is an easy one to pencil in if you want a hands-on afternoon.\",\"3) Materials are supplied, which makes it straightforward to show up and get making.\",\"4) One practical note: bring an apron.\",\"5) If you like activities with a clear start time and a tangible takeaway, pottery fits the brief.\",\"6) Final takeaway: put 20 February, 3pm in your calendar now so it does not get lost.\"],\"cta\":\"If you know someone in Leeds who would enjoy this, send it their way.\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 10896
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-unicode",
+      "repeat": 2,
+      "promptSha256": "976bb11970efcdd1669b0e46433df2d114b0d1ffc921fb8047274d4879f8644c",
+      "stage": "generation",
+      "inputTokens": 3754,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3754,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 397,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4151
+      },
+      "output": "{\"title\":\"Instagram captions and extra hashtag set\",\"summary\":\"Professional, menu-led captions highlighting Friday café crème, pastries, the £7 lunch option, and that delivery is not available.\",\"sections\":[{\"id\":\"instagram-captions\",\"type\":\"instagram\",\"title\":\"Instagram caption alternatives\",\"platform\":\"Instagram\",\"body\":\"Option 1:\\nFriday at Pâtisserie Lumière: café crème and pastries.\\n\\nIf you are looking for something simple and satisfying, there is also a £7 lunch option.\\n\\nDelivery is not available.\\n\\n#CafeCreme #Patisserie #Pastries #LunchOption #FridayTreats\\n\\nOption 2:\\nCafé crème + pastries makes a solid Friday plan.\\n\\nPâtisserie Lumière also has a £7 lunch option if you want something more filling.\\n\\nDelivery is not available.\\n\\n#CafeStop #FrenchPastries #LunchDeal #CoffeeAndPastries #FridayLunch\\n\\nOption 3:\\nQuick Friday note from Pâtisserie Lumière.\\n\\nCafé crème and pastries are on, and the menu includes a £7 lunch option.\\n\\nDelivery is not available.\\n\\n#LocalCafe #CoffeeBreak #PastryLover #LunchSpecial #CafeLunch\",\"items\":[\"#CafeCreme #Patisserie #Pastries #LunchOption #FridayTreats\",\"#CafeStop #FrenchPastries #LunchDeal #CoffeeAndPastries #FridayLunch\",\"#LocalCafe #CoffeeBreak #PastryLover #LunchSpecial #CafeLunch\"],\"cta\":\"If you are stopping by on Friday, which are you picking, café crème or a pastry?\"},{\"id\":\"platform-hashtags\",\"type\":\"platformHashtags\",\"title\":\"Additional hashtag set\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"#CoffeeShop\",\"#Bakery\",\"#FreshPastries\",\"#LunchTime\",\"#CafeCulture\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "validation": "failed",
+      "validationReason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "durationMs": 6541
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-founder",
+      "repeat": 2,
+      "promptSha256": "6bc230b7c31ae6352da70f22a37d35fe30b2898efc2d047fa911161a86413bbb",
+      "stage": "generation",
+      "inputTokens": 3721,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3721,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 551,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4272
+      },
+      "output": "{\"title\":\"Career change uncertainty: steady next steps\",\"summary\":\"A professional, grounded LinkedIn post and a set of distinct hooks about considering a career change after a long time in one role.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"Considering changing careers after 12 years in the same job can feel less like a leap and more like starting from zero.\\n\\nOne useful reframe is this: you are not starting again. You are starting next.\\n\\nYou already have 12 years of evidence about how you work, what drains you, what energises you, and what you can do consistently. The uncertainty is real, especially when you have not decided what you want to do yet.\\n\\nWhen you are undecided, avoid turning the decision into a single, high-pressure moment. Make it a series of smaller choices.\\n\\nA simple way to start:\\n1) Write down the parts of your current job you want to keep, and the parts you are ready to leave behind.\\n2) List the skills you use weekly, not the job title you have.\\n3) Run one low-risk test, like a conversation with someone in a role you are curious about.\\n\\nYou do not need a perfect plan to begin. You need a direction you can test.\",\"items\":[\"#CareerChange #CareerTransition #CareerDevelopment #ProfessionalGrowth #DecisionMaking\"],\"cta\":\"If you are in this stage, what is the hardest part for you right now, choosing a direction or starting from scratch?\"},{\"id\":\"hooks-collection\",\"type\":\"hooks\",\"title\":\"Hook options\",\"platform\":\"General\",\"body\":\"Eight hook options based on the supplied facts:\",\"items\":[\"Changing careers after 12 years can make you feel like you are starting again, even when you are not.\",\"I have been in the same job for 12 years, and the part that scares me is starting over.\",\"Undecided is not stuck. It is a stage, and it needs a different kind of next step.\",\"The hardest part of a career change is not the resume. It is choosing a direction when you are unsure.\",\"After 12 years in one role, the fear is real: what if I reset my progress by leaving?\",\"If you have not decided what to do next, build clarity like you build skills, one small test at a time.\",\"A career change does not start with certainty. It starts with admitting what is no longer working.\",\"Twelve years in the same job teaches you a lot. The question is how to carry that forward into something new.\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "Considering changing careers after 12 years in the same job can feel less like a leap and more like starting from zero.\n\nOne useful reframe is this: you are not starting again. You are starting next.\n\nYou already have 12 years of evidence about how you work, what drains you, what energises you, and what you can do consistently. The uncertainty is real, especially when you have not decided what you want to do yet.\n\nWhen you are undecided, avoid turning the decision into a single, high-pressure moment. Make it a series of smaller choices.\n\nA simple way to start:\n1) Write down the parts of your current job you want to keep, and the parts you are ready to leave behind.\n2) List the skills you use weekly, not the job title you have.\n3) Run one low-risk test, like a conversation with someone in a role you are curious about.\n\nYou do not need a perfect plan to begin. You need a direction you can test.",
+          "items": [
+            "#CareerChange"
+          ],
+          "cta": "If you are in this stage, what is the hardest part for you right now, choosing a direction or starting from scratch?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "hooks-collection",
+          "type": "hooks",
+          "title": "Hook options",
+          "platform": "General",
+          "body": "Eight hook options based on the supplied facts:",
+          "items": [
+            "Changing careers after 12 years can make you feel like you are starting again, even when you are not.",
+            "I have been in the same job for 12 years, and the part that scares me is starting over.",
+            "Undecided is not stuck. It is a stage, and it needs a different kind of next step.",
+            "The hardest part of a career change is not the resume. It is choosing a direction when you are unsure.",
+            "After 12 years in one role, the fear is real: what if I reset my progress by leaving?",
+            "If you have not decided what to do next, build clarity like you build skills, one small test at a time.",
+            "A career change does not start with certainty. It starts with admitting what is no longer working.",
+            "Twelve years in the same job teaches you a lot. The question is how to carry that forward into something new."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 9778
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-news",
+      "repeat": 2,
+      "promptSha256": "73eefbd8fcd5cf8a12a57d60b9c09b4cbca13277755065308598e741fe547f51",
+      "stage": "generation",
+      "inputTokens": 3880,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3880,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3712
+        },
+        "output_tokens": 411,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4291
+      },
+      "output": "{\"title\":\"Library poetry reading announcement\",\"summary\":\"Professional announcement of a library poetry reading with key dates, capacity, and booking information.\",\"sections\":[{\"id\":\"emailnewsletter\",\"type\":\"emailNewsletter\",\"title\":\"Draft - details to confirm\",\"platform\":\"Email\",\"body\":\"Subject line options:\\n1) Library poetry reading, 3 March at 7pm\\n2) Poetry reading at the library: booking opens 12 February\\n3) Join us for a poetry reading, 3 March (capacity 40)\\n\\nHello,\\n\\nA library poetry reading is planned for 3 March at 7pm.\\n\\nCapacity is 40, and booking opens on 12 February.\\n\\nNo poets have been announced.\\n\\n[CONFIRM: booking method and link or contact details]\\n[CONFIRM: library name and location details to include]\\n\\nBest,\\n[CONFIRM: sender name or team name]\",\"items\":[],\"cta\":\"If you are planning to come, consider adding 12 February and 3 March to your calendar now.\"},{\"id\":\"xthread\",\"type\":\"xThread\",\"title\":\"Library poetry reading details (thread)\",\"platform\":\"X/Twitter\",\"body\":\"\",\"items\":[\"1) A library poetry reading is planned for 3 March at 7pm.\",\"2) Capacity is 40, so it may be worth booking early once it opens.\",\"3) Booking opens on 12 February.\",\"4) If you are sharing this with friends, the key details are: 3 March, 7pm, capacity 40.\",\"5) No poets have been announced, so the focus for now is simply the date and booking window.\",\"6) Takeaway: put 12 February (booking) and 3 March (event) in your calendar so you do not miss it.\\n\\n#Poetry #LibraryEvents\"],\"cta\":\"If this is your kind of evening, save the dates and pass the details to someone local.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "emailnewsletter",
+          "type": "emailNewsletter",
+          "title": "Draft - details to confirm",
+          "platform": "Email",
+          "body": "Subject line options:\n1) Library poetry reading, 3 March at 7pm\n2) Poetry reading at the library: booking opens 12 February\n3) Join us for a poetry reading, 3 March (capacity 40)\n\nHello\n\nA library poetry reading is planned for 3 March at 7pm.\n\nCapacity is 40, and booking opens on 12 February.\n\nNo poets have been announced.\n\n[CONFIRM: booking method and link or contact details]\n[CONFIRM: library name and location details to include]\n\nBest\n[CONFIRM: sender name or team name]",
+          "items": [],
+          "cta": "If you are planning to come, consider adding 12 February and 3 March to your calendar now.",
+          "review": {
+            "status": "needs_confirmation",
+            "notes": [
+              "Complete the labelled confirmation details before publication."
+            ]
+          }
+        },
+        {
+          "id": "xthread",
+          "type": "xThread",
+          "title": "Library poetry reading details (thread)",
+          "platform": "X/Twitter",
+          "body": "",
+          "items": [
+            "1) A library poetry reading is planned for 3 March at 7pm.",
+            "2) Capacity is 40, so it may be worth booking early once it opens.",
+            "3) Booking opens on 12 February.",
+            "4) If you are sharing this with friends, the key details are: 3 March, 7pm, capacity 40.",
+            "5) No poets have been announced, so the focus for now is simply the date and booking window.",
+            "6) Takeaway: put 12 February (booking) and 3 March (event) in your calendar so you do not miss it.\n\n#Poetry"
+          ],
+          "cta": "If this is your kind of evening, save the dates and pass the details to someone local.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 6776
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-repair",
+      "repeat": 2,
+      "promptSha256": "ee454bfc9615f14bd52fff64ce27771204cf943387416763239de420c3b115c8",
+      "stage": "generation",
+      "inputTokens": 3888,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3888,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 3712
+        },
+        "output_tokens": 1222,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 5110
+      },
+      "output": "{\"title\":\"Bicycle safety checklist repurpose pack + short video script\",\"summary\":\"Platform-native content that shares a simple three-step bicycle safety check without implying a repair service.\",\"sections\":[{\"id\":\"repurpose-pack-bike-safety\",\"type\":\"repurposePack\",\"title\":\"Repurpose Pack: Bicycle Safety Checklist (3 steps)\",\"platform\":\"General\",\"body\":\"LinkedIn:\\nA quick bike safety check is not a tune-up.\\n\\nIt is three fast steps before you ride:\\n\\nInspect tyres.\\nLook for low pressure, visible cuts, or anything that looks off.\\n\\nTest brakes.\\nSqueeze both levers and make sure they engage firmly.\\n\\nCheck lights.\\nConfirm they turn on and are bright enough to be seen.\\n\\nSimple checks, fewer surprises on the road.\\n\\n\\nInstagram:\\nBefore you roll out, do this 3-step bike safety check.\\n\\n1) Inspect tyres\\n2) Test brakes\\n3) Check lights\\n\\nIt is general safety info, not a repair appointment. Just a quick habit that helps you spot issues early.\\n\\n\\nTikTok:\\n3-step bike safety check before you ride:\\nInspect tyres. Test brakes. Check lights.\\n\\nQuick habit, safer ride. (General info, not a repair appointment.)\\n\\n\\nX/Twitter:\\nBefore every ride: inspect tyres, test brakes, check lights.\\n\\nThree small checks that can prevent a big problem.\\n\\n\\nCarousel:\\nSlide 1: The 3-step bicycle safety checklist\\nSlide 2: Step 1, Inspect tyres\\nSlide 3: Step 2, Test brakes\\nSlide 4: Step 3, Check lights\\nSlide 5: Quick reminder, This is general info, not a repair appointment\\n\\n\\nShort-video (caption idea for Reels/Shorts):\\nDo this 3-step bike safety check before you ride: tyres, brakes, lights.\\n\\n\\nEmail:\\nSubject: A 3-step bicycle safety check before you ride\\n\\nHi,\\n\\nA quick safety check is not the same as a repair appointment. It is simply a fast habit before you head out.\\n\\nHere is a simple three-step bicycle safety checklist:\\n\\n1) Inspect tyres\\n\\n2) Test brakes\\n\\n3) Check lights\\n\\nThat is it. Three steps to help you catch obvious issues before you are on the road.\\n\\nBest,\\n[Your name]\",\"items\":[\"LinkedIn hashtags: #BicycleSafety #RoadSafety #CyclingTips #BikeMaintenance #CommuterCycling\",\"Instagram hashtags: #BicycleSafety #CyclingTips #BikeCheck #BikeLife #RoadSafety\",\"TikTok hashtags: #BicycleSafety #CyclingTips #BikeCheck #RoadSafety #Cycling\",\"X/Twitter hashtags: #BicycleSafety\",\"Facebook post:\\nQuick bike safety check before you ride:\\n\\nInspect tyres.\\nTest brakes.\\nCheck lights.\\n\\nGeneral info, not a repair appointment.\\n\\n\\nFacebook hashtags: #BicycleSafety #RoadSafety #CyclingTips #BikeCheck #Cycling\",\"YouTube Shorts:\\nTitle: 3-Step Bicycle Safety Check (Tyres, Brakes, Lights)\\nDescription: A quick 3-step bicycle safety checklist before you ride: inspect tyres, test brakes, check lights. General information, not a repair appointment.\\n\\nYouTube Shorts hashtags: #BicycleSafety #CyclingTips #BikeCheck #RoadSafety #Cycling\",\"Optional Hashtags (extra set, not used above): #BikeSafetyTips #CyclingSafety #PreRideCheck #BikeLights #BrakeCheck\"],\"cta\":\"If you want, save this checklist so it is easy to run through before your next ride.\"},{\"id\":\"short-video-script-bike-safety\",\"type\":\"shortVideoScript\",\"title\":\"Short-form Video Script: 3-step bicycle safety checklist\",\"platform\":\"Video\",\"body\":\"[Staging: Face to camera, holding a bike helmet or standing next to a bicycle.]\\n\\nHook (spoken):\\nBefore you ride, do this quick 3-step bike safety check.\\n\\n[On-screen text: 3-step bike safety check]\\n\\nBeat 1 (spoken):\\nStep one, inspect tyres.\\n\\n[On-screen text: 1) Inspect tyres]\\n[Staging: Point to the tyres.]\\nSpoken: Look for anything obviously off, like low pressure or visible damage.\\n\\nBeat 2 (spoken):\\nStep two, test brakes.\\n\\n[On-screen text: 2) Test brakes]\\n[Staging: Squeeze each brake lever.]\\nSpoken: Make sure both levers engage firmly before you roll out.\\n\\nBeat 3 (spoken):\\nStep three, check lights.\\n\\n[On-screen text: 3) Check lights]\\n[Staging: Tap the light buttons.]\\nSpoken: Confirm they turn on and are bright enough to be seen.\\n\\nClose (spoken):\\nThat is it. Tyres, brakes, lights.\\n\\n[On-screen text: General info, not a repair appointment]\\n[Staging: Small nod, point to the three items on screen.]\\n\\nNatural close (spoken):\\nIf you ride often, this takes seconds and can help you catch problems early.\",\"items\":[\"Optional on-screen text sequence (tight version): 3-step check, Inspect tyres, Test brakes, Check lights, Tyres. Brakes. Lights.\",\"Suggested shot list: 1) Face to camera hook, 2) Tyre close-up, 3) Hands squeezing brakes, 4) Light turning on, 5) Back to face for close\"],\"cta\":\"Save this and run it before your next ride.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "repurpose-pack-bike-safety",
+          "type": "repurposePack",
+          "title": "Repurpose Pack: Bicycle Safety Checklist (3 steps)",
+          "platform": "General",
+          "body": "LinkedIn:\nA quick bike safety check is not a tune-up.\n\nIt is three fast steps before you ride:\n\nInspect tyres.\nLook for low pressure, visible cuts, or anything that looks off.\n\nTest brakes.\nSqueeze both levers and make sure they engage firmly.\n\nCheck lights.\nConfirm they turn on and are bright enough to be seen.\n\nSimple checks, fewer surprises on the road.\n\nInstagram:\nBefore you roll out, do this 3-step bike safety check.\n\n1) Inspect tyres\n2) Test brakes\n3) Check lights\n\nIt is general safety info, not a repair appointment. Just a quick habit that helps you spot issues early.\n\nTikTok:\n3-step bike safety check before you ride:\nInspect tyres. Test brakes. Check lights.\n\nQuick habit, safer ride. (General info, not a repair appointment.)\n\nX/Twitter:\nBefore every ride: inspect tyres, test brakes, check lights.\n\nThree small checks that can prevent a big problem.\n\nCarousel:\nSlide 1: The 3-step bicycle safety checklist\nSlide 2: Step 1, Inspect tyres\nSlide 3: Step 2, Test brakes\nSlide 4: Step 3, Check lights\nSlide 5: Quick reminder, This is general info, not a repair appointment\n\nShort-video (caption idea for Reels/Shorts):\nDo this 3-step bike safety check before you ride: tyres, brakes, lights.\n\nEmail:\nSubject: A 3-step bicycle safety check before you ride\n\nHi\n\nA quick safety check is not the same as a repair appointment. It is simply a fast habit before you head out.\n\nHere is a simple three-step bicycle safety checklist:\n\n1) Inspect tyres\n\n2) Test brakes\n\n3) Check lights\n\nThat is it. Three steps to help you catch obvious issues before you are on the road.\n\nBest\n[Your name]",
+          "items": [
+            "LinkedIn hashtags: #BicycleSafety",
+            "Instagram hashtags: #BicycleSafety",
+            "TikTok hashtags:",
+            "X/Twitter hashtags:",
+            "Facebook post:\nQuick bike safety check before you ride:\n\nInspect tyres.\nTest brakes.\nCheck lights.\n\nGeneral info, not a repair appointment.\n\nFacebook hashtags:",
+            "YouTube Shorts:\nTitle: 3-Step Bicycle Safety Check (Tyres, Brakes, Lights)\nDescription: A quick 3-step bicycle safety checklist before you ride: inspect tyres, test brakes, check lights. General information, not a repair appointment.\n\nYouTube Shorts hashtags: #BicycleSafety",
+            "Optional Hashtags (extra set, not used above): #BrakeCheck"
+          ],
+          "cta": "If you want, save this checklist so it is easy to run through before your next ride.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "short-video-script-bike-safety",
+          "type": "shortVideoScript",
+          "title": "Short-form Video Script: 3-step bicycle safety checklist",
+          "platform": "Video",
+          "body": "[Staging: Face to camera, holding a bike helmet or standing next to a bicycle.]\n\nHook (spoken):\nBefore you ride, do this quick 3-step bike safety check.\n\n[On-screen text: 3-step bike safety check]\n\nBeat 1 (spoken):\nStep one, inspect tyres.\n\n[On-screen text: 1) Inspect tyres]\n[Staging: Point to the tyres.]\nSpoken: Look for anything obviously off, like low pressure or visible damage.\n\nBeat 2 (spoken):\nStep two, test brakes.\n\n[On-screen text: 2) Test brakes]\n[Staging: Squeeze each brake lever.]\nSpoken: Make sure both levers engage firmly before you roll out.\n\nBeat 3 (spoken):\nStep three, check lights.\n\n[On-screen text: 3) Check lights]\n[Staging: Tap the light buttons.]\nSpoken: Confirm they turn on and are bright enough to be seen.\n\nClose (spoken):\nThat is it. Tyres, brakes, lights.\n\n[On-screen text: General info, not a repair appointment]\n[Staging: Small nod, point to the three items on screen.]\n\nNatural close (spoken):\nIf you ride often, this takes seconds and can help you catch problems early.",
+          "items": [
+            "Optional on-screen text sequence (tight version): 3-step check, Inspect tyres, Test brakes, Check lights, Tyres. Brakes. Lights.",
+            "Suggested shot list: 1) Face to camera hook, 2) Tyre close-up, 3) Hands squeezing brakes, 4) Light turning on, 5) Back to face for close"
+          ],
+          "cta": "Save this and run it before your next ride.",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 17448
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-privacy",
+      "repeat": 2,
+      "promptSha256": "ce3a4bf85c7ae7ff2ab5908d9c4eab614ff8ebc57756cdbec849551b08b1abc2",
+      "stage": "generation",
+      "inputTokens": 3772,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3772,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 540,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4312
+      },
+      "output": "{\"title\":\"Hydration wellbeing social posts\",\"summary\":\"Professional, general hydration guidance with a clear reminder to seek qualified individual advice.\",\"sections\":[{\"id\":\"facebook-hydration-wellbeing\",\"type\":\"facebook\",\"title\":\"Facebook post: Hydration basics (general wellbeing)\",\"platform\":\"Facebook\",\"body\":\"Hydration is one of those basics that can quietly affect how you feel day to day.\\n\\nA simple starting point is to sip water regularly rather than waiting until you feel thirsty, and to pay attention to everyday cues like a dry mouth or darker urine.\\n\\nNeeds vary a lot from person to person, especially with different activity levels, environments, and health considerations.\\n\\nFor advice that fits your situation, it is always best to ask a qualified professional.\",\"items\":[\"#Hydration #Wellbeing #HealthyHabits #HealthTips #SelfCare\"],\"cta\":\"If you want a simple check-in, what is one small change that helps you remember to drink water during the day?\"},{\"id\":\"instagram-hydration-captions\",\"type\":\"instagram\",\"title\":\"Instagram: 3 caption alternatives + hashtags\",\"platform\":\"Instagram\",\"body\":\"Caption 1:\\nThirst is a late signal.\\n\\nIf you only drink when you feel thirsty, you might already be playing catch-up.\\n\\nTry keeping water within reach and taking a few sips regularly through the day. If you are unsure what is right for you, ask a qualified professional for individual advice.\\n\\nCaption 2:\\nA practical hydration check: look at your day, not just your bottle.\\n\\nDo you go hours without a sip? Do you only remember after a busy stretch?\\n\\nBuild one tiny cue, like a few sips when you sit down at your desk or after a walk. For personalised guidance, speak with a qualified professional.\\n\\nCaption 3:\\nHydration is basic, but it is not one-size-fits-all.\\n\\nActivity level, heat, and personal health factors can all change what you need.\\n\\nUse simple habits to stay steady, and if you want advice tailored to you, ask a qualified professional.\",\"items\":[\"Caption 1 hashtags:\\n#Hydration #Wellbeing #HealthyHabits #HealthTips #SelfCare\",\"Caption 2 hashtags:\\n#Hydration #HealthyHabits #WellbeingTips #HealthAwareness #SelfCare\",\"Caption 3 hashtags:\\n#Hydration #Wellbeing #HealthEducation #HealthyHabits #SelfCare\"],\"cta\":\"Save this for a quick reminder the next time your day gets busy.\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "facebook-hydration-wellbeing",
+          "type": "facebook",
+          "title": "Facebook post: Hydration basics (general wellbeing)",
+          "platform": "Facebook",
+          "body": "Hydration is one of those basics that can quietly affect how you feel day to day.\n\nA simple starting point is to sip water regularly rather than waiting until you feel thirsty, and to pay attention to everyday cues like a dry mouth or darker urine.\n\nNeeds vary a lot from person to person, especially with different activity levels, environments, and health considerations.\n\nFor advice that fits your situation, it is always best to ask a qualified professional.",
+          "items": [
+            "#Hydration",
+            "#Wellbeing"
+          ],
+          "cta": "If you want a simple check-in, what is one small change that helps you remember to drink water during the day?",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "instagram-hydration-captions",
+          "type": "instagram",
+          "title": "Instagram: 3 caption alternatives + hashtags",
+          "platform": "Instagram",
+          "body": "Caption 1:\nThirst is a late signal.\n\nIf you only drink when you feel thirsty, you might already be playing catch-up.\n\nTry keeping water within reach and taking a few sips regularly through the day. If you are unsure what is right for you, ask a qualified professional for individual advice.\n\nCaption 2:\nA practical hydration check: look at your day, not just your bottle.\n\nDo you go hours without a sip? Do you only remember after a busy stretch?\n\nBuild one tiny cue, like a few sips when you sit down at your desk or after a walk. For personalised guidance, speak with a qualified professional.\n\nCaption 3:\nHydration is basic, but it is not one-size-fits-all.\n\nActivity level, heat, and personal health factors can all change what you need.\n\nUse simple habits to stay steady, and if you want advice tailored to you, ask a qualified professional.",
+          "items": [
+            "Caption 1 hashtags:",
+            "Caption 2 hashtags:",
+            "Caption 3 hashtags:",
+            "#Hydration",
+            "#Wellbeing",
+            "#WellbeingTips"
+          ],
+          "cta": "Save this for a quick reminder the next time your day gets busy.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 8790
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-neutral",
+      "repeat": 2,
+      "promptSha256": "b3fc1a3f8867f1ff09a33c95e177993cf343f9360bf9fe323622373a65b706ab",
+      "stage": "generation",
+      "inputTokens": 3793,
+      "status": "completed",
+      "usage": {
+        "input_tokens": 3793,
+        "input_tokens_details": {
+          "cache_write_tokens": 0,
+          "cached_tokens": 2688
+        },
+        "output_tokens": 386,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 4179
+      },
+      "output": "{\"title\":\"Early sketch feedback outreach\",\"summary\":\"Invite practical feedback on an early sketch while setting clear expectations about what is not decided yet.\",\"sections\":[{\"id\":\"linkedin-post\",\"type\":\"linkedin\",\"title\":\"LinkedIn post\",\"platform\":\"LinkedIn\",\"body\":\"Early sketches are where the real design decisions get made.\\n\\nWe are sharing an early sketch and inviting feedback while it is still easy to change.\\n\\nA useful way to review an early concept is to separate taste from function:\\n- What looks unclear at first glance?\\n- What feels missing or unnecessary?\\n- What would make this easier to use or understand?\\n\\nThe final design, launch date and pricing have not been decided. This is purely about pressure-testing the direction before it hardens into a finished deliverable.\",\"items\":[\"#DesignProcess #DesignFeedback #ProductDesign #CreativeWork #Iteration\"],\"cta\":\"If you have 30 seconds, share one thing you would change or question at first glance.\"},{\"id\":\"x-post\",\"type\":\"twitter\",\"title\":\"X/Twitter post\",\"platform\":\"X/Twitter\",\"body\":\"Sharing an early sketch and asking for feedback while it is still cheap to change.\\n\\nThe final design, launch date and pricing have not been decided.\",\"items\":[\"#DesignProcess #Iteration\"],\"cta\":\"\"},{\"id\":\"cta-options\",\"type\":\"ctas\",\"title\":\"CTA options\",\"platform\":\"General\",\"body\":\"\",\"items\":[\"If you have a quick take, share one thing that feels unclear at first glance.\",\"Drop a single suggestion: keep, cut, or change?\",\"If you have experience with early reviews, what do you look for first?\",\"Send one small improvement idea you would make before this becomes final.\",\"Save this and come back after you have looked at it twice, then share what stood out.\"],\"cta\":\"\"}]}",
+      "inputBoundMatched": true,
+      "sections": [
+        {
+          "id": "linkedin-post",
+          "type": "linkedin",
+          "title": "LinkedIn post",
+          "platform": "LinkedIn",
+          "body": "Early sketches are where the real design decisions get made.\n\nWe are sharing an early sketch and inviting feedback while it is still easy to change.\n\nA useful way to review an early concept is to separate taste from function:\n- What looks unclear at first glance?\n- What feels missing or unnecessary?\n- What would make this easier to use or understand?\n\nThe final design, launch date and pricing have not been decided. This is purely about pressure-testing the direction before it hardens into a finished deliverable.",
+          "items": [
+            "#DesignFeedback"
+          ],
+          "cta": "If you have 30 seconds, share one thing you would change or question at first glance.",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "x-post",
+          "type": "twitter",
+          "title": "X/Twitter post",
+          "platform": "X/Twitter",
+          "body": "Sharing an early sketch and asking for feedback while it is still cheap to change.\n\nThe final design, launch date and pricing have not been decided.",
+          "items": [],
+          "cta": "",
+          "hashtagLayout": "inline",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        },
+        {
+          "id": "cta-options",
+          "type": "ctas",
+          "title": "CTA options",
+          "platform": "General",
+          "body": "",
+          "items": [
+            "If you have a quick take, share one thing that feels unclear at first glance.",
+            "Drop a single suggestion: keep, cut, or change?",
+            "If you have experience with early reviews, what do you look for first?",
+            "Send one small improvement idea you would make before this becomes final.",
+            "Save this and come back after you have looked at it twice, then share what stood out."
+          ],
+          "cta": "",
+          "review": {
+            "status": "ready_to_review",
+            "notes": []
+          }
+        }
+      ],
+      "validation": "passed",
+      "durationMs": 7241
+    }
+  ],
+  "cases": [
+    {
+      "id": "independent-books",
+      "source": "Harbour Books will host a reading group on 17 January at 6pm in Bristol. Entry is free. The selected book has not been announced.",
+      "selectedTypes": [
+        "instagram",
+        "facebook"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-checklist",
+      "source": "A small bakery shares its preparation checklist: confirm the ingredients, preheat the oven, and label each batch before it leaves the kitchen.",
+      "selectedTypes": [
+        "linkedin",
+        "twitter"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-pilot",
+      "source": "A community garden is planning a seed swap for Sunday. The organisers have not yet confirmed a venue or opening time.",
+      "selectedTypes": [
+        "tiktok",
+        "youtubeShorts"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-course",
+      "source": "Mira Studio runs a pottery class in Leeds on 20 February at 3pm. Tickets cost £18. Bring an apron. Materials are supplied.",
+      "selectedTypes": [
+        "instagram",
+        "carousel",
+        "xThread"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-unicode",
+      "source": "Pâtisserie Lumière offers café crème and pastries on Friday. The menu includes a £7 lunch option. Delivery is not available.",
+      "selectedTypes": [
+        "instagram",
+        "platformHashtags"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-founder",
+      "source": "I am considering changing careers after 12 years in the same job. I am worried about starting again and have not decided what to do.",
+      "selectedTypes": [
+        "linkedin",
+        "hooks"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-news",
+      "source": "A library poetry reading is planned for 3 March at 7pm. Capacity is 40. Booking opens on 12 February. No poets have been announced.",
+      "selectedTypes": [
+        "emailNewsletter",
+        "xThread"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-repair",
+      "source": "A bicycle safety checklist has three steps: inspect tyres, test brakes, and check lights. It is general information, not a repair appointment.",
+      "selectedTypes": [
+        "repurposePack",
+        "shortVideoScript"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-privacy",
+      "source": "A clinic shares general wellbeing information about hydration and suggests people ask a qualified professional for individual advice. It makes no claims about treatment outcomes.",
+      "selectedTypes": [
+        "facebook",
+        "instagram"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "independent-neutral",
+      "source": "A design studio invites feedback on an early sketch. The final design, launch date and pricing have not been decided.",
+      "selectedTypes": [
+        "linkedin",
+        "twitter",
+        "ctas"
+      ],
+      "automaticSettings": []
+    }
+  ],
+  "note": "Synthetic briefs through unchanged production instructions/schema/parser. One attempt per sample, two independent repetitions. Token counting must succeed before generation. No invoice or blind human panel.",
+  "reservedUpperBoundGBP": 1.7940480000000008
+}

@@ -10,6 +10,11 @@ import {
 } from "@/lib/founder-offer";
 import { PlanId, SubscriptionStatus } from "@/types/saas";
 import { LITE_PURCHASES_SUSPENDED, LITE_SUSPENDED_MESSAGE } from "@/lib/lite-availability";
+import { PAID_LIFETIME_OFFER } from "@/lib/paid-lifetime-offer";
+import { AI_TOPUP_OFFER } from "@/lib/ai-topup-offer";
+import { buildLifetimeCheckoutParams } from "@/lib/paid-lifetime-stripe";
+import type { LifetimeCheckoutClaim } from "@/lib/paid-lifetime-stripe";
+import type { LifetimePaymentIntent } from "@/lib/paid-lifetime-stripe";
 
 export type BillingPlan = "lite" | "pro_creator" | "pro_studio";
 
@@ -32,12 +37,15 @@ type StripeSubscription = {
   id: string;
   customer: string;
   status: string;
+  current_period_start?: number;
   current_period_end?: number;
   cancel_at_period_end?: boolean;
   cancel_at?: number | null;
   canceled_at?: number | null;
   metadata?: Record<string, string>;
   items?: StripeList<{
+    current_period_start?: number;
+    current_period_end?: number;
     price?: StripePrice;
     quantity?: number;
   }>;
@@ -75,6 +83,7 @@ export type StripeSubscriptionState = {
   status: SubscriptionStatus;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  currentPeriodStart?: string | null;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
   cancelAt?: string | null;
@@ -191,7 +200,7 @@ async function stripeRequest<T>(path: string, body: URLSearchParams, options: { 
   return data;
 }
 
-async function stripeGet<T>(path: string, query?: URLSearchParams) {
+async function stripeGet<T>(path: string, query?: URLSearchParams, signal?: AbortSignal) {
   const env = getEnv();
 
   if (!isStripeConfigured()) {
@@ -207,7 +216,7 @@ async function stripeGet<T>(path: string, query?: URLSearchParams) {
       Authorization: `Bearer ${env.stripeSecretKey}`,
       "Stripe-Version": apiVersion
     },
-    signal: AbortSignal.timeout(stripeRequestTimeoutMs),
+    signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(stripeRequestTimeoutMs)]) : AbortSignal.timeout(stripeRequestTimeoutMs),
     cache: "no-store"
   });
 
@@ -247,11 +256,25 @@ function planFromSubscription(subscription: StripeSubscription): PlanId {
 }
 
 function timestampToIso(timestamp?: number | null) {
-  if (timestamp === undefined) {
-    return undefined;
-  }
+  if (timestamp === undefined) return undefined;
+  if (timestamp === null || timestamp === 0) return null;
+  if (!Number.isSafeInteger(timestamp) || timestamp < 0 || !Number.isFinite(new Date(timestamp * 1000).getTime())) return undefined;
+  return new Date(timestamp * 1000).toISOString();
+}
 
-  return timestamp ? new Date(timestamp * 1000).toISOString() : null;
+// Clover places the billing period on each subscription item. Only the single
+// unambiguous item used for entitlement selection may supply quota dates.
+function subscriptionPeriod(subscription: StripeSubscription) {
+  const items = subscription.items;
+  if (items?.has_more || (items?.data?.length ?? 0) > 1) return {};
+  const item = items?.data?.[0];
+  const hasItemPeriod = item && (item.current_period_start !== undefined || item.current_period_end !== undefined);
+  if (hasItemPeriod && (item.current_period_start === undefined || item.current_period_end === undefined)) return {};
+  const start = hasItemPeriod ? item.current_period_start : subscription.current_period_start;
+  const end = hasItemPeriod ? item.current_period_end : subscription.current_period_end;
+  const startIso = timestampToIso(start), endIso = timestampToIso(end);
+  if (!endIso || (start !== undefined && (!startIso || start! >= end!))) return {};
+  return { start: startIso ?? undefined, end: endIso, endSeconds: end! };
 }
 
 function hasActiveEntitlement(status: SubscriptionStatus) {
@@ -302,6 +325,7 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
   }
 
   const status = effectiveSubscriptionStatus(subscription);
+  const period = subscriptionPeriod(subscription);
   const plan = hasActiveEntitlement(status) || status === "past_due"
     ? planFromSubscription(subscription)
     : "free";
@@ -315,10 +339,11 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
     status,
     stripeCustomerId: subscription.customer,
     stripeSubscriptionId: subscription.id,
-    currentPeriodEnd: timestampToIso(subscription.current_period_end),
+    currentPeriodStart: period.start,
+    currentPeriodEnd: period.end,
     // The existing profile flag represents pending cancellation, including portal cancel_at.
     cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || scheduledCancelAt),
-    cancelAt: timestampToIso(scheduledCancelAt ?? (subscription.cancel_at_period_end ? subscription.current_period_end : undefined)) ?? null,
+    cancelAt: timestampToIso(scheduledCancelAt ?? (subscription.cancel_at_period_end ? period.endSeconds : undefined)) ?? null,
     canceledAt: timestampToIso(subscription.canceled_at)
   };
 }
@@ -371,12 +396,12 @@ export function hasActiveUnknownPaidSubscription(state: StripeSubscriptionState)
   );
 }
 
-export async function retrieveStripeSubscription(subscriptionId: string) {
+export async function retrieveStripeSubscription(subscriptionId: string, signal?: AbortSignal) {
   return stripeGet<StripeSubscription>(
     `subscriptions/${subscriptionId}`,
     new URLSearchParams({
       "expand[]": "items.data.price"
-    })
+    }), signal
   );
 }
 
@@ -439,7 +464,7 @@ export async function getStripeSubscriptionState(input: {
         rawStatus: subscription.status,
         effectiveStatus: effectiveSubscriptionStatus(subscription),
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        currentPeriodEnd: timestampToIso(subscription.current_period_end),
+        currentPeriodEnd: subscriptionPeriod(subscription).end,
         resolvedPlan: planFromSubscription(subscription)
       });
     });
@@ -457,7 +482,7 @@ export async function getStripeSubscriptionState(input: {
           return rank;
         }
 
-        return (b.current_period_end ?? 0) - (a.current_period_end ?? 0);
+        return (subscriptionPeriod(b).endSeconds ?? 0) - (subscriptionPeriod(a).endSeconds ?? 0);
       })[0];
   }
 
@@ -524,7 +549,7 @@ export async function getStripeSubscriptionState(input: {
         rawStatus: bestSubscription.status,
         effectiveStatus: effectiveSubscriptionStatus(bestSubscription),
         cancelAtPeriodEnd: bestSubscription.cancel_at_period_end,
-        currentPeriodEnd: timestampToIso(bestSubscription.current_period_end),
+        currentPeriodEnd: subscriptionPeriod(bestSubscription).end,
         resolvedBillingPlan: state.plan
       }
       : null,
@@ -681,15 +706,19 @@ export async function createCheckoutSession(input: {
 }
 
 export type StripeCheckoutSession = {
+  livemode?: boolean;
   id: string;
   url?: string | null;
   amount_total?: number | null;
+  amount_subtotal?: number | null;
+  currency?: string | null;
   mode?: string | null;
   status?: string | null;
   payment_status?: string;
   client_reference_id?: string | null;
   expires_at?: number | null;
   customer?: string | null;
+  payment_intent?: string | { id: string } | null;
   subscription?: string | null;
   metadata?: Record<string, string>;
   discounts?: Array<{
@@ -699,11 +728,15 @@ export type StripeCheckoutSession = {
     } | null;
   }>;
   line_items?: {
+    has_more?: boolean;
     data: Array<{
-      price?: StripePrice;
+      quantity?: number;
+      amount_total?: number;
+      price?: StripePrice & { currency?: string; unit_amount?: number | null };
     }>;
   };
   total_details?: {
+    amount_discount?: number | null;
     breakdown?: {
       discounts?: Array<{
         discount?: {
@@ -717,14 +750,14 @@ export type StripeCheckoutSession = {
   };
 };
 
-export async function retrieveCheckoutSession(sessionId: string) {
+export async function retrieveCheckoutSession(sessionId: string, signal?: AbortSignal) {
   const query = new URLSearchParams();
   query.append("expand[]", "line_items.data.price");
   query.append("expand[]", "discounts.promotion_code");
 
   return stripeGet<StripeCheckoutSession>(
     `checkout/sessions/${encodeURIComponent(sessionId)}`,
-    query
+    query, signal
   );
 }
 
@@ -733,6 +766,110 @@ export async function expireCheckoutSession(sessionId: string) {
     `checkout/sessions/${encodeURIComponent(sessionId)}/expire`,
     new URLSearchParams()
   );
+}
+
+/** Prepared only: deliberately inaccessible while the commercial gate is off. */
+export async function createPaidLifetimeCheckoutSession(input: {
+  claim: LifetimeCheckoutClaim;
+  customerId?: string | null;
+  email: string;
+}) {
+  if (!PAID_LIFETIME_OFFER.checkoutEnabled) {
+    throw new Error("Paid lifetime checkout is not open.");
+  }
+  const body = buildLifetimeCheckoutParams(input.claim,
+    stripeRedirectUrl("/success?session_id={CHECKOUT_SESSION_ID}&lifetime=1"),
+    stripeRedirectUrl("/pricing?lifetime=canceled"));
+  if (input.customerId) body.set("customer", input.customerId);
+  else {
+    // Payment-mode Checkout does not always create a Stripe Customer by
+    // default. Fulfillment requires a durable customer identity.
+    body.set("customer_email", input.email);
+    body.set("customer_creation", "always");
+  }
+  // Persist the exact request before POST. Retries must not change customer,
+  // email, redirects or expiry under an existing Stripe idempotency key.
+  const { getPool } = await import("@/lib/db/client");
+  const stored = await getPool().query<{checkout_params:string}>(
+    `UPDATE contentos_app.paid_creator_lifetime_purchases
+     SET checkout_params=COALESCE(checkout_params,$2) WHERE id=$1 AND status IN ('preparing','open') RETURNING checkout_params`,
+    [input.claim.id,body.toString()]);
+  if (!stored.rows[0]) throw new Error("Lifetime attempt is no longer open.");
+  const immutableBody = new URLSearchParams(stored.rows[0].checkout_params);
+  const created = await stripeRequest<StripeCheckoutSession>("checkout/sessions", immutableBody, {
+    idempotencyKey: input.claim.attemptKey
+  });
+  if (!created.id || !created.url) {
+    throw new Error("Stripe did not provide a valid lifetime checkout session.");
+  }
+  // A payment session may not be marked paid yet. Fulfillment must separately
+  // retrieve the expanded session and validate the exact completed payment.
+  return created;
+}
+
+/** Test-mode only. The persisted form ensures idempotent retries use identical parameters. */
+export async function createTestTopupCheckoutSession(input:{id:string;accountId:string;attemptKey:string;pricePence:number;credits:number;email:string}) {
+  if(!AI_TOPUP_OFFER.checkoutEnabled || !/^(sk|rk)_test_/.test(getEnv().stripeSecretKey))throw new Error("Test top-up checkout is closed.");
+  if(!Object.values(AI_TOPUP_OFFER.packages).some(p=>p.pricePence===input.pricePence && p.credits===input.credits))throw new Error("Unknown prepaid package.");
+  const body=new URLSearchParams({mode:"payment",success_url:stripeRedirectUrl("/dashboard?topup=pending"),
+    cancel_url:stripeRedirectUrl("/dashboard?topup=canceled"),client_reference_id:input.accountId,
+    customer_email:input.email,customer_creation:"always",
+    "line_items[0][price_data][currency]":"gbp","line_items[0][price_data][unit_amount]":String(input.pricePence),
+    "line_items[0][price_data][product_data][name]":`GetContentOS ${input.credits} prepaid text generations`,"line_items[0][quantity]":"1",
+    "metadata[offer]":AI_TOPUP_OFFER.code,"metadata[purchase_id]":input.id,
+    "metadata[user_id]":input.accountId,"metadata[attempt_key]":input.attemptKey});
+  const {getPool}=await import("@/lib/db/client");
+  const saved=await getPool().query<{checkout_params:string}>(`UPDATE contentos_app.ai_topup_purchases
+    SET checkout_params=COALESCE(checkout_params,$2),updated_at=now()
+    WHERE id=$1 AND account_id=$3 AND status IN ('preparing','open') AND created_at>now()-interval '23 hours'
+    RETURNING checkout_params`,[input.id,body.toString(),input.accountId]);
+  if(!saved.rows[0])throw new Error("Top-up attempt requires reconciliation.");
+  const created=await stripeRequest<StripeCheckoutSession>("checkout/sessions",new URLSearchParams(saved.rows[0].checkout_params),{idempotencyKey:input.attemptKey});
+  if(!created.id?.startsWith("cs_test_") || !created.url?.startsWith("https://checkout.stripe.com/"))throw new Error("Invalid test Checkout session.");
+  const updated=await getPool().query(`UPDATE contentos_app.ai_topup_purchases SET stripe_session_id=$2,status='open',updated_at=now()
+    WHERE id=$1 AND status IN ('preparing','open') AND (stripe_session_id IS NULL OR stripe_session_id=$2) RETURNING id`,[input.id,created.id]);
+  if(!updated.rowCount)throw new Error("Top-up session requires reconciliation.");
+  return {url:created.url};
+}
+
+/** Read back the authoritative payment and expanded charge before fulfillment. */
+export async function retrievePaidLifetimePaymentIntent(paymentIntentId: string, signal?: AbortSignal) {
+  if (!/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) throw new Error("Invalid payment intent ID.");
+  return stripeGet<LifetimePaymentIntent>(`payment_intents/${encodeURIComponent(paymentIntentId)}`,
+    new URLSearchParams({ "expand[]": "latest_charge" }),signal);
+}
+
+/** Fail closed if Stripe cannot return all disputes for this PaymentIntent. */
+export async function retrieveLifetimeDisputes(paymentIntentId: string, signal?: AbortSignal) {
+  if (!/^pi_[A-Za-z0-9]+$/.test(paymentIntentId)) throw new Error("Invalid payment intent ID.");
+  const list = await stripeGet<StripeList<{id:string; status:string; charge:string; payment_intent:string | null}>>(
+    "disputes",new URLSearchParams({payment_intent:paymentIntentId,limit:"100"}),signal);
+  if (list.has_more !== false) throw new Error("Dispute list is incomplete.");
+  return list.data;
+}
+
+// Recover older recurring checkouts created before the durable guard existed.
+// An unpaid completed session can still be settling asynchronously.
+export async function hasPendingSubscriptionCheckout(customerId: string) {
+  let cursor: string | undefined;
+  for (let page = 0; page < 100; page += 1) {
+    const params = new URLSearchParams({customer:customerId,limit:"100"});
+    if (cursor) params.set("starting_after",cursor);
+    const result = await stripeGet<StripeList<StripeCheckoutSession>>("checkout/sessions",params);
+    for (const session of result.data) {
+      if (session.mode !== "subscription") continue;
+      if (session.status === "open") return true;
+      if (session.status === "complete" && session.payment_status === "unpaid") {
+        if (typeof session.subscription !== "string") return true;
+        const subscription = await retrieveStripeSubscription(session.subscription);
+        if (!["canceled","incomplete_expired"].includes(subscription.status)) return true;
+      }
+    }
+    if (!result.has_more) return false;
+    cursor = result.data.at(-1)?.id;
+    if (!cursor) break;
+  }
+  throw new Error("Subscription checkout history requires reconciliation.");
 }
 
 export class BillingCustomerUnavailableError extends Error {
@@ -839,4 +976,21 @@ export function verifyStripeSignature(payload: string, signatureHeader: string |
   // Accept overlapping signing secrets during Stripe rotation; reject malformed signatures.
   return parts.filter(([key])=>key==="v1").some(([,value])=>
     /^[a-f0-9]{64}$/i.test(value??"") && timingSafeEqual(Buffer.from(value,"hex"),expectedBuffer));
+}
+
+/** Exhaustive bounded listing; never treat a truncated/failed lookup as absence. */
+export async function findLifetimeCheckoutSessions(claim: {id:string; attemptKey:string; createdAt:string}, signal?: AbortSignal) {
+  const matches: StripeCheckoutSession[] = [];
+  let cursor: string | undefined;
+  for (let page=0; page<100; page++) {
+    const query = new URLSearchParams({limit:"100", "created[gte]":String(Math.floor(Date.parse(claim.createdAt)/1000)-60)});
+    if (cursor) query.set("starting_after",cursor);
+    signal?.throwIfAborted();
+    const list = await stripeGet<StripeList<StripeCheckoutSession>>("checkout/sessions",query,signal);
+    for (const session of list.data) if (session.metadata?.purchase_id === claim.id && session.metadata?.attempt_key === claim.attemptKey) matches.push(await retrieveCheckoutSession(session.id,signal));
+    if (!list.has_more) return matches;
+    cursor = list.data.at(-1)?.id;
+    if (!cursor) break;
+  }
+  throw new Error("Checkout reconciliation listing incomplete.");
 }

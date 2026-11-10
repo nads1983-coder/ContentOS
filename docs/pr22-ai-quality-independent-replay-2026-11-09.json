@@ -1,0 +1,717 @@
+{
+  "source": "docs/pr22-ai-quality-independent-2026-11-09.json",
+  "method": "Real synthetic outputs replayed offline against the final validator; not an invoice or blind quality review.",
+  "models": [
+    {
+      "model": "gpt-6-luna",
+      "attempts": 20,
+      "providerCompleted": 20,
+      "passed": 16,
+      "inputTokens": 75776,
+      "outputTokens": 7605,
+      "cachedInputTokens": 56318,
+      "cacheWriteTokens": 19398,
+      "estimatedUSD": 0.00679643,
+      "estimatedGBPWithContingency": 0.008155716,
+      "failed": [
+        {
+          "case": "independent-course",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        },
+        {
+          "case": "independent-unicode",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        },
+        {
+          "case": "independent-course",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        },
+        {
+          "case": "independent-unicode",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "attempts": 20,
+      "providerCompleted": 20,
+      "passed": 14,
+      "inputTokens": 75776,
+      "outputTokens": 10380,
+      "cachedInputTokens": 43904,
+      "cacheWriteTokens": 0,
+      "estimatedUSD": 0.2087792,
+      "estimatedGBPWithContingency": 0.25053504,
+      "failed": [
+        {
+          "case": "independent-pilot",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "timing"
+          ]
+        },
+        {
+          "case": "independent-course",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk",
+            "commitment"
+          ]
+        },
+        {
+          "case": "independent-unicode",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        },
+        {
+          "case": "independent-pilot",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "timing"
+          ]
+        },
+        {
+          "case": "independent-course",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        },
+        {
+          "case": "independent-unicode",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-books",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3776,
+      "outputTokens": 215,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-checklist",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3758,
+      "outputTokens": 254,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-pilot",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3755,
+      "outputTokens": 234,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-course",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3791,
+      "outputTokens": 667,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.2.items.3",
+          "category": "high_risk",
+          "text": "4/6 Tickets cost £18."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-unicode",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3754,
+      "outputTokens": 211,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Instagram caption options and additional hashtag ideas featuring Friday café crème, pastries, the £7 lunch option, and no delivery."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "There’s also a £7 lunch option."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-founder",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3721,
+      "outputTokens": 473,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-news",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3880,
+      "outputTokens": 403,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-repair",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3888,
+      "outputTokens": 723,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-privacy",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3772,
+      "outputTokens": 194,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-neutral",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3793,
+      "outputTokens": 421,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-books",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3776,
+      "outputTokens": 233,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-checklist",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3758,
+      "outputTokens": 324,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-pilot",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3755,
+      "outputTokens": 240,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-course",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3791,
+      "outputTokens": 685,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.0.items.1",
+          "category": "high_risk",
+          "text": "Materials are supplied, and tickets cost £18."
+        },
+        {
+          "field": "sections.2.items.4",
+          "category": "high_risk",
+          "text": "5/6 Tickets cost £18."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-unicode",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3754,
+      "outputTokens": 296,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Instagram caption options highlight Friday café crème and pastries, the £7 lunch option, and the fact that delivery is unavailable."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "There’s also a £7 lunch option."
+        },
+        {
+          "field": "sections.0.items.0",
+          "category": "high_risk",
+          "text": "Pâtisserie Lumière’s menu also includes a £7 lunch option."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-founder",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3721,
+      "outputTokens": 447,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-news",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3880,
+      "outputTokens": 315,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-repair",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3888,
+      "outputTokens": 698,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-privacy",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3772,
+      "outputTokens": 252,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "independent-neutral",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3793,
+      "outputTokens": 320,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-books",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3776,
+      "outputTokens": 416,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-checklist",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3758,
+      "outputTokens": 312,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-pilot",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3755,
+      "outputTokens": 464,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.0.body",
+          "category": "timing",
+          "text": "Seed swap happening Sunday."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-course",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3791,
+      "outputTokens": 630,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "£18 ticket, materials supplied."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "commitment",
+          "text": "We’ll supply the rest."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Tickets are £18 and materials are supplied."
+        },
+        {
+          "field": "sections.1.items.2",
+          "category": "high_risk",
+          "text": "Slide 3: Tickets cost £18"
+        },
+        {
+          "field": "sections.1.items.5",
+          "category": "high_risk",
+          "text": "Leeds, 20 February, 3pm, £18, bring an apron"
+        },
+        {
+          "field": "sections.2.items.1",
+          "category": "high_risk",
+          "text": "2) Tickets cost £18."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-unicode",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3754,
+      "outputTokens": 411,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Instagram-ready copy highlighting Friday café crème, pastries, and the £7 lunch option, with delivery not available."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "If you want something a bit more filling, there’s also a £7 lunch option."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Simple plan: stop in, choose your pastry, and if you’re staying for lunch, the menu includes a £7 lunch option."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Pâtisserie Lumière offers café crème and pastries on Friday, and the menu includes a £7 lunch option."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-founder",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3721,
+      "outputTokens": 536,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-news",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3880,
+      "outputTokens": 392,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-repair",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3888,
+      "outputTokens": 1019,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-privacy",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3772,
+      "outputTokens": 615,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-neutral",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3793,
+      "outputTokens": 393,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-books",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3776,
+      "outputTokens": 401,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-checklist",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3758,
+      "outputTokens": 328,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-pilot",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3755,
+      "outputTokens": 295,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.0.body",
+          "category": "timing",
+          "text": "Option 3:Quick heads up: community garden seed swap happening Sunday."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-course",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3791,
+      "outputTokens": 661,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "£18 per ticket"
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "£18 tickets, and materials are supplied."
+        },
+        {
+          "field": "sections.1.items.0",
+          "category": "high_risk",
+          "text": "Tickets: £18"
+        },
+        {
+          "field": "sections.2.items.1",
+          "category": "high_risk",
+          "text": "2) Tickets cost £18, so it is an easy one to pencil in if you want a hands-on afternoon."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-unicode",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3754,
+      "outputTokens": 397,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Professional, menu-led captions highlighting Friday café crème, pastries, the £7 lunch option, and that delivery is not available."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "If you are looking for something simple and satisfying, there is also a £7 lunch option."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Pâtisserie Lumière also has a £7 lunch option if you want something more filling."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café crème and pastries are on, and the menu includes a £7 lunch option."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-founder",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3721,
+      "outputTokens": 551,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-news",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3880,
+      "outputTokens": 411,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-repair",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3888,
+      "outputTokens": 1222,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-privacy",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3772,
+      "outputTokens": 540,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "independent-neutral",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3793,
+      "outputTokens": 386,
+      "validation": "passed",
+      "sections": 3
+    }
+  ]
+}

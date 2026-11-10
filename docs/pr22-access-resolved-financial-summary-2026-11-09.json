@@ -1,0 +1,360 @@
+{
+  "source": "docs/pr22-access-resolved-model-evaluation-2026-11-09.json",
+  "limits": {
+    "inputTokens": 8192,
+    "outputTokens": 4096,
+    "attempts": 2
+  },
+  "models": [
+    {
+      "model": "gpt-6-luna",
+      "samples": 16,
+      "completed": 16,
+      "parserPassed": 9,
+      "parserRejected": 7,
+      "inputTokens": 62852,
+      "outputTokens": 11034,
+      "cacheWriteTokens": 19152,
+      "cachedTokens": 43652,
+      "estimatedUSD": 0.00835232,
+      "estimatedGBPWithContingency": 0.010022784,
+      "estimatedGBPPerAttempt": 0.000626424,
+      "estimatedGBPPerAcceptedOutput": 0.0011136426666666667,
+      "countedInputEqualsUsage": true,
+      "maximumInputTokens": 4757,
+      "maximumOutputTokens": 1996,
+      "meanLatencyMs": 6673.5,
+      "caseResults": [
+        {
+          "id": "milestone",
+          "passed": 0,
+          "samples": 2
+        },
+        {
+          "id": "practical",
+          "passed": 2,
+          "samples": 2
+        },
+        {
+          "id": "limited-claim",
+          "passed": 2,
+          "samples": 2
+        },
+        {
+          "id": "all-formats",
+          "passed": 0,
+          "samples": 2
+        },
+        {
+          "id": "repurpose",
+          "passed": 2,
+          "samples": 2
+        },
+        {
+          "id": "newsletter",
+          "passed": 1,
+          "samples": 2
+        },
+        {
+          "id": "unicode",
+          "passed": 0,
+          "samples": 2
+        },
+        {
+          "id": "long-brief",
+          "passed": 2,
+          "samples": 2
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "samples": 16,
+      "completed": 16,
+      "parserPassed": 9,
+      "parserRejected": 7,
+      "inputTokens": 62852,
+      "outputTokens": 14221,
+      "cacheWriteTokens": 0,
+      "cachedTokens": 21888,
+      "estimatedUSD": 0.2746114,
+      "estimatedGBPWithContingency": 0.32953368,
+      "estimatedGBPPerAttempt": 0.020595855,
+      "estimatedGBPPerAcceptedOutput": 0.036614853333333336,
+      "countedInputEqualsUsage": true,
+      "maximumInputTokens": 4757,
+      "maximumOutputTokens": 3007,
+      "meanLatencyMs": 14406.0625,
+      "caseResults": [
+        {
+          "id": "milestone",
+          "passed": 0,
+          "samples": 2
+        },
+        {
+          "id": "practical",
+          "passed": 2,
+          "samples": 2
+        },
+        {
+          "id": "limited-claim",
+          "passed": 1,
+          "samples": 2
+        },
+        {
+          "id": "all-formats",
+          "passed": 0,
+          "samples": 2
+        },
+        {
+          "id": "repurpose",
+          "passed": 2,
+          "samples": 2
+        },
+        {
+          "id": "newsletter",
+          "passed": 2,
+          "samples": 2
+        },
+        {
+          "id": "unicode",
+          "passed": 0,
+          "samples": 2
+        },
+        {
+          "id": "long-brief",
+          "passed": 2,
+          "samples": 2
+        }
+      ]
+    }
+  ],
+  "projections": [
+    {
+      "model": "gpt-5.2",
+      "perDeliveredCreditGBP": 0.172032,
+      "monthlyLifetimeGBP": [
+        {
+          "customers": 1,
+          "cost": 8.6016
+        },
+        {
+          "customers": 25,
+          "cost": 215.04
+        },
+        {
+          "customers": 50,
+          "cost": 430.08
+        },
+        {
+          "customers": 100,
+          "cost": 860.16
+        }
+      ],
+      "packages": [
+        {
+          "credits": 25,
+          "priceGBP": 5,
+          "api": 4.3008,
+          "fee": 0.46,
+          "net": 4.166666666666667,
+          "overhead": 0.5,
+          "contribution": -1.0941333333333327,
+          "margin": -0.2625919999999998
+        },
+        {
+          "credits": 50,
+          "priceGBP": 9,
+          "api": 8.6016,
+          "fee": 0.67,
+          "net": 7.5,
+          "overhead": 0.9,
+          "contribution": -2.6715999999999993,
+          "margin": -0.3562133333333332
+        },
+        {
+          "credits": 100,
+          "priceGBP": 15,
+          "api": 17.2032,
+          "fee": 0.98,
+          "net": 12.5,
+          "overhead": 1.5,
+          "contribution": -7.183199999999999,
+          "margin": -0.574656
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.6-luna",
+      "perDeliveredCreditGBP": 0.01671168,
+      "monthlyLifetimeGBP": [
+        {
+          "customers": 1,
+          "cost": 0.835584
+        },
+        {
+          "customers": 25,
+          "cost": 20.889599999999998
+        },
+        {
+          "customers": 50,
+          "cost": 41.779199999999996
+        },
+        {
+          "customers": 100,
+          "cost": 83.55839999999999
+        }
+      ],
+      "packages": [
+        {
+          "credits": 25,
+          "priceGBP": 5,
+          "api": 0.417792,
+          "fee": 0.46,
+          "net": 4.166666666666667,
+          "overhead": 0.5,
+          "contribution": 2.788874666666667,
+          "margin": 0.66932992
+        },
+        {
+          "credits": 50,
+          "priceGBP": 9,
+          "api": 0.835584,
+          "fee": 0.67,
+          "net": 7.5,
+          "overhead": 0.9,
+          "contribution": 5.094416,
+          "margin": 0.6792554666666667
+        },
+        {
+          "credits": 100,
+          "priceGBP": 15,
+          "api": 1.671168,
+          "fee": 0.98,
+          "net": 12.5,
+          "overhead": 1.5,
+          "contribution": 8.348832,
+          "margin": 0.66790656
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "perDeliveredCreditGBP": 0.0073728,
+      "monthlyLifetimeGBP": [
+        {
+          "customers": 1,
+          "cost": 0.36863999999999997
+        },
+        {
+          "customers": 25,
+          "cost": 9.216
+        },
+        {
+          "customers": 50,
+          "cost": 18.432
+        },
+        {
+          "customers": 100,
+          "cost": 36.864
+        }
+      ],
+      "packages": [
+        {
+          "credits": 25,
+          "priceGBP": 5,
+          "api": 0.18431999999999998,
+          "fee": 0.46,
+          "net": 4.166666666666667,
+          "overhead": 0.5,
+          "contribution": 3.022346666666667,
+          "margin": 0.7253632
+        },
+        {
+          "credits": 50,
+          "priceGBP": 9,
+          "api": 0.36863999999999997,
+          "fee": 0.67,
+          "net": 7.5,
+          "overhead": 0.9,
+          "contribution": 5.56136,
+          "margin": 0.7415146666666667
+        },
+        {
+          "credits": 100,
+          "priceGBP": 15,
+          "api": 0.7372799999999999,
+          "fee": 0.98,
+          "net": 12.5,
+          "overhead": 1.5,
+          "contribution": 9.28272,
+          "margin": 0.7426176
+        }
+      ]
+    },
+    {
+      "model": "gpt-4.1-mini",
+      "perDeliveredCreditGBP": 0.023592960000000003,
+      "monthlyLifetimeGBP": [
+        {
+          "customers": 1,
+          "cost": 1.1796480000000003
+        },
+        {
+          "customers": 25,
+          "cost": 29.491200000000003
+        },
+        {
+          "customers": 50,
+          "cost": 58.982400000000005
+        },
+        {
+          "customers": 100,
+          "cost": 117.96480000000001
+        }
+      ],
+      "packages": [
+        {
+          "credits": 25,
+          "priceGBP": 5,
+          "api": 0.5898240000000001,
+          "fee": 0.46,
+          "net": 4.166666666666667,
+          "overhead": 0.5,
+          "contribution": 2.616842666666667,
+          "margin": 0.62804224
+        },
+        {
+          "credits": 50,
+          "priceGBP": 9,
+          "api": 1.1796480000000003,
+          "fee": 0.67,
+          "net": 7.5,
+          "overhead": 0.9,
+          "contribution": 4.7503519999999995,
+          "margin": 0.6333802666666666
+        },
+        {
+          "credits": 100,
+          "priceGBP": 15,
+          "api": 2.3592960000000005,
+          "fee": 0.98,
+          "net": 12.5,
+          "overhead": 1.5,
+          "contribution": 7.660703999999999,
+          "margin": 0.6128563199999999
+        }
+      ]
+    }
+  ],
+  "note": "Token counts are provider-reported; spending is a list-price estimate, not an invoice. GBP assumes £1/USD plus 20% contingency. Two independent repetitions are not a tested retry implementation. No production routing or entitlement change.",
+  "budgetGBP": 30,
+  "protectedIncumbentReserveGBP": 30,
+  "currentFundedNewPlaces": 0,
+  "hypotheticalMixedDemand": {
+    "existingCalls": 480,
+    "existingCodeDefaultMaximumGBP": 326.68876800000004,
+    "lifetimeCustomers": 25,
+    "lifetimeGPT6CandidateGBP": 9.216
+  }
+}

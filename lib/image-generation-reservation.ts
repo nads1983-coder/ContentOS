@@ -185,7 +185,9 @@ export function reserveImageInProfile(data: Document, userId: string, input: Ima
     const wait = Math.min(...pending.map(entry => Date.parse(entry.createdAt))) + IMAGE_RETENTION.reservationMs - now.getTime();
     throw new ImageGenerationError("Too many images are in progress. Wait for an existing attempt to finish.", 429, "image_concurrency_limit", Math.max(1, Math.ceil(wait / 1000)));
   }
-  const { periodStart, periodEnd } = currentUsageWindow(now, hasLifetimeEntitlement(data) ? null : data.subscription_current_period_end);
+  const { periodStart, periodEnd } = currentUsageWindow(now, hasLifetimeEntitlement(data) ? null : data.subscription_current_period_end,
+    hasLifetimeEntitlement(data) ? null : data.subscription_current_period_start,
+    data.subscription_usage_transition_start, data.subscription_usage_transition_end);
   const used = usedInWindow(data, userId, periodStart, periodEnd);
   const deterministic = input.mode !== undefined && buildCreativeBrief(request).design.mode === "text";
   const reservedInWindow = pending.filter(entry => !entry.deterministic && Date.parse(entry.createdAt) >= Date.parse(periodStart) && Date.parse(entry.createdAt) < Date.parse(periodEnd)).length;

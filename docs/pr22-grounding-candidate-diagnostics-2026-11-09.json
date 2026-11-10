@@ -1,0 +1,348 @@
+{
+  "source": "pr22-grounding-candidate-2026-11-09.json",
+  "rows": [
+    {
+      "model": "gpt-6-luna",
+      "case": "all-formats",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "sections.6.items.3",
+          "category": "high_risk",
+          "text": "4/ Tickets cost £12."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "unicode",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Three concise Instagram caption options highlight the Saturday café con leche and croissants, with the £5 breakfast option stated exactly as supplied."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "milestone",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "milestone",
+          "text": "Three Instagram caption alternatives announce Northbank Paper reaching 1,000 newsletter subscribers and note that giveaway details are undecided."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "all-formats",
+      "repeat": 2,
+      "stage": "invalid JSON or truncated output",
+      "status": "completed",
+      "outputTokens": 4001
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "unicode",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Three concise caption angles highlight the Saturday café con leche and croissant offering, with the £5 breakfast option stated exactly."
+        },
+        {
+          "field": "sections.0.items.2",
+          "category": "high_risk",
+          "text": "There’s also a £5 breakfast option on the menu."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "all-formats",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "sections.0.body",
+          "category": "commitment",
+          "text": "We’ll cover:"
+        },
+        {
+          "field": "sections.1.body",
+          "category": "commitment",
+          "text": "We’ll cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.1.body",
+          "category": "commitment",
+          "text": "We’ll work through observation, outlines, and shading."
+        },
+        {
+          "field": "sections.2.body",
+          "category": "commitment",
+          "text": "We’ll cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.2.body",
+          "category": "high_risk",
+          "text": "£12 ticket."
+        },
+        {
+          "field": "sections.3.body",
+          "category": "high_risk",
+          "text": "£12 ticket."
+        },
+        {
+          "field": "sections.7.body",
+          "category": "commitment",
+          "text": "Beat 2 (say): We’ll cover three fundamentals: observation, outlines, and shading."
+        },
+        {
+          "field": "sections.7.body",
+          "category": "high_risk",
+          "text": "Beat 3 (say): Tickets cost £12."
+        },
+        {
+          "field": "sections.7.body",
+          "category": "high_risk",
+          "text": "[On-screen text: “£12”]"
+        },
+        {
+          "field": "sections.8.items.2",
+          "category": "commitment",
+          "text": "Slide 3: What we’ll cover"
+        },
+        {
+          "field": "sections.10.body",
+          "category": "commitment",
+          "text": "We’ll cover:"
+        },
+        {
+          "field": "sections.10.body",
+          "category": "commitment",
+          "text": "We’ll cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "£12 ticket."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "5) Tickets cost £12"
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "Beat: £12 ticket."
+        },
+        {
+          "field": "sections.11.items.6",
+          "category": "high_risk",
+          "text": "A £12, pencil-and-sketchbook kind of workshop."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "unicode",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Promote Café Étoile’s Saturday café con leche and croissants with a clear mention of the £5 breakfast option, without implying delivery or discounts."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "If you want something simple and solid, the menu includes a £5 breakfast option."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café Étoile has both on the menu, plus a £5 breakfast option if you’re keeping it easy."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café Étoile is serving café con leche and croissants on Saturday, and the menu includes a £5 breakfast option."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "milestone",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "title",
+          "category": "milestone",
+          "text": "Instagram captions: 1,000 subscribers milestone plus giveaway mention"
+        },
+        {
+          "field": "summary",
+          "category": "milestone",
+          "text": "Professional Instagram caption announcing 1,000 newsletter subscribers while noting an upcoming giveaway without inventing details."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "commitment",
+          "text": "We are still finalising the prize, dates, and eligibility, so we will share details once they are confirmed."
+        },
+        {
+          "field": "sections.0.items.0",
+          "category": "milestone",
+          "text": "NorthbankPaper has reached 1,000 newsletter subscribers."
+        },
+        {
+          "field": "sections.0.items.0",
+          "category": "milestone",
+          "text": "1,000 subscribers is a real milestone."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "limited-claim",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "sections.0.cta",
+          "category": "commitment",
+          "text": "If you are curious about how a repair cafe works, drop a question and we will answer what we can."
+        },
+        {
+          "field": "sections.1.body",
+          "category": "commitment",
+          "text": "Because it is a pilot, we do not yet know what attendance will look like or what outcomes we will see, but we wanted to share the plan clearly and early."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "all-formats",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "sections.1.body",
+          "category": "commitment",
+          "text": "We will work through observation, outlines, and shading, with time to practice."
+        },
+        {
+          "field": "sections.1.body",
+          "category": "commitment",
+          "text": "We will cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.2.body",
+          "category": "high_risk",
+          "text": "£12."
+        },
+        {
+          "field": "sections.2.body",
+          "category": "high_risk",
+          "text": "£12."
+        },
+        {
+          "field": "sections.2.body",
+          "category": "high_risk",
+          "text": "£12."
+        },
+        {
+          "field": "sections.7.body",
+          "category": "commitment",
+          "text": "Spoken: We will cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.7.items.1",
+          "category": "high_risk",
+          "text": "On-screen cue list: York, 14 Dec, 2pm | Observation, outlines, shading | Bring pencil + sketchbook | £12 | hello@example.invalid"
+        },
+        {
+          "field": "sections.8.items.2",
+          "category": "commitment",
+          "text": "Slide 3: What we will cover: observation (learning what to look for)"
+        },
+        {
+          "field": "sections.8.items.3",
+          "category": "commitment",
+          "text": "Slide 4: What we will cover: outlines (turning what you see into simple shapes)"
+        },
+        {
+          "field": "sections.8.items.4",
+          "category": "commitment",
+          "text": "Slide 5: What we will cover: shading (adding light and shadow with pencil)"
+        },
+        {
+          "field": "sections.8.items.6",
+          "category": "high_risk",
+          "text": "Slide 7: Cost: Tickets cost £12."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "commitment",
+          "text": "We will cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "£12."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "7) Tickets cost £12."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "£12."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "unicode",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Professional, mobile-friendly Instagram captions highlighting Saturday café con leche, croissants, and the £5 breakfast option, with grounded hashtags and a soft CTA."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "There’s also a £5 breakfast option on the menu."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café Étoile is serving café con leche and croissants on Saturday, plus a £5 breakfast option on the menu."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café Étoile has café con leche and croissants on Saturday, with a £5 breakfast option if you want something set and easy."
+        }
+      ]
+    }
+  ]
+}

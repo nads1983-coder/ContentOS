@@ -1,0 +1,746 @@
+{
+  "source": "docs/pr22-ai-quality-regression-2026-11-09.json",
+  "method": "Real synthetic outputs replayed offline against the final validator; not an invoice or blind quality review.",
+  "models": [
+    {
+      "model": "gpt-6-luna",
+      "attempts": 16,
+      "providerCompleted": 15,
+      "passed": 11,
+      "inputTokens": 64388,
+      "outputTokens": 12580,
+      "cachedInputTokens": 64340,
+      "cacheWriteTokens": 0,
+      "estimatedUSD": 0.0069382,
+      "estimatedGBPWithContingency": 0.00832584,
+      "failed": [
+        {
+          "case": "milestone",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "milestone"
+          ]
+        },
+        {
+          "case": "all-formats",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        },
+        {
+          "case": "unicode",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        },
+        {
+          "case": "all-formats",
+          "repeat": 2,
+          "reason": "provider response incomplete",
+          "categories": []
+        },
+        {
+          "case": "unicode",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "attempts": 16,
+      "providerCompleted": 16,
+      "passed": 9,
+      "inputTokens": 64388,
+      "outputTokens": 13916,
+      "cachedInputTokens": 53248,
+      "cacheWriteTokens": 0,
+      "estimatedUSD": 0.22363739999999996,
+      "estimatedGBPWithContingency": 0.2683648799999999,
+      "failed": [
+        {
+          "case": "milestone",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "milestone"
+          ]
+        },
+        {
+          "case": "limited-claim",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "commitment"
+          ]
+        },
+        {
+          "case": "all-formats",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "commitment",
+            "high_risk"
+          ]
+        },
+        {
+          "case": "unicode",
+          "repeat": 1,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        },
+        {
+          "case": "limited-claim",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "commitment"
+          ]
+        },
+        {
+          "case": "all-formats",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "commitment",
+            "high_risk"
+          ]
+        },
+        {
+          "case": "unicode",
+          "repeat": 2,
+          "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+          "categories": [
+            "high_risk"
+          ]
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "model": "gpt-6-luna",
+      "case": "milestone",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3719,
+      "outputTokens": 229,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.0.body",
+          "category": "milestone",
+          "text": "A little milestone for Northbank Paper: 1,000 newsletter subscribers."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "milestone",
+          "text": "1,000 newsletter subscribers."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "practical",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3753,
+      "outputTokens": 312,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "limited-claim",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3820,
+      "outputTokens": 369,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "all-formats",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 4362,
+      "outputTokens": 1968,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.7.body",
+          "category": "high_risk",
+          "text": "Tickets £12.]"
+        },
+        {
+          "field": "sections.8.items.5",
+          "category": "high_risk",
+          "text": "Slide 6: Tickets cost £12."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "Slide 6: Tickets cost £12."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "repurpose",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3929,
+      "outputTokens": 871,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "newsletter",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3998,
+      "outputTokens": 659,
+      "validation": "passed",
+      "sections": 5
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "unicode",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3760,
+      "outputTokens": 267,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café Étoile is offering both on Saturday, alongside a £5 breakfast option."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "There’s also a £5 breakfast option at Café Étoile."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café Étoile is offering café con leche and croissants, plus a £5 breakfast option."
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "long-brief",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 4853,
+      "outputTokens": 383,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "milestone",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3719,
+      "outputTokens": 189,
+      "validation": "passed",
+      "sections": 1
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "practical",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3753,
+      "outputTokens": 293,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "limited-claim",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3820,
+      "outputTokens": 355,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "all-formats",
+      "repeat": 2,
+      "providerStatus": "incomplete",
+      "originalValidation": "failed",
+      "inputTokens": 4362,
+      "outputTokens": 4096,
+      "validation": "failed",
+      "reason": "provider response incomplete"
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "repurpose",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3929,
+      "outputTokens": 1137,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "newsletter",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3998,
+      "outputTokens": 744,
+      "validation": "passed",
+      "sections": 5
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "unicode",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3760,
+      "outputTokens": 378,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Three caption options highlight the Saturday café con leche and croissants, including the £5 breakfast option."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café Étoile is offering both on Saturday, alongside a £5 breakfast option."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Saturday’s menu has two easy picks: café con leche with croissants, or the £5 breakfast option at Café Étoile."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "A warm café con leche, a croissant, and a Saturday breakfast option for £5."
+        },
+        {
+          "field": "sections.0.cta",
+          "category": "high_risk",
+          "text": "Which would you choose for Saturday: café con leche and a croissant, or the £5 breakfast option?"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "long-brief",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 4853,
+      "outputTokens": 330,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "milestone",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3719,
+      "outputTokens": 383,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "title",
+          "category": "milestone",
+          "text": "Instagram captions: 1,000 subscribers and giveaway tease"
+        },
+        {
+          "field": "sections.0.body",
+          "category": "milestone",
+          "text": "1,000 newsletter subscribers."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "milestone",
+          "text": "A small milestone with a big ripple: 1,000 newsletter subscribers."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "practical",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3753,
+      "outputTokens": 292,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "limited-claim",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3820,
+      "outputTokens": 528,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.2.body",
+          "category": "commitment",
+          "text": "The first session is planned for Saturday, and we will be learning from how the pilot goes."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "all-formats",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 4362,
+      "outputTokens": 2747,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.1.body",
+          "category": "commitment",
+          "text": "We’ll cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.2.body",
+          "category": "high_risk",
+          "text": "£12 tickets."
+        },
+        {
+          "field": "sections.6.items.6",
+          "category": "high_risk",
+          "text": "7) Tickets cost £12."
+        },
+        {
+          "field": "sections.7.body",
+          "category": "commitment",
+          "text": "BEAT 2 (say): We’ll cover three fundamentals: observation, outlines, and shading."
+        },
+        {
+          "field": "sections.7.body",
+          "category": "high_risk",
+          "text": "BEAT 4 (say): Tickets cost £12."
+        },
+        {
+          "field": "sections.7.body",
+          "category": "high_risk",
+          "text": "[On-screen text: £12]"
+        },
+        {
+          "field": "sections.8.items.2",
+          "category": "commitment",
+          "text": "Slide 3: What we’ll cover: Observation, outlines, and shading"
+        },
+        {
+          "field": "sections.8.items.7",
+          "category": "high_risk",
+          "text": "Slide 8: Cost + booking: Tickets cost £12."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "commitment",
+          "text": "We’ll cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "£12 tickets."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "5) Tickets cost £12"
+        },
+        {
+          "field": "sections.10.body",
+          "category": "commitment",
+          "text": "Say: “We’ll cover observation, outlines, and shading.”"
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "Say: “Tickets cost £12.”"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "repurpose",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3929,
+      "outputTokens": 1173,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "newsletter",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3998,
+      "outputTokens": 740,
+      "validation": "passed",
+      "sections": 5
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "unicode",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3760,
+      "outputTokens": 444,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Professional, mobile-friendly captions promoting Saturday café con leche and croissants, including the £5 breakfast option and noting no delivery or discount."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "£5 breakfast option on the menu."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "If you want a straightforward option, there’s a £5 breakfast option on the menu."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Menu note: £5 breakfast option available."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "long-brief",
+      "repeat": 1,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 4853,
+      "outputTokens": 592,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "milestone",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3719,
+      "outputTokens": 164,
+      "validation": "passed",
+      "sections": 1
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "practical",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3753,
+      "outputTokens": 326,
+      "validation": "passed",
+      "sections": 2
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "limited-claim",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3820,
+      "outputTokens": 502,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.0.cta",
+          "category": "commitment",
+          "text": "If you’re curious about how a repair cafe works, drop a quick question and we’ll answer what we can based on the pilot plan."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "all-formats",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 4362,
+      "outputTokens": 2973,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "sections.1.body",
+          "category": "commitment",
+          "text": "We will cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.2.body",
+          "category": "high_risk",
+          "text": "£12."
+        },
+        {
+          "field": "sections.3.body",
+          "category": "commitment",
+          "text": "We will cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.4.body",
+          "category": "commitment",
+          "text": "We will cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.6.items.6",
+          "category": "high_risk",
+          "text": "7) Tickets cost £12."
+        },
+        {
+          "field": "sections.8.items.2",
+          "category": "commitment",
+          "text": "Slide 3: What we will cover"
+        },
+        {
+          "field": "sections.10.body",
+          "category": "commitment",
+          "text": "We will cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "commitment",
+          "text": "We will cover observation, outlines, and shading."
+        },
+        {
+          "field": "sections.10.body",
+          "category": "high_risk",
+          "text": "Slide 5: Tickets cost £12"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "repurpose",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3929,
+      "outputTokens": 1313,
+      "validation": "passed",
+      "sections": 3
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "newsletter",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 3998,
+      "outputTokens": 724,
+      "validation": "passed",
+      "sections": 5
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "unicode",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "failed",
+      "inputTokens": 3760,
+      "outputTokens": 374,
+      "validation": "failed",
+      "reason": "Details could not be verified against your brief. Your existing draft is unchanged.",
+      "claims": [
+        {
+          "field": "summary",
+          "category": "high_risk",
+          "text": "Professional, mobile-friendly Instagram caption options focused on Saturday café con leche and croissants with the £5 breakfast option, plus an extra hashtag set."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "If you want an easy breakfast plan, the menu includes a £5 breakfast option."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café con leche, croissants, and a £5 breakfast option on the menu."
+        },
+        {
+          "field": "sections.0.body",
+          "category": "high_risk",
+          "text": "Café Étoile is serving both on Saturday, and the menu includes a £5 breakfast option."
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "long-brief",
+      "repeat": 2,
+      "providerStatus": "completed",
+      "originalValidation": "passed",
+      "inputTokens": 4853,
+      "outputTokens": 641,
+      "validation": "passed",
+      "sections": 2
+    }
+  ]
+}

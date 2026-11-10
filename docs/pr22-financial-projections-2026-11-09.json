@@ -1,0 +1,328 @@
+{
+  "date": "2026-11-09",
+  "currencyAssumption": "£1 per USD +20% contingency; standard service only; all input at cache-write rates where applicable; no cache discount",
+  "limits": {
+    "inputTokens": 8192,
+    "outputTokens": 4096,
+    "attempts": 2
+  },
+  "productionChanged": false,
+  "invoiceAvailable": false,
+  "feeAssumption": "5.15% +20p (international cards with FX), rounded up; VAT scenario 20% inclusive; operating reserve 10% gross; other methods and disputes can exceed this",
+  "models": [
+    {
+      "model": "gpt-5.2",
+      "perAttempt": 0.086016,
+      "perDeliveredWithOneRetry": 0.172032,
+      "lifetimeMonthly": [
+        {
+          "customers": 1,
+          "estimatedGBP": 8.6016
+        },
+        {
+          "customers": 25,
+          "estimatedGBP": 215.04
+        },
+        {
+          "customers": 50,
+          "estimatedGBP": 430.08
+        },
+        {
+          "customers": 100,
+          "estimatedGBP": 860.16
+        }
+      ],
+      "packages": [
+        {
+          "credits": 25,
+          "priceGBP": 5,
+          "api": 4.3008,
+          "fee": 0.46,
+          "net": 4.166666666666667,
+          "overhead": 0.5,
+          "contribution": -1.0941333333333327,
+          "margin": -0.2625919999999998
+        },
+        {
+          "credits": 50,
+          "priceGBP": 9,
+          "api": 8.6016,
+          "fee": 0.67,
+          "net": 7.5,
+          "overhead": 0.9,
+          "contribution": -2.6715999999999993,
+          "margin": -0.3562133333333332
+        },
+        {
+          "credits": 100,
+          "priceGBP": 15,
+          "api": 17.2032,
+          "fee": 0.98,
+          "net": 12.5,
+          "overhead": 1.5,
+          "contribution": -7.183199999999999,
+          "margin": -0.574656
+        }
+      ],
+      "mixedDemand": [
+        {
+          "lifetimeCustomers": 25,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 541.7287680000001,
+          "hypotheticalAllMigratedGBP": 297.61536
+        },
+        {
+          "lifetimeCustomers": 50,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 756.768768,
+          "hypotheticalAllMigratedGBP": 512.65536
+        },
+        {
+          "lifetimeCustomers": 100,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 1186.848768,
+          "hypotheticalAllMigratedGBP": 942.7353599999999
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.6-luna",
+      "perAttempt": 0.00835584,
+      "perDeliveredWithOneRetry": 0.01671168,
+      "lifetimeMonthly": [
+        {
+          "customers": 1,
+          "estimatedGBP": 0.835584
+        },
+        {
+          "customers": 25,
+          "estimatedGBP": 20.889599999999998
+        },
+        {
+          "customers": 50,
+          "estimatedGBP": 41.779199999999996
+        },
+        {
+          "customers": 100,
+          "estimatedGBP": 83.55839999999999
+        }
+      ],
+      "packages": [
+        {
+          "credits": 25,
+          "priceGBP": 5,
+          "api": 0.417792,
+          "fee": 0.46,
+          "net": 4.166666666666667,
+          "overhead": 0.5,
+          "contribution": 2.788874666666667,
+          "margin": 0.66932992
+        },
+        {
+          "credits": 50,
+          "priceGBP": 9,
+          "api": 0.835584,
+          "fee": 0.67,
+          "net": 7.5,
+          "overhead": 0.9,
+          "contribution": 5.094416,
+          "margin": 0.6792554666666667
+        },
+        {
+          "credits": 100,
+          "priceGBP": 15,
+          "api": 1.671168,
+          "fee": 0.98,
+          "net": 12.5,
+          "overhead": 1.5,
+          "contribution": 8.348832,
+          "margin": 0.66790656
+        }
+      ],
+      "mixedDemand": [
+        {
+          "lifetimeCustomers": 25,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 347.578368,
+          "hypotheticalAllMigratedGBP": 28.911206399999998
+        },
+        {
+          "lifetimeCustomers": 50,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 368.46796800000004,
+          "hypotheticalAllMigratedGBP": 49.8008064
+        },
+        {
+          "lifetimeCustomers": 100,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 410.24716800000004,
+          "hypotheticalAllMigratedGBP": 91.5800064
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "perAttempt": 0.0036864,
+      "perDeliveredWithOneRetry": 0.0073728,
+      "lifetimeMonthly": [
+        {
+          "customers": 1,
+          "estimatedGBP": 0.36863999999999997
+        },
+        {
+          "customers": 25,
+          "estimatedGBP": 9.216
+        },
+        {
+          "customers": 50,
+          "estimatedGBP": 18.432
+        },
+        {
+          "customers": 100,
+          "estimatedGBP": 36.864
+        }
+      ],
+      "packages": [
+        {
+          "credits": 25,
+          "priceGBP": 5,
+          "api": 0.18431999999999998,
+          "fee": 0.46,
+          "net": 4.166666666666667,
+          "overhead": 0.5,
+          "contribution": 3.022346666666667,
+          "margin": 0.7253632
+        },
+        {
+          "credits": 50,
+          "priceGBP": 9,
+          "api": 0.36863999999999997,
+          "fee": 0.67,
+          "net": 7.5,
+          "overhead": 0.9,
+          "contribution": 5.56136,
+          "margin": 0.7415146666666667
+        },
+        {
+          "credits": 100,
+          "priceGBP": 15,
+          "api": 0.7372799999999999,
+          "fee": 0.98,
+          "net": 12.5,
+          "overhead": 1.5,
+          "contribution": 9.28272,
+          "margin": 0.7426176
+        }
+      ],
+      "mixedDemand": [
+        {
+          "lifetimeCustomers": 25,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 335.90476800000005,
+          "hypotheticalAllMigratedGBP": 12.754944
+        },
+        {
+          "lifetimeCustomers": 50,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 345.12076800000006,
+          "hypotheticalAllMigratedGBP": 21.970944
+        },
+        {
+          "lifetimeCustomers": 100,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 363.552768,
+          "hypotheticalAllMigratedGBP": 40.402944
+        }
+      ]
+    },
+    {
+      "model": "gpt-4.1-mini",
+      "perAttempt": 0.011796480000000002,
+      "perDeliveredWithOneRetry": 0.023592960000000003,
+      "lifetimeMonthly": [
+        {
+          "customers": 1,
+          "estimatedGBP": 1.1796480000000003
+        },
+        {
+          "customers": 25,
+          "estimatedGBP": 29.491200000000003
+        },
+        {
+          "customers": 50,
+          "estimatedGBP": 58.982400000000005
+        },
+        {
+          "customers": 100,
+          "estimatedGBP": 117.96480000000001
+        }
+      ],
+      "packages": [
+        {
+          "credits": 25,
+          "priceGBP": 5,
+          "api": 0.5898240000000001,
+          "fee": 0.46,
+          "net": 4.166666666666667,
+          "overhead": 0.5,
+          "contribution": 2.616842666666667,
+          "margin": 0.62804224
+        },
+        {
+          "credits": 50,
+          "priceGBP": 9,
+          "api": 1.1796480000000003,
+          "fee": 0.67,
+          "net": 7.5,
+          "overhead": 0.9,
+          "contribution": 4.7503519999999995,
+          "margin": 0.6333802666666666
+        },
+        {
+          "credits": 100,
+          "priceGBP": 15,
+          "api": 2.3592960000000005,
+          "fee": 0.98,
+          "net": 12.5,
+          "overhead": 1.5,
+          "contribution": 7.660703999999999,
+          "margin": 0.6128563199999999
+        }
+      ],
+      "mixedDemand": [
+        {
+          "lifetimeCustomers": 25,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 356.17996800000003,
+          "hypotheticalAllMigratedGBP": 40.815820800000004
+        },
+        {
+          "lifetimeCustomers": 50,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 385.671168,
+          "hypotheticalAllMigratedGBP": 70.3070208
+        },
+        {
+          "lifetimeCustomers": 100,
+          "incumbentTextCalls": 480,
+          "existingRouteGBP": 444.65356800000006,
+          "hypotheticalAllMigratedGBP": 129.28942080000002
+        }
+      ]
+    }
+  ],
+  "evaluation": {
+    "completed": 16,
+    "parserPassed": 9,
+    "inputTokens": 62852,
+    "outputTokens": 11901,
+    "conservativeUsageEstimateGBP": 0.03599304,
+    "inputPreflightMatched": true,
+    "maxOutputUsed": 2463,
+    "latencyMs": {
+      "min": 3199,
+      "max": 16630
+    }
+  },
+  "warning": "Model availability, quality, invoice costs, persistent per-credit retry accounting, production caps and lifetime funding have not passed release acceptance. Repeated user retries are not bounded per delivered credit today."
+}

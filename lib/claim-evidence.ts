@@ -23,6 +23,22 @@ export function sourceEvidence(request: GenerateRequest) {
     .filter(fact => isConfirmedFact(fact.text)));
 }
 
+// Accept only a complete, unqualified ticket-price paraphrase backed by an
+// equally complete brief sentence. Other ticket references make the context
+// ambiguous, so require editorial review rather than dropping qualifications.
+export function ticketPriceEvidence(value: string, request: GenerateRequest) {
+  const claim = factualText(value).match(/^tickets (?:are|cost) ([£$€]\s*\d+(?:\.\d{1,2})?)$/);
+  if (!claim) return undefined;
+  const sentences = factualSentences(request.source).map(factualText);
+  const ticketSentences = sentences.filter(text => /\btickets?\b/.test(text));
+  if (ticketSentences.length !== 1) return undefined;
+  if (sentences.some(text => text !== ticketSentences[0] &&
+    (/[£$€]\s*\d/.test(text) || /\b(?:free|complimentary)\s+(?:entry|admission)\b|\badmission\s+(?:is|will be)\s+(?:free|complimentary)\b/.test(text)))) return undefined;
+  const source = ticketSentences[0].match(/^tickets (?:are|cost) ([£$€]\s*\d+(?:\.\d{1,2})?)$/);
+  if (!source || source[1].replace(/\s/g, "") !== claim[1].replace(/\s/g, "")) return undefined;
+  return sourceEvidence(request).find(fact => fact.source === "brief" && fact.text === ticketSentences[0]);
+}
+
 // Match only complete first-person formulations with the same duration and
 // unchanged employment context. Restrictive grammar prevents extra claims from
 // borrowing evidence, including negation, occupations or employer names.

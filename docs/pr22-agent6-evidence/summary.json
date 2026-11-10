@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-09",
+  "startingCommit": "7977d23",
+  "targeted": {
+    "total": 95,
+    "pass": 95,
+    "fail": 0
+  },
+  "fullSuite": {
+    "total": 485,
+    "pass": 473,
+    "fail": 10,
+    "skipped": 2,
+    "failuresMatchProductionBaseline": true,
+    "failureNames": [
+      "exact captured retest keeps its factual hook, removes unsupported niche and two stock phrases",
+      "brand name alone and newly generated prose do not establish a niche",
+      "explicit hashtag preferences and current overrides are respected",
+      "Unicode, compound audience phrases, numbers and explicit tags remain usable",
+      "deduplication spans caption and tags but does not delete independent platform sets or plain labels",
+      "refinement remains grounded while allowing explicit style and hashtag instructions",
+      "server output, workspace round-trip, clipboard transport and export retain identical LF spacing",
+      "all post platforms group tags; explicit separate-line request survives generation and cloud save",
+      "default hashtag limits do not add filler or drop meaningful text accompanying a tag",
+      "one sentence produces a single-platform contract; all 14 formats remain parseable"
+    ]
+  },
+  "postgres": {
+    "compoundChecks": 15,
+    "passed": 15,
+    "realStripeOrAI": false
+  },
+  "typecheck": "passed",
+  "lint": "passed",
+  "note": "Checkout and credit grant are not implemented for top-ups; no sandbox verification was performed."
+}

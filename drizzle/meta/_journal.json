@@ -22,6 +22,55 @@
       "when": 1791296400000,
       "tag": "0002_founder_checkout_claims",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794168000000,
+      "tag": "0004_paid_creator_lifetime",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794178800000,
+      "tag": "0005_lifetime_guard_reconciliation",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794182400000,
+      "tag": "0006_lifetime_adjudications",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794186000000,
+      "tag": "0007_lifetime_reconciliation_jobs",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794189600000,
+      "tag": "0008_ai_spend_cohort",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794276000000,
+      "tag": "0009_prepaid_text_credits",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794283200000,
+      "tag": "0010_topup_adjudications",
+      "breakpoints": true
     }
   ]
 }

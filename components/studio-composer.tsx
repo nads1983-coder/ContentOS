@@ -13,7 +13,7 @@ type Props = {
   id: string; source: string; tone: ToneId; lastUsedTone: ToneId | null;
   sharpness: SharpnessId; ctaMode: CtaModeId; presetTopic: PresetTopicId;
   selectedTypes: ContentTypeId[]; brandName: string; audience: string; offer: string;
-  writingStyle: string; contentGoal: string; plan: PlanId; usage: UsageSummary;
+  writingStyle: string; contentGoal: string; plan: PlanId; usage: UsageSummary; purchasedRemaining: number;
   length: "short" | "standard" | "detailed";
   onLengthChange: (v: "short" | "standard" | "detailed") => void;
   canGenerate: boolean; isPending: boolean; isLoading: boolean; brandProfiles: BrandProfile[];
@@ -32,7 +32,7 @@ export function StudioComposer(p: Props) {
     <fieldset id={p.id} disabled={p.isLoading || p.isPending} aria-busy={p.isLoading || p.isPending} className="scroll-mt-20 min-w-0 border-b border-white/10 pb-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">AI Studio</h1>
-        <span className="text-xs text-muted">{p.usage.remaining} / {p.usage.limit} generations remaining</span>
+        <span className="text-xs text-muted">{p.usage.remaining} / {p.usage.limit} included remaining{p.purchasedRemaining ? ` · ${p.purchasedRemaining} purchased` : ""}</span>
       </div>
       <label htmlFor="studio-source" className="mt-6 block text-sm font-semibold">What would you like to create?</label>
       <textarea id="studio-source" value={p.source} onChange={e => p.onSourceChange(e.target.value)}

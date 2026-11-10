@@ -27,8 +27,10 @@ import {
 } from "@/lib/repository";
 import { buildUsageSummary } from "@/lib/usage";
 import { BrandProfile, PlanId, UserProfile } from "@/types/saas";
-import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement, hasPaidCreatorLifetimeEntitlement, paidCreatorLifetimeIsPrimary } from "@/lib/entitlements";
 import type { GenerationResult } from "@/types/content";
+import { AI_TOPUP_OFFER } from "@/lib/ai-topup-offer";
+import { TopupCheckoutButton } from "@/components/topup-checkout-button";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +60,15 @@ function formatDate(value?: string | null) {
     month: "short",
     year: "numeric"
   }).format(new Date(value));
+}
+
+function topupStatus(status:string) {
+  if(status==="paid")return "Payment confirmed; credits added";
+  if(status==="reversed")return "Credits frozen for administrator review";
+  if(status==="revoked")return "Fully refunded; unused credits revoked";
+  if(status==="expired")return "Checkout expired";
+  if(status==="failed")return "Payment failed";
+  return "Awaiting payment confirmation";
 }
 
 function fallbackProfileForUser(user: { id: string; email: string }): UserProfile {
@@ -133,6 +144,7 @@ export default async function DashboardPage() {
         subscription_status: subscriptionState.status,
         stripe_customer_id: subscriptionState.stripeCustomerId,
         stripe_subscription_id: subscriptionState.stripeSubscriptionId,
+        subscription_current_period_start: subscriptionState.currentPeriodStart,
         subscription_current_period_end: subscriptionState.currentPeriodEnd,
         subscription_cancel_at_period_end: subscriptionState.cancelAtPeriodEnd,
         subscription_cancel_at: subscriptionState.cancelAt,
@@ -170,12 +182,14 @@ export default async function DashboardPage() {
           status: normalizedStoredStatus,
           stripeCustomerId: profile.stripe_customer_id ?? subscriptionState.stripeCustomerId,
           stripeSubscriptionId: profile.stripe_subscription_id,
+          currentPeriodStart: subscriptionState.currentPeriodStart,
           currentPeriodEnd: subscriptionState.currentPeriodEnd,
           cancelAtPeriodEnd: subscriptionState.cancelAtPeriodEnd,
           cancelAt: subscriptionState.cancelAt,
           canceledAt: subscriptionState.canceledAt
         }) ?? {
           ...profile,
+          subscription_current_period_start: subscriptionState.currentPeriodStart,
           subscription_current_period_end: subscriptionState.currentPeriodEnd,
           subscription_cancel_at_period_end: subscriptionState.cancelAtPeriodEnd,
           subscription_cancel_at: subscriptionState.cancelAt,
@@ -197,9 +211,10 @@ export default async function DashboardPage() {
       console.warn("Dashboard brand profile fetch failed");
     }
   }
-  const plan = normalizePlanId(profile?.plan);
-  const status = normalizeSubscriptionStatus(profile?.subscription_status);
-  const hasLifetimeAccess = hasLifetimeEntitlement(profile);
+  const paidCreatorPrimary = paidCreatorLifetimeIsPrimary(profile);
+  const plan = paidCreatorPrimary ? "pro_creator" : normalizePlanId(profile?.plan);
+  const status = paidCreatorPrimary ? "active" : normalizeSubscriptionStatus(profile?.subscription_status);
+  const hasLifetimeAccess = hasLifetimeEntitlement(profile) || hasPaidCreatorLifetimeEntitlement(profile);
   let billingCustomerUnavailable = false;
   if (hasLifetimeAccess && profile?.stripe_customer_id && isStripeConfigured()) {
     try {
@@ -208,10 +223,11 @@ export default async function DashboardPage() {
       // An outage must not be mistaken for a deleted billing account.
     }
   }
-  const hasActiveSubscription = planHasActiveEntitlement(plan, status);
-  const hasPendingCancellation = !hasLifetimeAccess && hasActiveSubscription && Boolean(profile?.subscription_cancel_at_period_end);
+  const hasActiveSubscription = !hasLifetimeEntitlement(profile) &&
+    planHasActiveEntitlement(normalizePlanId(profile?.plan), normalizeSubscriptionStatus(profile?.subscription_status));
+  const hasPendingCancellation = hasActiveSubscription && Boolean(profile?.subscription_cancel_at_period_end);
   const cancellationDate = profile?.subscription_cancel_at ?? profile?.subscription_current_period_end;
-  const canUpgradeToCreator = !hasActiveSubscription || plan === "lite";
+  const canUpgradeToCreator = !hasLifetimeAccess && (!hasActiveSubscription || plan === "lite");
   const canUpgradeToStudio = !(hasActiveSubscription && plan === "pro_studio");
   let monthlyUsageCount = 0;
 
@@ -219,14 +235,24 @@ export default async function DashboardPage() {
     try {
       monthlyUsageCount = await getMonthlyUsageCount({
         userId: profileUserId,
-        periodEnd: profile?.subscription_current_period_end
+        eventType: paidCreatorPrimary ? "text_generation" : undefined,
+        periodEnd: paidCreatorPrimary ? null : profile?.subscription_current_period_end,
+        periodStart: paidCreatorPrimary ? null : profile?.subscription_current_period_start,
+        transitionStart: paidCreatorPrimary ? null : profile?.subscription_usage_transition_start,
+        transitionEnd: paidCreatorPrimary ? null : profile?.subscription_usage_transition_end
       });
     } catch {
       console.warn("Dashboard usage fetch failed");
     }
   }
 
-  const usage = buildUsageSummary(plan, monthlyUsageCount, profile?.subscription_current_period_end);
+  const usage = buildUsageSummary(plan, monthlyUsageCount, paidCreatorPrimary ? null : profile?.subscription_current_period_end,
+    paidCreatorPrimary ? null : profile?.subscription_current_period_start, paidCreatorPrimary ? null : profile?.subscription_usage_transition_start,
+    paidCreatorPrimary ? null : profile?.subscription_usage_transition_end);
+  let topups:Awaited<ReturnType<typeof import("@/lib/ai-topup-payments").topupAccountSummary>> | null=null;
+  if(isDatabaseConfigured()) {
+    try {topups=await (await import("@/lib/ai-topup-payments")).topupAccountSummary(user.id);} catch { /* Existing account pages remain usable before migration. */ }
+  }
   let recent: GenerationResult[] = [];
   let historyUnavailable = false;
   if (isDatabaseConfigured()) {
@@ -263,12 +289,13 @@ export default async function DashboardPage() {
                 : status}
             </p>
             <p className="mt-2 text-sm text-muted">
-              {hasLifetimeAccess
-                ? "Access: Lifetime / no expiry"
+              {hasLifetimeAccess && !hasActiveSubscription
+                ? hasLifetimeEntitlement(profile) ? "Access: Lifetime / no expiry" : "Creator lifetime access: no recurring payment"
                 : hasPendingCancellation
                   ? `Paid until: ${formatDate(cancellationDate)}`
                   : `Renewal date: ${formatDate(profile?.subscription_current_period_end)}`}
             </p>
+            {hasPaidCreatorLifetimeEntitlement(profile) && hasActiveSubscription ? <p className="mt-2 text-sm text-muted">Creator lifetime access remains separate from your recurring subscription.</p> : null}
             {hasPendingCancellation ? (
               <p className="mt-2 rounded border border-gold/40 bg-gold/10 p-3 text-sm text-bone">
                 Cancellation pending. Access remains active until {formatDate(cancellationDate)}.
@@ -285,7 +312,7 @@ export default async function DashboardPage() {
               ) : null}
               {!canUpgradeToCreator && !canUpgradeToStudio ? (
                 <p className="rounded border border-white/10 bg-white/[0.035] p-3 text-sm text-muted">
-                  {hasLifetimeAccess ? "Your lifetime Pro Studio access is active." : "Your current plan is active."}
+                  {hasPaidCreatorLifetimeEntitlement(profile) ? "Your lifetime Pro Creator access is active." : hasLifetimeAccess ? "Your lifetime Pro Studio access is active." : "Your current plan is active."}
                 </p>
               ) : null}
               {profile?.stripe_customer_id && !billingCustomerUnavailable ? <ManageBillingButton /> : null}
@@ -306,6 +333,7 @@ export default async function DashboardPage() {
             <p className="mt-2 text-sm text-muted">
               Monthly generations reset on {new Date(usage.periodEnd).toLocaleDateString()}.
             </p>
+            {topups ? <p className="mt-2 text-sm text-muted">Purchased text generations available: {topups.available}. Monthly included generations are used first.</p> : null}
           </article>
 
           <article className="min-w-0 rounded border border-white/10 bg-coal/86 p-5">
@@ -318,6 +346,14 @@ export default async function DashboardPage() {
             </p>
           </article>
         </section>
+
+        {topups && (plan!=="free" || topups.history.length>0) ? <section className="mt-6 rounded border border-white/10 bg-coal/86 p-5">
+          <h2 className="text-xl font-semibold">Prepaid text generations</h2>
+          <p className="mt-2 text-sm text-muted">Optional one-time purchases. No automatic renewal. Purchased credits do not expire while your account remains active. Monthly included credits are used first. Full refunds revoke unused credits; partial refunds and disputes freeze affected credits for administrator review. Usage requires an eligible paid membership and available funded capacity. Sales are not open yet.</p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">{Object.entries(AI_TOPUP_OFFER.packages).map(([id,pkg])=><div key={id} className="rounded border border-white/10 p-3"><p className="capitalize">{id}: £{(pkg.pricePence/100).toFixed(0)} for {pkg.credits}</p><TopupCheckoutButton accountId={user.id} packageId={id} enabled={AI_TOPUP_OFFER.checkoutEnabled}/></div>)}</div>
+          <h3 className="mt-5 font-semibold">Purchase history</h3>
+          {topups.history.length ? <ul className="mt-2 space-y-1 text-sm text-muted">{topups.history.map(p=><li key={p.id}>{new Date(p.createdAt).toLocaleDateString("en-GB")} · {p.package} · {p.credits} credits · {topupStatus(p.status)} · {p.consumed} used{p.reserved ? ` · ${p.reserved} reserved` : ""}</li>)}</ul> : <p className="mt-2 text-sm text-muted">No top-up purchases yet.</p>}
+        </section> : null}
 
         <section className="mt-4 grid gap-4 lg:grid-cols-2">
           <article className="min-w-0 rounded border border-white/10 bg-panel/78 p-5">

@@ -1,0 +1,350 @@
+{
+  "source": "pr22-access-resolved-model-evaluation-2026-11-09.json",
+  "rows": [
+    {
+      "model": "gpt-6-luna",
+      "case": "milestone",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "milestone": 4
+      },
+      "examples": [
+        {
+          "field": "title",
+          "text": "1,000 Newsletter Subscribers",
+          "category": "milestone"
+        },
+        {
+          "field": "summary",
+          "text": "Three Instagram caption options mark Northbank Paper reaching 1,000 newsletter subscribers and note that giveaway details are still undecided.",
+          "category": "milestone"
+        },
+        {
+          "field": "sections.1.body",
+          "text": "A milestone for Northbank Paper: 1,000 newsletter subscribers.",
+          "category": "milestone"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "all-formats",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "high_risk": 13
+      },
+      "examples": [
+        {
+          "field": "sections.1.body",
+          "text": "Tickets are £12.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.2.body",
+          "text": "Tickets £12.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.3.body",
+          "text": "Tickets are £12.",
+          "category": "high_risk"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "unicode",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "high_risk": 4
+      },
+      "examples": [
+        {
+          "field": "summary",
+          "text": "Three conversational Instagram captions highlight Café Étoile’s Saturday café con leche, croissants, and £5 breakfast option, alongside five additional relevant hashtag ideas.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "Saturday breakfast at Café Étoile: café con leche, croissants, and a £5 breakfast option.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.1.body",
+          "text": "There’s also a £5 breakfast option if you’re after breakfast at the café.",
+          "category": "high_risk"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "milestone",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "milestone": 2
+      },
+      "examples": [
+        {
+          "field": "sections.0.body",
+          "text": "A milestone for Northbank Paper: 1,000 newsletter subscribers.",
+          "category": "milestone"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "1,000 newsletter subscribers.",
+          "category": "milestone"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "all-formats",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "high_risk": 13
+      },
+      "examples": [
+        {
+          "field": "sections.1.body",
+          "text": "Tickets are £12.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.2.body",
+          "text": "Tickets £12.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.3.body",
+          "text": "Bring a pencil and sketchbook; tickets cost £12.",
+          "category": "high_risk"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "newsletter",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "commitment": 1
+      },
+      "examples": [
+        {
+          "field": "sections.3.items.4",
+          "text": "Keep an eye out for booking details when booking opens on 1 December.",
+          "category": "commitment"
+        }
+      ]
+    },
+    {
+      "model": "gpt-6-luna",
+      "case": "unicode",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "high_risk": 4
+      },
+      "examples": [
+        {
+          "field": "summary",
+          "text": "Three Instagram caption angles highlight Café Étoile’s Saturday café con leche, croissants, and £5 breakfast option, plus a separate set of additional food-related hashtags.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "The menu also includes a £5 breakfast option.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "Café con leche, croissants, and a £5 breakfast option.",
+          "category": "high_risk"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "milestone",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "milestone": 3,
+        "commitment": 1,
+        "timing": 1
+      },
+      "examples": [
+        {
+          "field": "title",
+          "text": "Instagram captions: 1,000 subscribers + giveaway (details TBD)",
+          "category": "milestone"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "1,000 newsletter subscribers.",
+          "category": "milestone"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "Prize, dates, and eligibility are still being decided, so we will share specifics once they are locked.",
+          "category": "commitment"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "limited-claim",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "commitment": 1
+      },
+      "examples": [
+        {
+          "field": "sections.1.body",
+          "text": "The idea is simple: bring something broken and we’ll do our best to repair it together, instead of it going straight in the bin.",
+          "category": "commitment"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "all-formats",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "commitment": 4,
+        "high_risk": 23
+      },
+      "examples": [
+        {
+          "field": "sections.0.body",
+          "text": "We’ll cover three foundations you can practise straight away:",
+          "category": "commitment"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "Tickets are £12.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.1.body",
+          "text": "Tickets are £12.",
+          "category": "high_risk"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "unicode",
+      "repeat": 1,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "high_risk": 4
+      },
+      "examples": [
+        {
+          "field": "summary",
+          "text": "Three Instagram caption alternatives promoting Saturday café con leche and croissants with a £5 breakfast option, plus an extra set of distinct relevant hashtags.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "If you want something simple that still feels like a proper morning, we have a £5 breakfast option on the menu.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "£5 breakfast option available.",
+          "category": "high_risk"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "milestone",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "milestone": 3,
+        "commitment": 1,
+        "timing": 1
+      },
+      "examples": [
+        {
+          "field": "title",
+          "text": "Instagram caption set: 1,000 subscribers + giveaway teaser",
+          "category": "milestone"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "1,000 newsletter subscribers.",
+          "category": "milestone"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "Prize, dates, and eligibility are still being decided, so we’ll share details once they’re locked in.",
+          "category": "commitment"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "all-formats",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "commitment": 8,
+        "high_risk": 22
+      },
+      "examples": [
+        {
+          "field": "sections.0.body",
+          "text": "We’ll cover three fundamentals you can practise straight away:",
+          "category": "commitment"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "Tickets are £12.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.1.body",
+          "text": "Tickets are £12.",
+          "category": "high_risk"
+        }
+      ]
+    },
+    {
+      "model": "gpt-5.2",
+      "case": "unicode",
+      "repeat": 2,
+      "stage": "publication preparation: Unresolved factual claim",
+      "categories": {
+        "high_risk": 4
+      },
+      "examples": [
+        {
+          "field": "sections.0.body",
+          "text": "Café Étoile is serving café con leche and croissants this Saturday, plus a £5 breakfast option on the menu.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "If you are keeping it simple, Café Étoile has you covered, and there is a £5 breakfast option on the menu too.",
+          "category": "high_risk"
+        },
+        {
+          "field": "sections.0.body",
+          "text": "There is also a £5 breakfast option on the menu.",
+          "category": "high_risk"
+        }
+      ]
+    }
+  ]
+}

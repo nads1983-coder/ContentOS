@@ -4,8 +4,36 @@ import { getPool } from "@/lib/db/client";
 import { AICapacityError, COST_POLICY, usageCost } from "@/lib/ai-cost";
 import type { CostQuote } from "@/lib/ai-cost";
 import type { UserProfile } from "@/types/saas";
+import { paidCreatorLifetimeIsPrimary } from "@/lib/entitlements";
+import { reserveTopupCredit, finishTopupCredit, assertTopupDispatch } from "@/lib/ai-topup-credit-ledger";
 export type CommercialDocument = UserProfile & Record<string, unknown>;
 export type Mutation<T> = (data: CommercialDocument) => { data: CommercialDocument; result: T };
+// A new per-account spending limit requires founder approval. An unset value
+// preserves current admissions; invalid configuration fails closed.
+export function configuredAccountCapacity():number | null {
+  const raw=process.env.AI_ACCOUNT_MONTHLY_CAP_MICROGBP;
+  if (!raw) return null;
+  if (!/^\d+$/.test(raw)) throw new AICapacityError("invalid_account_capacity");
+  const amount=Number(raw);
+  if (!Number.isSafeInteger(amount) || amount<=0 || amount>COST_POLICY.monthly) throw new AICapacityError("invalid_account_capacity");
+  return amount;
+}
+export function commercialCohort(data:CommercialDocument, now=new Date()) {
+  if (paidCreatorLifetimeIsPrimary(data,now)) return "lifetime";
+  if (["lite","pro_creator","pro_studio"].includes(data.plan) && ["active","trialing"].includes(data.subscription_status) &&
+      (!data.subscription_current_period_end || Date.parse(data.subscription_current_period_end)>now.getTime())) return "subscription";
+  return "other";
+}
+async function enforceAccountCapacity(client: PoolClient, id: string, month: string, additional: number) {
+  const limit=configuredAccountCapacity();
+  if (limit === null) return;
+  const used = Number((await client.query(
+    "SELECT COALESCE(sum(accounted_microgbp),0) AS used FROM contentos_app.ai_spend_requests WHERE month=$1 AND account_id=$2",
+    [month,id])).rows[0].used);
+  if (used + additional > limit) {
+    throw new AICapacityError("account_capacity_exhausted", "AI generation capacity for this account is temporarily unavailable until the next monthly budget period. Your saved content and unused credits are unchanged.");
+  }
+}
 // Shared transaction lock coordinates every admission/settlement and profile mutation.
 // No provider/network operation is allowed inside this callback.
 export async function commercialTransaction<T>(fn: (client: PoolClient) => Promise<T>) {
@@ -39,9 +67,12 @@ export async function reserveCommercial<T extends { status: string }>(id: string
     if (previous.rowCount) throw new AICapacityError("provider_attempt_already_exists");
     const global = Number((await client.query("SELECT COALESCE(sum(accounted_microgbp),0) AS used FROM contentos_app.ai_spend_requests WHERE month=$1", [month])).rows[0].used) + (month === configuration.starts_month ? Number(configuration.opening_microgbp) : 0);
     if (global + quote.maximum > COST_POLICY.monthly) throw new AICapacityError("global_capacity_exhausted");
+    await enforceAccountCapacity(client,id,month,quote.maximum);
+    const source = quote.kind === "text" && (changed.result as {funding?:string}).funding === "purchased" ? "purchased" : "included";
+    if (source === "purchased") await reserveTopupCredit(client,id,requestId);
     await client.query(`INSERT INTO contentos_app.ai_spend_requests
-      (account_id,kind,request_id,fingerprint,month,quote,reserved_microgbp,accounted_microgbp,state)
-      VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7,$7,'reserved')`, [id, quote.kind, requestId, quote.hash, month, JSON.stringify(quote), quote.maximum]);
+      (account_id,kind,request_id,fingerprint,month,quote,reserved_microgbp,accounted_microgbp,state,customer_cohort,text_credit_source)
+      VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7,$7,'reserved',$8,$9)`, [id, quote.kind, requestId, quote.hash, month, JSON.stringify(quote), quote.maximum,commercialCohort(data),source]);
     for (const threshold of [20_000_000,25_000_000]) if (global + quote.maximum >= threshold) {
       await client.query("INSERT INTO contentos_app.ai_budget_alerts(month,threshold_microgbp) VALUES ($1,$2) ON CONFLICT DO NOTHING", [month,threshold]);
     }
@@ -54,13 +85,15 @@ export async function dispatchCommercial(id: string, requestId: string, quote: C
     const row = (await c.query("SELECT * FROM contentos_app.ai_spend_requests WHERE account_id=$1 AND kind=$2 AND request_id=$3 FOR UPDATE",[id,quote.kind,requestId])).rows[0];
     const configuration = (await c.query("SELECT * FROM contentos_app.ai_budget_configuration WHERE singleton=true")).rows[0];
     if (!row || row.state !== "reserved" || row.fingerprint !== quote.hash || !configuration || configuration.suspended || new Date() >= new Date(COST_POLICY.expires)) throw new AICapacityError("dispatch_not_authorised");
+    if (quote.kind === "text" && row.text_credit_source === "purchased") await assertTopupDispatch(c,id,requestId);
     const month = (await c.query("SELECT to_char(now() AT TIME ZONE 'Europe/London','YYYY-MM') AS month")).rows[0].month;
     // A reservation made before midnight must not spend the previous month's capacity.
     if (month !== row.month) {
       const total = Number((await c.query("SELECT COALESCE(sum(accounted_microgbp),0) AS used FROM contentos_app.ai_spend_requests WHERE month=$1",[month])).rows[0].used) + (month === configuration.starts_month ? Number(configuration.opening_microgbp) : 0);
       if (total + Number(row.accounted_microgbp) > COST_POLICY.monthly) throw new AICapacityError("global_capacity_exhausted");
+      await enforceAccountCapacity(c,id,month,Number(row.accounted_microgbp));
       for (const threshold of [20_000_000,25_000_000]) if (total + Number(row.accounted_microgbp) >= threshold) await c.query("INSERT INTO contentos_app.ai_budget_alerts(month,threshold_microgbp) VALUES ($1,$2) ON CONFLICT DO NOTHING",[month,threshold]);
-    }
+    } else await enforceAccountCapacity(c,id,month,0); // Existing reservation is already included in this month's sum.
     await c.query("UPDATE contentos_app.ai_spend_requests SET state='dispatched',month=$4,updated_at=now() WHERE account_id=$1 AND kind=$2 AND request_id=$3",[id,quote.kind,requestId,month]);
   });
 }
@@ -88,6 +121,7 @@ export async function finishCommercial<T>(id: string, requestId: string, quote: 
     const row = (await c.query("SELECT * FROM contentos_app.ai_spend_requests WHERE account_id=$1 AND kind=$2 AND request_id=$3 FOR UPDATE", [id,quote.kind,requestId])).rows[0];
     if (!row || row.fingerprint !== quote.hash) throw new AICapacityError("spend_state_mismatch");
     if (delivered && !["settled","uncertain"].includes(row.state)) throw new AICapacityError("provider_not_reconciled");
+    if (quote.kind === "text") await finishTopupCredit(c,id,requestId,delivered,row.text_credit_source === "purchased");
     const changed = fn(data);
     const state = row.state === "reserved" ? "released" : row.state === "dispatched" ? "uncertain" : row.state;
     await c.query("UPDATE contentos_app.ai_spend_requests SET state=$4,accounted_microgbp=$5,delivered=delivered OR $6,updated_at=now() WHERE account_id=$1 AND kind=$2 AND request_id=$3", [id,quote.kind,requestId,state,state === "released" ? 0 : row.accounted_microgbp,delivered]);

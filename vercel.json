@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/lifetime/reconcile", "schedule": "0 4 * * *" }
+  ]
+}

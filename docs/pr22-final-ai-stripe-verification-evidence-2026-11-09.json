@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-09",
+  "baseCommit": "af3d2be80971ab3f329ec9f781eb2fbd5f01b0ec",
+  "openai": {
+    "gpt-6-luna": {
+      "httpStatus": 403,
+      "code": "model_not_found",
+      "reason": "project does not have access"
+    },
+    "gpt-5.2": {
+      "httpStatus": 403,
+      "code": "model_not_found",
+      "reason": "project does not have access"
+    },
+    "productionModelOverride": "unverified",
+    "newGenerations": 0
+  },
+  "stripe": "not run; only live account accessible; no local test key",
+  "preview": "isolation unverified; environment metadata access 403",
+  "targetedPassed": 87,
+  "postgresChecksPassed": 22,
+  "localHttpsAlertTest": "passed",
+  "deployedScheduler": "unverified; repository schedule daily",
+  "typecheck": "passed",
+  "lint": "passed",
+  "fullSuite": {
+    "tests": 496,
+    "passed": 484,
+    "failed": 10,
+    "skipped": 2,
+    "failuresMatchProductionBaseline": true
+  },
+  "sales": "disabled",
+  "recommendation": "NO-GO"
+}

@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-09T19:01:47.803Z",
+  "kind": "read-only provider access probes; no new payment transactions",
+  "results": [
+    {
+      "resource": "checkout/sessions",
+      "status": 200,
+      "returnedObjects": 1,
+      "allReturnedObjectsTestMode": true
+    },
+    {
+      "resource": "events",
+      "status": 200,
+      "returnedObjects": 1,
+      "allReturnedObjectsTestMode": true
+    },
+    {
+      "resource": "disputes",
+      "status": 200,
+      "returnedObjects": 1,
+      "allReturnedObjectsTestMode": true
+    },
+    {
+      "resource": "webhook_endpoints",
+      "status": 200,
+      "returnedObjects": 1,
+      "allReturnedObjectsTestMode": true
+    },
+    {
+      "resource": "payment_intents",
+      "status": 200,
+      "returnedObjects": 1,
+      "allReturnedObjectsTestMode": true
+    },
+    {
+      "resource": "charges",
+      "status": 200,
+      "returnedObjects": 1,
+      "allReturnedObjectsTestMode": true
+    }
+  ]
+}

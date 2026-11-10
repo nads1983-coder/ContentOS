@@ -1,5 +1,5 @@
 import type { GenerateRequest } from "@/types/content";
-import { careerDurationEvidence, channelClaims, channelEvidence, milestoneEvidence, promotionEvidence, subjectText, sourceEvidence } from "@/lib/claim-evidence";
+import { careerDurationEvidence, channelClaims, channelEvidence, milestoneEvidence, promotionEvidence, subjectText, sourceEvidence, ticketPriceEvidence } from "@/lib/claim-evidence";
 import { plainPostText, socialHashtag } from "@/lib/post-format";
 import { brandContextScope, mentionsBrand } from "@/lib/brand-context";
 
@@ -44,6 +44,9 @@ export type GroundingDecision = {
 function category(text: string): ClaimCategory | undefined {
   if (purposeClaim.test(text)) return "purpose";
   if (commitmentClaim.test(text)) return "commitment";
+  // A definite event announcement must not be inferred from a tentative plan.
+  // Exact, user-supplied wording still passes the source-evidence check below.
+  if (/\bhappening\s+(?:on\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i.test(text)) return "timing";
   if (eventClaim.test(text) && (datedEvent.test(text) || /\bjust\s+(?:hit|reached|crossed)\b/i.test(text))) return "timing";
   if (highRiskClaims.some(pattern => pattern.test(text))) return "high_risk";
   if ([...text.matchAll(milestone)].length) return "milestone";
@@ -89,12 +92,21 @@ export function reviewBusinessFacts(value: unknown, request: GenerateRequest): G
     }
     const claimCategory = classify(sentence) ?? (channelClaims(sentence, request).length ? "channel" : undefined);
     const claim = normalize(sentence).replace(/[.!?]+$/, "");
+    // An X-thread item may prefix a source sentence with its ordinal. Only
+    // remove that marker for the first sentence of an actual thread item;
+    // the remaining claim must still match the complete source sentence.
+    const threadItem = String(path).match(/^sections\.(\d+)\.items\.\d+$/);
+    const threadSection = threadItem ? record(sections[Number(threadItem[1])]) : undefined;
+    const numberedClaim = threadSection?.type === "xThread" && field.trimStart().startsWith(sentence)
+      ? claim.replace(/^(?:[1-9]|1\d|20)\/\s+/, "") : claim;
     // Whole source sentences, not substring matches: "Do not say X" and "not X"
     // must not authorize X. No partial matching that loses qualifiers or quantities.
-    const supported = evidence.find(source => subjectText(source.text, request) === subjectText(claim, request) && !(source.source === "offer" && evidence.some(current =>
+    const supported = evidence.find(source => subjectText(source.text, request) === subjectText(numberedClaim, request) && !(source.source === "offer" && evidence.some(current =>
       current.source === "brief" && classify(current.text) === claimCategory && /\b(?:not|never|no longer|do not|don't)\b/.test(current.text))));
     if (supported) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: supported.source, index: supported.index } };
     if (claimCategory === "high_risk") {
+      const ticket = ticketPriceEvidence(sentence, request);
+      if (ticket) return { ...base, category: claimCategory, classification: "source_supported", evidence: { source: ticket.source, index: ticket.index } };
       const career = careerDurationEvidence(sentence, request);
       if (career) return { ...base, category: claimCategory, classification: "source_supported", evidence: career };
     }

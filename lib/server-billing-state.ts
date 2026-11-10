@@ -10,7 +10,7 @@ import {
 } from "@/lib/stripe-rest";
 import { getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
 import { PlanId, SubscriptionStatus, UserProfile } from "@/types/saas";
-import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement, paidCreatorLifetimeIsPrimary } from "@/lib/entitlements";
 
 export type ServerBillingState = {
   isLoggedIn: boolean;
@@ -53,6 +53,7 @@ export async function getServerBillingState(): Promise<ServerBillingState> {
     return { isLoggedIn: true, plan: profile.plan, status: "active" };
   }
 
+
   if (isStripeConfigured()) {
     try {
       const subscriptionState = reconcileActiveSubscriptionPlan(await getStripeSubscriptionState({
@@ -69,6 +70,10 @@ export async function getServerBillingState(): Promise<ServerBillingState> {
       const plan = normalizePlanId(synced?.plan ?? subscriptionState.plan);
       const status = normalizeSubscriptionStatus(synced?.subscription_status ?? subscriptionState.status);
 
+      if (paidCreatorLifetimeIsPrimary(synced ?? profile)) {
+        return { isLoggedIn: true, plan: "pro_creator", status: "active" };
+      }
+
       return {
         isLoggedIn: true,
         plan: planHasActiveEntitlement(plan, status) ? plan : "free",
@@ -77,6 +82,10 @@ export async function getServerBillingState(): Promise<ServerBillingState> {
     } catch {
       // Public CTAs should still render if Stripe is temporarily unavailable.
     }
+  }
+
+  if (paidCreatorLifetimeIsPrimary(profile)) {
+    return { isLoggedIn: true, plan: "pro_creator", status: "active" };
   }
 
   const plan = normalizePlanId(profile.plan);

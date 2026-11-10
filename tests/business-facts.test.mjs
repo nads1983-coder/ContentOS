@@ -99,3 +99,35 @@ test("explicitly requested saved offer supports an unchanged specification, not 
   assert.doesNotThrow(() => check(offer, context));
   assert.throws(() => check(`${offer} Our notebooks come with a lifetime warranty.`, context), GenerationGroundingError);
 });
+
+test("ticket-price paraphrases preserve exact price and reject ambiguous evidence", () => {
+  const source = "A drawing workshop is planned in York. Tickets cost £12.";
+  assert.equal(check("Tickets are £12.", { source }).sections[0].body, "Tickets are £12.");
+  for (const [brief, claim] of [
+    [source, "Tickets are £13."],
+    [source, "Tickets are $12."],
+    [source, "Children's tickets are £12."],
+    [source, "Tickets are £12 for members."],
+    ["Tickets cost £12 for members.", "Tickets are £12."],
+    ["Tickets do not cost £12.", "Tickets are £12."],
+    ["Tickets cost £12. Tickets are not available.", "Tickets are £12."],
+    ["Tickets cost £12. Admission is free.", "Tickets are £12."],
+    ["Tickets might cost £12.", "Tickets are £12."]
+  ]) assert.throws(() => check(claim, { source: brief }), GenerationGroundingError);
+});
+
+test("thread ordinal preserves only complete source-supported facts", () => {
+  const { reviewBusinessFacts } = loadTs("lib/business-facts.ts");
+  const req = normalize({source:"The workshop is in York. Tickets cost £12.",selectedTypes:["xThread"]});
+  const verdict=(item,type="xThread")=>reviewBusinessFacts({sections:[{type,items:[item]}]},req).find(d=>d.category === "high_risk")?.classification;
+  assert.equal(verdict("4/ Tickets cost £12."),"source_supported");
+  for(const item of ["4/ Tickets cost £13.","4/ Tickets cost £12 for members.","4/ Tickets do not cost £12.","4/ Tickets cost £12 with a free meal."]) assert.equal(verdict(item),"unsupported");
+  assert.equal(verdict("4/ Tickets cost £12.","carousel"),"unsupported");
+});
+
+test("an event planned for a weekday is not asserted as definitely happening", () => {
+  const source="A community garden is planning a seed swap for Sunday. The organisers have not yet confirmed a venue or opening time.";
+  assert.throws(()=>check("Seed swap happening Sunday.",{source}),GenerationGroundingError);
+  const confirmed="Seed swap happening Sunday.";
+  assert.equal(check(confirmed,{source:confirmed}).sections[0].body,confirmed);
+});

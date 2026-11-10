@@ -14,7 +14,7 @@ import {
 import { getMonthlyUsageCount, getUserProfileForUser, syncUserSubscriptionState } from "@/lib/repository";
 import { buildUsageSummary } from "@/lib/usage";
 import type { PlanId, UsageSummary, UserProfile } from "@/types/saas";
-import { hasLifetimeEntitlement } from "@/lib/entitlements";
+import { hasLifetimeEntitlement, paidCreatorLifetimeIsPrimary } from "@/lib/entitlements";
 
 export const dynamic = "force-dynamic";
 
@@ -38,13 +38,17 @@ async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promi
   try {
     const used = await getMonthlyUsageCount({
       userId: profile.id,
-      periodEnd: profile.subscription_current_period_end
+      periodEnd: profile.subscription_current_period_end,
+      periodStart: profile.subscription_current_period_start,
+      transitionStart: profile.subscription_usage_transition_start,
+      transitionEnd: profile.subscription_usage_transition_end,
+      eventType: paidCreatorLifetimeIsPrimary(profile) ? "text_generation" : undefined
     });
 
-    return buildUsageSummary(plan, used, profile.subscription_current_period_end);
+    return buildUsageSummary(plan, used, profile.subscription_current_period_end, profile.subscription_current_period_start, profile.subscription_usage_transition_start, profile.subscription_usage_transition_end);
   } catch {
     console.warn("Studio usage fetch failed");
-    return buildUsageSummary(plan, 0, profile.subscription_current_period_end);
+    return buildUsageSummary(plan, 0, profile.subscription_current_period_end, profile.subscription_current_period_start, profile.subscription_usage_transition_start, profile.subscription_usage_transition_end);
   }
 }
 
@@ -76,6 +80,7 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
     };
   }
 
+
   if (isStripeConfigured()) {
     try {
       const subscriptionState = reconcileActiveSubscriptionPlan(await getStripeSubscriptionState({
@@ -94,6 +99,11 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
         synced?.subscription_status ?? subscriptionState.status
       );
 
+      if (paidCreatorLifetimeIsPrimary(synced ?? profile)) {
+        return { plan: "pro_creator", accountId: user.id, authenticated: true,
+          usage: await usageForProfile({ ...(synced ?? profile), subscription_current_period_end: null }, "pro_creator") };
+      }
+
       if (planHasActiveEntitlement(syncedPlan, syncedStatus)) {
         return {
           plan: syncedPlan,
@@ -105,6 +115,15 @@ async function getInitialStudioState(): Promise<{ plan: PlanId; authenticated: b
     } catch {
       // Use stored account state if Stripe is temporarily unavailable.
     }
+  }
+
+  if (paidCreatorLifetimeIsPrimary(profile)) {
+    return {
+      plan: "pro_creator",
+      accountId: user.id,
+      authenticated: true,
+      usage: await usageForProfile({ ...profile, subscription_current_period_end: null }, "pro_creator")
+    };
   }
 
   const plan = normalizePlanId(profile.plan);

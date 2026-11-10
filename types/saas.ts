@@ -31,12 +31,17 @@ export type UserProfile = {
   stripe_customer_id?: string;
   stripe_subscription_id?: string;
   stripe_checkout_session_id?: string;
+  subscription_current_period_start?: string | null;
   subscription_current_period_end?: string | null;
+  subscription_usage_transition_start?: string | null;
+  subscription_usage_transition_end?: string | null;
   subscription_cancel_at_period_end?: boolean | null;
   subscription_canceled_at?: string | null;
   subscription_cancel_at?: string | null;
   entitlement_source?: string | null;
   amount_paid?: number | null;
+  paid_creator_lifetime_status?: "active" | "refunded" | "disputed" | "review" | null;
+  paid_creator_lifetime_purchase_id?: string | null;
   onboarding_completed?: boolean;
   created_at?: string;
   updated_at?: string;

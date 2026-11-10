@@ -1,0 +1,3217 @@
+TAP version 13
+# Subtest: financial reporting is restricted to authenticated administrators
+ok 1 - financial reporting is restricted to authenticated administrators
+  ---
+  duration_ms: 275.005417
+  type: 'test'
+  ...
+# Subtest: report labels estimates, opening balance and holds without claiming invoice totals
+ok 2 - report labels estimates, opening balance and holds without claiming invoice totals
+  ---
+  duration_ms: 304.900084
+  type: 'test'
+  ...
+# Subtest: account capacity is opt-in and invalid limits fail closed
+ok 3 - account capacity is opt-in and invalid limits fail closed
+  ---
+  duration_ms: 428.438542
+  type: 'test'
+  ...
+# Subtest: top-up catalog preserves the three approved one-time GBP packages
+ok 4 - top-up catalog preserves the three approved one-time GBP packages
+  ---
+  duration_ms: 0.737041
+  type: 'test'
+  ...
+# Subtest: unfinished top-ups cannot be enabled or resolved through a prototype key
+ok 5 - unfinished top-ups cannot be enabled or resolved through a prototype key
+  ---
+  duration_ms: 0.24325
+  type: 'test'
+  ...
+# Subtest: dedicated synthetic PostgreSQL Better Auth lifecycle
+ok 6 - dedicated synthetic PostgreSQL Better Auth lifecycle # SKIP
+  ---
+  duration_ms: 0.72075
+  type: 'test'
+  ...
+# Subtest: concurrent Better Auth sign-ins share the PostgreSQL rate limit
+ok 7 - concurrent Better Auth sign-ins share the PostgreSQL rate limit # SKIP
+  ---
+  duration_ms: 2.445292
+  type: 'test'
+  ...
+# Subtest: installed reset endpoint: metadata hook failure occurs after explicit session revocation
+ok 8 - installed reset endpoint: metadata hook failure occurs after explicit session revocation
+  ---
+  duration_ms: 298.062917
+  type: 'test'
+  ...
+# Subtest: post-reset defense alone propagates revoke failure without marking metadata verified
+ok 9 - post-reset defense alone propagates revoke failure without marking metadata verified
+  ---
+  duration_ms: 19.625417
+  type: 'test'
+  ...
+# Subtest: installed reset endpoint: existing credential completes revoke-first hook and built-in revocation
+ok 10 - installed reset endpoint: existing credential completes revoke-first hook and built-in revocation
+  ---
+  duration_ms: 5.82175
+  type: 'test'
+  ...
+# Subtest: installed reset endpoint: legacy missing credential completes revoke-first hook and built-in revocation
+ok 11 - installed reset endpoint: legacy missing credential completes revoke-first hook and built-in revocation
+  ---
+  duration_ms: 148.020917
+  type: 'test'
+  ...
+# Subtest: installed reset endpoint: invalid or consumed token cannot reach password/session/metadata writes
+ok 12 - installed reset endpoint: invalid or consumed token cannot reach password/session/metadata writes
+  ---
+  duration_ms: 16.160833
+  type: 'test'
+  ...
+# Subtest: token-consumption hook revokes before updating credentials using actual stored hash
+ok 13 - token-consumption hook revokes before updating credentials using actual stored hash
+  ---
+  duration_ms: 91.632834
+  type: 'test'
+  ...
+# Subtest: pre-revocation failure prevents password update and preserves the token
+ok 14 - pre-revocation failure prevents password update and preserves the token
+  ---
+  duration_ms: 79.09825
+  type: 'test'
+  ...
+# Subtest: token-consumption hook revokes before creating migrated credentials using actual stored hash
+ok 15 - token-consumption hook revokes before creating migrated credentials using actual stored hash
+  ---
+  duration_ms: 11.992542
+  type: 'test'
+  ...
+# Subtest: pre-revocation failure prevents migrated credential creation and preserves the token
+ok 16 - pre-revocation failure prevents migrated credential creation and preserves the token
+  ---
+  duration_ms: 6.746833
+  type: 'test'
+  ...
+# Subtest: query-token and existing plaintext fallback use the same pre-revocation safeguard
+ok 17 - query-token and existing plaintext fallback use the same pre-revocation safeguard
+  ---
+  duration_ms: 137.406458
+  type: 'test'
+  ...
+# Subtest: wrong reset token never revokes sessions or changes credentials
+ok 18 - wrong reset token never revokes sessions or changes credentials
+  ---
+  duration_ms: 32.524083
+  type: 'test'
+  ...
+# Subtest: expired token consumption does not revoke, hash, mutate credentials or verify metadata
+ok 19 - expired token consumption does not revoke, hash, mutate credentials or verify metadata
+  ---
+  duration_ms: 28.475625
+  type: 'test'
+  ...
+# Subtest: consumed-token retry cannot trigger pre-revocation or another credential write
+ok 20 - consumed-token retry cannot trigger pre-revocation or another credential write
+  ---
+  duration_ms: 14.064083
+  type: 'test'
+  ...
+# Subtest: token consumption failure rolls back pre-revocation and prevents password mutation
+ok 21 - token consumption failure rolls back pre-revocation and prevents password mutation
+  ---
+  duration_ms: 20.426458
+  type: 'test'
+  ...
+# Subtest: verification hook ignores unrelated contexts, token mismatches, expired and malformed expiry records
+ok 22 - verification hook ignores unrelated contexts, token mismatches, expired and malformed expiry records
+  ---
+  duration_ms: 85.374417
+  type: 'test'
+  ...
+# Subtest: post-reset metadata failure still follows both pre- and post-write session revocation
+ok 23 - post-reset metadata failure still follows both pre- and post-write session revocation
+  ---
+  duration_ms: 12.179458
+  type: 'test'
+  ...
+# Subtest: user reservation and session admission lookups use adapter transaction connection and account predicates
+ok 24 - user reservation and session admission lookups use adapter transaction connection and account predicates
+  ---
+  duration_ms: 56.539208
+  type: 'test'
+  ...
+# Subtest: orphaned profile reservation rejects inside transaction without acquiring the pool
+ok 25 - orphaned profile reservation rejects inside transaction without acquiring the pool
+  ---
+  duration_ms: 53.686417
+  type: 'test'
+  ...
+# Subtest: session hook denies missing user on the transaction connection
+ok 26 - session hook denies missing user on the transaction connection
+  ---
+  duration_ms: 3.612125
+  type: 'test'
+  ...
+# Subtest: session hook denies disabled user on the transaction connection
+ok 27 - session hook denies disabled user on the transaction connection
+  ---
+  duration_ms: 27.050209
+  type: 'test'
+  ...
+# Subtest: session hook denies unverified user on the transaction connection
+ok 28 - session hook denies unverified user on the transaction connection
+  ---
+  duration_ms: 57.199917
+  type: 'test'
+  ...
+# Subtest: both lookup hooks propagate query failures and restore outer context
+ok 29 - both lookup hooks propagate query failures and restore outer context
+  ---
+  duration_ms: 30.67
+  type: 'test'
+  ...
+# Subtest: interleaved account transactions isolate hook queries and never leak scope to outside callers
+ok 30 - interleaved account transactions isolate hook queries and never leak scope to outside callers
+  ---
+  duration_ms: 3.167083
+  type: 'test'
+  ...
+# Subtest: nested proxy transactions restore enclosing connection after rejection and pass through properties
+ok 31 - nested proxy transactions restore enclosing connection after rejection and pass through properties
+  ---
+  duration_ms: 36.337625
+  type: 'test'
+  ...
+# Subtest: reported Codex contamination fails, while the subject and creative hook survive tag cleanup
+ok 32 - reported Codex contamination fails, while the subject and creative hook survive tag cleanup
+  ---
+  duration_ms: 182.356458
+  type: 'test'
+  ...
+# Subtest: provider input projects request-scoped preferences without mutating the saved profile
+ok 33 - provider input projects request-scoped preferences without mutating the saved profile
+  ---
+  duration_ms: 5.079041
+  type: 'test'
+  ...
+# Subtest: author identity, topic and explicit exclusions are distinct; unrelated no-CTA does not suppress branding
+ok 34 - author identity, topic and explicit exclusions are distinct; unrelated no-CTA does not suppress branding
+  ---
+  duration_ms: 0.886833
+  type: 'test'
+  ...
+# Subtest: saved offers and CTA choices do not establish promotions; confirmed current facts still work
+ok 35 - saved offers and CTA choices do not establish promotions; confirmed current facts still work
+  ---
+  duration_ms: 54.254917
+  type: 'test'
+  ...
+# Subtest: all fourteen formats reject unrelated identity in every delivered field and keep subject tags
+ok 36 - all fourteen formats reject unrelated identity in every delivered field and keep subject tags
+  ---
+  duration_ms: 81.057041
+  type: 'test'
+  ...
+# Subtest: refinement cannot authorize contamination from the previous draft or saved preferences
+ok 37 - refinement cannot authorize contamination from the previous draft or saved preferences
+  ---
+  duration_ms: 1.947291
+  type: 'test'
+  ...
+# Subtest: saved hashtag instructions cannot smuggle a brand or an unrelated promotion into subject tags
+ok 38 - saved hashtag instructions cannot smuggle a brand or an unrelated promotion into subject tags
+  ---
+  duration_ms: 35.091083
+  type: 'test'
+  ...
+# Subtest: Image Studio keeps saved aesthetics, not unrelated identity, audience or promotional instructions
+ok 39 - Image Studio keeps saved aesthetics, not unrelated identity, audience or promotional instructions
+  ---
+  duration_ms: 11.161125
+  type: 'test'
+  ...
+# Subtest: exact captured paid output is rejected before delivery
+ok 40 - exact captured paid output is rejected before delivery
+  ---
+  duration_ms: 72.0835
+  type: 'test'
+  ...
+# Subtest: origins and founder experiences require explicit source sentences, not tone or goals
+ok 41 - origins and founder experiences require explicit source sentences, not tone or goals
+  ---
+  duration_ms: 116.201709
+  type: 'test'
+  ...
+# Subtest: missing proof, prizes, terms and prices are not approved merely because they look plausible
+ok 42 - missing proof, prizes, terms and prices are not approved merely because they look plausible
+  ---
+  duration_ms: 5.101
+  type: 'test'
+  ...
+# Subtest: quantities, location, dates and qualifications cannot be borrowed from a different source assertion
+ok 43 - quantities, location, dates and qualifications cannot be borrowed from a different source assertion
+  ---
+  duration_ms: 0.628792
+  type: 'test'
+  ...
+# Subtest: source-grounded factual sentences and natural creative framing coexist on Instagram and LinkedIn
+ok 44 - source-grounded factual sentences and natural creative framing coexist on Instagram and LinkedIn
+  ---
+  duration_ms: 39.77675
+  type: 'test'
+  ...
+# Subtest: all formats and all delivered fields receive the same guard
+ok 45 - all formats and all delivered fields receive the same guard
+  ---
+  duration_ms: 118.036291
+  type: 'test'
+  ...
+# Subtest: refinement cannot promote an earlier AI invention or edit instruction into factual evidence
+ok 46 - refinement cannot promote an earlier AI invention or edit instruction into factual evidence
+  ---
+  duration_ms: 1.1505
+  type: 'test'
+  ...
+# Subtest: labelled missing details stay labelled; placeholders cannot hide an adjacent fabricated claim
+ok 47 - labelled missing details stay labelled; placeholders cannot hide an adjacent fabricated claim
+  ---
+  duration_ms: 0.781917
+  type: 'test'
+  ...
+# Subtest: explicitly requested saved offer supports an unchanged specification, not extra guarantees
+ok 48 - explicitly requested saved offer supports an unchanged specification, not extra guarantees
+  ---
+  duration_ms: 1.124542
+  type: 'test'
+  ...
+# Subtest: dashboard uses explicit cancellation date, not renewal date or cancellation initiation
+ok 49 - dashboard uses explicit cancellation date, not renewal date or cancellation initiation
+  ---
+  duration_ms: 104.702834
+  type: 'test'
+  ...
+# Subtest: deleted owner billing link is hidden without altering lifetime benefits; valid Founder billing stays available
+ok 50 - deleted owner billing link is hidden without altering lifetime benefits; valid Founder billing stays available
+  ---
+  duration_ms: 8.435666
+  type: 'test'
+  ...
+# Subtest: dashboard supports legacy period-end cancellation without a stored cancel_at
+ok 51 - dashboard supports legacy period-end cancellation without a stored cancel_at
+  ---
+  duration_ms: 3.508584
+  type: 'test'
+  ...
+# Subtest: renewing and reversed subscriptions show renewal date without stale cancellation notice
+ok 52 - renewing and reversed subscriptions show renewal date without stale cancellation notice
+  ---
+  duration_ms: 142.547875
+  type: 'test'
+  ...
+# Subtest: Founder and owner lifetime display ignores stale ordinary cancellation fields
+ok 53 - Founder and owner lifetime display ignores stale ordinary cancellation fields
+  ---
+  duration_ms: 55.097
+  type: 'test'
+  ...
+# Subtest: paid Creator lifetime displays active and Studio cancellation remains separate
+ok 54 - paid Creator lifetime displays active and Studio cancellation remains separate
+  ---
+  duration_ms: 33.576708
+  type: 'test'
+  ...
+# Subtest: career input: supported paraphrase, exact fact and creative reflection pass
+ok 55 - career input: supported paraphrase, exact fact and creative reflection pass
+  ---
+  duration_ms: 132.771458
+  type: 'test'
+  ...
+# Subtest: invented career history and business claims remain rejected
+ok 56 - invented career history and business claims remain rejected
+  ---
+  duration_ms: 8.695667
+  type: 'test'
+  ...
+# Subtest: negated and different source contexts never establish career evidence
+ok 57 - negated and different source contexts never establish career evidence
+  ---
+  duration_ms: 1.904167
+  type: 'test'
+  ...
+# Subtest: pinned replacement reserves conservatively and settles official Flare usage
+ok 58 - pinned replacement reserves conservatively and settles official Flare usage
+  ---
+  duration_ms: 1.014417
+  type: 'test'
+  ...
+# Subtest: integer worst-case bounds remain within the shared monthly policy
+ok 59 - integer worst-case bounds remain within the shared monthly policy
+  ---
+  duration_ms: 0.079875
+  type: 'test'
+  ...
+# Subtest: production image configuration reserves and settles the same model-specific price
+ok 60 - production image configuration reserves and settles the same model-specific price
+  ---
+  duration_ms: 0.252833
+  type: 'test'
+  ...
+# Subtest: production image policy refuses unbounded or unreviewed parameters
+ok 61 - production image policy refuses unbounded or unreviewed parameters
+  ---
+  duration_ms: 0.178833
+  type: 'test'
+  ...
+# Subtest: published Image 1 shutdown stops new reservations without blocking settlement or text
+ok 62 - published Image 1 shutdown stops new reservations without blocking settlement or text
+  ---
+  duration_ms: 0.097583
+  type: 'test'
+  ...
+# Subtest: full serialized payload including schema is priced; UTF-8 bytes are not character counts
+ok 63 - full serialized payload including schema is priced; UTF-8 bytes are not character counts
+  ---
+  duration_ms: 0.187209
+  type: 'test'
+  ...
+# Subtest: unknown models, stale prices, tools, unbounded outputs and unreviewed image configurations fail closed
+ok 64 - unknown models, stale prices, tools, unbounded outputs and unreviewed image configurations fail closed
+  ---
+  duration_ms: 0.119375
+  type: 'test'
+  ...
+# Subtest: known usage reconciles conservatively; uncertain and malformed usage never releases money
+ok 65 - known usage reconciles conservatively; uncertain and malformed usage never releases money
+  ---
+  duration_ms: 0.076708
+  type: 'test'
+  ...
+# Subtest: GPT-5.2 default and pinned model use their own verified rates, including fractional input pricing
+ok 66 - GPT-5.2 default and pinned model use their own verified rates, including fractional input pricing
+  ---
+  duration_ms: 0.087834
+  type: 'test'
+  ...
+# Subtest: goal-consistency hashtags survive the provider response and final output
+ok 67 - goal-consistency hashtags survive the provider response and final output
+  ---
+  duration_ms: 128.372875
+  type: 'test'
+  ...
+# Subtest: no hashtags and explicit exclusions or user tags remain authoritative
+ok 68 - no hashtags and explicit exclusions or user tags remain authoritative
+  ---
+  duration_ms: 3.461875
+  type: 'test'
+  ...
+# Subtest: topic inference is narrow and platform caps remain intact
+ok 69 - topic inference is narrow and platform caps remain intact
+  ---
+  duration_ms: 3.393625
+  type: 'test'
+  ...
+# Subtest: exact captured retest keeps its factual hook, removes unsupported niche and two stock phrases
+not ok 70 - exact captured retest keeps its factual hook, removes unsupported niche and two stock phrases
+  ---
+  duration_ms: 154.747417
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:15:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      [
+        '#independentmakers',
+        '#northbankpaper',
+    -   '#1000subscribers',
+    -   '#Subscribers',
+    -   '#Giveaway'
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: '#independentmakers'
+    1: '#northbankpaper'
+    2: '#1000subscribers'
+    3: '#Subscribers'
+    4: '#Giveaway'
+  actual:
+    0: '#independentmakers'
+    1: '#northbankpaper'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:19:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.start (node:internal/test_runner/test:1096:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17)
+  ...
+# Subtest: quality processing cannot hide the attic failure or a fabricated tag-linked business claim
+ok 71 - quality processing cannot hide the attic failure or a fabricated tag-linked business claim
+  ---
+  duration_ms: 2.013125
+  type: 'test'
+  ...
+# Subtest: brand name alone and newly generated prose do not establish a niche
+not ok 72 - brand name alone and newly generated prose do not establish a niche
+  ---
+  duration_ms: 48.688833
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:33:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      [
+        '#northbankpaper',
+    -   '#Subscribers',
+    -   '#Giveaway'
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: '#northbankpaper'
+    1: '#Subscribers'
+    2: '#Giveaway'
+  actual:
+    0: '#northbankpaper'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:34:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+    Test.postRun (node:internal/test_runner/test:1330:19)
+    Test.run (node:internal/test_runner/test:1258:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+  ...
+# Subtest: explicit hashtag preferences and current overrides are respected
+not ok 73 - explicit hashtag preferences and current overrides are respected
+  ---
+  duration_ms: 8.579916
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:42:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+    + []
+    - [
+    -   '#Subscribers',
+    -   '#Giveaway'
+    - ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: '#Subscribers'
+    1: '#Giveaway'
+  actual:
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:43:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+    Test.postRun (node:internal/test_runner/test:1330:19)
+    Test.run (node:internal/test_runner/test:1258:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+  ...
+# Subtest: Unicode, compound audience phrases, numbers and explicit tags remain usable
+not ok 74 - Unicode, compound audience phrases, numbers and explicit tags remain usable
+  ---
+  duration_ms: 1.084792
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:51:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      [
+        '#IndependentMakers',
+    -   '#1000Subscribers',
+        '#NorthbankPaper',
+    -   '#Subscribers',
+    -   '#Giveaway'
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: '#IndependentMakers'
+    1: '#1000Subscribers'
+    2: '#NorthbankPaper'
+    3: '#Subscribers'
+    4: '#Giveaway'
+  actual:
+    0: '#IndependentMakers'
+    1: '#NorthbankPaper'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:52:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+    Test.postRun (node:internal/test_runner/test:1330:19)
+    Test.run (node:internal/test_runner/test:1258:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+  ...
+# Subtest: hashtag cleanup preserves URL fragments and non-tag identifiers
+ok 75 - hashtag cleanup preserves URL fragments and non-tag identifiers
+  ---
+  duration_ms: 22.02775
+  type: 'test'
+  ...
+# Subtest: deduplication spans caption and tags but does not delete independent platform sets or plain labels
+not ok 76 - deduplication spans caption and tags but does not delete independent platform sets or plain labels
+  ---
+  duration_ms: 5.39725
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:62:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      [
+        'Hook:',
+        '#northbankpaper',
+        '#independentmakers',
+    -   '#Subscribers',
+    -   '#Giveaway'
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'Hook:'
+    1: '#northbankpaper'
+    2: '#independentmakers'
+    3: '#Subscribers'
+    4: '#Giveaway'
+  actual:
+    0: 'Hook:'
+    1: '#northbankpaper'
+    2: '#independentmakers'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:64:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+    Test.postRun (node:internal/test_runner/test:1330:19)
+    Test.run (node:internal/test_runner/test:1258:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+  ...
+# Subtest: stock-phrase cleanup preserves explicit voice, genuine source text and unrelated creative language
+ok 77 - stock-phrase cleanup preserves explicit voice, genuine source text and unrelated creative language
+  ---
+  duration_ms: 12.433334
+  type: 'test'
+  ...
+# Subtest: all fourteen formats survive quality cleanup, including empty supported-tag sets
+ok 78 - all fourteen formats survive quality cleanup, including empty supported-tag sets
+  ---
+  duration_ms: 28.949167
+  type: 'test'
+  ...
+# Subtest: refinement remains grounded while allowing explicit style and hashtag instructions
+not ok 79 - refinement remains grounded while allowing explicit style and hashtag instructions
+  ---
+  duration_ms: 1.699083
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:93:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+
+      [
+        '#northbankpaper',
+        '#independentmakers',
+    -   '#1000subscribers'
+      ]
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: '#northbankpaper'
+    1: '#independentmakers'
+    2: '#1000subscribers'
+  actual:
+    0: '#northbankpaper'
+    1: '#independentmakers'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/content-quality.test.mjs:98:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+    Test.postRun (node:internal/test_runner/test:1330:19)
+    Test.run (node:internal/test_runner/test:1258:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+  ...
+# Subtest: portal validates expanded dedicated catalogue and explicitly selects it for the session
+ok 80 - portal validates expanded dedicated catalogue and explicitly selects it for the session
+  ---
+  duration_ms: 77.57225
+  type: 'test'
+  ...
+# Subtest: missing or invalid dedicated ID and missing or duplicate price mappings fail before Stripe
+ok 81 - missing or invalid dedicated ID and missing or duplicate price mappings fail before Stripe
+  ---
+  duration_ms: 391.2435
+  type: 'test'
+  ...
+# Subtest: portal fails closed for account-wide default, without creating a default session
+ok 82 - portal fails closed for account-wide default, without creating a default session
+  ---
+  duration_ms: 59.123125
+  type: 'test'
+  ...
+# Subtest: portal fails closed for wrong configuration, without creating a default session
+ok 83 - portal fails closed for wrong configuration, without creating a default session
+  ---
+  duration_ms: 40.116167
+  type: 'test'
+  ...
+# Subtest: portal fails closed for inactive configuration, without creating a default session
+ok 84 - portal fails closed for inactive configuration, without creating a default session
+  ---
+  duration_ms: 71.847334
+  type: 'test'
+  ...
+# Subtest: portal fails closed for unrelated application, without creating a default session
+ok 85 - portal fails closed for unrelated application, without creating a default session
+  ---
+  duration_ms: 30.859542
+  type: 'test'
+  ...
+# Subtest: portal fails closed for disabled switching, without creating a default session
+ok 86 - portal fails closed for disabled switching, without creating a default session
+  ---
+  duration_ms: 42.027041
+  type: 'test'
+  ...
+# Subtest: portal fails closed for quantity changes, without creating a default session
+ok 87 - portal fails closed for quantity changes, without creating a default session
+  ---
+  duration_ms: 52.378625
+  type: 'test'
+  ...
+# Subtest: portal fails closed for promotion changes, without creating a default session
+ok 88 - portal fails closed for promotion changes, without creating a default session
+  ---
+  duration_ms: 47.183417
+  type: 'test'
+  ...
+# Subtest: portal fails closed for adjustable quantity, without creating a default session
+ok 89 - portal fails closed for adjustable quantity, without creating a default session
+  ---
+  duration_ms: 89.306459
+  type: 'test'
+  ...
+# Subtest: portal fails closed for TaskPilot price, without creating a default session
+ok 90 - portal fails closed for TaskPilot price, without creating a default session
+  ---
+  duration_ms: 35.018916
+  type: 'test'
+  ...
+# Subtest: portal fails closed for additional product, without creating a default session
+ok 91 - portal fails closed for additional product, without creating a default session
+  ---
+  duration_ms: 70.203167
+  type: 'test'
+  ...
+# Subtest: portal fails closed for missing product, without creating a default session
+ok 92 - portal fails closed for missing product, without creating a default session
+  ---
+  duration_ms: 31.756292
+  type: 'test'
+  ...
+# Subtest: portal fails closed for duplicate product, without creating a default session
+ok 93 - portal fails closed for duplicate product, without creating a default session
+  ---
+  duration_ms: 69.133709
+  type: 'test'
+  ...
+# Subtest: portal fails closed for duplicate price, without creating a default session
+ok 94 - portal fails closed for duplicate price, without creating a default session
+  ---
+  duration_ms: 70.448875
+  type: 'test'
+  ...
+# Subtest: portal fails closed for unexpanded catalogue, without creating a default session
+ok 95 - portal fails closed for unexpanded catalogue, without creating a default session
+  ---
+  duration_ms: 35.571041
+  type: 'test'
+  ...
+# Subtest: portal fails closed for immediate invoice, without creating a default session
+ok 96 - portal fails closed for immediate invoice, without creating a default session
+  ---
+  duration_ms: 58.919958
+  type: 'test'
+  ...
+# Subtest: portal fails closed for reset invoice anchor, without creating a default session
+ok 97 - portal fails closed for reset invoice anchor, without creating a default session
+  ---
+  duration_ms: 27.744042
+  type: 'test'
+  ...
+# Subtest: portal fails closed for end trial early, without creating a default session
+ok 98 - portal fails closed for end trial early, without creating a default session
+  ---
+  duration_ms: 34.169834
+  type: 'test'
+  ...
+# Subtest: portal fails closed for scheduled switch, without creating a default session
+ok 99 - portal fails closed for scheduled switch, without creating a default session
+  ---
+  duration_ms: 32.749083
+  type: 'test'
+  ...
+# Subtest: portal fails closed for immediate cancellation, without creating a default session
+ok 100 - portal fails closed for immediate cancellation, without creating a default session
+  ---
+  duration_ms: 52.6505
+  type: 'test'
+  ...
+# Subtest: portal fails closed for cancellation proration, without creating a default session
+ok 101 - portal fails closed for cancellation proration, without creating a default session
+  ---
+  duration_ms: 53.208292
+  type: 'test'
+  ...
+# Subtest: portal fails closed for disabled cancellation, without creating a default session
+ok 102 - portal fails closed for disabled cancellation, without creating a default session
+  ---
+  duration_ms: 13.932209
+  type: 'test'
+  ...
+# Subtest: portal fails closed for disabled payment management, without creating a default session
+ok 103 - portal fails closed for disabled payment management, without creating a default session
+  ---
+  duration_ms: 37.26625
+  type: 'test'
+  ...
+# Subtest: portal fails closed for disabled invoices, without creating a default session
+ok 104 - portal fails closed for disabled invoices, without creating a default session
+  ---
+  duration_ms: 36.494166
+  type: 'test'
+  ...
+# Subtest: provider errors are redacted and never retried or replaced with the default portal
+ok 105 - provider errors are redacted and never retried or replaced with the default portal
+  ---
+  duration_ms: 46.310625
+  type: 'test'
+  ...
+# Subtest: portal uses authenticated account customer, never browser-supplied customer or configuration
+ok 106 - portal uses authenticated account customer, never browser-supplied customer or configuration
+  ---
+  duration_ms: 2.631208
+  type: 'test'
+  ...
+# Subtest: portal preserves origin, authentication and missing-customer guards
+ok 107 - portal preserves origin, authentication and missing-customer guards
+  ---
+  duration_ms: 41.870042
+  type: 'test'
+  ...
+# Subtest: portal configuration failure gives a safe 503 without claiming a subscription change
+ok 108 - portal configuration failure gives a safe 503 without claiming a subscription change
+  ---
+  duration_ms: 29.9545
+  type: 'test'
+  ...
+# Subtest: captured deleted customer is not sent to portal creation or automatically replaced
+ok 109 - captured deleted customer is not sent to portal creation or automatically replaced
+  ---
+  duration_ms: 23.053583
+  type: 'test'
+  ...
+# Subtest: suspended Lite cannot be selected in portal while current Lite recognition is preserved
+ok 110 - suspended Lite cannot be selected in portal while current Lite recognition is preserved
+  ---
+  duration_ms: 92.121542
+  type: 'test'
+  ...
+# Subtest: customer lookup distinguishes resource_missing from permission failures and outages
+ok 111 - customer lookup distinguishes resource_missing from permission failures and outages
+  ---
+  duration_ms: 121.259959
+  type: 'test'
+  ...
+# Subtest: career example filters fragments and duplicate concepts on social platforms
+ok 112 - career example filters fragments and duplicate concepts on social platforms
+  ---
+  duration_ms: 98.171458
+  type: 'test'
+  ...
+# Subtest: everyday topics use grounded concepts and explicit no hashtags wins
+ok 113 - everyday topics use grounded concepts and explicit no hashtags wins
+  ---
+  duration_ms: 3.1985
+  type: 'test'
+  ...
+# Subtest: prompt asks for varied grounded hooks and endings without extra calls
+ok 114 - prompt asks for varied grounded hooks and endings without extra calls
+  ---
+  duration_ms: 1.124875
+  type: 'test'
+  ...
+# Subtest: exact latest capture is immutable and each of its three factual inventions is independently rejected
+ok 115 - exact latest capture is immutable and each of its three factual inventions is independently rejected
+  ---
+  duration_ms: 38.706875
+  type: 'test'
+  ...
+# Subtest: factual support has a source location; absence of a match is never reported as verified
+ok 116 - factual support has a source location; absence of a match is never reported as verified
+  ---
+  duration_ms: 92.135959
+  type: 'test'
+  ...
+# Subtest: timing, purpose and commitments need supplied facts, not audience, preferences or previous AI copy
+ok 117 - timing, purpose and commitments need supplied facts, not audience, preferences or previous AI copy
+  ---
+  duration_ms: 41.165417
+  type: 'test'
+  ...
+# Subtest: saved factual wording is usable, but a current explicit contradiction overrides it
+ok 118 - saved factual wording is usable, but a current explicit contradiction overrides it
+  ---
+  duration_ms: 9.068041
+  type: 'test'
+  ...
+# Subtest: typed milestone matching preserves entity, quantity, relationship, scope and uncertainty
+ok 119 - typed milestone matching preserves entity, quantity, relationship, scope and uncertainty
+  ---
+  duration_ms: 4.315375
+  type: 'test'
+  ...
+# Subtest: ordinary creative language, educational examples and non-event temporal CTAs remain usable
+ok 120 - ordinary creative language, educational examples and non-event temporal CTAs remain usable
+  ---
+  duration_ms: 2.706125
+  type: 'test'
+  ...
+# Subtest: all 14 formats reject inventions in every field before cleanup, including explicit No CTA
+ok 121 - all 14 formats reject inventions in every field before cleanup, including explicit No CTA
+  ---
+  duration_ms: 90.151291
+  type: 'test'
+  ...
+# Subtest: No CTA reaches body and items, not only the dedicated CTA property
+ok 122 - No CTA reaches body and items, not only the dedicated CTA property
+  ---
+  duration_ms: 44.616042
+  type: 'test'
+  ...
+# Subtest: linkedin: distinct contract, formatting, account save and text export round-trip
+ok 123 - linkedin: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 98.722334
+  type: 'test'
+  ...
+# Subtest: instagram: distinct contract, formatting, account save and text export round-trip
+ok 124 - instagram: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 15.99275
+  type: 'test'
+  ...
+# Subtest: tiktok: distinct contract, formatting, account save and text export round-trip
+ok 125 - tiktok: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 5.458916
+  type: 'test'
+  ...
+# Subtest: twitter: distinct contract, formatting, account save and text export round-trip
+ok 126 - twitter: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 3.344541
+  type: 'test'
+  ...
+# Subtest: facebook: distinct contract, formatting, account save and text export round-trip
+ok 127 - facebook: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 17.749458
+  type: 'test'
+  ...
+# Subtest: youtubeShorts: distinct contract, formatting, account save and text export round-trip
+ok 128 - youtubeShorts: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 4.637333
+  type: 'test'
+  ...
+# Subtest: xThread: distinct contract, formatting, account save and text export round-trip
+ok 129 - xThread: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 4.472875
+  type: 'test'
+  ...
+# Subtest: shortVideoScript: distinct contract, formatting, account save and text export round-trip
+ok 130 - shortVideoScript: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 1.587084
+  type: 'test'
+  ...
+# Subtest: carousel: distinct contract, formatting, account save and text export round-trip
+ok 131 - carousel: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 1.465792
+  type: 'test'
+  ...
+# Subtest: emailNewsletter: distinct contract, formatting, account save and text export round-trip
+ok 132 - emailNewsletter: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 1.48025
+  type: 'test'
+  ...
+# Subtest: repurposePack: distinct contract, formatting, account save and text export round-trip
+ok 133 - repurposePack: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 2.004375
+  type: 'test'
+  ...
+# Subtest: hooks: distinct contract, formatting, account save and text export round-trip
+ok 134 - hooks: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 8.747375
+  type: 'test'
+  ...
+# Subtest: ctas: distinct contract, formatting, account save and text export round-trip
+ok 135 - ctas: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 1.127667
+  type: 'test'
+  ...
+# Subtest: platformHashtags: distinct contract, formatting, account save and text export round-trip
+ok 136 - platformHashtags: distinct contract, formatting, account save and text export round-trip
+  ---
+  duration_ms: 1.184791
+  type: 'test'
+  ...
+# (node:6521) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/lib/founder-offer.ts is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Founder intent survives signup, email-verification callback, login and authenticated resume
+ok 137 - Founder intent survives signup, email-verification callback, login and authenticated resume
+  ---
+  duration_ms: 1.176125
+  type: 'test'
+  ...
+# Subtest: existing Founder and paid users are blocked from consuming another Founder place
+ok 138 - existing Founder and paid users are blocked from consuming another Founder place
+  ---
+  duration_ms: 62.796209
+  type: 'test'
+  ...
+# Subtest: FOUNDING100 must exist, be active, have a limit and have remaining redemptions
+ok 139 - FOUNDING100 must exist, be active, have a limit and have remaining redemptions
+  ---
+  duration_ms: 3.770917
+  type: 'test'
+  ...
+# Subtest: configured coupon or promotion mismatches fail instead of applying a different discount
+ok 140 - configured coupon or promotion mismatches fail instead of applying a different discount
+  ---
+  duration_ms: 1.15475
+  type: 'test'
+  ...
+# Subtest: the checked FOUNDING100 promotion code is the one applied to checkout
+ok 141 - the checked FOUNDING100 promotion code is the one applied to checkout
+  ---
+  duration_ms: 0.827709
+  type: 'test'
+  ...
+# Subtest: open checkout inspection allows null customer/subscription before completion
+ok 142 - open checkout inspection allows null customer/subscription before completion
+  ---
+  duration_ms: 0.143209
+  type: 'test'
+  ...
+# Subtest: completed checkout activation requires account association, customer and subscription
+ok 143 - completed checkout activation requires account association, customer and subscription
+  ---
+  duration_ms: 0.122208
+  type: 'test'
+  ...
+# Subtest: Founder subscription retries and cancellations preserve lifetime entitlement state
+ok 144 - Founder subscription retries and cancellations preserve lifetime entitlement state
+  ---
+  duration_ms: 0.214417
+  type: 'test'
+  ...
+# Subtest: checkout orchestration returns a valid open £0 session with null customer/subscription
+ok 145 - checkout orchestration returns a valid open £0 session with null customer/subscription
+  ---
+  duration_ms: 17.561667
+  type: 'test'
+  ...
+# Subtest: separate instances requesting concurrently share the persistent claim and Stripe idempotency key
+ok 146 - separate instances requesting concurrently share the persistent claim and Stripe idempotency key
+  ---
+  duration_ms: 0.352292
+  type: 'test'
+  ...
+# Subtest: sequential requests reuse the same valid open session
+ok 147 - sequential requests reuse the same valid open session
+  ---
+  duration_ms: 0.321125
+  type: 'test'
+  ...
+# Subtest: crash recovery reuses Stripe idempotency after creation but before database persistence
+ok 148 - crash recovery reuses Stripe idempotency after creation but before database persistence
+  ---
+  duration_ms: 0.544208
+  type: 'test'
+  ...
+# Subtest: expired sessions become terminal and retry with a new logical attempt
+ok 149 - expired sessions become terminal and retry with a new logical attempt
+  ---
+  duration_ms: 0.342834
+  type: 'test'
+  ...
+# Subtest: invalid discount or non-zero total is expired where possible and not converted to paid checkout
+ok 150 - invalid discount or non-zero total is expired where possible and not converted to paid checkout
+  ---
+  duration_ms: 0.28225
+  type: 'test'
+  ...
+# Subtest: offer exhaustion and Stripe failures mark attempts safely
+ok 151 - offer exhaustion and Stripe failures mark attempts safely
+  ---
+  duration_ms: 0.26
+  type: 'test'
+  ...
+# Subtest: completed checkout activates Founder access with qualifying evidence
+ok 152 - completed checkout activates Founder access with qualifying evidence
+  ---
+  duration_ms: 0.383167
+  type: 'test'
+  ...
+# Subtest: permanently invalid completed checkout is acknowledged without entitlement
+ok 153 - permanently invalid completed checkout is acknowledged without entitlement
+  ---
+  duration_ms: 0.172917
+  type: 'test'
+  ...
+# Subtest: entitlement persistence failure remains retryable for Stripe webhooks
+ok 154 - entitlement persistence failure remains retryable for Stripe webhooks
+  ---
+  duration_ms: 0.180958
+  type: 'test'
+  ...
+# Subtest: missing entitlement target remains retryable for Stripe webhooks
+ok 155 - missing entitlement target remains retryable for Stripe webhooks
+  ---
+  duration_ms: 3.797792
+  type: 'test'
+  ...
+# Subtest: Stripe checkout retrieval failure remains retryable for Stripe webhooks
+ok 156 - Stripe checkout retrieval failure remains retryable for Stripe webhooks
+  ---
+  duration_ms: 0.732708
+  type: 'test'
+  ...
+# Subtest: claim completion failure after entitlement persistence is safe on retry
+ok 157 - claim completion failure after entitlement persistence is safe on retry
+  ---
+  duration_ms: 0.2495
+  type: 'test'
+  ...
+# Subtest: terminal non-completed Founder claims cannot be activated later
+ok 158 - terminal non-completed Founder claims cannot be activated later
+  ---
+  duration_ms: 0.173167
+  type: 'test'
+  ...
+# Subtest: duplicate or reordered webhook events are idempotent
+ok 159 - duplicate or reordered webhook events are idempotent
+  ---
+  duration_ms: 1.946375
+  type: 'test'
+  ...
+# Subtest: subscription events before checkout confirmation do not newly grant Founder access
+ok 160 - subscription events before checkout confirmation do not newly grant Founder access
+  ---
+  duration_ms: 0.832375
+  type: 'test'
+  ...
+# Subtest: lifetime access survives later subscription cancellation events after checkout confirmation
+ok 161 - lifetime access survives later subscription cancellation events after checkout confirmation
+  ---
+  duration_ms: 1.557917
+  type: 'test'
+  ...
+# Subtest: deleted Stripe customer recovers to authenticated email with exact Founder discount and stable claim key
+ok 162 - deleted Stripe customer recovers to authenticated email with exact Founder discount and stable claim key
+  ---
+  duration_ms: 275.984292
+  type: 'test'
+  ...
+# Subtest: deleted-customer concurrency and crash recovery reuse one idempotent session
+ok 163 - deleted-customer concurrency and crash recovery reuse one idempotent session
+  ---
+  duration_ms: 267.934625
+  type: 'test'
+  ...
+# Subtest: valid customers are retained and ordinary paid checkout behaviour is unchanged
+ok 164 - valid customers are retained and ordinary paid checkout behaviour is unchanged
+  ---
+  duration_ms: 107.033958
+  type: 'test'
+  ...
+# Subtest: customer lookup failures or mismatched identities never fall back or create Checkout
+ok 165 - customer lookup failures or mismatched identities never fall back or create Checkout
+  ---
+  duration_ms: 361.883083
+  type: 'test'
+  ...
+# Subtest: deleted customer recovery requires authenticated account, email and coordinated claim key
+ok 166 - deleted customer recovery requires authenticated account, email and coordinated claim key
+  ---
+  duration_ms: 115.984916
+  type: 'test'
+  ...
+# Subtest: customer recovery does not bypass exhausted offers, configuration mismatch, existing Founder or paid access
+ok 167 - customer recovery does not bypass exhausted offers, configuration mismatch, existing Founder or paid access
+  ---
+  duration_ms: 143.923208
+  type: 'test'
+  ...
+# Subtest: wrong promotion or nonzero recovered sessions are refused and expired; uncertain POST never retries
+ok 168 - wrong promotion or nonzero recovered sessions are refused and expired; uncertain POST never retries
+  ---
+  duration_ms: 152.631083
+  type: 'test'
+  ...
+# Subtest: retired checkout refuses every Founder flag before auth, DB, Stripe or usage calls
+ok 169 - retired checkout refuses every Founder flag before auth, DB, Stripe or usage calls
+  ---
+  duration_ms: 117.936375
+  type: 'test'
+  ...
+# Subtest: Stripe acquisition helpers independently refuse retired Founder offers without transport
+ok 170 - Stripe acquisition helpers independently refuse retired Founder offers without transport
+  ---
+  duration_ms: 99.840917
+  type: 'test'
+  ...
+# Subtest: owner complimentary Premium has normal limits; similar or incomplete markers do not grant lifetime access
+ok 171 - owner complimentary Premium has normal limits; similar or incomplete markers do not grant lifetime access
+  ---
+  duration_ms: 2.014292
+  type: 'test'
+  ...
+# Subtest: actual repository preserves owner and Founder lifetime data across duplicate/reordered billing writes
+ok 172 - actual repository preserves owner and Founder lifetime data across duplicate/reordered billing writes
+  ---
+  duration_ms: 588.654333
+  type: 'test'
+  ...
+# Subtest: ordinary subscription cancellations still update normally
+ok 173 - ordinary subscription cancellations still update normally
+  ---
+  duration_ms: 185.556792
+  type: 'test'
+  ...
+# Subtest: public offer removed without changing paid plan prices or product limits
+ok 174 - public offer removed without changing paid plan prices or product limits
+  ---
+  duration_ms: 18.38725
+  type: 'test'
+  ...
+# Subtest: factual rejection identifies the failed prompt and permits only deliberate fresh retry
+ok 175 - factual rejection identifies the failed prompt and permits only deliberate fresh retry
+  ---
+  duration_ms: 0.63975
+  type: 'test'
+  ...
+# Subtest: unknown delivery and save uncertainty never authorize a new retry ID
+ok 176 - unknown delivery and save uncertainty never authorize a new retry ID
+  ---
+  duration_ms: 0.083291
+  type: 'test'
+  ...
+# Subtest: quota, session and storage errors do not offer another chargeable attempt
+ok 177 - quota, session and storage errors do not offer another chargeable attempt
+  ---
+  duration_ms: 0.067334
+  type: 'test'
+  ...
+# Subtest: effective paid tier rejects expired or canceled access and preserves both lifetime sources
+ok 178 - effective paid tier rejects expired or canceled access and preserves both lifetime sources
+  ---
+  duration_ms: 1.533875
+  type: 'test'
+  ...
+# Subtest: paid output selection is enforced server-side without changing the billing record
+ok 179 - paid output selection is enforced server-side without changing the billing record
+  ---
+  duration_ms: 3.977792
+  type: 'test'
+  ...
+# Subtest: request IDs, tenant identity, fingerprint and extended model inputs are validated
+ok 180 - request IDs, tenant identity, fingerprint and extended model inputs are validated
+  ---
+  duration_ms: 0.260875
+  type: 'test'
+  ...
+# Subtest: same request and concurrent identical fingerprints cannot trigger a second provider call
+ok 181 - same request and concurrent identical fingerprints cannot trigger a second provider call
+  ---
+  duration_ms: 0.298292
+  type: 'test'
+  ...
+# Subtest: completion atomically appends history and usage once and replays the stored result
+ok 182 - completion atomically appends history and usage once and replays the stored result
+  ---
+  duration_ms: 0.701542
+  type: 'test'
+  ...
+# Subtest: failures remain terminal for the same request and cannot later be completed
+ok 183 - failures remain terminal for the same request and cannot later be completed
+  ---
+  duration_ms: 0.17275
+  type: 'test'
+  ...
+# Subtest: ambiguous reservations never expire into automatic regeneration
+ok 184 - ambiguous reservations never expire into automatic regeneration
+  ---
+  duration_ms: 0.143666
+  type: 'test'
+  ...
+# Subtest: quota includes concurrent reservations, legacy history and image usage
+ok 185 - quota includes concurrent reservations, legacy history and image usage
+  ---
+  duration_ms: 0.162708
+  type: 'test'
+  ...
+# Subtest: lifetime text allowance ignores past Studio images, counts text and pending, resets UTC month
+ok 186 - lifetime text allowance ignores past Studio images, counts text and pending, resets UTC month
+  ---
+  duration_ms: 0.187375
+  type: 'test'
+  ...
+# Subtest: durable counter enforces quota after history/event pruning and resets with monthly window
+ok 187 - durable counter enforces quota after history/event pruning and resets with monthly window
+  ---
+  duration_ms: 0.166375
+  type: 'test'
+  ...
+# Subtest: completion charges the original admission month across a boundary
+ok 188 - completion charges the original admission month across a boundary
+  ---
+  duration_ms: 0.139583
+  type: 'test'
+  ...
+# Subtest: repository row-lock serializes duplicate admission and completion across callers
+ok 189 - repository row-lock serializes duplicate admission and completion across callers
+  ---
+  duration_ms: 129.464
+  type: 'test'
+  ...
+# Subtest: repository refuses nonexistent account and never reports success when commit fails
+ok 190 - repository refuses nonexistent account and never reports success when commit fails
+  ---
+  duration_ms: 162.548167
+  type: 'test'
+  ...
+# Subtest: failed completion commit retains reservation, with no history or usage to claim success
+ok 191 - failed completion commit retains reservation, with no history or usage to claim success
+  ---
+  duration_ms: 97.23575
+  type: 'test'
+  ...
+# Subtest: legacy 2000-entry ledger compacts terminal identities and admits new requests
+ok 192 - legacy 2000-entry ledger compacts terminal identities and admits new requests
+  ---
+  duration_ms: 28.421709
+  type: 'test'
+  ...
+# Subtest: 30-day replay expiry rejects old IDs, leaves history/usage untouched and accepts a fresh ID
+ok 193 - 30-day replay expiry rejects old IDs, leaves history/usage untouched and accepts a fresh ID
+  ---
+  duration_ms: 0.282625
+  type: 'test'
+  ...
+# Subtest: abandoned slots expire terminally after grace period, never into retry leases
+ok 194 - abandoned slots expire terminally after grace period, never into retry leases
+  ---
+  duration_ms: 0.231209
+  type: 'test'
+  ...
+# Subtest: concurrency limit is temporary and failed slots reopen without losing failed-ID protection
+ok 195 - concurrency limit is temporary and failed slots reopen without losing failed-ID protection
+  ---
+  duration_ms: 0.579042
+  type: 'test'
+  ...
+# Subtest: cache pressure evicts only replay bodies, not history or terminal identity
+ok 196 - cache pressure evicts only replay bodies, not history or terminal identity
+  ---
+  duration_ms: 48.664375
+  type: 'test'
+  ...
+# Subtest: malformed tombstones fail closed and failed compaction commits leave original ledger intact
+ok 197 - malformed tombstones fail closed and failed compaction commits leave original ledger intact
+  ---
+  duration_ms: 119.898958
+  type: 'test'
+  ...
+# Subtest: workspace CAS uses the same repository lock and leaves only one concurrent winner
+ok 198 - workspace CAS uses the same repository lock and leaves only one concurrent winner
+  ---
+  duration_ms: 63.4915
+  type: 'test'
+  ...
+# Subtest: usage summary uses durable text count even after recent event truncation
+ok 199 - usage summary uses durable text count even after recent event truncation
+  ---
+  duration_ms: 151.602541
+  type: 'test'
+  ...
+# Subtest: durable attempt budget counts failures without charging successful credits
+ok 200 - durable attempt budget counts failures without charging successful credits
+  ---
+  duration_ms: 1.059458
+  type: 'test'
+  ...
+# Subtest: replays and rejected duplicate IDs never consume attempt capacity
+ok 201 - replays and rejected duplicate IDs never consume attempt capacity
+  ---
+  duration_ms: 0.1635
+  type: 'test'
+  ...
+# Subtest: attempt budget is rolling, bounded, fail-closed, and does not reset on backwards clock
+ok 202 - attempt budget is rolling, bounded, fail-closed, and does not reset on backwards clock
+  ---
+  duration_ms: 0.242209
+  type: 'test'
+  ...
+# Subtest: repository serializes the last attempt slot across callers and preserves it on failed completion
+ok 203 - repository serializes the last attempt slot across callers and preserves it on failed completion
+  ---
+  duration_ms: 111.475125
+  type: 'test'
+  ...
+# Subtest: monthly total uses the image event/counter maximum plus other events without double-counting
+ok 204 - monthly total uses the image event/counter maximum plus other events without double-counting
+  ---
+  duration_ms: 0.450666
+  type: 'test'
+  ...
+# Subtest: malformed durable image accounting fails closed before text admission or completion
+ok 205 - malformed durable image accounting fails closed before text admission or completion
+  ---
+  duration_ms: 0.471917
+  type: 'test'
+  ...
+# Subtest: durable image accounting preserves all existing monthly plan limits and lifetime entitlements
+ok 206 - durable image accounting preserves all existing monthly plan limits and lifetime entitlements
+  ---
+  duration_ms: 0.485416
+  type: 'test'
+  ...
+# Subtest: 100 daily attempts include failures across minute windows while replay and success credits stay independent
+ok 207 - 100 daily attempts include failures across minute windows while replay and success credits stay independent
+  ---
+  duration_ms: 27.532583
+  type: 'test'
+  ...
+# Subtest: UTC daily rollover preserves rolling cap and Retry-After covers both limits
+ok 208 - UTC daily rollover preserves rolling cap and Retry-After covers both limits
+  ---
+  duration_ms: 0.21825
+  type: 'test'
+  ...
+# Subtest: daily budget fails closed for corruption or backwards days and seeds known legacy attempts
+ok 209 - daily budget fails closed for corruption or backwards days and seeds known legacy attempts
+  ---
+  duration_ms: 0.3355
+  type: 'test'
+  ...
+# Subtest: repository serializes the final daily slot and failures or failed writes never refund it
+ok 210 - repository serializes the final daily slot and failures or failed writes never refund it
+  ---
+  duration_ms: 156.76675
+  type: 'test'
+  ...
+# Subtest: route reserves before a bounded provider call and completes only validated output
+ok 211 - route reserves before a bounded provider call and completes only validated output
+  ---
+  duration_ms: 235.741667
+  type: 'test'
+  ...
+# Subtest: captured factual failure refuses delivery, retains provider accounting and terminal request identity
+ok 212 - captured factual failure refuses delivery, retains provider accounting and terminal request identity
+  ---
+  duration_ms: 328.180709
+  type: 'test'
+  ...
+# Subtest: refinement factual failures also refuse delivery without a retry or successful usage
+ok 213 - refinement factual failures also refuse delivery without a retry or successful usage
+  ---
+  duration_ms: 38.902167
+  type: 'test'
+  ...
+# Subtest: a later rejected request preserves the earlier result and accounting; explicit retry and replay remain exactly once
+ok 214 - a later rejected request preserves the earlier result and accounting; explicit retry and replay remain exactly once
+  ---
+  duration_ms: 474.964458
+  type: 'test'
+  ...
+# Subtest: Codex brand contamination fails before persistence in generation and refinement; provider usage is retained
+ok 215 - Codex brand contamination fails before persistence in generation and refinement; provider usage is retained
+  ---
+  duration_ms: 420.1175
+  type: 'test'
+  ...
+# Subtest: subject-scoped caption persists once, strips unrelated tags and replays without another provider call
+ok 216 - subject-scoped caption persists once, strips unrelated tags and replays without another provider call
+  ---
+  duration_ms: 198.625625
+  type: 'test'
+  ...
+# Subtest: requested hashtag sets are completed before exactly-once persistence with one mocked provider dispatch
+ok 217 - requested hashtag sets are completed before exactly-once persistence with one mocked provider dispatch
+  ---
+  duration_ms: 206.781875
+  type: 'test'
+  ...
+# Subtest: caption allocation and disjoint extras persist exactly once without another provider request
+ok 218 - caption allocation and disjoint extras persist exactly once without another provider request
+  ---
+  duration_ms: 169.324542
+  type: 'test'
+  ...
+# Subtest: latest live inventions fail both generation and refinement before persistence, while paid usage is retained
+ok 219 - latest live inventions fail both generation and refinement before persistence, while paid usage is retained
+  ---
+  duration_ms: 470.864459
+  type: 'test'
+  ...
+# Subtest: captured quality cleanup is persisted once with provider accounting and safe duplicate replay
+ok 220 - captured quality cleanup is persisted once with provider accounting and safe duplicate replay
+  ---
+  duration_ms: 197.897583
+  type: 'test'
+  ...
+# Subtest: simple creation and bounded custom refinement use the same guarded provider route
+ok 221 - simple creation and bounded custom refinement use the same guarded provider route
+  ---
+  duration_ms: 126.118709
+  type: 'test'
+  ...
+# Subtest: final captured draft omits unprovided channel history, persists review status once and never retries the provider
+ok 222 - final captured draft omits unprovided channel history, persists review status once and never retries the provider
+  ---
+  duration_ms: 379.020292
+  type: 'test'
+  ...
+# Subtest: route rejects unsafe/unauthenticated/invalid/unconfigured requests before admission
+ok 223 - route rejects unsafe/unauthenticated/invalid/unconfigured requests before admission
+  ---
+  duration_ms: 306.869708
+  type: 'test'
+  ...
+# Subtest: text route rejects missing, empty, and stale account headers before reading data or accessing storage
+ok 224 - text route rejects missing, empty, and stale account headers before reading data or accessing storage
+  ---
+  duration_ms: 196.23225
+  type: 'test'
+  ...
+# Subtest: route quota, paid-format, conflict and unavailable admission errors never call provider
+ok 225 - route quota, paid-format, conflict and unavailable admission errors never call provider
+  ---
+  duration_ms: 278.349958
+  type: 'test'
+  ...
+# Subtest: route returns completed replays without another provider call or usage event
+ok 226 - route returns completed replays without another provider call or usage event
+  ---
+  duration_ms: 44.645834
+  type: 'test'
+  ...
+# Subtest: attempt throttling returns Retry-After without invoking the provider
+ok 227 - attempt throttling returns Retry-After without invoking the provider
+  ---
+  duration_ms: 66.817625
+  type: 'test'
+  ...
+# Subtest: route marks malformed/refused/incomplete packs failed without completing usage
+ok 228 - route marks malformed/refused/incomplete packs failed without completing usage
+  ---
+  duration_ms: 203.458459
+  type: 'test'
+  ...
+# Subtest: route provider errors and timeouts do not retry or complete usage
+ok 229 - route provider errors and timeouts do not retry or complete usage
+  ---
+  duration_ms: 171.470875
+  type: 'test'
+  ...
+# Subtest: uncertain completion keeps reservation intact and returns request ID for replay
+ok 230 - uncertain completion keeps reservation intact and returns request ID for replay
+  ---
+  duration_ms: 56.111875
+  type: 'test'
+  ...
+# Subtest: installed OpenAI SDK makes one fetch on 429, 500, connection failure, and timeout
+ok 231 - installed OpenAI SDK makes one fetch on 429, 500, connection failure, and timeout
+  ---
+  duration_ms: 222.371
+  type: 'test'
+  ...
+# Subtest: success analytics contain only elapsed time, output count, and provider token counts
+ok 232 - success analytics contain only elapsed time, output count, and provider token counts
+  ---
+  duration_ms: 79.963959
+  type: 'test'
+  ...
+# Subtest: failure and replay metrics omit malformed token values and all identifying fields
+ok 233 - failure and replay metrics omit malformed token values and all identifying fields
+  ---
+  duration_ms: 120.724416
+  type: 'test'
+  ...
+# Subtest: raw provider and repository errors never enter route logs or analytics
+ok 234 - raw provider and repository errors never enter route logs or analytics
+  ---
+  duration_ms: 138.924917
+  type: 'test'
+  ...
+# Subtest: analytics failures cannot turn a committed generation into an error
+ok 235 - analytics failures cannot turn a committed generation into an error
+  ---
+  duration_ms: 89.242792
+  type: 'test'
+  ...
+# Subtest: lost completion acknowledgement replays committed output and charges exactly once
+ok 236 - lost completion acknowledgement replays committed output and charges exactly once
+  ---
+  duration_ms: 148.871792
+  type: 'test'
+  ...
+# Subtest: rolled-back completion leaves pending quota and blocks same-ID and new-ID duplicate retries
+ok 237 - rolled-back completion leaves pending quota and blocks same-ID and new-ID duplicate retries
+  ---
+  duration_ms: 291.453458
+  type: 'test'
+  ...
+# Subtest: failed provider attempt is terminal on retry and never counted as successful usage
+ok 238 - failed provider attempt is terminal on retry and never counted as successful usage
+  ---
+  duration_ms: 154.617041
+  type: 'test'
+  ...
+# Subtest: three reported topics: automatic caption allocation, distinct extras, no misleading confirmation
+ok 239 - three reported topics: automatic caption allocation, distinct extras, no misleading confirmation
+  ---
+  duration_ms: 140.646917
+  type: 'test'
+  ...
+# Subtest: unfamiliar topics accept grounded model tags without manufacturing fallback tags
+ok 240 - unfamiliar topics accept grounded model tags without manufacturing fallback tags
+  ---
+  duration_ms: 72.108834
+  type: 'test'
+  ...
+# Subtest: inflections and case survive; unsupported caption nouns cannot become hashtag evidence
+ok 241 - inflections and case survive; unsupported caption nouns cannot become hashtag evidence
+  ---
+  duration_ms: 5.437625
+  type: 'test'
+  ...
+# Subtest: platform caps, explicit no-hashtag instructions and exclusions survive fallback
+ok 242 - platform caps, explicit no-hashtag instructions and exclusions survive fallback
+  ---
+  duration_ms: 75.608708
+  type: 'test'
+  ...
+# Subtest: refinement, storage, formatter, clipboard text and export share final tags
+ok 243 - refinement, storage, formatter, clipboard text and export share final tags
+  ---
+  duration_ms: 19.151208
+  type: 'test'
+  ...
+# Subtest: reported one-tag pack allocates captions first and five non-overlapping additional choices
+ok 244 - reported one-tag pack allocates captions first and five non-overlapping additional choices
+  ---
+  duration_ms: 60.812917
+  type: 'test'
+  ...
+# Subtest: optional set cannot consume or reduce automatic caption allocations; ordering and bad extras do not matter
+ok 245 - optional set cannot consume or reduce automatic caption allocations; ordering and bad extras do not matter
+  ---
+  duration_ms: 6.819416
+  type: 'test'
+  ...
+# Subtest: screenshot X variant and other social platforms retain their own caps without forced filler
+ok 246 - screenshot X variant and other social platforms retain their own caps without forced filler
+  ---
+  duration_ms: 47.085375
+  type: 'test'
+  ...
+# Subtest: explicit exclusions, no hashtags and count preferences remain authoritative
+ok 247 - explicit exclusions, no hashtags and count preferences remain authoritative
+  ---
+  duration_ms: 11.671583
+  type: 'test'
+  ...
+# Subtest: refining the additional set excludes all captions without treating exclusion context as source facts
+ok 248 - refining the additional set excludes all captions without treating exclusion context as source facts
+  ---
+  duration_ms: 9.155
+  type: 'test'
+  ...
+# Subtest: edited or refined tags stay distinct through workspace roundtrip, copy and export; original is recoverable
+ok 249 - edited or refined tags stay distinct through workspace roundtrip, copy and export; original is recoverable
+  ---
+  duration_ms: 51.198375
+  type: 'test'
+  ...
+# Subtest: ordinary briefs yield topic concepts rather than awkward source fragments
+ok 250 - ordinary briefs yield topic concepts rather than awkward source fragments
+  ---
+  duration_ms: 147.848083
+  type: 'test'
+  ...
+# Subtest: unfamiliar subjects keep grounded model tags, but no tags are manufactured
+ok 251 - unfamiliar subjects keep grounded model tags, but no tags are manufactured
+  ---
+  duration_ms: 1.429958
+  type: 'test'
+  ...
+# Subtest: explicit tags and no-hashtag instructions remain authoritative
+ok 252 - explicit tags and no-hashtag instructions remain authoritative
+  ---
+  duration_ms: 2.111375
+  type: 'test'
+  ...
+# Subtest: case variants of fragments and duplicate career concepts do not survive
+ok 253 - case variants of fragments and duplicate career concepts do not survive
+  ---
+  duration_ms: 0.60175
+  type: 'test'
+  ...
+# Subtest: business size is not inferred from a company launch
+ok 254 - business size is not inferred from a company launch
+  ---
+  duration_ms: 0.398
+  type: 'test'
+  ...
+# Subtest: exact production question with additional Hashtags repairs empty caption and generic-only set locally
+ok 255 - exact production question with additional Hashtags repairs empty caption and generic-only set locally
+  ---
+  duration_ms: 54.8985
+  type: 'test'
+  ...
+# Subtest: prompt and validator share meaningful candidates, not format-label or saved-brand tags
+ok 256 - prompt and validator share meaningful candidates, not format-label or saved-brand tags
+  ---
+  duration_ms: 7.695792
+  type: 'test'
+  ...
+# Subtest: questions and educational topics are not no-hashtag instructions; explicit exclusions always win
+ok 257 - questions and educational topics are not no-hashtag instructions; explicit exclusions always win
+  ---
+  duration_ms: 31.799541
+  type: 'test'
+  ...
+# Subtest: only a relevant subject authorizes social strategy candidates, not a selected platform or Hashtags label
+ok 258 - only a relevant subject authorizes social strategy candidates, not a selected platform or Hashtags label
+  ---
+  duration_ms: 4.844875
+  type: 'test'
+  ...
+# Subtest: all social platforms get bounded relevant sets; single format and all fourteen format routing remain valid
+ok 259 - all social platforms get bounded relevant sets; single format and all fourteen format routing remain valid
+  ---
+  duration_ms: 49.724209
+  type: 'test'
+  ...
+# Subtest: refinement retains requested subject tags without treating old unsupported tags as evidence
+ok 260 - refinement retains requested subject tags without treating old unsupported tags as evidence
+  ---
+  duration_ms: 15.628666
+  type: 'test'
+  ...
+# Subtest: caption and separate sets survive display, clipboard serialization, save/restore and export
+ok 261 - caption and separate sets survive display, clipboard serialization, save/restore and export
+  ---
+  duration_ms: 4.118
+  type: 'test'
+  ...
+# Subtest: reported LinkedIn topic retains four meaningful concepts without saved brand or niche contamination
+ok 262 - reported LinkedIn topic retains four meaningful concepts without saved brand or niche contamination
+  ---
+  duration_ms: 70.938125
+  type: 'test'
+  ...
+# Subtest: themes need source relationships, not platform choice, invented output, saved preferences or brand tokens
+ok 263 - themes need source relationships, not platform choice, invented output, saved preferences or brand tokens
+  ---
+  duration_ms: 11.632
+  type: 'test'
+  ...
+# Subtest: platform caps allow source-supported completion, sparse topics stay sparse, explicit counts win
+ok 264 - platform caps allow source-supported completion, sparse topics stay sparse, explicit counts win
+  ---
+  duration_ms: 42.971542
+  type: 'test'
+  ...
+# Subtest: current preferences and refinement override defaults without allowing saved unrelated tags
+ok 265 - current preferences and refinement override defaults without allowing saved unrelated tags
+  ---
+  duration_ms: 1.553167
+  type: 'test'
+  ...
+# Subtest: every format retains grounded themes and rejects unrelated identity; hashtag sets retain independent groups
+ok 266 - every format retains grounded themes and rejects unrelated identity; hashtag sets retain independent groups
+  ---
+  duration_ms: 3.614084
+  type: 'test'
+  ...
+# Subtest: final display, clipboard serialization, workspace restore and export share the same final tags
+ok 267 - final display, clipboard serialization, workspace restore and export share the same final tags
+  ---
+  duration_ms: 59.977958
+  type: 'test'
+  ...
+# Subtest: image UI sends account header and UUID; ambiguous saves and network errors retain ID and payload
+ok 268 - image UI sends account header and UUID; ambiguous saves and network errors retain ID and payload
+  ---
+  duration_ms: 38.939166
+  type: 'test'
+  ...
+# Subtest: long article and brand preferences produce a bounded image excerpt without mutating originals
+ok 269 - long article and brand preferences produce a bounded image excerpt without mutating originals
+  ---
+  duration_ms: 39.589416
+  type: 'test'
+  ...
+# Subtest: image title does not append a second platform heading and caption hashtags stay intact
+ok 270 - image title does not append a second platform heading and caption hashtags stay intact
+  ---
+  duration_ms: 0.274167
+  type: 'test'
+  ...
+# Subtest: hashtag cards cannot start an image request, including stale open image panels
+ok 271 - hashtag cards cannot start an image request, including stale open image panels
+  ---
+  duration_ms: 0.122667
+  type: 'test'
+  ...
+# Subtest: image UI double-click is guarded synchronously and terminal failure permits next explicit attempt
+ok 272 - image UI double-click is guarded synchronously and terminal failure permits next explicit attempt
+  ---
+  duration_ms: 0.182375
+  type: 'test'
+  ...
+# Subtest: gateway object errors show a readable message and retain the recovery request ID
+ok 273 - gateway object errors show a readable message and retain the recovery request ID
+  ---
+  duration_ms: 0.196125
+  type: 'test'
+  ...
+# Subtest: image UI discards success and failure results after an account switch
+ok 274 - image UI discards success and failure results after an account switch
+  ---
+  duration_ms: 0.244375
+  type: 'test'
+  ...
+# Subtest: exact owner brief preserves both destinations and shared subject without deciding an outcome
+ok 275 - exact owner brief preserves both destinations and shared subject without deciding an outcome
+  ---
+  duration_ms: 15.628125
+  type: 'test'
+  ...
+# Subtest: explicit relationships generalise without a people, country or product dictionary
+ok 276 - explicit relationships generalise without a people, country or product dictionary
+  ---
+  duration_ms: 5.20275
+  type: 'test'
+  ...
+# Subtest: single scenes, incidental or, output choices, palettes and negative instructions do not imply comparison
+ok 277 - single scenes, incidental or, output choices, palettes and negative instructions do not imply comparison
+  ---
+  duration_ms: 0.470291
+  type: 'test'
+  ...
+# Subtest: explicit layouts and selected controls win, saved aesthetics cannot introduce a comparison
+ok 278 - explicit layouts and selected controls win, saved aesthetics cannot introduce a comparison
+  ---
+  duration_ms: 3.863125
+  type: 'test'
+  ...
+# Subtest: actual authenticated provider payload contains composition with unchanged model, exports and exactly-once credit
+ok 279 - actual authenticated provider payload contains composition with unchanged model, exports and exactly-once credit
+  ---
+  duration_ms: 1146.50875
+  type: 'test'
+  ...
+# Subtest: Auto chooses text, visual storytelling or mixed without a briefing API
+ok 280 - Auto chooses text, visual storytelling or mixed without a briefing API
+  ---
+  duration_ms: 6.956584
+  type: 'test'
+  ...
+# Subtest: inline and multiline image text directives stay separate and do not render publisher instructions
+ok 281 - inline and multiline image text directives stay separate and do not render publisher instructions
+  ---
+  duration_ms: 0.310917
+  type: 'test'
+  ...
+# Subtest: explicit palette and creative direction override saved preferences; no invented logo or offers
+ok 282 - explicit palette and creative direction override saved preferences; no invented logo or offers
+  ---
+  duration_ms: 22.015333
+  type: 'test'
+  ...
+# Subtest: captions stay out of image prompts while explicit headline edits remain exact
+ok 283 - captions stay out of image prompts while explicit headline edits remain exact
+  ---
+  duration_ms: 13.507875
+  type: 'test'
+  ...
+# Subtest: Image mode is full-frame without labels or overlays; mixed uses safe panel and exact canvas dimensions
+ok 284 - Image mode is full-frame without labels or overlays; mixed uses safe panel and exact canvas dimensions
+  ---
+  duration_ms: 8.080625
+  type: 'test'
+  ...
+# Subtest: long typography fits before branding; contrast, escaping and local overlay extraction are safe
+ok 285 - long typography fits before branding; contrast, escaping and local overlay extraction are safe
+  ---
+  duration_ms: 16.701
+  type: 'test'
+  ...
+# Subtest: all modes execute the actual route; Text makes no provider, commercial or credit calls
+ok 286 - all modes execute the actual route; Text makes no provider, commercial or credit calls
+  ---
+  duration_ms: 888.492667
+  type: 'test'
+  ...
+# Subtest: Text-only credits stay free at monthly image quota; entitlement, attempt and ownership checks remain
+ok 287 - Text-only credits stay free at monthly image quota; entitlement, attempt and ownership checks remain
+  ---
+  duration_ms: 1.979708
+  type: 'test'
+  ...
+# Subtest: new render fields bind idempotency, old request fingerprints remain byte-compatible
+ok 288 - new render fields bind idempotency, old request fingerprints remain byte-compatible
+  ---
+  duration_ms: 0.460834
+  type: 'test'
+  ...
+# Subtest: failed Image mode never delivers a blank visual or automatically retries; mixed fallback is labelled
+ok 289 - failed Image mode never delivers a blank visual or automatically retries; mixed fallback is labelled
+  ---
+  duration_ms: 320.274792
+  type: 'test'
+  ...
+# Subtest: device design retention is bounded, latest first, and leaves originals intact
+ok 290 - device design retention is bounded, latest first, and leaves originals intact
+  ---
+  duration_ms: 7.161208
+  type: 'test'
+  ...
+# Subtest: instruction-only auto mode creates imagery while explicit text mode displays the supplied text
+ok 291 - instruction-only auto mode creates imagery while explicit text mode displays the supplied text
+  ---
+  duration_ms: 124.5865
+  type: 'test'
+  ...
+# Subtest: image contract requires a stable UUID and preserves all four formats and six styles
+ok 292 - image contract requires a stable UUID and preserves all four formats and six styles
+  ---
+  duration_ms: 0.972875
+  type: 'test'
+  ...
+# Subtest: image JSON reader bounds actual UTF-8 bytes, rejects invalid JSON and declared overflow
+ok 293 - image JSON reader bounds actual UTF-8 bytes, rejects invalid JSON and declared overflow
+  ---
+  duration_ms: 42.978
+  type: 'test'
+  ...
+# Subtest: background accepts bounded PNG base64 only and never follows provider URLs
+ok 294 - background accepts bounded PNG base64 only and never follows provider URLs
+  ---
+  duration_ms: 0.514167
+  type: 'test'
+  ...
+# Subtest: image results have an explicit byte cap and project only the public response
+ok 295 - image results have an explicit byte cap and project only the public response
+  ---
+  duration_ms: 10.037042
+  type: 'test'
+  ...
+# Subtest: image reservation validates ownership and effective entitlement
+ok 296 - image reservation validates ownership and effective entitlement
+  ---
+  duration_ms: 4.001875
+  type: 'test'
+  ...
+# Subtest: fingerprint covers every normalized render field but excludes request ID
+ok 297 - fingerprint covers every normalized render field but excludes request ID
+  ---
+  duration_ms: 1.51
+  type: 'test'
+  ...
+# Subtest: pending IDs, identical concurrent payloads and two-active cap prevent duplicate spend
+ok 298 - pending IDs, identical concurrent payloads and two-active cap prevent duplicate spend
+  ---
+  duration_ms: 7.4065
+  type: 'test'
+  ...
+# Subtest: last monthly credit includes pending holds and completes once with durable usage
+ok 299 - last monthly credit includes pending holds and completes once with durable usage
+  ---
+  duration_ms: 4.881375
+  type: 'test'
+  ...
+# Subtest: failure releases credit hold but remains terminal and retains attempt budget
+ok 300 - failure releases credit hold but remains terminal and retains attempt budget
+  ---
+  duration_ms: 0.367458
+  type: 'test'
+  ...
+# Subtest: free SVG fallback is replayable without credit usage but still consumes attempt budget
+ok 301 - free SVG fallback is replayable without credit usage but still consumes attempt budget
+  ---
+  duration_ms: 0.17425
+  type: 'test'
+  ...
+# Subtest: legacy image usage migrates to durable count and event pruning cannot reset quota
+ok 302 - legacy image usage migrates to durable count and event pruning cannot reset quota
+  ---
+  duration_ms: 0.987542
+  type: 'test'
+  ...
+# Subtest: completion uses the admission billing window across month rollover
+ok 303 - completion uses the admission billing window across month rollover
+  ---
+  duration_ms: 0.161958
+  type: 'test'
+  ...
+# Subtest: expired pending requests become terminal; late completion never charges or regenerates
+ok 304 - expired pending requests become terminal; late completion never charges or regenerates
+  ---
+  duration_ms: 0.1965
+  type: 'test'
+  ...
+# Subtest: replay expires at 24 hours while the terminal identity prevents regeneration forever
+ok 305 - replay expires at 24 hours while the terminal identity prevents regeneration forever
+  ---
+  duration_ms: 0.24025
+  type: 'test'
+  ...
+# Subtest: replay storage is capped by both bytes and count, retaining tombstones for evicted bodies
+ok 306 - replay storage is capped by both bytes and count, retaining tombstones for evicted bodies
+  ---
+  duration_ms: 105.107958
+  type: 'test'
+  ...
+# Subtest: bounded terminal identity capacity fails closed rather than permitting old-ID reuse
+ok 307 - bounded terminal identity capacity fails closed rather than permitting old-ID reuse
+  ---
+  duration_ms: 110.31625
+  type: 'test'
+  ...
+# Subtest: six per rolling ten minutes includes failures; replay is free and rejected admission does not count
+ok 308 - six per rolling ten minutes includes failures; replay is free and rejected admission does not count
+  ---
+  duration_ms: 1.305084
+  type: 'test'
+  ...
+# Subtest: 100 daily attempts survive failures and reset on UTC day boundary without erasing rolling limit
+ok 309 - 100 daily attempts survive failures and reset on UTC day boundary without erasing rolling limit
+  ---
+  duration_ms: 5.712542
+  type: 'test'
+  ...
+# Subtest: corrupt durable state fails closed before admitting a provider attempt
+ok 310 - corrupt durable state fails closed before admitting a provider attempt
+  ---
+  duration_ms: 0.270458
+  type: 'test'
+  ...
+# Subtest: replacement default image model preserves payload, rendering and exactly-once usage
+ok 311 - replacement default image model preserves payload, rendering and exactly-once usage
+  ---
+  duration_ms: 1252.072583
+  type: 'test'
+  ...
+# Subtest: image auth and account ownership reject before reading body or touching storage
+ok 312 - image auth and account ownership reject before reading body or touching storage
+  ---
+  duration_ms: 612.400083
+  type: 'test'
+  ...
+# Subtest: missing storage, profiles, invalid inputs and ineligible plans never reach AI
+ok 313 - missing storage, profiles, invalid inputs and ineligible plans never reach AI
+  ---
+  duration_ms: 1028.535625
+  type: 'test'
+  ...
+# Subtest: malformed usage and admission transaction failure fail closed without provider spend
+ok 314 - malformed usage and admission transaction failure fail closed without provider spend
+  ---
+  duration_ms: 488.560166
+  type: 'test'
+  ...
+# Subtest: actual SVG renderer preserves all four formats; success replays exactly without another AI call or charge
+ok 315 - actual SVG renderer preserves all four formats; success replays exactly without another AI call or charge
+  ---
+  duration_ms: 578.899667
+  type: 'test'
+  ...
+# Subtest: provider rejection, timeout, malformed response and URL-only output fall back once with no AI credit
+ok 316 - provider rejection, timeout, malformed response and URL-only output fall back once with no AI credit
+  ---
+  duration_ms: 742.245458
+  type: 'test'
+  ...
+# Subtest: unconfigured provider produces a durable free template with zero network calls
+ok 317 - unconfigured provider produces a durable free template with zero network calls
+  ---
+  duration_ms: 85.42625
+  type: 'test'
+  ...
+# Subtest: an oversized encoded AI result becomes a bounded free SVG instead of an unbounded profile value
+ok 318 - an oversized encoded AI result becomes a bounded free SVG instead of an unbounded profile value
+  ---
+  duration_ms: 101.84975
+  type: 'test'
+  ...
+# Subtest: route diagnostics contain only fixed categories, never source, brand, account or provider errors
+ok 319 - route diagnostics contain only fixed categories, never source, brand, account or provider errors
+  ---
+  duration_ms: 194.754459
+  type: 'test'
+  ...
+# Subtest: failed rendering releases exactly once and leaves terminal identity, not a successful credit
+ok 320 - failed rendering releases exactly once and leaves terminal identity, not a successful credit
+  ---
+  duration_ms: 55.439167
+  type: 'test'
+  ...
+# Subtest: uncertain release keeps reservation and blocks retry without a second provider call
+ok 321 - uncertain release keeps reservation and blocks retry without a second provider call
+  ---
+  duration_ms: 60.138084
+  type: 'test'
+  ...
+# Subtest: lost reservation acknowledgement cannot start AI and the same ID remains blocked
+ok 322 - lost reservation acknowledgement cannot start AI and the same ID remains blocked
+  ---
+  duration_ms: 56.329834
+  type: 'test'
+  ...
+# Subtest: completion failure before persistence preserves pending hold without release or provider retry
+ok 323 - completion failure before persistence preserves pending hold without release or provider retry
+  ---
+  duration_ms: 58.451833
+  type: 'test'
+  ...
+# Subtest: lost completion acknowledgement replays durable result with exactly one credit
+ok 324 - lost completion acknowledgement replays durable result with exactly one credit
+  ---
+  duration_ms: 50.895542
+  type: 'test'
+  ...
+# Subtest: locked admission serializes identical concurrent requests even when request IDs differ
+ok 325 - locked admission serializes identical concurrent requests even when request IDs differ
+  ---
+  duration_ms: 56.193791
+  type: 'test'
+  ...
+# Subtest: locked last-credit admission lets only one of concurrent distinct requests reach AI
+ok 326 - locked last-credit admission lets only one of concurrent distinct requests reach AI
+  ---
+  duration_ms: 55.294667
+  type: 'test'
+  ...
+# Subtest: two active distinct images block a third and completion releases concurrency capacity
+ok 327 - two active distinct images block a third and completion releases concurrency capacity
+  ---
+  duration_ms: 55.085125
+  type: 'test'
+  ...
+# Subtest: durable attempt budget prevents new-ID provider abuse after six refunded failures
+ok 328 - durable attempt budget prevents new-ID provider abuse after six refunded failures
+  ---
+  duration_ms: 57.226708
+  type: 'test'
+  ...
+# Subtest: image usage summaries take the durable/event maximum without changing text or double-counting totals
+ok 329 - image usage summaries take the durable/event maximum without changing text or double-counting totals
+  ---
+  duration_ms: 54.830459
+  type: 'test'
+  ...
+# Subtest: locked admission serializes the final rolling attempt slot across distinct new IDs
+ok 330 - locked admission serializes the final rolling attempt slot across distinct new IDs
+  ---
+  duration_ms: 56.915708
+  type: 'test'
+  ...
+# Subtest: request IDs are scoped to the authenticated account, never another user's replay
+ok 331 - request IDs are scoped to the authenticated account, never another user's replay
+  ---
+  duration_ms: 52.191333
+  type: 'test'
+  ...
+# Subtest: client cancellation releases the hold and never records successful usage
+ok 332 - client cancellation releases the hold and never records successful usage
+  ---
+  duration_ms: 54.11775
+  type: 'test'
+  ...
+# Subtest: suggestions draw on later meaning and keep relationships grounded in the post
+ok 333 - suggestions draw on later meaning and keep relationships grounded in the post
+  ---
+  duration_ms: 1.512
+  type: 'test'
+  ...
+# Subtest: empty posts clear the suggestion and separate posts never reuse prior content
+ok 334 - empty posts clear the suggestion and separate posts never reuse prior content
+  ---
+  duration_ms: 0.172416
+  type: 'test'
+  ...
+# Subtest: edited instructions remain explicit direction alongside source context
+ok 335 - edited instructions remain explicit direction alongside source context
+  ---
+  duration_ms: 4.004291
+  type: 'test'
+  ...
+# Subtest: framing respects explicit close-ups and supporting text remains complete or omitted
+ok 336 - framing respects explicit close-ups and supporting text remains complete or omitted
+  ---
+  duration_ms: 2.779375
+  type: 'test'
+  ...
+# Subtest: all read-only repository paths project ledgers in SQL without dropping history, counters, brands or billing
+ok 337 - all read-only repository paths project ledgers in SQL without dropping history, counters, brands or billing
+  ---
+  duration_ms: 509.792625
+  type: 'test'
+  ...
+# Subtest: workspace and metadata writes re-read full locked profiles and preserve both image and text replay state
+ok 338 - workspace and metadata writes re-read full locked profiles and preserve both image and text replay state
+  ---
+  duration_ms: 194.225542
+  type: 'test'
+  ...
+# Subtest: provider brief retains content and asks for grounded interpretation of literal and figurative meaning
+ok 339 - provider brief retains content and asks for grounded interpretation of literal and figurative meaning
+  ---
+  duration_ms: 6.114625
+  type: 'test'
+  ...
+# Subtest: explicit visual instructions and appearance reach the actual provider payload
+ok 340 - explicit visual instructions and appearance reach the actual provider payload
+  ---
+  duration_ms: 342.6875
+  type: 'test'
+  ...
+# Subtest: reinstatement requires same-origin authenticated administrator and explicit review
+ok 341 - reinstatement requires same-origin authenticated administrator and explicit review
+  ---
+  duration_ms: 133.688792
+  type: 'test'
+  ...
+# Subtest: reconciliation status and retry require administrators and write-origin checks
+ok 342 - reconciliation status and retry require administrators and write-origin checks
+  ---
+  duration_ms: 149.207959
+  type: 'test'
+  ...
+# Subtest: approved reopening enables Lite purchases without a misleading suspension message
+ok 343 - approved reopening enables Lite purchases without a misleading suspension message
+  ---
+  duration_ms: 110.468917
+  type: 'test'
+  ...
+# Subtest: all Lite purchase buttons are visibly suspended; other plans and existing covered access remain usable
+ok 344 - all Lite purchase buttons are visibly suspended; other plans and existing covered access remain usable
+  ---
+  duration_ms: 24.309375
+  type: 'test'
+  ...
+# Subtest: approved plan order, 10/50 pool and existing allowances are preserved
+ok 345 - approved plan order, 10/50 pool and existing allowances are preserved
+  ---
+  duration_ms: 18.294458
+  type: 'test'
+  ...
+# Subtest: Lite has every text format, one pooled generation/refinement limit and atomic pending capacity
+ok 346 - Lite has every text format, one pooled generation/refinement limit and atomic pending capacity
+  ---
+  duration_ms: 10.875
+  type: 'test'
+  ...
+# Subtest: Lite cancellation/expiry falls back to Free, upgrades retain used capacity
+ok 347 - Lite cancellation/expiry falls back to Free, upgrades retain used capacity
+  ---
+  duration_ms: 0.47425
+  type: 'test'
+  ...
+# Subtest: Lite and Creator image requests are denied before provider dispatch
+ok 348 - Lite and Creator image requests are denied before provider dispatch
+  ---
+  duration_ms: 417.744917
+  type: 'test'
+  ...
+# Subtest: Lite signup/verification continuation and price-mapped portal plan changes
+ok 349 - Lite signup/verification continuation and price-mapped portal plan changes
+  ---
+  duration_ms: 3.081917
+  type: 'test'
+  ...
+# Subtest: Lite checkout validates GBP5 monthly price, passes account binding, fails closed when absent or wrong
+ok 350 - Lite checkout validates GBP5 monthly price, passes account binding, fails closed when absent or wrong
+  ---
+  duration_ms: 225.603042
+  type: 'test'
+  ...
+# Subtest: Lite upgrade/downgrade uses existing billing portal, never another subscription checkout
+ok 351 - Lite upgrade/downgrade uses existing billing portal, never another subscription checkout
+  ---
+  duration_ms: 136.859916
+  type: 'test'
+  ...
+# Subtest: incident containment refuses Lite before account, Stripe or provider work
+ok 352 - incident containment refuses Lite before account, Stripe or provider work
+  ---
+  duration_ms: 51.832208
+  type: 'test'
+  ...
+# Subtest: Lite webhook activation, upgrades, downgrades and cancellation preserve content and other accounts
+ok 353 - Lite webhook activation, upgrades, downgrades and cancellation preserve content and other accounts
+  ---
+  duration_ms: 189.643833
+  type: 'test'
+  ...
+# (node:6552) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/lib/migration-email.ts is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: exact notice contains the live sign-in link and reset instruction
+ok 354 - exact notice contains the live sign-in link and reset instruction
+  ---
+  duration_ms: 1.496667
+  type: 'test'
+  ...
+# Subtest: operator token is a separate exact 256-bit secret
+ok 355 - operator token is a separate exact 256-bit secret
+  ---
+  duration_ms: 0.424125
+  type: 'test'
+  ...
+# Subtest: transient retry uses precisely the same recipient, content and idempotency key
+ok 356 - transient retry uses precisely the same recipient, content and idempotency key
+  ---
+  duration_ms: 13.341
+  type: 'test'
+  ...
+# Subtest: network failures retry at most three times; permanent rejection only once
+ok 357 - network failures retry at most three times; permanent rejection only once
+  ---
+  duration_ms: 0.312584
+  type: 'test'
+  ...
+# Subtest: storage failure prevents any provider request
+ok 358 - storage failure prevents any provider request
+  ---
+  duration_ms: 0.172625
+  type: 'test'
+  ...
+# Subtest: a completed but unpaid lifetime session stays pending without granting access
+ok 359 - a completed but unpaid lifetime session stays pending without granting access
+  ---
+  duration_ms: 149.755584
+  type: 'test'
+  ...
+# Subtest: a subsequent asynchronous payment success activates through verified Stripe retrieval
+ok 360 - a subsequent asynchronous payment success activates through verified Stripe retrieval
+  ---
+  duration_ms: 58.825958
+  type: 'test'
+  ...
+# Subtest: a Stripe snapshot overtaken by an administrator decision is retried
+ok 361 - a Stripe snapshot overtaken by an administrator decision is retried
+  ---
+  duration_ms: 26.643125
+  type: 'test'
+  ...
+# Subtest: an asynchronous failure releases only a matching unpaid reservation
+ok 362 - an asynchronous failure releases only a matching unpaid reservation
+  ---
+  duration_ms: 68.598209
+  type: 'test'
+  ...
+# Subtest: current shared budget cannot fund even one worst-case lifetime allowance
+ok 363 - current shared budget cannot fund even one worst-case lifetime allowance
+  ---
+  duration_ms: 6.63125
+  type: 'test'
+  ...
+# Subtest: new checkout saves only a verified session; never a browser-supplied total
+ok 364 - new checkout saves only a verified session; never a browser-supplied total
+  ---
+  duration_ms: 1.51375
+  type: 'test'
+  ...
+# Subtest: existing open checkout is reused without a second Stripe create
+ok 365 - existing open checkout is reused without a second Stripe create
+  ---
+  duration_ms: 0.233417
+  type: 'test'
+  ...
+# Subtest: unverified, aged, and completed attempts fail closed
+ok 366 - unverified, aged, and completed attempts fail closed
+  ---
+  duration_ms: 0.393
+  type: 'test'
+  ...
+# Subtest: disabled lifetime checkout refuses requests before account, database or Stripe work
+ok 367 - disabled lifetime checkout refuses requests before account, database or Stripe work
+  ---
+  duration_ms: 110.734625
+  type: 'test'
+  ...
+# Subtest: paid lifetime access is separate from retired Founder and recurring billing
+ok 368 - paid lifetime access is separate from retired Founder and recurring billing
+  ---
+  duration_ms: 0.3915
+  type: 'test'
+  ...
+# Subtest: active Pro Studio subscription wins until expiry; lifetime Creator then takes over
+ok 369 - active Pro Studio subscription wins until expiry; lifetime Creator then takes over
+  ---
+  duration_ms: 0.079208
+  type: 'test'
+  ...
+# Subtest: verified payment grants once and preserves subscription records
+ok 370 - verified payment grants once and preserves subscription records
+  ---
+  duration_ms: 187.20975
+  type: 'test'
+  ...
+# Subtest: unmatched refund survives stale completion and duplicate events
+ok 371 - unmatched refund survives stale completion and duplicate events
+  ---
+  duration_ms: 84.022208
+  type: 'test'
+  ...
+# Subtest: partial refund preserves existing access but cannot activate an unfulfilled payment
+ok 372 - partial refund preserves existing access but cannot activate an unfulfilled payment
+  ---
+  duration_ms: 163.8025
+  type: 'test'
+  ...
+# Subtest: incorrect payment cannot grant a lifetime entitlement
+ok 373 - incorrect payment cannot grant a lifetime entitlement
+  ---
+  duration_ms: 48.69475
+  type: 'test'
+  ...
+# Subtest: new paid lifetime identity cannot be mistaken for retired Founding 100
+ok 374 - new paid lifetime identity cannot be mistaken for retired Founding 100
+  ---
+  duration_ms: 0.349042
+  type: 'test'
+  ...
+# Subtest: first 25 completed purchases get £99 and later buyers £149
+ok 375 - first 25 completed purchases get £99 and later buyers £149
+  ---
+  duration_ms: 0.224167
+  type: 'test'
+  ...
+# Subtest: reconciliation requires a secret even when fulfillment is disabled
+ok 376 - reconciliation requires a secret even when fulfillment is disabled
+  ---
+  duration_ms: 101.457417
+  type: 'test'
+  ...
+# Subtest: enabled lifetime route rejects anonymous, existing subscriptions and old open subscription checkouts; ignores browser identity/price
+ok 377 - enabled lifetime route rejects anonymous, existing subscriptions and old open subscription checkouts; ignores browser identity/price
+  ---
+  duration_ms: 91.228666
+  type: 'test'
+  ...
+# Subtest: refund and all dispute lifecycle webhooks retain unmatched events and retry persistence failure
+ok 378 - refund and all dispute lifecycle webhooks retain unmatched events and retry persistence failure
+  ---
+  duration_ms: 262.897208
+  type: 'test'
+  ...
+# Subtest: historical unpaid recurring checkout blocks only until its subscription is definitively ended
+ok 379 - historical unpaid recurring checkout blocks only until its subscription is definitively ended
+  ---
+  duration_ms: 254.491417
+  type: 'test'
+  ...
+# Subtest: an interrupted lost-session search stops before contacting Stripe
+ok 380 - an interrupted lost-session search stops before contacting Stripe
+  ---
+  duration_ms: 40.005417
+  type: 'test'
+  ...
+# Subtest: lifetime Checkout has exactly one payment-mode item and account-bound metadata
+ok 381 - lifetime Checkout has exactly one payment-mode item and account-bound metadata
+  ---
+  duration_ms: 4.288291
+  type: 'test'
+  ...
+# Subtest: asynchronous failure releases only the matching unpaid one-time checkout
+ok 382 - asynchronous failure releases only the matching unpaid one-time checkout
+  ---
+  duration_ms: 1.079708
+  type: 'test'
+  ...
+# Subtest: only fully paid, exact-amount account-bound one-time sessions qualify
+ok 383 - only fully paid, exact-amount account-bound one-time sessions qualify
+  ---
+  duration_ms: 0.376958
+  type: 'test'
+  ...
+# Subtest: later refunds, disputes, partial payments and charge mismatches block activation
+ok 384 - later refunds, disputes, partial payments and charge mismatches block activation
+  ---
+  duration_ms: 0.218791
+  type: 'test'
+  ...
+# Subtest: direct recurring Creator checkout is refused for lifetime; deliberate Studio upgrade remains possible
+ok 385 - direct recurring Creator checkout is refused for lifetime; deliberate Studio upgrade remains possible
+  ---
+  duration_ms: 179.266041
+  type: 'test'
+  ...
+# Subtest: server billing refreshes delayed Studio renewal before lifetime fallback and retains lifetime during outage
+ok 386 - server billing refreshes delayed Studio renewal before lifetime fallback and retains lifetime during outage
+  ---
+  duration_ms: 84.79225
+  type: 'test'
+  ...
+# Subtest: subscription cancellation preserves lifetime and image generation cannot consume lifetime allowance
+ok 387 - subscription cancellation preserves lifetime and image generation cannot consume lifetime allowance
+  ---
+  duration_ms: 305.396167
+  type: 'test'
+  ...
+# Subtest: Studio page reconciles renewal and requests text-only usage on lifetime fallback
+ok 388 - Studio page reconciles renewal and requests text-only usage on lifetime fallback
+  ---
+  duration_ms: 77.749875
+  type: 'test'
+  ...
+# Subtest: success message is account bound and distinguishes pending, active and reversed purchases
+ok 389 - success message is account bound and distinguishes pending, active and reversed purchases
+  ---
+  duration_ms: 22.157292
+  type: 'test'
+  ...
+# Subtest: caption copy removes exact repetition and duplicate CTA, retaining distinct paragraphs and grouped tags
+ok 390 - caption copy removes exact repetition and duplicate CTA, retaining distinct paragraphs and grouped tags
+  ---
+  duration_ms: 28.039541
+  type: 'test'
+  ...
+# Subtest: server output, workspace round-trip, clipboard transport and export retain identical LF spacing
+not ok 391 - server output, workspace round-trip, clipboard transport and export retain identical LF spacing
+  ---
+  duration_ms: 55.692417
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/post-format.test.mjs:25:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+      'A little room to think.\n' +
+        '\n' +
+        'Try putting one idea on paper.\n' +
+        '\n' +
+        'What would you write?\n' +
+        '\n' +
+    +   '#Planning #Ideas'
+    -   '#Planning #Ideas #PlanningIdeas'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: |-
+    A little room to think.
+
+    Try putting one idea on paper.
+
+    What would you write?
+
+    #Planning #Ideas #PlanningIdeas
+  actual: |-
+    A little room to think.
+
+    Try putting one idea on paper.
+
+    What would you write?
+
+    #Planning #Ideas
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/post-format.test.mjs:29:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+    Test.postRun (node:internal/test_runner/test:1330:19)
+    Test.run (node:internal/test_runner/test:1258:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:385:3)
+  ...
+# Subtest: short real captions never become source instructions, and literal identifiers survive formatting
+ok 392 - short real captions never become source instructions, and literal identifiers survive formatting
+  ---
+  duration_ms: 1.407416
+  type: 'test'
+  ...
+# Subtest: paragraph fallback is bounded to long unformatted prose, never rewrites distinct facts or deliberate lists
+ok 393 - paragraph fallback is bounded to long unformatted prose, never rewrites distinct facts or deliberate lists
+  ---
+  duration_ms: 1.967541
+  type: 'test'
+  ...
+# Subtest: all post platforms group tags; explicit separate-line request survives generation and cloud save
+not ok 394 - all post platforms group tags; explicit separate-line request survives generation and cloud save
+  ---
+  duration_ms: 18.430291
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/post-format.test.mjs:59:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(copy.buildSectionCopyText(parseWorkspaceGeneration(result).sections[0]).endsWith("#Planning\n#Ideas\n#PlanningIdeas"))
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/post-format.test.mjs:65:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+    Test.postRun (node:internal/test_runner/test:1330:19)
+    Test.run (node:internal/test_runner/test:1258:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+  ...
+# Subtest: default hashtag limits do not add filler or drop meaningful text accompanying a tag
+not ok 395 - default hashtag limits do not add filler or drop meaningful text accompanying a tag
+  ---
+  duration_ms: 5.901125
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/post-format.test.mjs:70:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+
+    0 !== 5
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 5
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/post-format.test.mjs:74:10)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:831:18)
+    Test.postRun (node:internal/test_runner/test:1330:19)
+    Test.run (node:internal/test_runner/test:1258:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:831:7)
+  ...
+# Subtest: ambiguous saved preferences never authorize promotions, terms, deadlines or offers
+ok 396 - ambiguous saved preferences never authorize promotions, terms, deadlines or offers
+  ---
+  duration_ms: 13.190333
+  type: 'test'
+  ...
+# Subtest: explicit giveaway confirmation supports existence only, not prize, mechanics or timing; refinement stays guarded
+ok 397 - explicit giveaway confirmation supports existence only, not prize, mechanics or timing; refinement stays guarded
+  ---
+  duration_ms: 13.277333
+  type: 'test'
+  ...
+# Subtest: all 14 formats use the original production input without staged review
+ok 398 - all 14 formats use the original production input without staged review
+  ---
+  duration_ms: 70.746875
+  type: 'test'
+  ...
+# Subtest: refinement preserves the source and selected section, and edited provenance survives cloud validation
+ok 399 - refinement preserves the source and selected section, and edited provenance survives cloud validation
+  ---
+  duration_ms: 22.896167
+  type: 'test'
+  ...
+# Subtest: Preview fixtures cannot run with production targets, paid credentials or unrecognised accounts
+ok 400 - Preview fixtures cannot run with production targets, paid credentials or unrecognised accounts
+  ---
+  duration_ms: 20.223416
+  type: 'test'
+  ...
+# Subtest: ContentOS has ten approved workflow records and no generated rejected workflow pages
+ok 401 - ContentOS has ten approved workflow records and no generated rejected workflow pages
+  ---
+  duration_ms: 7.153625
+  type: 'test'
+  ...
+# Subtest: workflow SEO fields are unique and substantial
+ok 402 - workflow SEO fields are unique and substantial
+  ---
+  duration_ms: 1.699625
+  type: 'test'
+  ...
+# Subtest: the six priority workflows have distinct format guidance, examples, checks and visible FAQs
+ok 403 - the six priority workflows have distinct format guidance, examples, checks and visible FAQs
+  ---
+  duration_ms: 2.066625
+  type: 'test'
+  ...
+# Subtest: workflow renderer uses canonical metadata, structured data, breadcrumbs and related links
+ok 404 - workflow renderer uses canonical metadata, structured data, breadcrumbs and related links
+  ---
+  duration_ms: 1.123166
+  type: 'test'
+  ...
+# Subtest: workflow hub groups every page by intent and uses descriptive crawlable links
+ok 405 - workflow hub groups every page by intent and uses descriptive crawlable links
+  ---
+  duration_ms: 1.021292
+  type: 'test'
+  ...
+# Subtest: performing workflows provide contextual links into priority workflows
+ok 406 - performing workflows provide contextual links into priority workflows
+  ---
+  duration_ms: 0.687625
+  type: 'test'
+  ...
+# Subtest: workflow pages are discoverable in navigation and sitemap
+ok 407 - workflow pages are discoverable in navigation and sitemap
+  ---
+  duration_ms: 1.016125
+  type: 'test'
+  ...
+# Subtest: workflow copy avoids unsupported product and outcome claims
+ok 408 - workflow copy avoids unsupported product and outcome claims
+  ---
+  duration_ms: 1.267917
+  type: 'test'
+  ...
+# Subtest: exact final capture is useful with the unsupported sentence omitted, not invented replacement facts
+ok 409 - exact final capture is useful with the unsupported sentence omitted, not invented replacement facts
+  ---
+  duration_ms: 56.164875
+  type: 'test'
+  ...
+# Subtest: milestone paraphrases preserve subject quantity unit scope and factual relation
+ok 410 - milestone paraphrases preserve subject quantity unit scope and factual relation
+  ---
+  duration_ms: 6.762084
+  type: 'test'
+  ...
+# Subtest: audience context never creates giveaway eligibility or authorizes arbitrary summary claims
+ok 411 - audience context never creates giveaway eligibility or authorizes arbitrary summary claims
+  ---
+  duration_ms: 5.004417
+  type: 'test'
+  ...
+# Subtest: channel existence is not first-publication history, frequency, dates or subscriber source
+ok 412 - channel existence is not first-publication history, frequency, dates or subscriber source
+  ---
+  duration_ms: 29.629625
+  type: 'test'
+  ...
+# Subtest: source-authored founder paraphrases preserve relationships; preferences and refinement are not evidence
+ok 413 - source-authored founder paraphrases preserve relationships; preferences and refinement are not evidence
+  ---
+  duration_ms: 14.958542
+  type: 'test'
+  ...
+# Subtest: all formats remove complete unsupported channel sentences and preserve confirmation metadata
+ok 414 - all formats remove complete unsupported channel sentences and preserve confirmation metadata
+  ---
+  duration_ms: 18.152042
+  type: 'test'
+  ...
+# Subtest: omission cannot hide adjacent high-risk facts, exhaust coverage or smuggle forged review status
+ok 415 - omission cannot hide adjacent high-risk facts, exhaust coverage or smuggle forged review status
+  ---
+  duration_ms: 4.50875
+  type: 'test'
+  ...
+# Subtest: QA reserves six slots atomically upfront, six succeed, seventh rejected and savings never recycled
+ok 416 - QA reserves six slots atomically upfront, six succeed, seventh rejected and savings never recycled
+  ---
+  duration_ms: 20.156625
+  type: 'test'
+  ...
+# Subtest: QA duplicate approval and excessive cumulative reservations cannot create a new campaign
+ok 417 - QA duplicate approval and excessive cumulative reservations cannot create a new campaign
+  ---
+  duration_ms: 0.348708
+  type: 'test'
+  ...
+# Subtest: QA separate instances serialize concurrent requests before provider IO
+ok 418 - QA separate instances serialize concurrent requests before provider IO
+  ---
+  duration_ms: 0.266
+  type: 'test'
+  ...
+# Subtest: QA failure consumes slot and budget, stops subsequent calls and cannot retry after restart
+ok 419 - QA failure consumes slot and budget, stops subsequent calls and cannot retry after restart
+  ---
+  duration_ms: 0.289625
+  type: 'test'
+  ...
+# Subtest: QA timeout consumes slot and budget, stops subsequent calls and cannot retry after restart
+ok 420 - QA timeout consumes slot and budget, stops subsequent calls and cannot retry after restart
+  ---
+  duration_ms: 0.251459
+  type: 'test'
+  ...
+# Subtest: QA uncertain consumes slot and budget, stops subsequent calls and cannot retry after restart
+ok 421 - QA uncertain consumes slot and budget, stops subsequent calls and cannot retry after restart
+  ---
+  duration_ms: 0.226708
+  type: 'test'
+  ...
+# Subtest: QA bound violation consumes slot and budget, stops subsequent calls and cannot retry after restart
+ok 422 - QA bound violation consumes slot and budget, stops subsequent calls and cannot retry after restart
+  ---
+  duration_ms: 0.214875
+  type: 'test'
+  ...
+# Subtest: QA lost completion and lost admission acknowledgements fail closed across restarts
+ok 423 - QA lost completion and lost admission acknowledgements fail closed across restarts
+  ---
+  duration_ms: 0.292875
+  type: 'test'
+  ...
+# Subtest: QA rejects account switches, changed replay payloads, unapproved models and oversized reservations before IO
+ok 424 - QA rejects account switches, changed replay payloads, unapproved models and oversized reservations before IO
+  ---
+  duration_ms: 0.423208
+  type: 'test'
+  ...
+# Subtest: QA expired and corrupted campaigns reject without dispatch
+ok 425 - QA expired and corrupted campaigns reject without dispatch
+  ---
+  duration_ms: 0.18625
+  type: 'test'
+  ...
+# Subtest: QA rejects production/Preview, other database hosts, ambient credentials and missing execution approval
+ok 426 - QA rejects production/Preview, other database hosts, ambient credentials and missing execution approval
+  ---
+  duration_ms: 0.434875
+  type: 'test'
+  ...
+# Subtest: QA designated key loader rejects unsafe files, expiry and ambient loading; guarded transport cannot retry
+ok 427 - QA designated key loader rejects unsafe files, expiry and ambient loading; guarded transport cannot retry
+  ---
+  duration_ms: 6.511291
+  type: 'test'
+  ...
+# Subtest: selects complete source wording instead of dependent replies and metaphors
+ok 428 - selects complete source wording instead of dependent replies and metaphors
+  ---
+  duration_ms: 2.522458
+  type: 'test'
+  ...
+# Subtest: explicit quotations retain punctuation and Unicode, with SVG-safe escaping
+ok 429 - explicit quotations retain punctuation and Unicode, with SVG-safe escaping
+  ---
+  duration_ms: 5.745041
+  type: 'test'
+  ...
+# Subtest: long explicit quotations are rejected without clipping input
+ok 430 - long explicit quotations are rejected without clipping input
+  ---
+  duration_ms: 0.321542
+  type: 'test'
+  ...
+# Subtest: quote blocks and their accents stay within the canvas across formats and lengths
+ok 431 - quote blocks and their accents stay within the canvas across formats and lengths
+  ---
+  duration_ms: 15.841625
+  type: 'test'
+  ...
+# Subtest: explicit quote and headline take precedence over automatic selection
+ok 432 - explicit quote and headline take precedence over automatic selection
+  ---
+  duration_ms: 1.112917
+  type: 'test'
+  ...
+# Subtest: text mode uses plain description and preserves explicit and source precedence
+ok 433 - text mode uses plain description and preserves explicit and source precedence
+  ---
+  duration_ms: 2.274958
+  type: 'test'
+  ...
+# Subtest: one sentence produces a single-platform contract; all 14 formats remain parseable
+not ok 434 - one sentence produces a single-platform contract; all 14 formats remain parseable
+  ---
+  duration_ms: 57.762167
+  type: 'test'
+  location: '/Users/nadinepierre/Documents/Social Media Tool/ContentOS-Agent6-Recovery/tests/simple-creation.test.mjs:17:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+
+      assert.ok(result.sections[0].items.length>0)
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///Users/nadinepierre/Documents/Social%20Media%20Tool/ContentOS-Agent6-Recovery/tests/simple-creation.test.mjs:25:14)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1201:25)
+    Test.start (node:internal/test_runner/test:1096:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:385:17)
+  ...
+# Subtest: automatic orchestration omits conflicting defaults and explicit selections override inference
+ok 435 - automatic orchestration omits conflicting defaults and explicit selections override inference
+  ---
+  duration_ms: 4.878958
+  type: 'test'
+  ...
+# Subtest: custom refinements are bounded, source-grounded and included in request identity
+ok 436 - custom refinements are bounded, source-grounded and included in request identity
+  ---
+  duration_ms: 0.701084
+  type: 'test'
+  ...
+# Subtest: saved preferences round-trip through account-scoped workspace without replacing legacy data
+ok 437 - saved preferences round-trip through account-scoped workspace without replacing legacy data
+  ---
+  duration_ms: 0.523667
+  type: 'test'
+  ...
+# Subtest: visual description and selected controls reach actual image prompt without altering caption or model parameters
+ok 438 - visual description and selected controls reach actual image prompt without altering caption or model parameters
+  ---
+  duration_ms: 188.870292
+  type: 'test'
+  ...
+# Subtest: explicit type, style and palette override inferred and saved defaults; invalid values fail before provider
+ok 439 - explicit type, style and palette override inferred and saved defaults; invalid values fail before provider
+  ---
+  duration_ms: 318.644959
+  type: 'test'
+  ...
+# Subtest: supplied LinkedIn announcement keeps caption hashtags but never overlays them or a goal in the footer
+ok 440 - supplied LinkedIn announcement keeps caption hashtags but never overlays them or a goal in the footer
+  ---
+  duration_ms: 15.943875
+  type: 'test'
+  ...
+# Subtest: actual formatted copy preserves platform keywords while image copy excludes metadata blocks
+ok 441 - actual formatted copy preserves platform keywords while image copy excludes metadata blocks
+  ---
+  duration_ms: 1.740583
+  type: 'test'
+  ...
+# Subtest: server rejects hashtag cards before any reservation, provider call or credit charge
+ok 442 - server rejects hashtag cards before any reservation, provider call or credit charge
+  ---
+  duration_ms: 381.501875
+  type: 'test'
+  ...
+# Subtest: every platform sanitises inline, labelled, Unicode and encoded hashtags in all image context fields
+ok 443 - every platform sanitises inline, labelled, Unicode and encoded hashtags in all image context fields
+  ---
+  duration_ms: 6.711417
+  type: 'test'
+  ...
+# Subtest: fallback topic and direct template rendering are sanitised; palette hex values keep their meaning
+ok 444 - fallback topic and direct template rendering are sanitised; palette hex values keep their meaning
+  ---
+  duration_ms: 0.340875
+  type: 'test'
+  ...
+# Subtest: long allowed copy stays above the reserved branding footer for every canvas and style
+ok 445 - long allowed copy stays above the reserved branding footer for every canvas and style
+  ---
+  duration_ms: 3.452709
+  type: 'test'
+  ...
+# Subtest: actual route sanitises provider prompts and graphics on mocked success and fallback, preserving caption and replay accounting
+ok 446 - actual route sanitises provider prompts and graphics on mocked success and fallback, preserving caption and replay accounting
+  ---
+  duration_ms: 220.967084
+  type: 'test'
+  ...
+# Subtest: device storage is account-scoped and never auto-imports unowned legacy data
+ok 447 - device storage is account-scoped and never auto-imports unowned legacy data
+  ---
+  duration_ms: 5.297333
+  type: 'test'
+  ...
+# Subtest: unavailable browser storage reports failure without destroying the caller's draft
+ok 448 - unavailable browser storage reports failure without destroying the caller's draft
+  ---
+  duration_ms: 0.480542
+  type: 'test'
+  ...
+# Subtest: cancelled Lifetime product has no route, marketing, adapter or migration
+ok 449 - cancelled Lifetime product has no route, marketing, adapter or migration
+  ---
+  duration_ms: 1.393833
+  type: 'test'
+  ...
+# Subtest: subscription checkout enables Lite, preserves Creator/Studio and rejects a forged Lifetime plan
+ok 450 - subscription checkout enables Lite, preserves Creator/Studio and rejects a forged Lifetime plan
+  ---
+  duration_ms: 86.479583
+  type: 'test'
+  ...
+# Subtest: profile mutations retain historical unknown fields and existing lifetime benefits
+ok 451 - profile mutations retain historical unknown fields and existing lifetime benefits
+  ---
+  duration_ms: 343.951125
+  type: 'test'
+  ...
+# Subtest: shared Stripe signature protection accepts rotation and refuses stale, forged or malformed delivery
+ok 452 - shared Stripe signature protection accepts rotation and refuses stale, forged or malformed delivery
+  ---
+  duration_ms: 19.345167
+  type: 'test'
+  ...
+# Subtest: complete webhook transition lite -> pro_creator -> lite ignores original metadata
+ok 453 - complete webhook transition lite -> pro_creator -> lite ignores original metadata
+  ---
+  duration_ms: 304.286375
+  type: 'test'
+  ...
+# Subtest: complete webhook transition pro_studio -> lite -> pro_creator ignores original metadata
+ok 454 - complete webhook transition pro_studio -> lite -> pro_creator ignores original metadata
+  ---
+  duration_ms: 166.823375
+  type: 'test'
+  ...
+# Subtest: complete webhook transition pro_creator -> lite -> pro_studio ignores original metadata
+ok 455 - complete webhook transition pro_creator -> lite -> pro_studio ignores original metadata
+  ---
+  duration_ms: 121.758667
+  type: 'test'
+  ...
+# Subtest: complete webhook transition pro_creator -> pro_studio -> lite ignores original metadata
+ok 456 - complete webhook transition pro_creator -> pro_studio -> lite ignores original metadata
+  ---
+  duration_ms: 94.204625
+  type: 'test'
+  ...
+# Subtest: unknown, missing, mixed and ambiguous prices never inherit paid metadata or stored tiers
+ok 457 - unknown, missing, mixed and ambiguous prices never inherit paid metadata or stored tiers
+  ---
+  duration_ms: 104.075833
+  type: 'test'
+  ...
+# Subtest: archived recognised prices preserve the purchased tier, never stale higher metadata
+ok 458 - archived recognised prices preserve the purchased tier, never stale higher metadata
+  ---
+  duration_ms: 83.722333
+  type: 'test'
+  ...
+# Subtest: scheduled downgrade and pending prorated upgrade do not change entitlements before current item changes
+ok 459 - scheduled downgrade and pending prorated upgrade do not change entitlements before current item changes
+  ---
+  duration_ms: 80.904208
+  type: 'test'
+  ...
+# Subtest: cancellation, renewal and reordered deletion reconcile current subscriptions, not stale event snapshots
+ok 460 - cancellation, renewal and reordered deletion reconcile current subscriptions, not stale event snapshots
+  ---
+  duration_ms: 92.070417
+  type: 'test'
+  ...
+# Subtest: lookup failures never persist historical cancellation snapshots; webhook processing fails for retry
+ok 461 - lookup failures never persist historical cancellation snapshots; webhook processing fails for retry
+  ---
+  duration_ms: 72.776083
+  type: 'test'
+  ...
+# Subtest: Founder and complimentary owner profiles survive paid-plan and cancellation events unchanged
+ok 462 - Founder and complimentary owner profiles survive paid-plan and cancellation events unchanged
+  ---
+  duration_ms: 160.838292
+  type: 'test'
+  ...
+# Subtest: captured portal cancel_at is pending without changing the authoritative billing period
+ok 463 - captured portal cancel_at is pending without changing the authoritative billing period
+  ---
+  duration_ms: 76.1435
+  type: 'test'
+  ...
+# Subtest: period-end flag falls back to period end; explicit cancel_at takes precedence
+ok 464 - period-end flag falls back to period end; explicit cancel_at takes precedence
+  ---
+  duration_ms: 78.616625
+  type: 'test'
+  ...
+# Subtest: lite: webhook persists both cancellation forms, reversal clears date, renewal keeps usage
+ok 465 - lite: webhook persists both cancellation forms, reversal clears date, renewal keeps usage
+  ---
+  duration_ms: 83.750375
+  type: 'test'
+  ...
+# Subtest: pro_creator: webhook persists both cancellation forms, reversal clears date, renewal keeps usage
+ok 466 - pro_creator: webhook persists both cancellation forms, reversal clears date, renewal keeps usage
+  ---
+  duration_ms: 72.600334
+  type: 'test'
+  ...
+# Subtest: pro_studio: webhook persists both cancellation forms, reversal clears date, renewal keeps usage
+ok 467 - pro_studio: webhook persists both cancellation forms, reversal clears date, renewal keeps usage
+  ---
+  duration_ms: 74.519542
+  type: 'test'
+  ...
+# Subtest: serializes saves and coalesces newer edits behind an in-flight write
+ok 468 - serializes saves and coalesces newer edits behind an in-flight write
+  ---
+  duration_ms: 1.400416
+  type: 'test'
+  ...
+# Subtest: revision conflict stops writes instead of overwriting newer server data
+ok 469 - revision conflict stops writes instead of overwriting newer server data
+  ---
+  duration_ms: 0.297
+  type: 'test'
+  ...
+# Subtest: a lost save acknowledgement is never silently retried with a new revision
+ok 470 - a lost save acknowledgement is never silently retried with a new revision
+  ---
+  duration_ms: 0.155709
+  type: 'test'
+  ...
+# Subtest: disposing a workspace cancels queued saves and ignores an in-flight completion
+ok 471 - disposing a workspace cancels queued saves and ignores an in-flight completion
+  ---
+  duration_ms: 0.198167
+  type: 'test'
+  ...
+# [workspace] persistence unavailable
+# [workspace] persistence unavailable
+# Subtest: workspace imports existing history and read-only brands scoped to authenticated account
+ok 472 - workspace imports existing history and read-only brands scoped to authenticated account
+  ---
+  duration_ms: 1.382583
+  type: 'test'
+  ...
+# Subtest: onboarding supplies composer preferences and supported tone
+ok 473 - onboarding supplies composer preferences and supported tone
+  ---
+  duration_ms: 0.108916
+  type: 'test'
+  ...
+# Subtest: compare-and-swap increments revision, retains unrelated data and refuses stale writes
+ok 474 - compare-and-swap increments revision, retains unrelated data and refuses stale writes
+  ---
+  duration_ms: 0.314458
+  type: 'test'
+  ...
+# Subtest: explicit projection excludes images, client usage and privileges cannot be written
+ok 475 - explicit projection excludes images, client usage and privileges cannot be written
+  ---
+  duration_ms: 0.165041
+  type: 'test'
+  ...
+# Subtest: validates versions, shapes, revision integers, bounds and brand ownership
+ok 476 - validates versions, shapes, revision integers, bounds and brand ownership
+  ---
+  duration_ms: 0.193666
+  type: 'test'
+  ...
+# Subtest: drafts retain optional brand fields and saved edits survive history merge
+ok 477 - drafts retain optional brand fields and saved edits survive history merge
+  ---
+  duration_ms: 0.223042
+  type: 'test'
+  ...
+# Subtest: malformed overall stored data fails closed instead of overwriting legacy content
+ok 478 - malformed overall stored data fails closed instead of overwriting legacy content
+  ---
+  duration_ms: 0.107208
+  type: 'test'
+  ...
+# Subtest: missing, null, serialized-null, serialized-array and array history remain compatible
+ok 479 - missing, null, serialized-null, serialized-array and array history remain compatible
+  ---
+  duration_ms: 0.128083
+  type: 'test'
+  ...
+# Subtest: valid history remains visible with warning count and unrenderable legacy history survives writes
+ok 480 - valid history remains visible with warning count and unrenderable legacy history survives writes
+  ---
+  duration_ms: 0.211042
+  type: 'test'
+  ...
+# Subtest: route requires authentication and only uses session ID, with no-store responses
+ok 481 - route requires authentication and only uses session ID, with no-store responses
+  ---
+  duration_ms: 32.731875
+  type: 'test'
+  ...
+# Subtest: route rejects unsafe writes, reports stale revisions and never invents persistence success
+ok 482 - route rejects unsafe writes, reports stale revisions and never invents persistence success
+  ---
+  duration_ms: 5.939083
+  type: 'test'
+  ...
+# Subtest: route bounds streamed body size and rejects invalid JSON before repository writes
+ok 483 - route bounds streamed body size and rejects invalid JSON before repository writes
+  ---
+  duration_ms: 5.139792
+  type: 'test'
+  ...
+# Subtest: stalled workspace uploads terminate without a database write
+ok 484 - stalled workspace uploads terminate without a database write
+  ---
+  duration_ms: 10009.503375
+  type: 'test'
+  ...
+# Subtest: a stale account tab cannot load or save content under a changed session
+ok 485 - a stale account tab cannot load or save content under a changed session
+  ---
+  duration_ms: 19.089584
+  type: 'test'
+  ...
+1..485
+# tests 485
+# suites 0
+# pass 473
+# fail 10
+# cancelled 0
+# skipped 2
+# todo 0
+# duration_ms 22000.584334

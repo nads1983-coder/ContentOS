@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-09",
+  "baseCommit": "4289380652def55a40ba892767c3440cb72e0b57",
+  "targeted": {
+    "passed": 87,
+    "failed": 0
+  },
+  "postgresCompoundChecks": 22,
+  "migration0010": {
+    "runner": true,
+    "rollback": true,
+    "rerun": true,
+    "legacyFrozenPreserved": true
+  },
+  "localHTTPSAlertRetry": true,
+  "fullSuite": {
+    "tests": 496,
+    "pass": 484,
+    "fail": 10,
+    "skipped": 2
+  },
+  "baselineFailureNamesMatch": true,
+  "baselineFailureNames": [
+    "Unicode, compound audience phrases, numbers and explicit tags remain usable",
+    "all post platforms group tags; explicit separate-line request survives generation and cloud save",
+    "brand name alone and newly generated prose do not establish a niche",
+    "deduplication spans caption and tags but does not delete independent platform sets or plain labels",
+    "default hashtag limits do not add filler or drop meaningful text accompanying a tag",
+    "exact captured retest keeps its factual hook, removes unsupported niche and two stock phrases",
+    "explicit hashtag preferences and current overrides are respected",
+    "one sentence produces a single-platform contract; all 14 formats remain parseable",
+    "refinement remains grounded while allowing explicit style and hashtag instructions",
+    "server output, workspace round-trip, clipboard transport and export retain identical LF spacing"
+  ],
+  "typecheck": "passed",
+  "lint": "passed",
+  "StripeRealSandbox": "not verified: no authorized test API credential",
+  "PreviewDatabaseIsolation": "not verified: authorized environment request returned 403",
+  "modelGenerationAccess": {
+    "gpt-5.2": "403",
+    "gpt-6-luna": "403",
+    "gpt-4.1-mini": "403",
+    "gpt-5.6-luna": "16 completed, 9 parser accepted"
+  },
+  "sales": "disabled",
+  "productionModelAndBudget": "unchanged"
+}

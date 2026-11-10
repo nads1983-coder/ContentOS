@@ -1,6 +1,9 @@
 import { pgSchema, text, jsonb, timestamp, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
 import type { UserProfile } from "@/types/saas";
 export const appSchema = pgSchema("contentos_app");
+// Commercial ledger (0003) and lifetime payment state (0004) are managed by
+// reviewed SQL, not drizzle-kit generate/push. See docs/paid-creator-lifetime-handover-2026-11-08.md.
+// Do not schema-push this partial model over those tables or replay 0003.
 // Preserve the existing profile shape and embedded collections during migration.
 export const profiles = appSchema.table("profiles", {
   id: text("id").primaryKey(),

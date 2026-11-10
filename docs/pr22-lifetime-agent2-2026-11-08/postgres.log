@@ -1,0 +1,9 @@
+PASS 1: actual migration runner applies 0004 exactly once over journal 0000–0002 plus externally managed 0003
+PASS 2: runtime cannot delete purchases, change price, or remove reversal evidence
+PASS 3: 26 concurrent customers receive exactly 25 £99 holds; £149 starts only after 25 paid customers
+PASS 4: concurrent activation/refund submissions in both orders retain no paid access; stale success and duplicate reversal are safe
+PASS 5: partial refund quarantine, dispute and full refund are monotonic; refunded slots never recycle
+PASS 6: recurring checkout guard serializes with lifetime allocation; canceled subscription may transition; Creator rebilling denied and Studio permitted
+PASS 7: reconciliation recovers abandoned and lost-response sessions, preserves uncertain payments and reuses expired slots
+PASS 8: real monetary ledger serializes final shared text/image capacity and retains uncertain holds
+All 8 isolated PostgreSQL checks passed. No Stripe/AI network calls.

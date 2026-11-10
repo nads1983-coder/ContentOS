@@ -88,6 +88,16 @@ test("quota includes concurrent reservations, legacy history and image usage", (
   assert.throws(() => reserve(data, "alice", "request-2", request({ source: "Different source" }), now), code("quota_exceeded"));
   assert.equal(data.generation_usage_json["2026-10-01T00:00:00.000Z"], 1);
 });
+
+test("lifetime text allowance ignores past Studio images, counts text and pending, resets UTC month", () => {
+  const data=profile({plan:"pro_studio",subscription_status:"canceled",paid_creator_lifetime_status:"active",paid_creator_lifetime_purchase_id:"purchase",
+    generation_usage_json:{"2026-10-01T00:00:00.000Z":49},image_generation_usage_json:{"2026-10-01T00:00:00.000Z":100}});
+  const admitted=reserve(data,"alice","lifetime-50",request(),now);
+  assert.equal(admitted.result.status,"reserved");
+  assert.throws(()=>reserve(admitted.data,"alice","lifetime-51",request({source:"Different source"}),now),code("quota_exceeded"));
+  assert.equal(reserve(data,"alice","lifetime-next",request(),new Date("2026-11-01T00:00:00Z")).result.status,"reserved");
+  assert.equal(effectiveGenerationPlan(data,now),"pro_creator");
+});
 test("durable counter enforces quota after history/event pruning and resets with monthly window", () => {
   const data = profile({ generation_usage_json: { "2026-10-01T00:00:00.000Z": 3 }, usage_events_json: [], generation_history_json: [] });
   assert.throws(() => reserve(data, "alice", "request-1", request(), now), code("quota_exceeded"));

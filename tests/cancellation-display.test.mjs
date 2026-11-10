@@ -24,6 +24,9 @@ async function renderDashboard(overrides = {}, customerAvailable) {
     "@/components/brand-logo": { BrandLogo: () => null },
     "@/components/billing-buttons": { CheckoutButton: () => null, ManageBillingButton: () => createElement("button", null, "Manage subscription") },
     "@/components/logout-button": { LogoutButton: () => null },
+    "@/components/topup-checkout-button": { TopupCheckoutButton: () => null },
+    "@/lib/ai-topup-offer": { AI_TOPUP_OFFER: { checkoutEnabled: false, packages: {} } },
+    "@/lib/ai-topup-payments": { topupAccountSummary: async () => ({ available: 0, history: [] }) },
     "@/lib/auth": { getCurrentUser: async () => ({ id: profile.id, email: profile.email }) },
     "@/lib/backend": { isDatabaseConfigured: () => true, usesPostgres: () => true },
     "@/lib/env": { isStripeConfigured: () => customerAvailable !== undefined },
@@ -83,4 +86,13 @@ test("Founder and owner lifetime display ignores stale ordinary cancellation fie
     assert.match(html, /Access: Lifetime \/ no expiry/);
     assert.doesNotMatch(html, /Cancellation pending|cancellation scheduled|Renewal date:|Paid until:/);
   }
+});
+
+test("paid Creator lifetime displays active and Studio cancellation remains separate",async()=>{
+  const paid={paid_creator_lifetime_status:"active",paid_creator_lifetime_purchase_id:"purchase"};
+  const alone=await renderDashboard({...paid,plan:"free",subscription_status:"none",subscription_current_period_end:null});
+  assert.match(alone,/Status: active/);assert.match(alone,/Creator lifetime access: no recurring payment/);
+  const studio=await renderDashboard({...paid,plan:"pro_studio",subscription_cancel_at_period_end:true,stripe_subscription_id:"sub_test"});
+  assert.match(studio,/Paid until: 1 Dec 2026/);assert.match(studio,/separate from your recurring subscription/);
+  assert.doesNotMatch(studio,/no expiry/);
 });

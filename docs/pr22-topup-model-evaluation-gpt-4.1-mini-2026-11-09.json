@@ -1,0 +1,50 @@
+{
+  "note": "Small synthetic evaluation, 1800 output-token cap, reasoning none; human quality review is required.",
+  "cases": [
+    {
+      "id": "milestone",
+      "source": "Northbank Paper has reached 1,000 newsletter subscribers. Announce an upcoming giveaway, but prize, dates and eligibility have not been decided.",
+      "selectedTypes": [
+        "instagram"
+      ],
+      "ctaMode": "none",
+      "automaticSettings": []
+    },
+    {
+      "id": "practical",
+      "source": "A small design studio shares three planning steps: collect references, sketch alternatives, and review the draft before publishing.",
+      "selectedTypes": [
+        "linkedin"
+      ],
+      "automaticSettings": []
+    },
+    {
+      "id": "limited-claim",
+      "source": "A volunteer group is piloting a monthly repair cafe. The first session is planned for Saturday; attendance and outcomes are not yet known.",
+      "selectedTypes": [
+        "tiktok"
+      ],
+      "automaticSettings": []
+    }
+  ],
+  "results": [
+    {
+      "model": "gpt-4.1-mini",
+      "case": "milestone",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    },
+    {
+      "model": "gpt-4.1-mini",
+      "case": "practical",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    },
+    {
+      "model": "gpt-4.1-mini",
+      "case": "limited-claim",
+      "status": "request_failed",
+      "errorClass": "PermissionDeniedError"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+PASS 1: actual migration runner applies 0004–0009 exactly once over journal 0000–0002 plus externally managed 0003
+PASS 2: runtime cannot delete purchases, change price, or remove reversal evidence
+PASS 3: 26 concurrent customers receive exactly 25 £99 holds; £149 starts only after 25 paid customers
+PASS 4: concurrent activation/refund submissions in both orders retain no paid access; stale success and duplicate reversal are safe
+PASS 5: partial refund preserves access pending review; dispute and full refund take precedence
+PASS 6: explicit administrator approval restores only verified won disputes; replay stays restored and new refund revokes
+PASS 7: partial-refund review can be explicitly approved without automatic activation
+PASS 8: new reversal evidence during administrator review blocks the stale decision
+[Lifetime reconciliation] Operator review required {
+  checked: 2,
+  terminal: 0,
+  uncertain: 2,
+  guardsChecked: 10,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+PASS 9: recurring guard checks rotate across batches without starving lifetime purchases
+PASS 10: recurring checkout guard serializes with lifetime allocation; canceled subscription may transition; Creator rebilling denied and Studio permitted
+[Lifetime reconciliation] Operator review required {
+  checked: 7,
+  terminal: 3,
+  uncertain: 4,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+PASS 11: reconciliation recovers abandoned and lost-response sessions, preserves uncertain payments and reuses expired slots
+[Lifetime reconciliation] Operator review required {
+  checked: 2,
+  terminal: 0,
+  uncertain: 2,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+[Lifetime reconciliation] Operator review required {
+  checked: 1,
+  terminal: 0,
+  uncertain: 1,
+  guardsChecked: 0,
+  guardFailures: 0,
+  guardDeadlineExceeded: false,
+  timedOut: false
+}
+PASS 12: uncertain reconciliation uses durable backoff, stops after eight attempts and produces an actionable alert
+PASS 13: real monetary ledger serializes final shared text/image capacity and retains uncertain holds
+PASS 14: one account cannot consume more than one-quarter of shared monthly capacity across concurrent text and image calls
+PASS 15: financial report snapshots lifetime and subscription cohorts and retains estimates and actual token counts
+PASS 16: test-mode top-up issuance is idempotent and reversal before payment cannot grant credits
+PASS 17: top-up credits are reserved atomically and a dispute blocks in-flight delivery
+PASS 18: top-up reconciliation retains uncertainty, retries fairly and delivers durable operator alerts
+All 18 isolated PostgreSQL checks passed. No Stripe/AI network calls.

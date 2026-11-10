@@ -4,9 +4,10 @@ import { PublicPage } from "@/components/public-page";
 import { ClearPendingCheckout } from "@/components/clear-pending-checkout";
 import { getEnv, isStripeConfigured } from "@/lib/env";
 import { retrieveCheckoutSession, StripeCheckoutSession } from "@/lib/stripe-rest";
+import { paidLifetimeSuccessMessage } from "@/lib/paid-lifetime-success";
 
 export const metadata = pageMetadata({
-  title: "ContentOS Subscription Started",
+  title: "ContentOS Checkout Status",
   path: "/success",
   index: false
 });
@@ -83,12 +84,15 @@ export default async function SuccessPage({
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  const showFoundingMessage = await isFoundingCreatorCheckout(params?.session_id);
+  const isLifetime = params?.lifetime === "1";
+  const sessionId = Array.isArray(params?.session_id) ? params.session_id[0] : params?.session_id;
+  const lifetimeMessage = isLifetime ? await paidLifetimeSuccessMessage(sessionId) : null;
+  const showFoundingMessage = !isLifetime && await isFoundingCreatorCheckout(params?.session_id);
 
   return (
-    <PublicPage title={showFoundingMessage ? "Founder access active" : "Subscription started"}>
+    <PublicPage title={isLifetime ? "Creator lifetime payment status" : showFoundingMessage ? "Founder access active" : "Checkout received"}>
       <ClearPendingCheckout />
-      {showFoundingMessage ? (
+      {lifetimeMessage ? <p>{lifetimeMessage}</p> : showFoundingMessage ? (
         <section className="rounded border border-gold/35 bg-gold/[0.08] p-4 text-bone">
           <p className="font-semibold text-goldSoft">
             Your Founder access is active. You have not been charged.
@@ -99,8 +103,7 @@ export default async function SuccessPage({
         </section>
       ) : (
         <>
-          <p>Your Pro subscription has been activated successfully.</p>
-          <p>You now have access to your upgraded ContentOS features.</p>
+          <p>Check your dashboard for your subscription and payment status.</p>
         </>
       )}
       <Link href="/dashboard" className="text-goldSoft hover:text-bone">
