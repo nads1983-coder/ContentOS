@@ -79,6 +79,24 @@ test("unknown models, stale prices, tools, unbounded outputs and unreviewed imag
   for (const patch of [{model:"unknown"},{n:2},{quality:"auto"},{size:"auto"},{image:"input"}]) assert.throws(()=>quoteAI("image",{...image,...patch},date));
   assert.throws(()=>quoteAI("text",text,new Date(COST_POLICY.expires)));
 });
+test("reviewed policy covers the former deadline and retains the next fail-closed deadline", () => {
+  assert.ok(quoteAI("text", text, new Date("2026-11-18T23:59:59Z")));
+  assert.ok(quoteAI("text", text, new Date("2026-11-19T00:00:00Z")));
+  assert.ok(quoteAI("image", image, new Date("2026-11-19T00:00:00Z")));
+  assert.throws(() => quoteAI("text", text, new Date("2026-12-19T00:00:00Z")), e => e.code === "pricing_review_required");
+  assert.equal(COST_POLICY.monthly, 30_000_000);
+});
+test("policy emits a warning during its final seven days", () => {
+  const original = console.warn, calls = [];
+  console.warn = (...args) => calls.push(args);
+  try {
+    quoteAI("text", text, new Date("2026-12-11T23:59:59Z"));
+    assert.equal(calls.length, 0);
+    quoteAI("text", text, new Date("2026-12-12T00:00:00Z"));
+    assert.equal(calls.length, 1);
+    assert.match(calls[0][0], /pricing policy requires review/);
+  } finally { console.warn = original; }
+});
 test("known usage reconciles conservatively; uncertain and malformed usage never releases money", () => {
   const q=quoteAI("text",text,date);
   assert.equal(usageCost(q,{input_tokens:2033,output_tokens:3078}),34428);

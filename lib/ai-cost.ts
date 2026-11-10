@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
 export const COST_POLICY = {
-  version: "2026-10-21-v3", expires: "2026-11-19T00:00:00Z",
+  version: "2026-11-10-v4", expires: "2026-12-19T00:00:00Z",
   monthly: 30_000_000, textBytes: 128_000, imageBytes: 16_000
 } as const;
 export const DEFAULT_IMAGE_MODEL = "gpt-image-2.5-flare-2026-09-08";
@@ -25,6 +25,8 @@ export function conservativeGBP(microUSD: number) {
 }
 export function quoteAI(kind: CostQuote["kind"], payload: Record<string, unknown>, now = new Date()): CostQuote {
   if (now >= new Date(COST_POLICY.expires) || now < new Date("2026-10-19T00:00:00Z")) throw new AICapacityError("pricing_review_required");
+  if (now.getTime() >= new Date(COST_POLICY.expires).getTime() - 7 * 24 * 60 * 60 * 1000)
+    console.warn("AI pricing policy requires review before expiry", { expires: COST_POLICY.expires });
   const serialized = JSON.stringify(payload), bytes = Buffer.byteLength(serialized);
   const model = String(payload.model);
   const inputBound = bytes + 4096;
