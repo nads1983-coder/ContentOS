@@ -1,0 +1,31 @@
+# PR 22 payment edge-case verification — 10 November 2026
+
+**PAYMENT-NOT-READY.** This is a payment assessment separate from lifetime-offer launch readiness. Sales remain disabled. The clean recovery checkout began at `fc5b0de`; the damaged checkout and its uncommitted files were not touched.
+
+## Authenticated administrator
+
+The unchanged local application ran on loopback against the previously identified isolated `pr22_payments_qa` Neon database, with a restricted Stripe test key, no email or AI provider credentials, and sales/fulfillment flags unchanged. Two synthetic `example.invalid` accounts were created using the real signup endpoint. Their verification flags were explicitly set in QA only because no test email provider was configured; both then used real password login and session cookies. Anonymous and authenticated non-admin requests to the actual review route returned 403. The locally configured administrator reinstated the partial-refund purchase `e5b66832-67d0-4997-85ab-4ccd896e77d0` through that route (200); the duplicate request returned 409. Decision `5c530f6b-d6d3-412d-a002-2a461287b08b` durably recorded the QA administrator, reason and time. A subsequent application reconciliation retrieved the real Stripe test payment and returned `replay`; the 50-credit purchase remained paid. This validates real local authentication and authorisation for a partial refund, not deployed Preview authentication. The previous report records a won dispute reviewed with a simulated administrator identity.
+
+## Refund after consumption: awaiting Stripe reviewer
+
+The previously purchased genuine £15/100-credit Stripe test package `pi_3Ua7cZFnoS3uqGtr1NYurJyV`, QA purchase `1e208891-34f2-4948-9c3b-f8799b583ff0`, was reused. Application `reserveTopupCredit`, `assertTopupDispatch` and `finishTopupCredit` were called under the real commercial transaction lock for two requests. Both were recorded consumed. Delivery was simulated; no AI provider was called, so this does not prove the full content-generation path. No purchase state was manually changed. The owner-requested full £15 Stripe test refund was submitted with an idempotency key, and Stripe returned `approval_required`. Approval request `apreq_test_61Vje7nUsvNJYJSg316UittCKGE9cE0CBdhXzSFkO49o` is `requires_review`; no refund exists yet. Stripe says it will execute automatically once approved. Until then the application correctly still sees the purchase as paid and the 98 remaining credits as available. Do not consume additional credits in this fixture. Once approved, retrieve the refund and current PaymentIntent, run the normal application reconciliation or signed webhook, verify status `revoked`, two consumed reservations and ledger entries remain, 98 unused credits are unavailable, and replay the event twice to establish idempotency. This scenario has not passed yet.
+
+## Subscription test limitation
+
+The restricted Stripe test key could list test subscriptions. The only returned active subscription, `sub_1UPR3vFnoS3uqGtr9Eqmh1Ih`, was not associated with a QA profile; it was left untouched. Stripe returned 403 `more_permissions_required` for reading prices and for subscription/price writes (writes were checked with empty requests, which cannot create an object). A genuine Creator subscription test requires an authorised test-only key with access to the relevant Stripe Prices/Products and Subscriptions, including creation permissions, and a synthetic test customer/payment method. Preserve existing sandbox subscriptions and verify subscription status, recurring item and entitlement before and after test lifetime and top-up purchases. Automated and local Postgres subscription protection tests do not replace this real Stripe scenario.
+
+## PostgreSQL and local checks
+
+A temporary checksum-verified PostgreSQL 16.9.0 binary was started on `127.0.0.1:55439`. `tests/paid-lifetime-postgres-isolated.mjs` created and dropped its own disposable database and passed **21/21** checks, including migration reruns/rollback, concurrency, lifetime allocations, refund races, credit consumption and reversals, reconciliation, alerts and synthetic subscription guards. No Stripe or AI calls were made by that suite. The server was stopped after testing.
+
+Targeted lifetime, top-up and subscription suite: 70 passed. TypeScript and lint passed. Full suite: 504 passed, 10 failed, 2 skipped; the same ten content-generation/hashtag failures were previously reproduced on production. No application code changed in this verification.
+
+## Preview, operations and security
+
+Current-deployment Preview isolation, test webhook, deployed reconciliation trigger and alert delivery were not verified. The earlier runtime proof applies to deployment `dpl_AWjRseBb83A59zQTjbXKFJv8NcFR`, not later deployments. The existing Vercel integration's environment-variable operations were previously denied with HTTP 403, and the diagnostic bearer and webhook signing secret cannot be installed through that integration. A Vercel-authorised, sufficiently scoped Preview-only environment configuration path and deployment-specific authenticated database/key diagnostic are required before any Preview payment or migration. Preview cron cannot be assumed to run; explicitly trigger reconciliation in the verified test environment and use an authorised test alert endpoint.
+
+The exposed Stripe test credentials and pre-existing Vercel automation bypass remain compromised. Consumers and replacement configurations must be inventoried and migrated before coordinated revocation; do not assume the current restricted test key repairs unrelated exposed credentials. Temporary local secrets used here must be removed after testing. No live Stripe setting, production database, production AI routing, £30 budget or commercial entitlement was changed.
+
+## Release criteria
+
+Complete the pending real consumed-credit refund and duplicate-event checks; verify genuine Creator subscription protection; verify isolated current Preview, signed webhook, scheduler trigger and alert delivery; complete coordinated credential rotation; and resolve any defects found. Overall lifetime launch also needs its separate AI quality, funding and founder approval gates. Keep sales disabled until both assessments pass.
