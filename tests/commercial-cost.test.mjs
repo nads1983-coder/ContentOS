@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { loadTs } from "./image-test-helpers.mjs";
-const { quoteAI, usageCost, COST_POLICY, conservativeGBP, DEFAULT_IMAGE_MODEL } = loadTs("lib/ai-cost.ts");
+const { quoteAI, usageCost, exceededUsageCost, COST_POLICY, conservativeGBP, DEFAULT_IMAGE_MODEL } = loadTs("lib/ai-cost.ts");
 const date = new Date("2026-10-19T12:00:00Z");
 const text = { model: "gpt-4.1", input: "synthetic", max_output_tokens: 24000 };
 const image = { model: "gpt-image-1.5", prompt: "synthetic", n: 1, quality: "high", size: "1536x1024" };
@@ -79,10 +79,36 @@ test("unknown models, stale prices, tools, unbounded outputs and unreviewed imag
   for (const patch of [{model:"unknown"},{n:2},{quality:"auto"},{size:"auto"},{image:"input"}]) assert.throws(()=>quoteAI("image",{...image,...patch},date));
   assert.throws(()=>quoteAI("text",text,new Date(COST_POLICY.expires)));
 });
+test("reviewed policy covers the former deadline and retains the next fail-closed deadline", () => {
+  assert.ok(quoteAI("text", text, new Date("2026-11-18T23:59:59Z")));
+  assert.ok(quoteAI("text", text, new Date("2026-11-19T00:00:00Z")));
+  assert.ok(quoteAI("image", image, new Date("2026-11-19T00:00:00Z")));
+  assert.throws(() => quoteAI("text", text, new Date("2026-12-19T00:00:00Z")), e => e.code === "pricing_review_required");
+  assert.equal(COST_POLICY.monthly, 30_000_000);
+});
+test("policy emits a warning during its final seven days", () => {
+  const original = console.warn, calls = [];
+  console.warn = (...args) => calls.push(args);
+  try {
+    quoteAI("text", text, new Date("2026-12-11T23:59:59Z"));
+    assert.equal(calls.length, 0);
+    quoteAI("text", text, new Date("2026-12-12T00:00:00Z"));
+    assert.equal(calls.length, 1);
+    assert.match(calls[0][0], /pricing policy requires review/);
+  } finally { console.warn = original; }
+});
 test("known usage reconciles conservatively; uncertain and malformed usage never releases money", () => {
   const q=quoteAI("text",text,date);
   assert.equal(usageCost(q,{input_tokens:2033,output_tokens:3078}),34428);
   for(const value of [null,{}, {input_tokens:-1,output_tokens:10},{input_tokens:1.1,output_tokens:1}]) assert.equal(usageCost(q,value),null);
   assert.throws(()=>usageCost(q,{input_tokens:q.inputBound+1,output_tokens:0}));
   assert.throws(()=>usageCost(quoteAI("image",image,date),{input_tokens:10,output_tokens:10,input_tokens_details:{image_tokens:1}}));
+});
+test("measurable overruns are conservatively priced including unexpected image input", () => {
+  const q = quoteAI("image", image, date);
+  const usage = { input_tokens: 100, output_tokens: 7000, input_tokens_details: { image_tokens: 20 } };
+  assert.throws(() => usageCost(q, usage), e => e.code === "provider_cost_bound_exceeded");
+  assert.equal(exceededUsageCost(q, usage), conservativeGBP(100 * 8 + 7000 * 32));
+  assert.equal(exceededUsageCost(q, { input_tokens: 1, output_tokens: Number.MAX_SAFE_INTEGER }), null);
+  assert.equal(exceededUsageCost(q, { input_tokens: 1, output_tokens: 1, input_tokens_details: { image_tokens: 2 } }), null);
 });

@@ -56,6 +56,31 @@ try {
       assert.equal((await c.query("SELECT 1 FROM information_schema.columns WHERE table_schema=$1 AND column_name='lifetime'",[schema])).rowCount,0);
     } finally {await c.query("ROLLBACK");c.release();}
   });
+  await check("approved split serializes images, preserves text capacity and blocks on uncertainty",async()=>{
+    runtime.process.env.CONTENTOS_AI_BUDGET_SPLIT="approved-v1";
+    const a=await account(),b=await account();
+    try {
+      const simultaneous=await Promise.allSettled([reserve(a,"split-image-a",qi),reserve(b,"split-image-b",qi)]);
+      assert.equal(simultaneous.filter(x=>x.status==="fulfilled").length,1);
+      const chosen=simultaneous[0].status==="fulfilled"?a:b, key=chosen===a?"split-image-a":"split-image-b";
+      await reserve(a,"split-text",q);await finish(a,"split-text",q);
+      await ledger.dispatchCommercial(chosen,key,qi);await finish(chosen,key,qi);
+      await assert.rejects(()=>reserve(b,"uncertain-block",qi),e=>e.code==="image_capacity_pending");
+      await reserve(b,"text-despite-uncertainty",q);await finish(b,"text-despite-uncertainty",q);
+      await pool.query("DELETE FROM contentos_app.ai_spend_requests WHERE account_id=ANY($1::text[])",[[a,b]]);
+      for(let i=0;i<Math.floor(4_000_000/qi.maximum);i++) {const k=`split-cap-${i}`;await reserve(a,k,qi);await ledger.dispatchCommercial(a,k,qi);await ledger.settleCommercialUsage(a,k,qi,{input_tokens:qi.inputBound,output_tokens:qi.outputBound});await finish(a,k,qi,true);}
+      await assert.rejects(()=>reserve(a,"split-cap-over",qi),e=>e.code==="image_capacity_exhausted");
+      await reserve(b,"text-after-image-cap",q);await finish(b,"text-after-image-cap",q);
+      await pool.query("UPDATE contentos_app.ai_spend_requests SET month='2026-01' WHERE account_id=ANY($1::text[])",[[a,b]]);
+      await reserve(a,"next-month-image",qi);await finish(a,"next-month-image",qi);
+      await opening(4_000_000);await assert.rejects(()=>reserve(a,"unknown-opening",qi),e=>e.code==="image_budget_unreconciled");await opening();
+      const fullText={...q,maximum:24_000_000};await reserve(a,"text-cap",fullText);
+      await assert.rejects(()=>reserve(b,"text-over",q),e=>e.code==="text_capacity_exhausted");
+      await reserve(b,"image-after-text-cap",qi);await finish(b,"image-after-text-cap",qi);await finish(a,"text-cap",fullText);
+      runtime.process.env.CONTENTOS_AI_BUDGET_SPLIT="invalid";
+      await assert.rejects(()=>reserve(b,"bad-split-config",q),e=>e.code==="budget_not_initialised");
+    } finally { delete runtime.process.env.CONTENTOS_AI_BUDGET_SPLIT;await pool.query("DELETE FROM contentos_app.ai_spend_requests WHERE account_id=ANY($1::text[])",[[a,b]]); }
+  });
   await check("cross-instance concurrent final global reservation admits exactly one",async()=>{
     const a=await account(),b=await account();await opening(30_000_000-qi.maximum);
     const other=loadTs("lib/commercial-ledger.ts",mocks,new Map(),runtime);
@@ -94,6 +119,16 @@ try {
     await assert.rejects(()=>ledger.settleCommercialUsage(a,"bad-usage",q,{input_tokens:q.inputBound+1,output_tokens:1}));
     await assert.rejects(()=>reserve(a,"after-bound"),e=>e.code==="budget_not_initialised");
     assert.equal(Number((await row(a,"bad-usage")).accounted_microgbp),q.maximum);await opening();
+  });
+  await check("image overrun persists measurable cost and usage while suspending admissions",async()=>{
+    const a=await account();await reserve(a,"image-overrun",qi);await ledger.dispatchCommercial(a,"image-overrun",qi);
+    const usage={input_tokens:100,output_tokens:qi.outputBound+10000,input_tokens_details:{image_tokens:20}};
+    const expected=cost.exceededUsageCost(qi,usage);assert.ok(expected>qi.maximum);
+    await assert.rejects(()=>ledger.settleCommercialUsage(a,"image-overrun",qi,usage),e=>e.code==="provider_cost_bound_exceeded");
+    const state=await row(a,"image-overrun");assert.equal(state.state,"uncertain");assert.equal(Number(state.accounted_microgbp),expected);assert.deepEqual(state.provider_usage,usage);
+    await assert.rejects(()=>reserve(a,"blocked-after-overrun"),e=>e.code==="budget_not_initialised");
+    await assert.rejects(()=>ledger.settleCommercialUsage(a,"image-overrun",qi,usage),e=>e.code==="provider_cost_bound_exceeded");
+    assert.equal(Number((await row(a,"image-overrun")).accounted_microgbp),expected);await opening();
   });
   await check("Europe/London month boundaries include BST and winter transitions",async()=>{
     for(const [time,expected] of [["2026-03-31T23:30:00Z","2026-04"],["2026-10-31T23:30:00Z","2026-10"],["2026-11-01T00:00:00Z","2026-11"]]){
