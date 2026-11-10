@@ -13,3 +13,11 @@ Vercel documents that [cron jobs run only on production deployments](https://ver
 The previously exposed Stripe test credentials and pre-existing Vercel automation bypass remain compromised; identify and migrate their legitimate consumers before coordinated rotation. No broad project token was created and no existing credential was revoked.
 
 Local verification: 49 targeted lifetime, top-up, administrator, reconciliation and Preview diagnostic tests passed; TypeScript and lint passed. These are local tests, not genuine Stripe sandbox results. PostgreSQL integration and the full test suite were not rerun in this limited pass.
+
+## Coordinated session update
+
+The account owner approved the test-only permission change. The restricted PR22 Stripe test key was updated and the saved Debugging Tools permission was independently read back as Write. Stripe CLI v1.55.2, verified against its publisher checksum, obtained a test listener signing secret and connected successfully to a local listener. No event or payment was generated. Temporary local key, signing-secret and diagnostic-secret files were deleted after the check.
+
+A supported Vercel connector attempt to upsert `CONTENTOS_PREVIEW_DIAGNOSTIC_SECRET` solely for Preview branch `feat/paid-creator-lifetime-2026` failed with HTTP 403: the connected app lacks permission to create project environment variables. The account-owner browser can reach the scoped editor, but computer-use security requires the owner to enter a changed authentication credential; the owner declined to do that. No broad Vercel token, project-wide bypass, production change or credential workaround was used. An authorised integration with permission to create/update the project's PR-Preview environment variables, or account-owner entry through the existing scoped editor, is required before runtime isolation can be re-established. A separate test webhook signing secret will also require an authorised Preview-only configuration path.
+
+Current-deployment isolation, real payment and entitlement scenarios, Preview scheduler execution, and alert delivery remain unverified. The five local Preview diagnostic tests passed in this session. The earlier exposure and coordinated rotation obligations remain open.
