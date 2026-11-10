@@ -200,7 +200,9 @@ export function reserveGenerationInProfile(data: Document, userId: string, reque
   const plan = effectiveGenerationPlan(data, now);
   if (plan === "free" && request.selectedTypes.some(id => contentTypes.find(type => type.id === id)?.paidOnly)) throw new GenerationReservationError("These outputs require a paid plan.", 403, "paid_output_required");
   const { periodStart, periodEnd } = currentUsageWindow(now,
-    hasLifetimeEntitlement(data) || paidCreatorLifetimeIsPrimary(data, now) ? null : data.subscription_current_period_end);
+    hasLifetimeEntitlement(data) || paidCreatorLifetimeIsPrimary(data, now) ? null : data.subscription_current_period_end,
+    hasLifetimeEntitlement(data) || paidCreatorLifetimeIsPrimary(data, now) ? null : data.subscription_current_period_start,
+    data.subscription_usage_transition_start, data.subscription_usage_transition_end);
   const used = usageInWindow(data, userId, periodStart, periodEnd);
   const pending = entries.filter(r => r.status === "reserved" && r.funding !== "purchased" && Date.parse(r.createdAt) >= Date.parse(periodStart) && Date.parse(r.createdAt) < Date.parse(periodEnd)).length;
   const exhausted = used.text + (paidCreatorLifetimeIsPrimary(data, now) ? 0 : used.other) + pending >= monthlyLimitForPlan(plan);

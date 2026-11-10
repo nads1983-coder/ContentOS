@@ -39,13 +39,16 @@ async function usageForProfile(profile: UserProfile | null, plan: PlanId): Promi
     const used = await getMonthlyUsageCount({
       userId: profile.id,
       periodEnd: profile.subscription_current_period_end,
+      periodStart: profile.subscription_current_period_start,
+      transitionStart: profile.subscription_usage_transition_start,
+      transitionEnd: profile.subscription_usage_transition_end,
       eventType: paidCreatorLifetimeIsPrimary(profile) ? "text_generation" : undefined
     });
 
-    return buildUsageSummary(plan, used, profile.subscription_current_period_end);
+    return buildUsageSummary(plan, used, profile.subscription_current_period_end, profile.subscription_current_period_start, profile.subscription_usage_transition_start, profile.subscription_usage_transition_end);
   } catch {
     console.warn("Studio usage fetch failed");
-    return buildUsageSummary(plan, 0, profile.subscription_current_period_end);
+    return buildUsageSummary(plan, 0, profile.subscription_current_period_end, profile.subscription_current_period_start, profile.subscription_usage_transition_start, profile.subscription_usage_transition_end);
   }
 }
 

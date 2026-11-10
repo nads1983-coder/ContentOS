@@ -23,11 +23,23 @@ export function monthlyLimitForPlan(plan: PlanId) {
 
 function addMonths(value: Date, months: number) {
   const next = new Date(value);
+  const day = next.getUTCDate();
+  next.setUTCDate(1);
   next.setUTCMonth(next.getUTCMonth() + months);
+  const lastDay = new Date(Date.UTC(next.getUTCFullYear(), next.getUTCMonth() + 1, 0)).getUTCDate();
+  next.setUTCDate(Math.min(day, lastDay));
   return next;
 }
 
-export function currentUsageWindow(now = new Date(), billingPeriodEnd?: string | null) {
+export function currentUsageWindow(now = new Date(), billingPeriodEnd?: string | null, billingPeriodStart?: string | null,
+  transitionStart?: string | null, transitionEnd?: string | null) {
+  const start = billingPeriodStart ? Date.parse(billingPeriodStart) : NaN;
+  const end = billingPeriodEnd ? Date.parse(billingPeriodEnd) : NaN;
+  if (Number.isFinite(start) && Number.isFinite(end) && start < end && start <= now.getTime() && now.getTime() < end) {
+    const transition = transitionEnd === billingPeriodEnd && transitionStart ? Date.parse(transitionStart) : NaN;
+    const effectiveStart = Number.isFinite(transition) && transition <= now.getTime() && transition < end ? transition : start;
+    return { periodStart: new Date(effectiveStart).toISOString(), periodEnd: new Date(end).toISOString() };
+  }
   if (billingPeriodEnd) {
     const renewalDate = new Date(billingPeriodEnd);
 
@@ -57,10 +69,13 @@ export function currentUsageWindow(now = new Date(), billingPeriodEnd?: string |
 export function buildUsageSummary(
   plan: PlanId,
   used: number,
-  billingPeriodEnd?: string | null
+  billingPeriodEnd?: string | null,
+  billingPeriodStart?: string | null,
+  transitionStart?: string | null,
+  transitionEnd?: string | null
 ): UsageSummary {
   const limit = monthlyLimitForPlan(plan);
-  const { periodStart, periodEnd } = currentUsageWindow(new Date(), billingPeriodEnd);
+  const { periodStart, periodEnd } = currentUsageWindow(new Date(), billingPeriodEnd, billingPeriodStart, transitionStart, transitionEnd);
 
   return {
     plan,

@@ -495,6 +495,28 @@ try {
     assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,0);
     assert.equal((await pool.query("SELECT count(*) FROM contentos_app.ai_topup_adjudications WHERE purchase_id=$1",[x.row.id])).rows[0].count,"1");
   });
+  await check("subscription period backfill preserves current usage and purchased credits through renewal",async()=>{
+    const x=await topupPayment();
+    await x.topup.fulfillTopup(x.row.id,x.session,x.intent);
+    const now=new Date(),oldStart=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1));
+    const start=new Date(oldStart.getTime()+1000),end=new Date(now.getTime()+20*86400000);
+    if(start>=now)return;
+    const data={...x.p,plan:"pro_creator",subscription_status:"active",stripe_subscription_id:"sub_period_test",generation_usage_json:{[oldStart.toISOString()]:50}};
+    await pool.query("UPDATE contentos_app.profiles SET data=$2 WHERE id=$1",[x.p.id,data]);
+    const repo=loadTs("lib/postgres-repository.ts",{...mocks,"@/lib/db/client":{getDb:()=>drizzle(pool),getPool:()=>pool}});
+    await repo.updateSubscriptionStatus({userId:x.p.id,plan:"pro_creator",status:"active",stripeSubscriptionId:"sub_period_test",currentPeriodStart:start.toISOString(),currentPeriodEnd:end.toISOString()});
+    const saved=await readProfile(x.p.id);
+    assert.equal(saved.subscription_usage_transition_start,oldStart.toISOString());
+    const generation=loadTs("lib/generation-reservation.ts"),req={source:"Synthetic content for billing verification",tone:"professional",sharpness:"balanced",ctaMode:"soft",presetTopic:"none",selectedTypes:["linkedin"]};
+    assert.equal(generation.reserveGenerationInProfile(saved,x.p.id,"period-backfill-test",req,now,true).result.funding,"purchased");
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,25);
+    const nextEnd=new Date(end.getTime()+30*86400000);
+    await repo.updateSubscriptionStatus({userId:x.p.id,plan:"pro_creator",status:"active",stripeSubscriptionId:"sub_period_test",currentPeriodStart:end.toISOString(),currentPeriodEnd:nextEnd.toISOString()});
+    const renewed=await readProfile(x.p.id);
+    assert.equal(renewed.subscription_usage_transition_start,null);
+    assert.equal(generation.reserveGenerationInProfile(renewed,x.p.id,"period-renewal-test",req,new Date(end.getTime()+1000),true).result.funding,"included");
+    assert.equal((await x.topup.topupAccountSummary(x.p.id)).available,25);
+  });
   if(process.env.CONTENTOS_LOCAL_ALERT_TLS_DIR)await check("real localhost HTTPS alert failure retries and records acknowledgement; authenticated cron dispatch is protected",async()=>{
     const tlsDir=process.env.CONTENTOS_LOCAL_ALERT_TLS_DIR;
     let accepted=false;const deliveries=[];

@@ -25,7 +25,7 @@ function array<T>(value: unknown): T[] {
   return [];
 }
 function profile(d: Document): UserProfile {
-  return { id: d.id, email: d.email, full_name: d.full_name ?? undefined, plan: normalizePlanId(d.plan), subscription_status: normalizeSubscriptionStatus(d.subscription_status), stripe_customer_id: d.stripe_customer_id ?? undefined, stripe_subscription_id: d.stripe_subscription_id ?? undefined, stripe_checkout_session_id: d.stripe_checkout_session_id ?? undefined, subscription_current_period_end: d.subscription_current_period_end ?? null, subscription_cancel_at_period_end: d.subscription_cancel_at_period_end ?? false, subscription_cancel_at: d.subscription_cancel_at ?? null, subscription_canceled_at: d.subscription_canceled_at ?? null, entitlement_source: d.entitlement_source ?? null, amount_paid: d.amount_paid ?? null, paid_creator_lifetime_status: d.paid_creator_lifetime_status ?? null, paid_creator_lifetime_purchase_id: d.paid_creator_lifetime_purchase_id ?? null };
+  return { id: d.id, email: d.email, full_name: d.full_name ?? undefined, plan: normalizePlanId(d.plan), subscription_status: normalizeSubscriptionStatus(d.subscription_status), stripe_customer_id: d.stripe_customer_id ?? undefined, stripe_subscription_id: d.stripe_subscription_id ?? undefined, stripe_checkout_session_id: d.stripe_checkout_session_id ?? undefined, subscription_current_period_start: d.subscription_current_period_start ?? null, subscription_current_period_end: d.subscription_current_period_end ?? null, subscription_usage_transition_start: d.subscription_usage_transition_start ?? null, subscription_usage_transition_end: d.subscription_usage_transition_end ?? null, subscription_cancel_at_period_end: d.subscription_cancel_at_period_end ?? false, subscription_cancel_at: d.subscription_cancel_at ?? null, subscription_canceled_at: d.subscription_canceled_at ?? null, entitlement_source: d.entitlement_source ?? null, amount_paid: d.amount_paid ?? null, paid_creator_lifetime_status: d.paid_creator_lifetime_status ?? null, paid_creator_lifetime_purchase_id: d.paid_creator_lifetime_purchase_id ?? null };
 }
 // Readers do not need replay bodies or terminal IDs. Never use this projection
 // as the basis for a write: mutate() must re-read the complete locked document.
@@ -117,10 +117,13 @@ export async function recordUsageEvent(input: {
 export async function getMonthlyUsageCount(input: {
   userId: string;
   periodEnd?: string | null;
+  periodStart?: string | null;
+  transitionStart?: string | null;
+  transitionEnd?: string | null;
   eventType?: "text_generation" | "image_generation";
 }) {
   const d = await document(input.userId);
-  const { periodStart, periodEnd } = currentUsageWindow(new Date(), input.periodEnd);
+  const { periodStart, periodEnd } = currentUsageWindow(new Date(), input.periodEnd, input.periodStart, input.transitionStart, input.transitionEnd);
   const start = Date.parse(periodStart), end = Date.parse(periodEnd);
   const inWindow = (v: { created_at: string }) => Date.parse(v.created_at) >= start && Date.parse(v.created_at) < end;
   const events = array<UsageEvent>(d?.usage_events_json).filter(inWindow);
@@ -140,6 +143,7 @@ export async function updateSubscriptionStatus(input: {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   stripeCheckoutSessionId?: string;
+  currentPeriodStart?: string | null;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
   cancelAt?: string | null;
@@ -157,7 +161,35 @@ export async function updateSubscriptionStatus(input: {
       if (hasLifetimeEntitlement(profile(d))) return { data: d, result: profile(d) };
       // A delayed deletion must not replace a newer subscription after an earlier read.
       if (input.expectedStripeSubscriptionId !== undefined && d.stripe_subscription_id !== input.expectedStripeSubscriptionId) return { data: d, result: profile(d) };
-      const data = { ...d, ...clean({ plan: normalizePlanId(input.plan), subscription_status: normalizeSubscriptionStatus(input.status), stripe_customer_id: input.stripeCustomerId, stripe_subscription_id: input.stripeSubscriptionId, stripe_checkout_session_id: input.stripeCheckoutSessionId, subscription_current_period_end: input.currentPeriodEnd ?? null, subscription_cancel_at_period_end: input.cancelAtPeriodEnd ?? false, subscription_cancel_at: input.cancelAt ?? null, subscription_canceled_at: input.canceledAt ?? null, entitlement_source: input.entitlementSource, amount_paid: input.amountPaid, updated_at: new Date().toISOString() }) };
+      const sameSubscription = Boolean(input.stripeSubscriptionId && input.stripeSubscriptionId === d.stripe_subscription_id);
+      const oldEnd = typeof d.subscription_current_period_end === "string" ? Date.parse(d.subscription_current_period_end) : NaN;
+      const newEnd = typeof input.currentPeriodEnd === "string" ? Date.parse(input.currentPeriodEnd) : NaN;
+      const newStart = typeof input.currentPeriodStart === "string" ? Date.parse(input.currentPeriodStart) : NaN;
+      const preservePeriod = sameSubscription && (!Number.isFinite(newEnd) || (Number.isFinite(oldEnd) && newEnd < oldEnd));
+      const periodEnd = preservePeriod ? d.subscription_current_period_end : input.currentPeriodEnd ?? null;
+      const periodStart = preservePeriod ? d.subscription_current_period_start
+        : input.currentPeriodStart ?? (sameSubscription && Number.isFinite(newEnd) && newEnd === oldEnd ? d.subscription_current_period_start : null);
+      let transitionStart = sameSubscription ? d.subscription_usage_transition_start : null;
+      let transitionEnd = sameSubscription ? d.subscription_usage_transition_end : null;
+      if (transitionEnd && transitionEnd !== periodEnd) {
+        if (periodStart && periodStart === d.subscription_current_period_start && Number.isFinite(newEnd) && newEnd > oldEnd) {
+          transitionEnd = periodEnd;
+        } else { transitionStart = null; transitionEnd = null; }
+      }
+      // Existing subscriptions previously used a calendar (or inferred) window.
+      // Keep that window's start until the first verified Stripe period
+      // ends, so backfilling dates cannot grant a second allowance mid-cycle.
+      if (sameSubscription && !d.subscription_current_period_start && !transitionEnd &&
+          ["active", "trialing"].includes(String(d.subscription_status)) &&
+          Number.isFinite(newStart) && Number.isFinite(newEnd) && newStart <= Date.now() && Date.now() < newEnd && !preservePeriod) {
+        const oldWindow = currentUsageWindow(new Date(), d.subscription_current_period_end);
+        if (Date.parse(oldWindow.periodStart) !== newStart) {
+          transitionStart = oldWindow.periodStart;
+          transitionEnd = input.currentPeriodEnd;
+        }
+      }
+      const data = { ...d, ...clean({ subscription_current_period_start: periodStart ?? null, subscription_current_period_end: periodEnd ?? null,
+        subscription_usage_transition_start: transitionStart ?? null, subscription_usage_transition_end: transitionEnd ?? null, plan: normalizePlanId(input.plan), subscription_status: normalizeSubscriptionStatus(input.status), stripe_customer_id: input.stripeCustomerId, stripe_subscription_id: input.stripeSubscriptionId, stripe_checkout_session_id: input.stripeCheckoutSessionId, subscription_cancel_at_period_end: input.cancelAtPeriodEnd ?? false, subscription_cancel_at: input.cancelAt ?? null, subscription_canceled_at: input.canceledAt ?? null, entitlement_source: input.entitlementSource, amount_paid: input.amountPaid, updated_at: new Date().toISOString() }) };
       return { data, result: profile(data) };
     }));
   }
@@ -171,6 +203,7 @@ export async function syncUserSubscriptionState(input: {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   stripeCheckoutSessionId?: string;
+  currentPeriodStart?: string | null;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
   cancelAt?: string | null;

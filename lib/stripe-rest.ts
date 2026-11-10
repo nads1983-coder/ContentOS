@@ -37,12 +37,15 @@ type StripeSubscription = {
   id: string;
   customer: string;
   status: string;
+  current_period_start?: number;
   current_period_end?: number;
   cancel_at_period_end?: boolean;
   cancel_at?: number | null;
   canceled_at?: number | null;
   metadata?: Record<string, string>;
   items?: StripeList<{
+    current_period_start?: number;
+    current_period_end?: number;
     price?: StripePrice;
     quantity?: number;
   }>;
@@ -80,6 +83,7 @@ export type StripeSubscriptionState = {
   status: SubscriptionStatus;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  currentPeriodStart?: string | null;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
   cancelAt?: string | null;
@@ -252,11 +256,25 @@ function planFromSubscription(subscription: StripeSubscription): PlanId {
 }
 
 function timestampToIso(timestamp?: number | null) {
-  if (timestamp === undefined) {
-    return undefined;
-  }
+  if (timestamp === undefined) return undefined;
+  if (timestamp === null || timestamp === 0) return null;
+  if (!Number.isSafeInteger(timestamp) || timestamp < 0 || !Number.isFinite(new Date(timestamp * 1000).getTime())) return undefined;
+  return new Date(timestamp * 1000).toISOString();
+}
 
-  return timestamp ? new Date(timestamp * 1000).toISOString() : null;
+// Clover places the billing period on each subscription item. Only the single
+// unambiguous item used for entitlement selection may supply quota dates.
+function subscriptionPeriod(subscription: StripeSubscription) {
+  const items = subscription.items;
+  if (items?.has_more || (items?.data?.length ?? 0) > 1) return {};
+  const item = items?.data?.[0];
+  const hasItemPeriod = item && (item.current_period_start !== undefined || item.current_period_end !== undefined);
+  if (hasItemPeriod && (item.current_period_start === undefined || item.current_period_end === undefined)) return {};
+  const start = hasItemPeriod ? item.current_period_start : subscription.current_period_start;
+  const end = hasItemPeriod ? item.current_period_end : subscription.current_period_end;
+  const startIso = timestampToIso(start), endIso = timestampToIso(end);
+  if (!endIso || (start !== undefined && (!startIso || start! >= end!))) return {};
+  return { start: startIso ?? undefined, end: endIso, endSeconds: end! };
 }
 
 function hasActiveEntitlement(status: SubscriptionStatus) {
@@ -307,6 +325,7 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
   }
 
   const status = effectiveSubscriptionStatus(subscription);
+  const period = subscriptionPeriod(subscription);
   const plan = hasActiveEntitlement(status) || status === "past_due"
     ? planFromSubscription(subscription)
     : "free";
@@ -320,10 +339,11 @@ export function stripeSubscriptionToState(subscription?: StripeSubscription | nu
     status,
     stripeCustomerId: subscription.customer,
     stripeSubscriptionId: subscription.id,
-    currentPeriodEnd: timestampToIso(subscription.current_period_end),
+    currentPeriodStart: period.start,
+    currentPeriodEnd: period.end,
     // The existing profile flag represents pending cancellation, including portal cancel_at.
     cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || scheduledCancelAt),
-    cancelAt: timestampToIso(scheduledCancelAt ?? (subscription.cancel_at_period_end ? subscription.current_period_end : undefined)) ?? null,
+    cancelAt: timestampToIso(scheduledCancelAt ?? (subscription.cancel_at_period_end ? period.endSeconds : undefined)) ?? null,
     canceledAt: timestampToIso(subscription.canceled_at)
   };
 }
@@ -444,7 +464,7 @@ export async function getStripeSubscriptionState(input: {
         rawStatus: subscription.status,
         effectiveStatus: effectiveSubscriptionStatus(subscription),
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        currentPeriodEnd: timestampToIso(subscription.current_period_end),
+        currentPeriodEnd: subscriptionPeriod(subscription).end,
         resolvedPlan: planFromSubscription(subscription)
       });
     });
@@ -462,7 +482,7 @@ export async function getStripeSubscriptionState(input: {
           return rank;
         }
 
-        return (b.current_period_end ?? 0) - (a.current_period_end ?? 0);
+        return (subscriptionPeriod(b).endSeconds ?? 0) - (subscriptionPeriod(a).endSeconds ?? 0);
       })[0];
   }
 
@@ -529,7 +549,7 @@ export async function getStripeSubscriptionState(input: {
         rawStatus: bestSubscription.status,
         effectiveStatus: effectiveSubscriptionStatus(bestSubscription),
         cancelAtPeriodEnd: bestSubscription.cancel_at_period_end,
-        currentPeriodEnd: timestampToIso(bestSubscription.current_period_end),
+        currentPeriodEnd: subscriptionPeriod(bestSubscription).end,
         resolvedBillingPlan: state.plan
       }
       : null,

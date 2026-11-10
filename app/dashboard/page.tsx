@@ -144,6 +144,7 @@ export default async function DashboardPage() {
         subscription_status: subscriptionState.status,
         stripe_customer_id: subscriptionState.stripeCustomerId,
         stripe_subscription_id: subscriptionState.stripeSubscriptionId,
+        subscription_current_period_start: subscriptionState.currentPeriodStart,
         subscription_current_period_end: subscriptionState.currentPeriodEnd,
         subscription_cancel_at_period_end: subscriptionState.cancelAtPeriodEnd,
         subscription_cancel_at: subscriptionState.cancelAt,
@@ -181,12 +182,14 @@ export default async function DashboardPage() {
           status: normalizedStoredStatus,
           stripeCustomerId: profile.stripe_customer_id ?? subscriptionState.stripeCustomerId,
           stripeSubscriptionId: profile.stripe_subscription_id,
+          currentPeriodStart: subscriptionState.currentPeriodStart,
           currentPeriodEnd: subscriptionState.currentPeriodEnd,
           cancelAtPeriodEnd: subscriptionState.cancelAtPeriodEnd,
           cancelAt: subscriptionState.cancelAt,
           canceledAt: subscriptionState.canceledAt
         }) ?? {
           ...profile,
+          subscription_current_period_start: subscriptionState.currentPeriodStart,
           subscription_current_period_end: subscriptionState.currentPeriodEnd,
           subscription_cancel_at_period_end: subscriptionState.cancelAtPeriodEnd,
           subscription_cancel_at: subscriptionState.cancelAt,
@@ -233,14 +236,19 @@ export default async function DashboardPage() {
       monthlyUsageCount = await getMonthlyUsageCount({
         userId: profileUserId,
         eventType: paidCreatorPrimary ? "text_generation" : undefined,
-        periodEnd: paidCreatorPrimary ? null : profile?.subscription_current_period_end
+        periodEnd: paidCreatorPrimary ? null : profile?.subscription_current_period_end,
+        periodStart: paidCreatorPrimary ? null : profile?.subscription_current_period_start,
+        transitionStart: paidCreatorPrimary ? null : profile?.subscription_usage_transition_start,
+        transitionEnd: paidCreatorPrimary ? null : profile?.subscription_usage_transition_end
       });
     } catch {
       console.warn("Dashboard usage fetch failed");
     }
   }
 
-  const usage = buildUsageSummary(plan, monthlyUsageCount, paidCreatorPrimary ? null : profile?.subscription_current_period_end);
+  const usage = buildUsageSummary(plan, monthlyUsageCount, paidCreatorPrimary ? null : profile?.subscription_current_period_end,
+    paidCreatorPrimary ? null : profile?.subscription_current_period_start, paidCreatorPrimary ? null : profile?.subscription_usage_transition_start,
+    paidCreatorPrimary ? null : profile?.subscription_usage_transition_end);
   let topups:Awaited<ReturnType<typeof import("@/lib/ai-topup-payments").topupAccountSummary>> | null=null;
   if(isDatabaseConfigured()) {
     try {topups=await (await import("@/lib/ai-topup-payments")).topupAccountSummary(user.id);} catch { /* Existing account pages remain usable before migration. */ }

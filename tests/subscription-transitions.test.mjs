@@ -246,3 +246,93 @@ for (const plan of ["lite", "pro_creator", "pro_studio"]) {
     h.checkPreserved();
   });
 }
+
+test("Clover item period supplies both dates; malformed, missing and ambiguous periods fail closed", () => {
+  const h=harness(), item=subscription("pro_creator").items.data[0];
+  const start=1794323637,end=1796915637;
+  const s=subscription("pro_creator","pro_creator",{items:{has_more:false,data:[{...item,current_period_start:start,current_period_end:end}]}});
+  const state=h.api.stripeSubscriptionToState(s);
+  assert.equal(state.currentPeriodStart,"2026-11-10T15:13:57.000Z");
+  assert.equal(state.currentPeriodEnd,"2026-12-10T15:13:57.000Z");
+  const canceled=h.api.stripeSubscriptionToState({...s,status:"canceled",items:{data:[{...item,current_period_start:Math.floor(Date.now()/1000)-60,current_period_end:Math.floor(Date.now()/1000)+86400}]}});
+  assert.equal(canceled.status,"canceled", "a future item boundary must not revive an immediately canceled Clover subscription");
+  for(const bad of [
+    {...item,current_period_start:start}, {...item,current_period_start:start,current_period_end:NaN},
+    {...item,current_period_start:end,current_period_end:start}, {...item,current_period_start:1e20,current_period_end:end}
+  ]) {
+    const value=h.api.stripeSubscriptionToState({...s,items:{data:[bad]}});
+    assert.equal(value.currentPeriodEnd,undefined);
+    assert.equal(value.currentPeriodStart,undefined);
+    assert.equal(value.plan,"pro_creator", "malformed dates do not erase the verified tier");
+  }
+  assert.equal(h.api.stripeSubscriptionToState({...s,items:{has_more:true,data:s.items.data}}).currentPeriodEnd,undefined);
+  assert.equal(h.api.stripeSubscriptionToState({...s,items:{data:[s.items.data[0],s.items.data[0]]}}).currentPeriodEnd,undefined);
+  const legacy=h.api.stripeSubscriptionToState(subscription("pro_creator","pro_creator",{current_period_end:end}));
+  assert.equal(legacy.currentPeriodEnd,"2026-12-10T15:13:57.000Z");
+});
+
+test("item-date creation, duplicate and stale webhook delivery preserve renewal dates and existing data",async()=>{
+  const h=harness();const first={start:1794323637,end:1796915637},next={start:1796915637,end:1799594037};
+  function itemPeriod(v){const row=subscription("pro_creator");row.items.data[0].current_period_start=v.start;row.items.data[0].current_period_end=v.end;return row;}
+  h.stripeRows=[itemPeriod(first)];const stale=itemPeriod(first);
+  assert.equal((await h.send(stale,"customer.subscription.created")).status,200);
+  assert.equal(h.data.subscription_current_period_start,new Date(first.start*1000).toISOString());
+  assert.equal(h.data.subscription_current_period_end,new Date(first.end*1000).toISOString());
+  assert.equal((await h.send(stale)).status,200);h.checkPreserved();
+  h.stripeRows=[itemPeriod(next)];assert.equal((await h.send(stale)).status,200);
+  assert.equal(h.data.subscription_current_period_start,new Date(next.start*1000).toISOString());
+  assert.equal(h.data.subscription_current_period_end,new Date(next.end*1000).toISOString());
+  assert.equal((await h.send(stale)).status,200);h.checkPreserved();
+  await h.repository.updateSubscriptionStatus({userId:'user-test',plan:'pro_creator',status:'active',stripeSubscriptionId:'sub_synthetic',currentPeriodStart:new Date(first.start*1000).toISOString(),currentPeriodEnd:new Date(first.end*1000).toISOString()});
+  assert.equal(h.data.subscription_current_period_end,new Date(next.end*1000).toISOString(),"a slower stale write cannot move the window backward");
+  await h.repository.updateSubscriptionStatus({userId:'user-test',plan:'pro_creator',status:'active',stripeSubscriptionId:'sub_synthetic'});
+  assert.equal(h.data.subscription_current_period_end,new Date(next.end*1000).toISOString(),"missing provider dates cannot erase known dates");
+  await h.repository.updateSubscriptionStatus({userId:'user-test',plan:'pro_creator',status:'active',stripeSubscriptionId:'sub_synthetic',currentPeriodEnd:new Date(next.end*1000).toISOString()});
+  assert.equal(h.data.subscription_current_period_start,new Date(next.start*1000).toISOString(),"an end-only response cannot erase a known start for the same period");
+});
+
+test("backfill preserves existing usage until the first verified billing renewal",async()=>{
+  const now=new Date(),oldStart=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1));
+  const first=new Date(oldStart.getTime()+1000),end=new Date(now.getTime()+20*86400000);
+  if(first>=now)return; // only possible in the first second of a UTC month
+  const h=harness({plan:'pro_creator',subscription_status:'active',stripe_subscription_id:'sub_synthetic',subscription_current_period_end:null,generation_usage_json:{[oldStart.toISOString()]:50}});
+  await h.repository.updateSubscriptionStatus({userId:'user-test',plan:'pro_creator',status:'active',stripeSubscriptionId:'sub_synthetic',currentPeriodStart:first.toISOString(),currentPeriodEnd:end.toISOString()});
+  assert.equal(h.data.subscription_usage_transition_start,oldStart.toISOString());
+  assert.equal(h.data.subscription_usage_transition_end,end.toISOString());
+  const extended=new Date(end.getTime()+86400000);
+  await h.repository.updateSubscriptionStatus({userId:'user-test',plan:'pro_creator',status:'active',stripeSubscriptionId:'sub_synthetic',currentPeriodStart:first.toISOString(),currentPeriodEnd:extended.toISOString()});
+  assert.equal(h.data.subscription_usage_transition_start,oldStart.toISOString(),"extending the same Stripe period must not reset usage");
+  assert.equal(h.data.subscription_usage_transition_end,extended.toISOString());
+  const generation=loadTs('lib/generation-reservation.ts'),req={source:'Synthetic content for quota verification',tone:'professional',sharpness:'balanced',ctaMode:'soft',presetTopic:'none',selectedTypes:['linkedin']};
+  const used=generation.reserveGenerationInProfile(h.data,'user-test','test-backfill-request',req,now,true);
+  assert.equal(used.result.funding,'purchased',"backfill must not issue a fresh included allowance");
+  const nextEnd=new Date(extended.getTime()+30*86400000),newPeriod={...h.data,subscription_current_period_start:extended.toISOString(),subscription_current_period_end:nextEnd.toISOString()};
+  const renewed=generation.reserveGenerationInProfile(newPeriod,'user-test','test-renewal-request',{...req,source:'A different source after the verified renewal'},new Date(extended.getTime()+1000),true);
+  assert.equal(renewed.result.funding,'included');
+});
+
+test("explicit Stripe item boundaries handle month ends without calendar overflow",()=>{
+  const {currentUsageWindow}=loadTs('lib/usage.ts');
+  assert.deepEqual(currentUsageWindow(new Date('2026-02-28T12:00:00Z'),'2026-03-31T12:00:00.000Z','2026-02-28T12:00:00.000Z'),{periodStart:'2026-02-28T12:00:00.000Z',periodEnd:'2026-03-31T12:00:00.000Z'});
+  assert.equal(currentUsageWindow(new Date('2026-03-15T00:00:00Z'),'2026-03-31T12:00:00.000Z').periodStart,'2026-02-28T12:00:00.000Z');
+  assert.equal(currentUsageWindow(new Date('2026-11-15T00:00:00Z'),'2026-11-20T00:00:00.000Z','2026-10-20T00:00:00.000Z','2026-11-01T00:00:00.000Z','2026-11-20T00:00:00.000Z').periodStart,'2026-11-01T00:00:00.000Z',"backfill must retain a later calendar counter too");
+});
+
+test("backfill retains a calendar counter when the Stripe period began in the previous month",async()=>{
+  const now=new Date(),oldStart=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1));
+  if(now.getTime()<=oldStart.getTime()+1000)return;
+  const start=new Date(oldStart.getTime()-10*86400000),end=new Date(now.getTime()+10*86400000);
+  const h=harness({plan:'pro_creator',subscription_status:'active',stripe_subscription_id:'sub_synthetic',subscription_current_period_end:null,generation_usage_json:{[oldStart.toISOString()]:50}});
+  await h.repository.updateSubscriptionStatus({userId:'user-test',plan:'pro_creator',status:'active',stripeSubscriptionId:'sub_synthetic',currentPeriodStart:start.toISOString(),currentPeriodEnd:end.toISOString()});
+  assert.equal(h.data.subscription_usage_transition_start,oldStart.toISOString());
+  const generation=loadTs('lib/generation-reservation.ts'),req={source:'Synthetic source for previous month boundary',tone:'professional',sharpness:'balanced',ctaMode:'soft',presetTopic:'none',selectedTypes:['linkedin']};
+  assert.equal(generation.reserveGenerationInProfile(h.data,'user-test','test-prior-month-boundary',req,now,true).result.funding,'purchased');
+});
+
+test("subscription Checkout completion retrieves and stores Clover item boundaries",async()=>{
+  const h=harness(),row=subscription('pro_creator');
+  row.items.data[0].current_period_start=1794323637;row.items.data[0].current_period_end=1796915637;h.stripeRows=[row];
+  const checkout={id:'cs_synthetic',customer:'cus_synthetic',subscription:'sub_synthetic',client_reference_id:'user-test',metadata:{user_id:'user-test'}};
+  for(let n=0;n<2;n++){assert.equal((await h.send(checkout,'checkout.session.completed')).status,200);assert.equal(h.data.subscription_current_period_start,'2026-11-10T15:13:57.000Z');assert.equal(h.data.subscription_current_period_end,'2026-12-10T15:13:57.000Z');}
+  h.checkPreserved();
+});
