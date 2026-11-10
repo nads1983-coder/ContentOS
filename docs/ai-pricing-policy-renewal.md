@@ -1,0 +1,7 @@
+# AI pricing review runbook
+
+The pricing policy is a bounded review of provider rates, not the monthly funding approval. It expires at 00:00 UTC on 19 December 2026. Requests during the final seven days emit `AI pricing policy requires review before expiry` in server logs. This warning requires an operator to monitor logs; it is not an external alert and cannot warn during periods with no requests. Schedule a review before 12 December.
+
+Before renewal, check the current provider prices and model availability, exchange-rate contingency, payload/token bounds, reserved and actual spending, and compare them with the rates in `lib/ai-cost.ts`. Review all supported image models, including shutdown restrictions. If bounds remain conservative, update the policy version and expiry and run `node --test tests/commercial-cost.test.mjs` and the disposable PostgreSQL ledger suite. Submit a reviewed deployment; expiry does not renew automatically. If pricing cannot be verified, keep the existing fail-closed behaviour.
+
+`pricing_review_required` means the rate policy requires review; `global_capacity_exhausted` means the £30 monthly ledger cannot fund the request. Neither authorises a budget increase. The database funding configuration and advisory lock remain mandatory and are not modified by a policy renewal. Roll back using the prior production deployment; after the old deadline that rollback will fail closed.
