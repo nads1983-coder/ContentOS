@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { loadTs } from "./image-test-helpers.mjs";
-const { quoteAI, usageCost, COST_POLICY, conservativeGBP, DEFAULT_IMAGE_MODEL } = loadTs("lib/ai-cost.ts");
+const { quoteAI, usageCost, exceededUsageCost, COST_POLICY, conservativeGBP, DEFAULT_IMAGE_MODEL } = loadTs("lib/ai-cost.ts");
 const date = new Date("2026-10-19T12:00:00Z");
 const text = { model: "gpt-4.1", input: "synthetic", max_output_tokens: 24000 };
 const image = { model: "gpt-image-1.5", prompt: "synthetic", n: 1, quality: "high", size: "1536x1024" };
@@ -103,4 +103,12 @@ test("known usage reconciles conservatively; uncertain and malformed usage never
   for(const value of [null,{}, {input_tokens:-1,output_tokens:10},{input_tokens:1.1,output_tokens:1}]) assert.equal(usageCost(q,value),null);
   assert.throws(()=>usageCost(q,{input_tokens:q.inputBound+1,output_tokens:0}));
   assert.throws(()=>usageCost(quoteAI("image",image,date),{input_tokens:10,output_tokens:10,input_tokens_details:{image_tokens:1}}));
+});
+test("measurable overruns are conservatively priced including unexpected image input", () => {
+  const q = quoteAI("image", image, date);
+  const usage = { input_tokens: 100, output_tokens: 7000, input_tokens_details: { image_tokens: 20 } };
+  assert.throws(() => usageCost(q, usage), e => e.code === "provider_cost_bound_exceeded");
+  assert.equal(exceededUsageCost(q, usage), conservativeGBP(100 * 8 + 7000 * 32));
+  assert.equal(exceededUsageCost(q, { input_tokens: 1, output_tokens: Number.MAX_SAFE_INTEGER }), null);
+  assert.equal(exceededUsageCost(q, { input_tokens: 1, output_tokens: 1, input_tokens_details: { image_tokens: 2 } }), null);
 });

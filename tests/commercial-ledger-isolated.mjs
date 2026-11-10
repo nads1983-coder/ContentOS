@@ -95,6 +95,16 @@ try {
     await assert.rejects(()=>reserve(a,"after-bound"),e=>e.code==="budget_not_initialised");
     assert.equal(Number((await row(a,"bad-usage")).accounted_microgbp),q.maximum);await opening();
   });
+  await check("image overrun persists measurable cost and usage while suspending admissions",async()=>{
+    const a=await account();await reserve(a,"image-overrun",qi);await ledger.dispatchCommercial(a,"image-overrun",qi);
+    const usage={input_tokens:100,output_tokens:qi.outputBound+10000,input_tokens_details:{image_tokens:20}};
+    const expected=cost.exceededUsageCost(qi,usage);assert.ok(expected>qi.maximum);
+    await assert.rejects(()=>ledger.settleCommercialUsage(a,"image-overrun",qi,usage),e=>e.code==="provider_cost_bound_exceeded");
+    const state=await row(a,"image-overrun");assert.equal(state.state,"uncertain");assert.equal(Number(state.accounted_microgbp),expected);assert.deepEqual(state.provider_usage,usage);
+    await assert.rejects(()=>reserve(a,"blocked-after-overrun"),e=>e.code==="budget_not_initialised");
+    await assert.rejects(()=>ledger.settleCommercialUsage(a,"image-overrun",qi,usage),e=>e.code==="provider_cost_bound_exceeded");
+    assert.equal(Number((await row(a,"image-overrun")).accounted_microgbp),expected);await opening();
+  });
   await check("Europe/London month boundaries include BST and winter transitions",async()=>{
     for(const [time,expected] of [["2026-03-31T23:30:00Z","2026-04"],["2026-10-31T23:30:00Z","2026-10"],["2026-11-01T00:00:00Z","2026-11"]]){
       assert.equal((await pool.query("SELECT to_char($1::timestamptz AT TIME ZONE 'Europe/London','YYYY-MM') AS month",[time])).rows[0].month,expected);

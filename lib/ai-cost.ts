@@ -65,3 +65,21 @@ export function usageCost(quote: CostQuote, usage: unknown): number | null {
   if (cost > quote.maximum) throw new AICapacityError("provider_cost_bound_exceeded");
   return cost;
 }
+
+// Conservative reconciliation for measurable usage that exceeded a quote. This
+// does not make the original reservation a provider-enforced upper bound.
+export function exceededUsageCost(quote: CostQuote, usage: unknown): number | null {
+  if (!usage || typeof usage !== "object") return null;
+  const u = usage as Record<string, unknown>;
+  const input = u.input_tokens, output = u.output_tokens;
+  if (typeof input !== "number" || typeof output !== "number" || !Number.isSafeInteger(input) || !Number.isSafeInteger(output) || input < 0 || output < 0) return null;
+  // If image input appears unexpectedly, charge every input token at the
+  // applicable image-input rate (at least the text rate) rather than undercount.
+  const imageInput = (u.input_tokens_details as { image_tokens?: unknown } | undefined)?.image_tokens;
+  if (imageInput !== undefined && (typeof imageInput !== "number" || !Number.isSafeInteger(imageInput) || imageInput < 0 || imageInput > input)) return null;
+  const inputRate = quote.kind === "text" ? 2 : imageInput ? (quote.model === "gpt-image-1" ? 10 : 8) : 5;
+  const microUSD = input * inputRate + output * (quote.kind === "text" ? 8 : imageOutputRate(quote.model));
+  if (!Number.isSafeInteger(microUSD)) return null;
+  const amount = conservativeGBP(microUSD);
+  return Number.isSafeInteger(amount) ? amount : null;
+}

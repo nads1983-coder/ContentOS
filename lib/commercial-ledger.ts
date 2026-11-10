@@ -1,7 +1,7 @@
 import "server-only";
 import type { PoolClient } from "pg";
 import { getPool } from "@/lib/db/client";
-import { AICapacityError, COST_POLICY, usageCost } from "@/lib/ai-cost";
+import { AICapacityError, COST_POLICY, exceededUsageCost, usageCost } from "@/lib/ai-cost";
 import type { CostQuote } from "@/lib/ai-cost";
 import type { UserProfile } from "@/types/saas";
 export type CommercialDocument = UserProfile & Record<string, unknown>;
@@ -68,8 +68,13 @@ export async function settleCommercialUsage(id: string, requestId: string, quote
   let cost: number | null;
   try { cost = usageCost(quote, usage); }
   catch (error) {
-    // A violated provider bound disables further admissions until an operator reconciles it.
+    // Record measurable overrun conservatively and suspend admissions atomically.
     await commercialTransaction(async c => {
+      const row = (await c.query("SELECT * FROM contentos_app.ai_spend_requests WHERE account_id=$1 AND kind=$2 AND request_id=$3 FOR UPDATE", [id,quote.kind,requestId])).rows[0];
+      if (!row || row.fingerprint !== quote.hash || !["dispatched","settled","uncertain"].includes(row.state)) throw new AICapacityError("spend_state_mismatch");
+      const measured = exceededUsageCost(quote, usage);
+      await c.query(`UPDATE contentos_app.ai_spend_requests SET state='uncertain',accounted_microgbp=$4,provider_usage=$5::jsonb,updated_at=now()
+        WHERE account_id=$1 AND kind=$2 AND request_id=$3`, [id,quote.kind,requestId,Math.max(Number(row.accounted_microgbp),measured ?? 0),JSON.stringify(usage ?? null)]);
       await c.query("UPDATE contentos_app.ai_budget_configuration SET suspended=true, evidence_reference='provider-bound-review-required' WHERE singleton=true");
     });
     throw error;
