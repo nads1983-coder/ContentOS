@@ -1,5 +1,26 @@
 # PR 22 credential remediation — 10 November 2026
 
+## Follow-up: dedicated QA keys expired
+
+The founder authorised temporary interruption of GetContentOS non-production testing. On the Stripe **test-mode** account, the following two exposed restricted keys were expired through the Dashboard, and their named rows were absent afterwards:
+
+- `GetContentOS PR22 isolated sandbox QA – Nov 2026`, metadata ID `mk_1UZzKgFnoS3uqGtrtwIlHtVo`.
+- `GetContentOS lifetime QA – ChatGPT – Nov 2026`, metadata ID `mk_1UZbrvFnoS3uqGtrQ0Ilhs7w`.
+
+These were dedicated, agent-created GetContentOS QA keys; visible request history was consistent with the prior local and Preview QA work. The older key's test webhook endpoint had already been disabled. The approval covers any resulting GetContentOS QA interruption. Dashboard disappearance is evidence of expiry; a separate authentication attempt with each expired value was not made. Request logs are not a complete inventory of external systems, so an unexpected consumer would need to be identified and migrated.
+
+The previously created PR22 Preview replacement remains present. A separate test-only operator replacement, `GetContentOS PR22 QA operator replacement – Nov 2026`, metadata ID `mk_1UaJluFnoS3uqGtrbYke0pNY`, was created with explicit approval. Its scopes are Charges and Refunds: Write; Payment Disputes: Write; Debugging Tools: Write; Events: Read; and Payment Intents: Read. It is stored in the macOS login keychain under service `GetContentOS-PR22-QA-Operator-2026-11`, account `PR22`; retrieval was verified against the tested value without displaying it. A temporary owner-only file was removed.
+
+The operator key returned HTTP 200 for test events, disputes, payment intents and charges. A parameterless refund request returned 400 and did not establish refund-write capability. The official Stripe CLI v1.55.2 obtained a test listener signing secret without displaying it, establishing listener setup but not end-to-end signed delivery. After expiry, the keychain-stored operator key still returned 200 for test events. No new refund, dispute, Checkout or real payment was created in this remediation pass. Actual refund and dispute writes and end-to-end webhook delivery remain unverified with the operator replacement.
+
+The Preview replacement's previously recorded Stripe test reads and application reader checks remain valid, but runtime identity on the current Preview remains unverified. It does not include the operator scopes. The application also calls Stripe billing-portal configuration and session endpoints; the Preview replacement's documented scopes do not include Customer Portal, so subscription-management compatibility needs verification and, if required, separately approved minimal Preview-only access. No production or unrelated environment variable was changed. A temporary QA interruption, including Preview billing management, remains possible.
+
+Two exposed test keys remain active: the standard test secret `mk_1TZVw1FnoS3uqGtrMxleYKzB` and unnamed restricted key `mk_1TZVvqFnoS3uqGtrKOybQpyt`. The standard key may have unrelated consumers; the unnamed key has unknown ownership. Neither is authorised for revocation until its dependencies are established or any interruption to unrelated applications is specifically approved. The exposed project-wide Vercel automation bypass also remains active and potentially affects production. Establish its consumers, prepare a separate scoped access path, migrate and test each consumer, then obtain an appropriate production-impact approval and revoke it with rollback arrangements. Do not place the bypass in a third-party webhook URL.
+
+Five local Preview isolation-diagnostic tests passed in this pass; these do not prove runtime isolation. Security remains **NOT READY** while the two exposed test keys and Vercel bypass remain active and deployed Preview verification is incomplete.
+
+The historical inventory below describes the state before this follow-up and is retained as an audit trail.
+
 **SECURITY-NOT-READY.** The inventory and replacement checks below do not establish that all consumers are known. The compromised credentials must not be treated as safe merely because a replacement exists.
 
 ## Credential status and dependencies
