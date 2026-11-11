@@ -1,0 +1,17 @@
+# AI pricing review runbook
+
+The pricing policy is a bounded review of provider rates, not the monthly funding approval. It expires at 00:00 UTC on 19 December 2026. The next review is assigned to the GetContentOS operations owner for **12 December 2026**; record it in the team's independent calendar or incident system. No reminder is created by this change. Requests during the final seven days emit `AI pricing policy requires review before expiry` in server logs. This warning requires an operator to monitor logs; it is not an external alert and cannot warn during periods with no requests.
+
+Before renewal, check the current provider prices and model availability, exchange-rate contingency, payload/token bounds, reserved and actual spending, and compare them with the rates in `lib/ai-cost.ts`. Review all supported image models, including shutdown restrictions. If bounds remain conservative, update the policy version and expiry and run `node --test tests/commercial-cost.test.mjs` and the disposable PostgreSQL ledger suite. Submit a reviewed deployment; expiry does not renew automatically. If pricing cannot be verified, keep the existing fail-closed behaviour.
+
+`pricing_review_required` means the rate policy requires review; `global_capacity_exhausted` means the £30 monthly ledger cannot fund the request. Neither authorises a budget increase. The database funding configuration and advisory lock remain mandatory and are not modified by a policy renewal. Roll back using the prior production deployment; after the old deadline that rollback will fail closed.
+
+## Release and rollback checklist
+
+Only after founder approval: verify the current main commit and provider prices, merge this maintenance PR and deploy through the approved production workflow. Confirm the deployed commit and unchanged model and budget configuration; use an authorised test account and minimum necessary calls to verify text and eligible image generation, ledger settlement, the £30 limit, and existing billing and entitlements. Monitor provider usage and Vercel errors. Do not use a real customer account for changes or test subscriptions.
+
+The deployed route falls back to `gpt-5.2` if `OPENAI_MODEL` is unset, but the cost guard only accepts GPT-4.1. Historical production ledger entries show GPT-4.1 was used; the current masked environment value was not independently confirmed. Verify the existing runtime setting without displaying secrets before release; this PR does not change it. Similarly, confirm the image model remains one accepted by the guard. A missing or incompatible override will fail closed irrespective of this renewal.
+
+The existing image model has no documented provider-enforced per-request maximum; the founder has accepted this existing temporary risk for this maintenance release. Provider billing can exceed the application reservation before an overrun is known. Maintain close monitoring and investigate uncertain requests. During rollout a quote from one policy version may be rejected by an instance running another version; never re-dispatch an uncertain provider request to recover it.
+
+If a regression occurs, roll back to the previous production deployment and verify service and billing. Once 19 November has passed, the prior deployment's expired pricing policy blocks new AI generation, so rollback trades availability for restoration of the previous safeguard. No database migration or environment change is required by this PR.

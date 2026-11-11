@@ -7,6 +7,7 @@ import { isDatabaseConfigured } from "@/lib/backend";
 import { analyticsEvent, captureServerError } from "@/lib/monitoring";
 import { buildInstructions } from "@/lib/prompts";
 import { buildStudioInput, productionOutputSchema } from "@/lib/production-generation";
+import { openAIKey } from "@/lib/openai-credential";
 import { previewFixturesEnabled, previewTextResponse } from "@/lib/preview-fixtures";
 import {
   GENERATION_LIMITS,
@@ -75,7 +76,8 @@ export async function POST(nextRequest: NextRequest) {
     return NextResponse.json({ error: "Generation storage is unavailable. No generation was started." }, { status: 503 });
   }
   const fixture = previewFixturesEnabled();
-  if (!fixture && !process.env.OPENAI_API_KEY) {
+  const apiKey = openAIKey();
+  if (!fixture && !apiKey) {
     return NextResponse.json({ error: "AI generation is not configured." }, { status: 503 });
   }
 
@@ -83,7 +85,7 @@ export async function POST(nextRequest: NextRequest) {
   const requestId = request.requestId ?? crypto.randomUUID();
   const headers = { "X-Request-Id": requestId };
   const payload = {
-    model: fixture ? "gpt-4.1" : process.env.OPENAI_MODEL ?? "gpt-5.2",
+    model: fixture ? "gpt-4.1" : process.env.OPENAI_MODEL ?? "gpt-4.1",
     instructions: buildInstructions(), input: buildStudioInput(request),
     max_output_tokens: GENERATION_LIMITS.maxOutputTokens,
     text: { format: { type: "json_schema" as const, name: "social_content_generation", strict: true, schema: productionOutputSchema } }
@@ -113,7 +115,7 @@ export async function POST(nextRequest: NextRequest) {
   let result;
   try {
     const client = fixture ? null : new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey,
       timeout: GENERATION_LIMITS.timeoutMs,
       maxRetries: GENERATION_LIMITS.maxRetries,
       logLevel: "off"
