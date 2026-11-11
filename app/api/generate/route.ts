@@ -83,7 +83,7 @@ export async function POST(nextRequest: NextRequest) {
   const requestId = request.requestId ?? crypto.randomUUID();
   const headers = { "X-Request-Id": requestId };
   const payload = {
-    model: fixture ? "gpt-4.1" : process.env.OPENAI_MODEL ?? "gpt-5.2",
+    model: fixture ? "gpt-4.1" : process.env.OPENAI_MODEL ?? "gpt-4.1",
     instructions: buildInstructions(), input: buildStudioInput(request),
     max_output_tokens: GENERATION_LIMITS.maxOutputTokens,
     text: { format: { type: "json_schema" as const, name: "social_content_generation", strict: true, schema: productionOutputSchema } }

@@ -30,7 +30,7 @@ ContentOS is built for founders, creators, consultants, freelancers, agencies, c
 
 ```bash
 OPENAI_API_KEY=your_openai_key
-OPENAI_MODEL=gpt-5.2
+OPENAI_MODEL=gpt-4.1
 OPENAI_IMAGE_MODEL=gpt-image-1.5
 NEXT_PUBLIC_APP_URL=https://getcontentos.co
 NEXT_PUBLIC_SITE_URL=https://getcontentos.co

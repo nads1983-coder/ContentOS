@@ -100,7 +100,8 @@ async function routeFixture(options = {}) {
   const previous = process.env.OPENAI_API_KEY;
   const previousModel = process.env.OPENAI_MODEL;
   try {
-    process.env.OPENAI_MODEL = "gpt-4.1";
+    if (options.model === null) delete process.env.OPENAI_MODEL;
+    else process.env.OPENAI_MODEL = options.model ?? "gpt-4.1";
     if (options.noKey) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = "offline-placeholder-not-a-real-key";
     const headers = new Headers();
@@ -128,6 +129,23 @@ test("route reserves before a bounded provider call and completes only validated
   assert.equal(clientOptions.timeout, 90_000);
   assert.equal(providerInput.max_output_tokens, 24_000);
   assert.equal(response.headers.get("X-Request-Id"), "a189b831-43ea-479c-89ab-e639734983ab");
+});
+
+test("unset text model falls back to the model supported by the pricing policy", async () => {
+  const result = await routeFixture({ model: null });
+  assert.equal(result.response.status, 200);
+  assert.equal(result.providerInput.model, "gpt-4.1");
+  assert.deepEqual(result.calls, ["reserve", "provider", "complete"]);
+});
+
+test("configured text model is not overridden and unpriced models fail before reservation", async () => {
+  const supported = await routeFixture({ model: "gpt-4.1-2025-04-14" });
+  assert.equal(supported.response.status, 200);
+  assert.equal(supported.providerInput.model, "gpt-4.1-2025-04-14");
+  const unsupported = await routeFixture({ model: "gpt-5.2" });
+  assert.equal(unsupported.response.status, 503);
+  assert.deepEqual(unsupported.calls, []);
+  assert.equal(unsupported.providerInput, undefined);
 });
 
 test("captured factual failure refuses delivery, retains provider accounting and terminal request identity", async () => {
