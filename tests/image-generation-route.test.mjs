@@ -8,6 +8,22 @@ const creditCount = h => Object.values(h.data.image_generation_usage_json ?? {})
 const different = n => imageInput({ requestId: requestId(n), outputText: `Distinct original source ${n}` });
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 
+test("production image requests require the dedicated credential and preview uses its own", async () => {
+  const missing = createImageHarness({ env: { VERCEL_ENV: "production" } });
+  const unavailable = await missing.post();
+  assert.equal(unavailable.response.status, 503);
+  assert.equal(count(missing, "provider"), 0);
+  assert.equal(count(missing, "profile"), 0);
+  for (const [env, expected] of [[{ VERCEL_ENV: "production", OPENAI_API_KEY_1: "production-placeholder" }, "production-placeholder"], [{ VERCEL_ENV: "preview", OPENAI_API_KEY_1: "production-placeholder" }, "offline-test-placeholder"]]) {
+    const h = createImageHarness({ env, provider: async (_url, init) => {
+      assert.equal(init.headers.Authorization, `Bearer ${expected}`);
+      return Response.json({ data: [{ b64_json: PNG }], usage: { input_tokens: 10, output_tokens: 10 } });
+    } });
+    assert.equal((await h.post()).response.status, 200);
+    assert.equal(count(h, "provider"), 1);
+  }
+});
+
 test("replacement default image model preserves payload, rendering and exactly-once usage", async () => {
   for (const [format, size] of [["square", "1024x1024"], ["landscape", "1536x1024"], ["portrait", "1024x1536"], ["vertical", "1024x1536"]]) {
     const h = createImageHarness({ provider: async (_url, init) => {

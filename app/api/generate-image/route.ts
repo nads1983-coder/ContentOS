@@ -23,6 +23,7 @@ import { AICapacityError, DEFAULT_IMAGE_MODEL, quoteAI } from "@/lib/ai-cost";
 import type { CostQuote } from "@/lib/ai-cost";
 import { dispatchCommercial, settleCommercialUsage } from "@/lib/commercial-ledger";
 import { buildCreativeBrief } from "@/lib/image-design";
+import { openAIKey } from "@/lib/openai-credential";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -58,6 +59,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Add the words for your graphic in Content, or specify Headline: in your instructions.", code: "missing_visual_copy" }, { status: 400, headers });
   }
   const needsProvider = input.mode === undefined || brief.design.mode !== "text";
+  const apiKey = openAIKey();
+  if (needsProvider && process.env.VERCEL_ENV === "production" && !apiKey) {
+    return NextResponse.json({ error: "AI image generation is not configured.", code: "image_provider_unavailable", requestId: input.requestId }, { status: 503, headers });
+  }
   const payload = {
     model: process.env.OPENAI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL, prompt: input.mode === undefined ? buildTextlessBackgroundPrompt(input) : brief.prompt,
     n: 1, size: socialImageModelSize(input.format), quality: "high",
@@ -80,7 +85,7 @@ export async function POST(request: Request) {
         // Stored entitlement is checked fail-closed by the reservation transaction.
       }
     }
-    quote = needsProvider && process.env.OPENAI_API_KEY ? quoteAI("image", payload) : undefined;
+    quote = needsProvider && apiKey ? quoteAI("image", payload) : undefined;
     admission = await reserveImageGeneration(user.id, input, quote);
   } catch (error) {
     if (error instanceof AICapacityError) return NextResponse.json({ error: error.message, code: error.code, requestId: input.requestId }, { status: error.status, headers });
@@ -99,7 +104,7 @@ export async function POST(request: Request) {
     const content = buildSocialPosterContent(input);
     let backgroundDataUrl: string | undefined;
     let warning: string | undefined;
-    if (needsProvider && process.env.OPENAI_API_KEY) {
+    if (needsProvider && apiKey) {
       try {
         if (!quote) throw new AICapacityError("missing_cost_reservation");
         await dispatchCommercial(user.id, input.requestId, quote);
@@ -107,7 +112,7 @@ export async function POST(request: Request) {
         const response = await fetch("https://api.openai.com/v1/images/generations", {
           method: "POST", cache: "no-store", redirect: "error",
           signal: AbortSignal.any([request.signal, AbortSignal.timeout(IMAGE_LIMITS.providerMs)]),
-          headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}`, "Content-Type": "application/json" },
+          headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
         // No automatic model/network retries: the provider may already have spent resources.

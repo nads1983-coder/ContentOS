@@ -99,7 +99,13 @@ async function routeFixture(options = {}) {
   });
   const previous = process.env.OPENAI_API_KEY;
   const previousModel = process.env.OPENAI_MODEL;
+  const previousEnvironment = process.env.VERCEL_ENV;
+  const previousProductionKey = process.env.OPENAI_API_KEY_1;
   try {
+    if (options.vercelEnv) process.env.VERCEL_ENV = options.vercelEnv;
+    else delete process.env.VERCEL_ENV;
+    if (options.productionKey) process.env.OPENAI_API_KEY_1 = options.productionKey;
+    else delete process.env.OPENAI_API_KEY_1;
     if (options.model === null) delete process.env.OPENAI_MODEL;
     else process.env.OPENAI_MODEL = options.model ?? "gpt-4.1";
     if (options.noKey) delete process.env.OPENAI_API_KEY;
@@ -112,12 +118,28 @@ async function routeFixture(options = {}) {
     const response = await route.POST(incoming);
     return { response, body: await response.json(), calls, clientOptions, providerInput, analytics, errors, gateCalls, financialCalls, bodyRead: incoming.bodyUsed };
   } finally {
+    if (previousEnvironment === undefined) delete process.env.VERCEL_ENV;
+    else process.env.VERCEL_ENV = previousEnvironment;
+    if (previousProductionKey === undefined) delete process.env.OPENAI_API_KEY_1;
+    else process.env.OPENAI_API_KEY_1 = previousProductionKey;
     if (previousModel === undefined) delete process.env.OPENAI_MODEL;
     else process.env.OPENAI_MODEL = previousModel;
     if (previous === undefined) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = previous;
   }
 }
+
+test("production requires its dedicated key while preview retains its existing key", async () => {
+  const missing = await routeFixture({ vercelEnv: "production" });
+  assert.equal(missing.response.status, 503);
+  assert.deepEqual(missing.calls, []);
+  const production = await routeFixture({ vercelEnv: "production", productionKey: "production-placeholder" });
+  assert.equal(production.response.status, 200);
+  assert.equal(production.clientOptions.apiKey, "production-placeholder");
+  const preview = await routeFixture({ vercelEnv: "preview", productionKey: "production-placeholder" });
+  assert.equal(preview.response.status, 200);
+  assert.equal(preview.clientOptions.apiKey, "offline-placeholder-not-a-real-key");
+});
 
 test("route reserves before a bounded provider call and completes only validated output", async () => {
   const { response, body, calls, clientOptions, providerInput } = await routeFixture();
