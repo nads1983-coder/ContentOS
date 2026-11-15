@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: "ContentOS Privacy Policy",
+  description: "Read how ContentOS handles account details, saved content, generation history and usage data, and how to contact support about your privacy rights.",
   path: "/privacy"
 });
 

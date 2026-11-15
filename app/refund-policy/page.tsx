@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: "ContentOS Refund Policy",
+  description: "Review ContentOS cancellation and refund information, including when cancellations take effect and what to include in a refund request.",
   path: "/refund-policy"
 });
 
