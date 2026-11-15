@@ -4,6 +4,7 @@ import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
   title: "About ContentOS | AI Social Content Generator",
+  description: "Learn about ContentOS, the AI social content workspace built to help founders, creators and small businesses turn rough ideas into content drafts.",
   path: "/about"
 });
 

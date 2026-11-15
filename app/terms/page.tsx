@@ -3,6 +3,7 @@ import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
   title: "ContentOS Terms of Service",
+  description: "Read the ContentOS terms of service covering AI-assisted content, responsible use, reviewing generated outputs and subscription renewals.",
   path: "/terms"
 });
 

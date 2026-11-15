@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/site";
 
 export const metadata = pageMetadata({
   title: "Contact ContentOS Support",
+  description: "Contact ContentOS for account access, billing help and technical support, or get in touch about partnerships, press and general enquiries.",
   path: "/contact"
 });
 

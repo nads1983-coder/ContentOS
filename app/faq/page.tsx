@@ -3,6 +3,7 @@ import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
   title: "ContentOS FAQ | AI Social Content Generator",
+  description: "Find answers to common ContentOS questions, including who it is for, supported social platforms and repurposing one idea into multiple content formats.",
   path: "/faq"
 });
 

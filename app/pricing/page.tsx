@@ -5,6 +5,7 @@ import { PublicPage } from "@/components/public-page";
 
 export const metadata = pageMetadata({
   title: "ContentOS Pricing | Simple Pricing for Creators and Teams",
+  description: "Compare ContentOS plans, generation allowances and included content tools to choose the right option for your social content workflow.",
   path: "/pricing"
 });
 

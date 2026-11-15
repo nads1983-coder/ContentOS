@@ -11,6 +11,10 @@ export function SiteFooter() {
             <Link href="/features" className="hover:text-bone">Features</Link>
             <Link href="/pricing" className="hover:text-bone">Pricing</Link>
             <Link href="/workflows" className="hover:text-bone">Workflows</Link>
+            <Link href="/about" className="hover:text-bone">About</Link>
+            <Link href="/contact" className="hover:text-bone">Contact</Link>
+            <Link href="/faq" className="hover:text-bone">FAQ</Link>
+            <Link href="/refund-policy" className="hover:text-bone">Refund Policy</Link>
             <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-bone">
               {siteConfig.contactEmail}
             </a>
