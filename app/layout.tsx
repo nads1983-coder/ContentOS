@@ -4,6 +4,8 @@ import { Analytics } from "@/components/analytics";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
 import { previewFixturesEnabled } from "@/lib/preview-fixtures";
+import { ThemeRuntime } from "@/components/theme-selector";
+import { themeInitScript } from "@/lib/theme";
 
 const nadineAnalyticsSiteId = process.env.NEXT_PUBLIC_NADINE_ANALYTICS_SITE_ID;
 const nadineAnalyticsTrackingKey = process.env.NEXT_PUBLIC_NADINE_ANALYTICS_TRACKING_KEY;
@@ -78,8 +80,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
+        <ThemeRuntime />
         {previewFixturesEnabled() ? <aside role="status" className="border-b border-gold/40 bg-ink px-4 py-2 text-center text-sm text-bone">Protected Preview: synthetic accounts and simulated AI only. No payments or emails.</aside> : null}
         {children}
         <SiteFooter />

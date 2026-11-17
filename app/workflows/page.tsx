@@ -87,13 +87,13 @@ export default function WorkflowsIndexPage() {
               if (!page) return null;
 
               return (
-                <article key={page.slug} className="rounded border border-white/10 bg-white/[0.03] p-4">
-                  <p className="text-xs uppercase tracking-normal text-goldSoft">{page.keyword}</p>
+                <article key={page.slug} className="rounded border border-divider/10 bg-overlay/[0.03] p-4">
+                  <p className="text-xs uppercase tracking-normal text-accentGold">{page.keyword}</p>
                   <h3 className="mt-3 font-display text-xl uppercase tracking-normal text-bone">{page.h1}</h3>
                   <p className="mt-3 text-sm leading-7 text-muted">{page.description}</p>
                   <Link
                     href={workflowPath(page.slug)}
-                    className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-goldSoft hover:text-bone"
+                    className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-accentGold hover:text-bone"
                   >
                     Use the {page.h1} <ArrowRight size={16} aria-hidden="true" />
                   </Link>

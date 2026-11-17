@@ -25,11 +25,11 @@ type Props = {
   onCtaModeChange: (v: CtaModeId) => void; onPresetTopicChange: (v: PresetTopicId) => void;
   onToggleType: (v: ContentTypeId) => void; onGenerate: () => void; onSaveDraft: () => void;
 };
-const field = "min-h-11 w-full rounded border border-white/20 bg-ink px-3 py-2 text-sm text-bone outline-none focus-visible:ring-2 focus-visible:ring-violet";
+const field = "min-h-11 w-full rounded border border-divider/20 bg-ink px-3 py-2 text-sm text-bone outline-none focus-visible:ring-2 focus-visible:ring-violet";
 
 export function StudioComposer(p: Props) {
   return (
-    <fieldset id={p.id} disabled={p.isLoading || p.isPending} aria-busy={p.isLoading || p.isPending} className="scroll-mt-20 min-w-0 border-b border-white/10 pb-6">
+    <fieldset id={p.id} disabled={p.isLoading || p.isPending} aria-busy={p.isLoading || p.isPending} className="scroll-mt-20 min-w-0 border-b border-divider/10 pb-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">AI Studio</h1>
         <span className="text-xs text-muted">{p.usage.remaining} / {p.usage.limit} generations remaining</span>
@@ -48,16 +48,16 @@ export function StudioComposer(p: Props) {
       </label>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <button type="button" onClick={p.onGenerate} disabled={!p.canGenerate} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded bg-violet px-4 text-sm font-semibold text-white hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted">
+        <button type="button" onClick={p.onGenerate} disabled={!p.canGenerate} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded bg-violet px-4 text-sm font-semibold text-white hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-overlay/10 disabled:text-muted">
           {p.isPending ? <Loader2 size={18} className="animate-spin" /> : <Wand2 size={18} />}
           {p.isLoading ? "Loading your workspace..." : p.isPending ? "Creating your content..." : "Create Content"}
         </button>
-        <button type="button" onClick={p.onSaveDraft} title="Save draft" aria-label="Save draft" className="grid h-12 w-12 place-items-center rounded border border-white/20 hover:bg-white/10"><Save size={18} /></button>
+        <button type="button" onClick={p.onSaveDraft} title="Save draft" aria-label="Save draft" className="grid h-12 w-12 place-items-center rounded border border-divider/20 hover:bg-overlay/10"><Save size={18} /></button>
       </div>
       {p.selectedTypes.length === 0 ? <p role="status" className="mt-2 text-sm text-muted">Select at least one content format.</p> : null}
       {p.isPending ? <p role="status" className="mt-3 flex items-center gap-2 text-xs text-muted"><Check size={14} /> Preparing {p.selectedTypes.length} platform-specific outputs</p> : null}
 
-      <details className="mt-5 border-y border-white/10 py-4">
+      <details className="mt-5 border-y border-divider/10 py-4">
       <summary className="cursor-pointer text-sm font-semibold">Advanced Options (Optional)</summary>
       <fieldset className="mt-4">
         <legend className="mb-2 text-sm font-semibold">Additional formats</legend>
@@ -65,7 +65,7 @@ export function StudioComposer(p: Props) {
           {contentTypes.map(type => {
             const locked = Boolean(type.paidOnly && p.plan === "free");
             const checked = p.selectedTypes.includes(type.id);
-            return <label key={type.id} className={`flex min-h-11 cursor-pointer items-center gap-2 rounded border px-3 py-2 text-xs ${checked ? "border-violet bg-violet/10 text-white" : "border-white/15 text-muted"} ${locked ? "opacity-70" : ""}`}>
+            return <label key={type.id} className={`flex min-h-11 cursor-pointer items-center gap-2 rounded border px-3 py-2 text-xs ${checked ? "border-violet bg-violet/10 text-bone" : "border-divider/15 text-muted"} ${locked ? "opacity-70" : ""}`}>
               <input type="checkbox" checked={checked} disabled={locked || p.isPending} onChange={() => p.onToggleType(type.id)} className="h-4 w-4 shrink-0 accent-violet" />
               <span className="min-w-0">{type.shortLabel}{locked ? <span className="sr-only">, paid plan required</span> : null}</span>
               {locked ? <Lock size={12} className="ml-auto shrink-0" aria-hidden /> : null}
@@ -86,7 +86,7 @@ export function StudioComposer(p: Props) {
         </label>
       </div>
 
-      <div className="mt-5 border-y border-white/10 py-4">
+      <div className="mt-5 border-y border-divider/10 py-4">
         <h2 className="text-sm font-semibold">Saved brand preferences</h2>
         {p.brandProfiles.length ? <label className="mt-4 grid gap-2 text-sm">Saved brand
           <select defaultValue="" className={field} onChange={e => { const brand = p.brandProfiles.find(b => b.id === e.target.value); if (brand) p.onSelectBrand(brand); }}>

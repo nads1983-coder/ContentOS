@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
+import { ThemeSelector } from "@/components/theme-selector";
 import { pageMetadata } from "@/lib/metadata";
 import { pricingPlans } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site";
@@ -120,9 +121,10 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main className="text-bone">
-        <section className="relative overflow-hidden border-b border-white/10 px-4 py-5 sm:px-6 lg:px-8">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+        <section className="relative overflow-hidden border-b border-divider/10 px-4 py-5 sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
             <BrandLogo />
+            <ThemeSelector />
             <nav className="hidden items-center gap-6 text-sm text-muted md:flex" aria-label="Primary">
               <a href="#benefits" className="transition hover:text-bone">
                 Features
@@ -149,7 +151,7 @@ export default function Home() {
             <div className="flex shrink-0 items-center gap-2 md:hidden">
               <Link
                 href="/login"
-                className="rounded border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-bone transition hover:border-gold/60"
+                className="rounded border border-divider/10 bg-overlay/[0.04] px-3 py-2 text-xs font-semibold text-bone transition hover:border-gold/60"
               >
                 Log in
               </Link>
@@ -160,7 +162,7 @@ export default function Home() {
         <section id="demo" className="relative max-w-[100vw] overflow-hidden px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
           <div className="mx-auto grid w-full max-w-7xl min-w-0 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.88fr)] lg:items-center">
             <div className="min-w-0 overflow-hidden">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accentGold">
                 Authority-first AI content workflow
               </p>
               <h1 className="mt-5 max-w-3xl break-words text-3xl font-black leading-[1.08] tracking-normal text-bone sm:text-5xl lg:text-6xl">
@@ -180,21 +182,21 @@ export default function Home() {
                 </Link>
                 <a
                   href="#demo"
-                  className="flex min-h-12 items-center justify-center rounded border border-white/10 bg-white/[0.04] px-5 text-sm font-semibold text-bone transition hover:border-gold/60"
+                  className="flex min-h-12 items-center justify-center rounded border border-divider/10 bg-overlay/[0.04] px-5 text-sm font-semibold text-bone transition hover:border-gold/60"
                 >
                   View examples
                 </a>
               </div>
 
             </div>
-            <div className="w-full min-w-0 overflow-hidden rounded border border-white/10 bg-panel/76 p-3 shadow-violet backdrop-blur-xl sm:p-4">
-              <div className="w-full min-w-0 overflow-hidden rounded border border-white/10 bg-ink/80 p-4 sm:p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+            <div className="w-full min-w-0 overflow-hidden rounded border border-divider/10 bg-panel/76 p-3 shadow-violet backdrop-blur-xl sm:p-4">
+              <div className="w-full min-w-0 overflow-hidden rounded border border-divider/10 bg-ink/80 p-4 sm:p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accentGold">
                   Content pack preview
                 </p>
                 <div className="mt-4 grid gap-3">
                   {["LinkedIn post", "Instagram caption", "TikTok script"].map((item) => (
-                    <div key={item} className="min-w-0 rounded border border-white/10 bg-white/[0.04] p-3">
+                    <div key={item} className="min-w-0 rounded border border-divider/10 bg-overlay/[0.04] p-3">
                       <p className="text-sm font-semibold text-bone">{item}</p>
                       <p className="mt-1 break-words text-xs leading-5 text-muted">
                         One message, tailored to this format and ready for your edits.
@@ -217,7 +219,7 @@ export default function Home() {
             </p>
             <div className="mt-8 grid gap-4 md:grid-cols-3">
               {benefits.map((item) => (
-                <article key={item.title} className="rounded border border-white/10 bg-coal/70 p-5">
+                <article key={item.title} className="rounded border border-divider/10 bg-coal/70 p-5">
                   <h3 className="text-lg font-semibold text-bone">{item.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-muted">{item.body}</p>
                 </article>
@@ -226,7 +228,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
+        <section className="border-y border-divider/10 bg-overlay/[0.025] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
@@ -240,9 +242,9 @@ export default function Home() {
               {exampleOutputs.map((item) => (
                 <article
                   key={item.label}
-                  className={`rounded border p-5 ${item.label === "After" ? "border-gold/45 bg-gold/[0.08]" : "border-white/10 bg-coal/70"}`}
+                  className={`rounded border p-5 ${item.label === "After" ? "border-gold/45 bg-gold/[0.08]" : "border-divider/10 bg-coal/70"}`}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">{item.label}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accentGold">{item.label}</p>
                   <h3 className="mt-3 text-lg font-semibold text-bone">{item.title}</h3>
                   <p className="mt-3 text-sm leading-7 text-muted">{item.body}</p>
                 </article>
@@ -251,7 +253,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="pricing" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
+        <section id="pricing" className="border-y border-divider/10 bg-overlay/[0.025] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-7xl">
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Simple pricing for creators and teams
@@ -260,26 +262,26 @@ export default function Home() {
               {pricingPlans.map((plan) => (
                 <article
                   key={plan.name}
-                  className={`flex min-h-full flex-col rounded border p-5 ${plan.featured ? "border-gold/70 bg-gold/10 shadow-gold" : "border-white/10 bg-coal/70"}`}
+                  className={`flex min-h-full flex-col rounded border p-5 ${plan.featured ? "border-gold/70 bg-gold/10 shadow-gold" : "border-divider/10 bg-coal/70"}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <BrandLogo showWordmark={false} size="sm" />
                     {plan.badge ? (
-                      <span className="rounded border border-gold/50 bg-gold/10 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-goldSoft">
+                      <span className="rounded border border-gold/50 bg-gold/10 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-accentGold">
                         {plan.badge}
                       </span>
                     ) : null}
                   </div>
                   <h3 className="mt-4 text-xl font-semibold text-bone">{plan.name}</h3>
-                  <p className="mt-2 text-2xl font-extrabold text-goldSoft">{plan.price}</p>
+                  <p className="mt-2 text-2xl font-extrabold text-accentGold">{plan.price}</p>
                   <p className="mt-3 text-sm leading-6 text-muted">{plan.body}</p>
                   {plan.socialProof ? (
-                    <p className="mt-3 rounded border border-white/10 bg-white/[0.035] p-3 text-xs leading-5 text-bone/80">
+                    <p className="mt-3 rounded border border-divider/10 bg-overlay/[0.035] p-3 text-xs leading-5 text-bone/80">
                       {plan.socialProof}
                     </p>
                   ) : null}
                   {plan.offerNote ? (
-                    <p className="mt-3 rounded border border-gold/35 bg-gold/[0.08] p-3 text-xs font-medium leading-5 text-goldSoft">
+                    <p className="mt-3 rounded border border-gold/35 bg-gold/[0.08] p-3 text-xs font-medium leading-5 text-accentGold">
                       {plan.offerNote}
                     </p>
                   ) : null}
@@ -318,7 +320,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="faq" className="border-y border-white/10 bg-white/[0.025] px-4 py-14 sm:px-6 lg:px-8">
+        <section id="faq" className="border-y border-divider/10 bg-overlay/[0.025] px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto w-full max-w-4xl">
             <h2 className="break-words text-2xl font-extrabold tracking-normal text-bone sm:text-3xl">
               Ready to create content from your next idea?
@@ -327,7 +329,7 @@ export default function Home() {
             <h3 className="mt-10 text-lg font-semibold text-bone">Quick answers</h3>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {faqs.map((item) => (
-                <article key={item.question} className="rounded border border-white/10 bg-coal/70 p-5">
+                <article key={item.question} className="rounded border border-divider/10 bg-coal/70 p-5">
                   <h3 className="text-lg font-semibold text-bone">{item.question}</h3>
                   <p className="mt-3 text-sm leading-6 text-muted">{item.answer}</p>
                 </article>

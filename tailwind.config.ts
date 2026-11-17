@@ -9,17 +9,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#050509",
-        coal: "#0b0a10",
-        graphite: "#14121d",
-        panel: "#191524",
-        line: "#2d2241",
+        ink: "rgb(var(--color-ink) / <alpha-value>)",
+        coal: "rgb(var(--color-coal) / <alpha-value>)",
+        graphite: "rgb(var(--color-graphite) / <alpha-value>)",
+        panel: "rgb(var(--color-panel) / <alpha-value>)",
+        line: "rgb(var(--color-line) / <alpha-value>)",
+        menu: "rgb(var(--color-menu) / <alpha-value>)",
+        overlay: "rgb(var(--color-overlay) / <alpha-value>)",
+        divider: "rgb(var(--color-divider) / calc(var(--divider-base) + <alpha-value> * var(--divider-scale)))",
+        accentGold: "rgb(var(--color-accent-gold) / <alpha-value>)",
+        accentViolet: "rgb(var(--color-accent-violet) / <alpha-value>)",
+        danger: "rgb(var(--color-danger) / <alpha-value>)",
+        warning: "rgb(var(--color-warning) / <alpha-value>)",
         violet: "#8b3ff2",
         violetDeep: "#54229f",
         gold: "#c99a22",
         goldSoft: "#e0bb58",
-        bone: "#f4f1ea",
-        muted: "#a9a2b8"
+        bone: "rgb(var(--color-bone) / <alpha-value>)",
+        muted: "rgb(var(--color-muted) / <alpha-value>)"
       },
       boxShadow: {
         violet: "0 0 42px rgba(139, 63, 242, 0.28)",

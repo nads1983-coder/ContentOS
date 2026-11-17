@@ -92,14 +92,14 @@ export function CheckoutButton({
         onClick={checkout}
         disabled={isPending || suspended}
         className={clsx(
-          "min-h-11 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted",
+          "min-h-11 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-overlay/10 disabled:text-muted",
           className
         )}
       >
         {suspended ? "Lite temporarily unavailable" : isPending ? "Opening checkout..." : children}
       </button>
       {suspended ? <p className="text-xs text-muted">{LITE_SUSPENDED_MESSAGE}</p> : null}
-      {error ? <p className="text-xs text-goldSoft">{error}</p> : null}
+      {error ? <p className="text-xs text-accentGold">{error}</p> : null}
     </div>
   );
 }
@@ -159,13 +159,13 @@ export function FounderCheckoutButton({ className }: { className?: string }) {
         onClick={confirmFounderCheckout}
         disabled={isPending}
         className={clsx(
-          "min-h-12 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted",
+          "min-h-12 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-overlay/10 disabled:text-muted",
           className
         )}
       >
         {isPending ? "Confirming discount..." : "Activate Founder access for £0"}
       </button>
-      {error ? <p className="text-sm text-goldSoft">{error}</p> : null}
+      {error ? <p className="text-sm text-accentGold">{error}</p> : null}
     </div>
   );
 }
@@ -236,11 +236,11 @@ export function ManageBillingButton() {
         type="button"
         onClick={openPortal}
         disabled={isPending}
-        className="min-h-11 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 disabled:text-muted"
+        className="min-h-11 rounded border border-divider/10 bg-overlay/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 disabled:text-muted"
       >
         {isPending ? "Opening billing..." : "Manage subscription"}
       </button>
-      {error ? <p className="text-xs text-goldSoft">{error}</p> : null}
+      {error ? <p className="text-xs text-accentGold">{error}</p> : null}
     </div>
   );
 }

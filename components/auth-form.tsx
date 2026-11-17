@@ -214,7 +214,7 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
       {founderSignupPendingVerification ? (
         <Link
           href="/login?plan=pro_creator&founder=1"
-          className="rounded border border-gold/35 bg-gold/[0.08] px-4 py-3 text-center text-sm font-semibold text-goldSoft transition hover:border-gold/60 hover:text-bone"
+          className="rounded border border-gold/35 bg-gold/[0.08] px-4 py-3 text-center text-sm font-semibold text-accentGold transition hover:border-gold/60 hover:text-bone"
         >
           I have verified my email. Continue Founder claim
         </Link>
@@ -222,7 +222,7 @@ export function AuthForm({ mode, initialPlan = null, initialFounderOffer = false
       <button
         type="submit"
         disabled={isPending}
-        className="min-h-12 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted"
+        className="min-h-12 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-overlay/10 disabled:text-muted"
       >
         {isPending
           ? "Please wait..."

@@ -12,7 +12,7 @@ export default function CancelPage() {
   return (
     <PublicPage title="Checkout cancelled">
       <p>No payment was taken. You can return to pricing whenever you are ready.</p>
-      <Link href="/pricing" className="text-goldSoft hover:text-bone">
+      <Link href="/pricing" className="text-accentGold hover:text-bone">
         View pricing
       </Link>
     </PublicPage>

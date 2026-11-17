@@ -64,11 +64,11 @@ function RelatedBlogLinks({ slugs }: { slugs: string[] }) {
   if (!posts.length) return null;
 
   return (
-    <section className="grid gap-3 rounded border border-white/10 bg-white/[0.03] p-4">
+    <section className="grid gap-3 rounded border border-divider/10 bg-overlay/[0.03] p-4">
       <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Related guides</h2>
       {posts.map((post) => (
         <Link key={post.slug} href={`/blog/${post.slug}`} className="group grid gap-1 text-sm">
-          <span className="font-semibold text-goldSoft group-hover:text-bone">{post.title}</span>
+          <span className="font-semibold text-accentGold group-hover:text-bone">{post.title}</span>
           <span>{post.description}</span>
         </Link>
       ))}
@@ -139,7 +139,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
       <JsonLd data={webPageSchema} />
       <JsonLd data={itemListSchema} />
       {faqSchema ? <JsonLd data={faqSchema} /> : null}
-      <nav className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-goldSoft" aria-label="Breadcrumb">
+      <nav className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-accentGold" aria-label="Breadcrumb">
         <Link href="/">Home</Link>
         <span aria-hidden="true">/</span>
         <Link href="/workflows">Workflows</Link>
@@ -156,7 +156,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
         </section>
       ) : null}
 
-      <section className="grid gap-3 rounded border border-white/10 bg-white/[0.03] p-4">
+      <section className="grid gap-3 rounded border border-divider/10 bg-overlay/[0.03] p-4">
         <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Who this workflow is for</h2>
         <p>{page.audience}</p>
         <p>
@@ -190,7 +190,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
         </p>
         <div className="grid gap-3">
           {page.examples.map((example) => (
-            <blockquote key={example} className="rounded border border-white/10 bg-black/20 p-4 text-bone">
+            <blockquote key={example} className="rounded border border-divider/10 bg-overlay/[0.03] p-4 text-bone">
               {example}
             </blockquote>
           ))}
@@ -201,7 +201,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
         <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Variables to replace</h2>
         <div className="flex flex-wrap gap-2">
           {page.variables.map((variable) => (
-            <span key={variable} className="rounded border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-bone">
+            <span key={variable} className="rounded border border-divider/10 bg-overlay/[0.04] px-3 py-2 text-xs text-bone">
               {variable}
             </span>
           ))}
@@ -209,7 +209,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
       </section>
 
       {page.workedExample ? (
-        <section className="grid gap-3 rounded border border-white/10 bg-white/[0.03] p-4">
+        <section className="grid gap-3 rounded border border-divider/10 bg-overlay/[0.03] p-4">
           <h2 className="font-display text-2xl uppercase tracking-normal text-bone">{page.workedExample.heading}</h2>
           <p>{page.workedExample.scenario}</p>
           <ul className="grid gap-2 pl-5">
@@ -231,7 +231,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
         </section>
       ) : null}
 
-      <section className="grid gap-3 rounded border border-white/10 bg-white/[0.03] p-4">
+      <section className="grid gap-3 rounded border border-divider/10 bg-overlay/[0.03] p-4">
         <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Responsible use</h2>
         <p>{page.responsibleUse}</p>
       </section>
@@ -242,7 +242,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
           Use ContentOS to generate, repurpose, refine and save platform-ready content from one idea while keeping the
           final review in human hands.
         </p>
-        <Link href="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold text-goldSoft hover:text-bone">
+        <Link href="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold text-accentGold hover:text-bone">
           See ContentOS pricing <ArrowRight size={16} aria-hidden="true" />
         </Link>
       </section>
@@ -251,8 +251,8 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
         <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Related workflows</h2>
         <div className="grid gap-3">
           {relatedPages.map((related) => (
-            <Link key={related.slug} href={workflowPath(related.slug)} className="rounded border border-white/10 bg-white/[0.03] p-4 hover:border-goldSoft/60">
-              <span className="font-semibold text-goldSoft">{related.h1}</span>
+            <Link key={related.slug} href={workflowPath(related.slug)} className="rounded border border-divider/10 bg-overlay/[0.03] p-4 hover:border-goldSoft/60">
+              <span className="font-semibold text-accentGold">{related.h1}</span>
               <span className="mt-1 block text-sm">{related.description}</span>
             </Link>
           ))}
@@ -265,7 +265,7 @@ export default async function WorkflowDetailPage({ params }: WorkflowPageProps) 
         <section className="grid gap-3">
           <h2 className="font-display text-2xl uppercase tracking-normal text-bone">Frequently asked questions</h2>
           {page.faqs.map((faq) => (
-            <details key={faq.question} className="rounded border border-white/10 bg-white/[0.03] p-4">
+            <details key={faq.question} className="rounded border border-divider/10 bg-overlay/[0.03] p-4">
               <summary className="cursor-pointer font-semibold text-bone">{faq.question}</summary>
               <p className="mt-3">{faq.answer}</p>
             </details>
