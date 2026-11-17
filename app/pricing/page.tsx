@@ -18,26 +18,26 @@ export default function PricingPage() {
         {plans.map((plan) => (
           <div
             key={plan.name}
-            className={`rounded border p-4 ${plan.featured ? "border-gold/60 bg-gold/10" : "border-white/10 bg-white/[0.035]"}`}
+            className={`rounded border p-4 ${plan.featured ? "border-gold/60 bg-gold/10" : "border-divider/10 bg-overlay/[0.035]"}`}
           >
             <div className="flex items-start justify-between gap-3">
               <h2 className="text-lg font-semibold text-bone">
                 {plan.billingPlan ? `${plan.name}, ${plan.price}` : plan.name}
               </h2>
               {plan.badge ? (
-                <span className="rounded border border-gold/50 bg-gold/10 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-goldSoft">
+                <span className="rounded border border-gold/50 bg-gold/10 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-accentGold">
                   {plan.badge}
                 </span>
               ) : null}
             </div>
             <p className="mt-3">{plan.body}</p>
             {plan.socialProof ? (
-              <p className="mt-3 rounded border border-white/10 bg-white/[0.035] p-3 text-xs leading-5 text-bone/80">
+              <p className="mt-3 rounded border border-divider/10 bg-overlay/[0.035] p-3 text-xs leading-5 text-bone/80">
                 {plan.socialProof}
               </p>
             ) : null}
             {plan.offerNote ? (
-              <p className="mt-3 rounded border border-gold/35 bg-gold/[0.08] p-3 text-xs font-medium leading-5 text-goldSoft">
+              <p className="mt-3 rounded border border-gold/35 bg-gold/[0.08] p-3 text-xs font-medium leading-5 text-accentGold">
                 {plan.offerNote}
               </p>
             ) : null}

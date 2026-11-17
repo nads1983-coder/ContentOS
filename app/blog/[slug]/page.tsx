@@ -173,12 +173,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
       <PublicPage title={post.title}>
-        <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-goldSoft hover:text-bone">
+        <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-accentGold hover:text-bone">
           <ArrowLeft size={16} aria-hidden="true" />
           Blog
         </Link>
         <p className="text-base leading-8 text-bone">{post.description}</p>
-        <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-goldSoft">
+        <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-accentGold">
           <time dateTime={post.published}>
             Published{" "}
             {new Intl.DateTimeFormat("en-GB", {
@@ -199,7 +199,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {post.tags?.length ? (
           <div className="flex flex-wrap gap-2">
             {post.tags.map((tag) => (
-              <span key={tag} className="rounded border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-muted">
+              <span key={tag} className="rounded border border-divider/10 bg-overlay/[0.03] px-3 py-1 text-xs text-muted">
                 {tag}
               </span>
             ))}
@@ -217,10 +217,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         )}
         {post.cta ? (
           <section className="grid gap-3 rounded border border-goldSoft/30 bg-goldSoft/10 p-5">
-            <p className="text-xs uppercase tracking-normal text-goldSoft">Next step</p>
+            <p className="text-xs uppercase tracking-normal text-accentGold">Next step</p>
             <h2 className="font-display text-2xl uppercase tracking-normal text-bone">{post.cta}</h2>
             <p>Use this article to tighten one repeatable content workflow, then build the system around it.</p>
-            <Link href="/studio" className="inline-flex items-center gap-2 text-sm font-semibold text-goldSoft hover:text-bone">
+            <Link href="/studio" className="inline-flex items-center gap-2 text-sm font-semibold text-accentGold hover:text-bone">
               Open ContentOS
             </Link>
           </section>

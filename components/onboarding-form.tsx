@@ -54,7 +54,7 @@ export function OnboardingForm() {
               key={platform}
               type="button"
               onClick={() => togglePlatform(platform)}
-              className={`rounded border px-3 py-2 text-sm ${selectedPlatforms.includes(platform) ? "border-gold/70 bg-gold/10 text-bone" : "border-white/10 bg-white/[0.035] text-muted"}`}
+              className={`rounded border px-3 py-2 text-sm ${selectedPlatforms.includes(platform) ? "border-gold/70 bg-gold/10 text-bone" : "border-divider/10 bg-overlay/[0.035] text-muted"}`}
             >
               {platform}
             </button>
@@ -64,7 +64,7 @@ export function OnboardingForm() {
       <button className="min-h-12 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white">
         Save onboarding
       </button>
-      {message ? <p className="text-sm text-goldSoft">{message}</p> : null}
+      {message ? <p className="text-sm text-accentGold">{message}</p> : null}
     </form>
   );
 }

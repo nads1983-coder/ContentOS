@@ -38,6 +38,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { clsx } from "clsx";
 import { CheckoutButton } from "@/components/billing-buttons";
 import { BrandLogo } from "@/components/brand-logo";
+import { ThemeSelector } from "@/components/theme-selector";
 import { LogoutButton } from "@/components/logout-button";
 import { StudioComposer } from "@/components/studio-composer";
 import { createWorkspaceWriter } from "@/lib/workspace-sync";
@@ -1183,7 +1184,7 @@ export function StudioShell({
               setImagePlatform(platform);
               setImageSection({ id: `visual-${crypto.randomUUID()}`, type: selected?.id ?? "linkedin", title: "Original visual", platform, body: "", items: [] });
               setImageSource(""); setImageError(""); imageUndo.current = null;
-            }} className="flex min-h-11 items-center gap-2 rounded border border-white/15 px-4 text-sm hover:border-violet">
+            }} className="flex min-h-11 items-center gap-2 rounded border border-divider/15 px-4 text-sm hover:border-violet">
               <Wand2 size={16} /> Image Studio
             </button>
           </div>
@@ -1303,10 +1304,10 @@ export function StudioShell({
             />
           </section>
 
-          {canStartNewAttempt ? <div><button type="button" disabled={isPending} onClick={() => { requestAttempt.current = null; const intent = retryIntent.current; void generateContent(intent?.source ?? source, intent?.refinement); }} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm"><RefreshCcw size={16} />Try latest request again</button><p className="mt-2 text-xs text-muted">Starts a new AI request. Provider costs may apply even if the result is rejected.</p></div> : null}
+          {canStartNewAttempt ? <div><button type="button" disabled={isPending} onClick={() => { requestAttempt.current = null; const intent = retryIntent.current; void generateContent(intent?.source ?? source, intent?.refinement); }} className="flex min-h-11 items-center gap-2 rounded border border-divider/20 px-4 text-sm"><RefreshCcw size={16} />Try latest request again</button><p className="mt-2 text-xs text-muted">Starts a new AI request. Provider costs may apply even if the result is rejected.</p></div> : null}
 
           <p className="min-h-5 text-xs text-muted" role="status">{saveStatus}</p>
-          {historyWarning ? <p className="text-xs text-amber-200" role="status">{historyWarning}</p> : null}
+          {historyWarning ? <p className="text-xs text-warning" role="status">{historyWarning}</p> : null}
           <button type="button" onClick={() => {
             let recovered = null;
             try { recovered = accountId ? JSON.parse(window.localStorage.getItem(`contentos:recovery:${accountId}`) ?? "null") : null; } catch { /* Export current copy if recovery storage is unavailable. */ }
@@ -1314,7 +1315,7 @@ export function StudioShell({
             const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" }));
             const link = document.createElement("a"); link.href = url; link.download = "contentos-workspace-backup.json"; link.click(); URL.revokeObjectURL(url);
           }} className="flex min-h-10 items-center gap-2 text-xs text-muted"><Save size={14} />Export device backup</button>
-          <details className="border-y border-white/10 py-4">
+          <details className="border-y border-divider/10 py-4">
             <summary className="cursor-pointer text-sm font-semibold">Text formatter</summary>
             <PlatformFormatterPanel id="formatter" plan={plan} onPlanChange={viewPlans} />
           </details>
@@ -1435,7 +1436,7 @@ function TopBar({
   onToggleMenu: () => void;
 }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/86 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-divider/10 bg-ink/86 backdrop-blur-xl">
       <div className="mx-auto flex min-h-16 max-w-none items-center justify-between gap-2 px-3 py-3 sm:max-w-7xl sm:gap-3 sm:px-5 lg:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/" aria-label="Back to ContentOS homepage" className="hidden lg:block">
@@ -1448,20 +1449,22 @@ function TopBar({
           >
             <BrandLogo size="sm" showWordmark={false} />
             <span className="truncate text-base font-extrabold tracking-normal text-bone">
-              Content<span className="text-goldSoft">OS</span>
+              Content<span className="text-accentGold">OS</span>
             </span>
           </Link>
         </div>
 
+        <ThemeSelector />
+
         <div className="hidden items-center gap-3 lg:flex">
           <Link
             href="/"
-            className="flex min-h-10 items-center gap-2 rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+            className="flex min-h-10 items-center gap-2 rounded border border-divider/10 bg-overlay/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
           >
             <ArrowLeft size={15} />
             Home
           </Link>
-          <div className="flex items-center gap-2 rounded border border-line bg-white/[0.03] px-3 py-2 text-xs text-muted">
+          <div className="flex items-center gap-2 rounded border border-line bg-overlay/[0.03] px-3 py-2 text-xs text-muted">
             <span className="h-2 w-2 rounded-full bg-goldSoft" />
             {plan === "pro_studio"
               ? "Pro Studio workspace"
@@ -1475,16 +1478,16 @@ function TopBar({
             <>
               <Link
                 href="/dashboard"
-                className="flex min-h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+                className="flex min-h-10 items-center rounded border border-divider/10 bg-overlay/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
               >
                 Account
               </Link>
-              <LogoutButton className="flex min-h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60 disabled:text-muted" />
+              <LogoutButton className="flex min-h-10 items-center rounded border border-divider/10 bg-overlay/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60 disabled:text-muted" />
             </>
           ) : (
             <Link
               href="/login"
-              className="flex min-h-10 items-center rounded border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
+              className="flex min-h-10 items-center rounded border border-divider/10 bg-overlay/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60"
             >
               Log in
             </Link>
@@ -1501,7 +1504,7 @@ function TopBar({
           <button
             type="button"
             onClick={onToggleMenu}
-            className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-muted"
+            className="grid h-10 w-10 place-items-center rounded-lg border border-divider/10 bg-overlay/[0.04] text-muted"
             aria-label={menuOpen ? "Close account menu" : "Open account menu"}
             aria-expanded={menuOpen}
             aria-controls="studio-account-menu"
@@ -1509,27 +1512,27 @@ function TopBar({
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
           {menuOpen ? (
-            <div id="studio-account-menu" className="absolute right-0 top-full z-[100] mt-2 w-[11.25rem] rounded-xl border border-white/10 bg-[#07050d] p-1.5 shadow-[0_18px_45px_rgba(0,0,0,0.55)]">
+            <div id="studio-account-menu" className="absolute right-0 top-full z-[100] mt-2 w-[11.25rem] rounded-xl border border-divider/10 bg-menu p-1.5 shadow-[0_18px_45px_rgba(0,0,0,0.55)]">
               {authenticated ? (
                 <>
                   <Link
                     href="/dashboard#account"
-                    className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-white/[0.06]"
+                    className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-overlay/[0.06]"
                   >
                     Account
                   </Link>
                   <Link
                     href="/dashboard"
-                    className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-white/[0.06]"
+                    className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-overlay/[0.06]"
                   >
                     Dashboard
                   </Link>
-                  <LogoutButton className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-left text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-white/[0.06] disabled:text-muted" />
+                  <LogoutButton className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-left text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-overlay/[0.06] disabled:text-muted" />
                 </>
               ) : (
                 <Link
                   href="/login"
-                  className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-white/[0.06]"
+                  className="flex h-9 w-full items-center justify-start rounded-lg px-3 text-[0.82rem] font-semibold leading-none text-bone transition hover:bg-overlay/[0.06]"
                 >
                   Log in
                 </Link>
@@ -1554,7 +1557,7 @@ function DesktopRail({ onNavigate }: { onNavigate: (action: RailAction) => void 
   ];
 
   return (
-    <aside className="hidden rounded border border-white/10 bg-white/[0.035] p-3 lg:block">
+    <aside className="hidden rounded border border-divider/10 bg-overlay/[0.035] p-3 lg:block">
       <div className="flex h-full flex-col items-center gap-3">
         {items.map((item) => (
           <button
@@ -1562,7 +1565,7 @@ function DesktopRail({ onNavigate }: { onNavigate: (action: RailAction) => void 
             type="button"
             title={item.label}
             onClick={() => onNavigate(item.action)}
-            className="grid h-11 w-11 place-items-center border border-white/10 bg-ink/80 text-muted transition hover:border-violet/60 hover:text-bone"
+            className="grid h-11 w-11 place-items-center border border-divider/10 bg-ink/80 text-muted transition hover:border-violet/60 hover:text-bone"
           >
             <item.icon size={18} />
           </button>
@@ -1638,12 +1641,12 @@ function OutputPanel({
     <blockquote className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{failure.source}</blockquote>
     {failure.requestedChange ? <p className="mt-2 break-words">Requested change: {failure.requestedChange}</p> : null}
     <p className="mt-3 text-muted">{failure.message}</p>
-    {result.id !== "sample" && !showEarlierResult ? <button type="button" onClick={onShowEarlier} className="mt-3 min-h-11 rounded border border-white/20 px-3 font-semibold">Show earlier draft</button> : null}
+    {result.id !== "sample" && !showEarlierResult ? <button type="button" onClick={onShowEarlier} className="mt-3 min-h-11 rounded border border-divider/20 px-3 font-semibold">Show earlier draft</button> : null}
   </div> : null;
   if (failure && !showEarlierResult && !isPending) return <section id={id} ref={containerRef} className="min-w-0 scroll-mt-20">{failureNotice}</section>;
-  if (result.id === "sample" && !isPending) return <section id={id} ref={containerRef} className="min-w-0 border-t border-white/10 py-6 xl:border-t-0">
+  if (result.id === "sample" && !isPending) return <section id={id} ref={containerRef} className="min-w-0 border-t border-divider/10 py-6 xl:border-t-0">
     <h2 className="text-xl font-semibold">Your content</h2>
-    {error ? <p role="alert" className="mt-4 text-sm text-goldSoft">{error}</p> : <p className="mt-4 text-sm text-muted">No content yet.</p>}
+    {error ? <p role="alert" className="mt-4 text-sm text-accentGold">{error}</p> : <p className="mt-4 text-sm text-muted">No content yet.</p>}
   </section>;
   return (
     <section
@@ -1654,7 +1657,7 @@ function OutputPanel({
       {failureNotice}
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 overflow-hidden">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-accentGold sm:text-xs sm:tracking-[0.18em]">
             {result.id === "sample" ? "Example content pack" : earlier ? "Earlier generation - not the latest request" : "Your content pack"}
           </p>
           {earlier && result.id !== "sample" ? <div data-testid="earlier-generation-source" className="mt-3 text-sm"><p className="font-semibold">Original brief for this earlier draft</p><p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{result.source}</p></div> : null}
@@ -1670,8 +1673,8 @@ function OutputPanel({
           className={clsx(
             "grid h-11 w-11 shrink-0 place-items-center rounded-xl border transition sm:rounded",
             isSaved
-              ? "border-gold/70 bg-gold/15 text-goldSoft"
-              : "border-white/10 bg-white/[0.04] text-muted hover:border-gold/60"
+              ? "border-gold/70 bg-gold/15 text-accentGold"
+              : "border-divider/10 bg-overlay/[0.04] text-muted hover:border-gold/60"
           )}
           aria-label={failure ? "Save earlier output" : "Save output"}
         >
@@ -1685,7 +1688,7 @@ function OutputPanel({
         </div>
       ) : null}
 
-      <details className="mt-4 border-b border-white/10 pb-3">
+      <details className="mt-4 border-b border-divider/10 pb-3">
       <summary className="cursor-pointer text-sm text-muted">Formats & filters</summary>
       {!isPending && result.id !== "sample" && result.sections.length ? <GenerationSummary sections={result.sections} /> : null}
       <div className="studio-scroll mt-3 flex snap-x scroll-px-4 gap-2 overflow-x-auto pb-2">
@@ -1699,7 +1702,7 @@ function OutputPanel({
               "min-h-11 shrink-0 rounded-full border px-4 text-sm transition sm:min-h-10 sm:rounded sm:px-3",
               activeFilter === filter.id
                 ? "border-gold/70 bg-gold/10 text-bone"
-                : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/50"
+                : "border-divider/10 bg-overlay/[0.035] text-muted hover:border-violet/50"
             )}
           >
             {filter.label}
@@ -1727,7 +1730,7 @@ function OutputPanel({
             />
           ))
         ) : (
-          <div className="rounded border border-white/10 bg-white/[0.03] p-4 text-sm text-muted">
+          <div className="rounded border border-divider/10 bg-overlay/[0.03] p-4 text-sm text-muted">
             No outputs in this filter yet.
           </div>
         )}
@@ -1737,7 +1740,7 @@ function OutputPanel({
         type="button"
         onClick={onRegenerate}
         disabled={isPending}
-          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 disabled:cursor-not-allowed disabled:text-muted sm:mt-4 sm:min-h-11 sm:rounded"
+          className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-divider/10 bg-overlay/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 disabled:cursor-not-allowed disabled:text-muted sm:mt-4 sm:min-h-11 sm:rounded"
       >
         <RefreshCcw size={17} />
         Regenerate
@@ -1747,7 +1750,7 @@ function OutputPanel({
         <button
           type="button"
           onClick={onCopyAll}
-          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
+          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-divider/10 bg-overlay/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
         >
           <Copy size={16} />
           {copiedId === "all" ? "Copied" : failure ? "Copy earlier draft" : "Copy all"}
@@ -1755,7 +1758,7 @@ function OutputPanel({
         <button
           type="button"
           onClick={onDownload}
-          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
+          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-divider/10 bg-overlay/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded"
         >
           <FileText size={16} />
           {failure ? "Export earlier draft .txt" : "Download .txt"}
@@ -1763,7 +1766,7 @@ function OutputPanel({
         <button
           type="button"
           onClick={onSaveCurrent}
-          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded"
+          className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-divider/10 bg-overlay/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded"
         >
           <Bookmark size={16} />
           {failure ? "Save earlier draft" : "Save all"}
@@ -1782,9 +1785,9 @@ function GenerationSummary({ sections }: { sections: GeneratedSection[] }) {
         {labels.map((label) => (
           <span
             key={label}
-            className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-ink/60 px-3 py-1.5 text-xs font-semibold text-bone"
+            className="inline-flex items-center gap-1.5 rounded-full border border-divider/10 bg-ink/60 px-3 py-1.5 text-xs font-semibold text-bone"
           >
-            <Check size={13} className="text-goldSoft" />
+            <Check size={13} className="text-accentGold" />
             {label}
           </span>
         ))}
@@ -1907,11 +1910,11 @@ function PlatformFormatterPanel({
   return (
     <section
       id={id}
-      className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-panel/82 p-4 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
+      className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-divider/10 bg-panel/82 p-4 shadow-violet backdrop-blur-xl sm:rounded sm:border sm:p-5"
     >
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-accentGold sm:text-xs sm:tracking-[0.18em]">
             Platform formatter
           </p>
           <h2 className="mt-2 font-display text-[1.7rem] uppercase leading-none tracking-normal text-bone sm:text-2xl">
@@ -1922,12 +1925,12 @@ function PlatformFormatterPanel({
           </p>
         </div>
 
-        <div className="grid w-full grid-cols-2 overflow-hidden rounded-xl border border-white/10 bg-white/[0.03] sm:w-48 sm:rounded">
+        <div className="grid w-full grid-cols-2 overflow-hidden rounded-xl border border-divider/10 bg-overlay/[0.03] sm:w-48 sm:rounded">
           <button
             type="button"
             onClick={() => setPreviewMode("desktop")}
             className={clsx(
-              "flex min-h-11 items-center justify-center gap-2 border-r border-white/10 px-3 text-xs font-semibold sm:min-h-10",
+              "flex min-h-11 items-center justify-center gap-2 border-r border-divider/10 px-3 text-xs font-semibold sm:min-h-10",
               previewMode === "desktop"
                 ? "bg-gold/10 text-bone"
                 : "text-muted hover:text-bone"
@@ -1964,7 +1967,7 @@ function PlatformFormatterPanel({
                   "min-h-11 shrink-0 rounded-full border px-4 text-sm font-semibold transition sm:min-h-10 sm:rounded sm:px-3",
                   platform === item.id
                     ? "border-gold/70 bg-gold/10 text-bone"
-                    : "border-white/10 bg-white/[0.035] text-muted hover:border-violet/50"
+                    : "border-divider/10 bg-overlay/[0.035] text-muted hover:border-violet/50"
                 )}
               >
                 {item.label}
@@ -2007,7 +2010,7 @@ function PlatformFormatterPanel({
             value={text}
             onChange={(event) => setText(event.target.value)}
             rows={12}
-            className="studio-scroll min-h-80 w-full resize-none rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] leading-7 text-bone outline-none transition placeholder:text-muted/60 focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:p-4 sm:text-base"
+            className="studio-scroll min-h-80 w-full resize-none rounded-xl border border-line bg-ink/90 p-4 text-[0.95rem] leading-7 text-bone outline-none transition placeholder:text-muted focus:border-violet/70 focus:ring-2 focus:ring-violet/20 sm:rounded sm:p-4 sm:text-base"
             placeholder="Write or paste platform copy here."
           />
 
@@ -2019,7 +2022,7 @@ function PlatformFormatterPanel({
               <button
                 type="button"
                 onClick={() => setText("")}
-                className="flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded lg:min-w-[7rem]"
+                className="flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-divider/10 bg-overlay/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-violet/60 sm:rounded lg:min-w-[7rem]"
               >
                 <Eraser size={16} />
                 Clear
@@ -2027,7 +2030,7 @@ function PlatformFormatterPanel({
               <button
                 type="button"
                 onClick={downloadFormattedText}
-                className="flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded lg:min-w-[8rem]"
+                className="flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-xl border border-divider/10 bg-overlay/[0.035] px-4 text-sm font-semibold text-bone transition hover:border-gold/60 sm:rounded lg:min-w-[8rem]"
               >
                 <FileText size={16} />
                 Download
@@ -2043,17 +2046,18 @@ function PlatformFormatterPanel({
             </div>
           </div>
           {copyError ? (
-            <p className="mt-2 text-xs leading-5 text-goldSoft">{copyError}</p>
+            <p className="mt-2 text-xs leading-5 text-accentGold">{copyError}</p>
           ) : null}
         </div>
 
         <div
           className={clsx(
-            "min-w-0 rounded-xl border border-white/10 bg-ink/90 p-3 sm:rounded sm:p-4",
+            "min-w-0 rounded-xl border border-divider/10 bg-ink/90 p-3 sm:rounded sm:p-4",
             previewMode === "mobile" ? "mx-auto w-full max-w-none sm:max-w-sm" : "w-full 2xl:min-w-[34rem]"
           )}
         >
-          <div className="mx-auto w-full max-w-[40rem] rounded bg-[#f4f2ee] p-4 text-[#191919] 2xl:max-w-none">
+          {/* Preserve the target platform mockup, just as we preserve generated artwork. */}
+          <div data-social-preview className="mx-auto w-full max-w-[40rem] rounded bg-[#f4f2ee] p-4 text-[#191919] 2xl:max-w-none">
             <div className="flex items-start gap-3">
               <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#231832] text-sm font-bold text-[#e0bb58]">
                 CO
@@ -2101,7 +2105,7 @@ function FormatterButton({
       type="button"
       title={label}
       onClick={onClick}
-      className="grid h-10 w-10 shrink-0 place-items-center rounded border border-white/10 bg-white/[0.04] text-bone transition hover:border-violet/60"
+      className="grid h-10 w-10 shrink-0 place-items-center rounded border border-divider/10 bg-overlay/[0.04] text-bone transition hover:border-violet/60"
       aria-label={label}
     >
       {children}
@@ -2137,10 +2141,10 @@ function OutputCard({
   const [refinement, setRefinement] = useState("");
 
   return (
-    <article data-content-editing={editing} className="w-full min-w-0 overflow-hidden rounded border border-white/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:border-white/10 sm:bg-white/[0.035] sm:p-4 sm:shadow-none">
+    <article data-content-editing={editing} className="w-full min-w-0 overflow-hidden rounded border border-divider/[0.08] bg-ink/58 p-4 shadow-[0_16px_45px_rgba(0,0,0,0.22)] sm:border-divider/10 sm:bg-overlay/[0.035] sm:p-4 sm:shadow-none">
       <div className="mb-4 flex flex-col gap-3 sm:mb-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 overflow-hidden">
-          <p className="text-[0.72rem] uppercase tracking-[0.14em] text-violet sm:text-xs sm:tracking-[0.18em]">
+          <p className="text-[0.72rem] uppercase tracking-[0.14em] text-accentViolet sm:text-xs sm:tracking-[0.18em]">
             {section.platform}
           </p>
           <h3 className="mt-2 break-words text-xl font-semibold leading-6 text-bone sm:mt-1 sm:text-lg">{section.title}</h3>
@@ -2154,7 +2158,7 @@ function OutputCard({
               "flex min-h-11 items-center justify-center gap-2 rounded-xl border px-3 text-xs font-semibold transition sm:min-h-10 sm:rounded",
               canGenerateImage
                 ? "border-gold/60 bg-gold/10 text-bone hover:border-gold"
-                : "border-white/10 bg-ink/70 text-muted hover:border-gold/60 hover:text-bone"
+                : "border-divider/10 bg-ink/70 text-muted hover:border-gold/60 hover:text-bone"
             )}
           >
             {canGenerateImage ? <Wand2 size={15} /> : <Lock size={15} />}
@@ -2163,7 +2167,7 @@ function OutputCard({
           <button
             type="button"
             onClick={onCopy}
-            className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-violet/60 sm:min-h-10 sm:rounded sm:bg-ink/70"
+            className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-divider/10 bg-overlay/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-violet/60 sm:min-h-10 sm:rounded sm:bg-ink/70"
           >
             {copied ? <Check size={15} /> : <Copy size={15} />}
             {copied ? "Copied" : "Copy"}
@@ -2172,13 +2176,13 @@ function OutputCard({
       </div>
 
       <div className="mb-3 text-sm" role="status">
-        <p className={section.review?.status === "ready_to_review" && section.revisionSource !== "manual" ? "text-muted" : "font-semibold text-goldSoft"}>{section.review?.status === "ready_to_review" && section.revisionSource !== "manual" ? "Ready to review" : "Needs confirmation"}</p>
+        <p className={section.review?.status === "ready_to_review" && section.revisionSource !== "manual" ? "text-muted" : "font-semibold text-accentGold"}>{section.review?.status === "ready_to_review" && section.revisionSource !== "manual" ? "Ready to review" : "Needs confirmation"}</p>
         {(section.review?.notes ?? []).map(note => <p key={note} className="mt-1 text-xs leading-5 text-muted">{note}</p>)}
       </div>
       {editing ? <div className="grid gap-3">
-        <label className="grid gap-2 text-sm">Body<textarea aria-label={`Edit ${section.title} body`} rows={10} maxLength={20000} value={draft.body} onChange={e => setDraft({ ...draft, body: e.target.value })} className="w-full rounded border border-white/20 bg-ink p-3 leading-7" /></label>
-        <label className="grid gap-2 text-sm">Items, one per line<textarea rows={4} maxLength={20000} value={draft.items.join("\n")} onChange={e => setDraft({ ...draft, items: e.target.value.split("\n") })} className="w-full rounded border border-white/20 bg-ink p-3" /></label>
-        <label className="grid gap-2 text-sm">Call to action<input maxLength={2000} value={draft.cta ?? ""} onChange={e => setDraft({ ...draft, cta: e.target.value })} className="min-h-11 rounded border border-white/20 bg-ink px-3" /></label>
+        <label className="grid gap-2 text-sm">Body<textarea aria-label={`Edit ${section.title} body`} rows={10} maxLength={20000} value={draft.body} onChange={e => setDraft({ ...draft, body: e.target.value })} className="w-full rounded border border-divider/20 bg-ink p-3 leading-7" /></label>
+        <label className="grid gap-2 text-sm">Items, one per line<textarea rows={4} maxLength={20000} value={draft.items.join("\n")} onChange={e => setDraft({ ...draft, items: e.target.value.split("\n") })} className="w-full rounded border border-divider/20 bg-ink p-3" /></label>
+        <label className="grid gap-2 text-sm">Call to action<input maxLength={2000} value={draft.cta ?? ""} onChange={e => setDraft({ ...draft, cta: e.target.value })} className="min-h-11 rounded border border-divider/20 bg-ink px-3" /></label>
         <div className="flex gap-3">
           <button className="flex min-h-11 items-center gap-2 rounded bg-violet px-4 text-sm" onClick={() => { onEdit({ ...draft, items: draft.items.filter(Boolean) }); setEditing(false); }}><Check size={16} />Apply edits</button>
           <button className="min-h-11 px-3 text-sm text-muted" onClick={() => setEditing(false)}>Cancel</button>
@@ -2192,7 +2196,7 @@ function OutputCard({
           <img
             src={image.image}
             alt={`Generated visual for ${section.title}`}
-            className="w-full rounded border border-white/10 object-contain"
+            className="w-full rounded border border-divider/10 object-contain"
             style={{ aspectRatio: image.format === "landscape" ? "16 / 9" : image.format === "portrait" ? "4 / 5" : image.format === "vertical" ? "9 / 16" : "1" }}
           />
           <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -2203,27 +2207,27 @@ function OutputCard({
             <button
               type="button"
               onClick={() => void downloadVisualAsPng(image.image, imageFilename(section.title))}
-              className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60 sm:rounded"
+              className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-divider/10 bg-overlay/[0.04] px-3 text-xs font-semibold text-bone transition hover:border-gold/60 sm:rounded"
             >
               <FileText size={14} />
               Download PNG
             </button>
           </div>
           {image.warning ? (
-            <p className="mt-2 text-xs leading-5 text-goldSoft">{image.warning}</p>
+            <p className="mt-2 text-xs leading-5 text-accentGold">{image.warning}</p>
           ) : null}
         </div>
       ) : null}
 
-      <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
-        <button type="button" onClick={() => { setDraft(section); setEditing(true); }} disabled={editing} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-3 text-sm"><PenLine size={15} />Edit</button>
-        <button type="button" disabled={editing} onClick={() => onCopyRefinement("alternative")} className="flex min-h-11 items-center gap-2 rounded border border-white/20 px-3 text-sm"><RefreshCcw size={15} />Regenerate</button>
+      <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-divider/10 pt-3">
+        <button type="button" onClick={() => { setDraft(section); setEditing(true); }} disabled={editing} className="flex min-h-11 items-center gap-2 rounded border border-divider/20 px-3 text-sm"><PenLine size={15} />Edit</button>
+        <button type="button" disabled={editing} onClick={() => onCopyRefinement("alternative")} className="flex min-h-11 items-center gap-2 rounded border border-divider/20 px-3 text-sm"><RefreshCcw size={15} />Regenerate</button>
       </div>
       <form className="mt-3 grid gap-2" onSubmit={e => { e.preventDefault(); if (refinement.trim() && !editing) onCopyRefinement(refinement.trim()); }}>
-        <label className="grid gap-2 text-sm">What would you like to change?<input value={refinement} maxLength={400} onChange={e => setRefinement(e.target.value)} placeholder="Make it shorter and more conversational." className="min-h-11 min-w-0 rounded border border-white/20 bg-ink px-3 text-sm" /></label>
+        <label className="grid gap-2 text-sm">What would you like to change?<input value={refinement} maxLength={400} onChange={e => setRefinement(e.target.value)} placeholder="Make it shorter and more conversational." className="min-h-11 min-w-0 rounded border border-divider/20 bg-ink px-3 text-sm" /></label>
         <div className="flex flex-wrap items-center gap-2"><button type="submit" disabled={editing || !refinement.trim()} className="flex min-h-11 items-center gap-2 rounded border border-violet/60 px-3 text-sm disabled:opacity-40"><Sparkles size={14} />Apply change</button><span className="text-xs text-muted">1 generation</span></div>
         <details><summary className="cursor-pointer text-xs text-muted">Quick changes</summary>
-        <select aria-label={`Refine ${section.title}`} value={Object.hasOwn(REFINEMENT_ACTIONS, refinement) ? refinement : ""} onChange={e => setRefinement(e.target.value)} className="mt-2 min-h-11 min-w-0 rounded border border-white/20 bg-ink px-2 text-xs">
+        <select aria-label={`Refine ${section.title}`} value={Object.hasOwn(REFINEMENT_ACTIONS, refinement) ? refinement : ""} onChange={e => setRefinement(e.target.value)} className="mt-2 min-h-11 min-w-0 rounded border border-divider/20 bg-ink px-2 text-xs">
           <option value="" disabled>Choose a change</option>
           {Object.entries({ shorten: "Make shorter", expand: "Make longer", simplify: "Simplify", professional: "More professional", conversational: "More conversational", hook: "Strengthen hook", cta: "Improve CTA", alternative: "Create alternative" }).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
@@ -2236,7 +2240,7 @@ function OutputCard({
 function PlatformOutputBlocks({ blocks }: { blocks: OutputBlock[] }) {
   if (!blocks.length) {
     return (
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-muted sm:rounded">
+      <div className="rounded-xl border border-divider/10 bg-overlay/[0.03] p-4 text-sm leading-6 text-muted sm:rounded">
         No readable output content was returned for this card.
       </div>
     );
@@ -2260,9 +2264,9 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
           {block.lines.map((line, index) => (
             <li
               key={`${line}-${index}`}
-              className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-3 border-b border-white/10 py-3 text-sm leading-6 text-bone/90"
+              className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-3 border-b border-divider/10 py-3 text-sm leading-6 text-bone/90"
             >
-              <span className="grid h-7 w-7 place-items-center rounded-full border border-gold/50 bg-gold/10 text-xs font-semibold text-goldSoft">
+              <span className="grid h-7 w-7 place-items-center rounded-full border border-gold/50 bg-gold/10 text-xs font-semibold text-accentGold">
                 {index + 1}
               </span>
               <span className="min-w-0 whitespace-pre-line break-words">{line}</span>
@@ -2284,7 +2288,7 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
   if (block.kind === "platform") {
     return (
-      <div className="min-w-0 border-b border-white/10 py-3">
+      <div className="min-w-0 border-b border-divider/10 py-3">
         <OutputBlockLabel>{block.label}</OutputBlockLabel>
         <div className="mt-3 grid gap-3">
           {block.lines.map((line, index) => (
@@ -2335,7 +2339,7 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
           {block.lines.map((line) => (
             <li
               key={line}
-              className="min-w-0 break-words rounded-lg border-l-2 border-gold/70 bg-white/[0.035] py-2.5 pl-3 pr-2 text-sm leading-6 text-muted sm:rounded-none sm:bg-ink/42 sm:py-2 sm:pr-0"
+              className="min-w-0 break-words rounded-lg border-l-2 border-gold/70 bg-overlay/[0.035] py-2.5 pl-3 pr-2 text-sm leading-6 text-muted sm:rounded-none sm:bg-ink/42 sm:py-2 sm:pr-0"
             >
               {line}
             </li>
@@ -2359,7 +2363,7 @@ function PlatformOutputBlock({ block }: { block: OutputBlock }) {
 
 function OutputBlockLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-goldSoft/90 sm:text-[0.7rem]">
+    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-accentGold/90 sm:text-[0.7rem]">
       {children}
     </p>
   );
@@ -2422,12 +2426,12 @@ function ImageGenerationPanel({
 
   return (
     <dialog ref={dialogRef} aria-labelledby="image-generation-title" onCancel={onClose} onClose={onClose}
-      className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-5xl overflow-y-auto overscroll-contain rounded border border-white/10 bg-coal p-4 text-bone shadow-violet backdrop:bg-black/70 backdrop:backdrop-blur-sm sm:p-5"
+      className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%_-_2rem)] max-w-5xl overflow-y-auto overscroll-contain rounded border border-divider/10 bg-coal p-4 text-bone shadow-violet backdrop:bg-black/70 backdrop:backdrop-blur-sm sm:p-5"
     >
       {section ? <div className="min-w-0">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accentGold">
               {studio.platform}
             </p>
             <h2 id="image-generation-title" className="mt-2 font-display text-2xl uppercase tracking-normal text-bone">
@@ -2437,7 +2441,7 @@ function ImageGenerationPanel({
           <button
             type="button"
             onClick={onClose}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded border border-white/10 bg-white/[0.04] text-muted transition hover:border-violet/60 hover:text-bone"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded border border-divider/10 bg-overlay/[0.04] text-muted transition hover:border-violet/60 hover:text-bone"
             aria-label="Close image generation"
           >
             <X size={18} />
@@ -2447,7 +2451,7 @@ function ImageGenerationPanel({
         {!isProStudio ? (
           <div className="mt-5 rounded border border-gold/30 bg-gold/10 p-4">
             <div className="flex items-start gap-3">
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-gold/15 text-goldSoft">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded bg-gold/15 text-accentGold">
                 <Lock size={18} />
               </div>
               <div className="min-w-0">
@@ -2467,30 +2471,30 @@ function ImageGenerationPanel({
           <div className="mt-5 grid items-start gap-6 md:grid-cols-2">
             <div className="grid min-w-0 gap-4">
               <label className="grid gap-2 text-sm font-semibold">{studio.mode === "text" ? "Text for your graphic" : "What image would you like?"}
-                <textarea rows={3} value={studio.instructions} disabled={isPending} onChange={e => studio.onInstructions(e.target.value)} placeholder="Create a luxury cream-and-gold giveaway graphic for Gorl Lead." className="rounded border border-white/20 bg-ink p-3 leading-7" />
+                <textarea rows={3} value={studio.instructions} disabled={isPending} onChange={e => studio.onInstructions(e.target.value)} placeholder="Create a luxury cream-and-gold giveaway graphic for Gorl Lead." className="rounded border border-divider/20 bg-ink p-3 leading-7" />
               </label>
               {studio.mode === "text" && !studio.instructions.trim() && !studio.source.trim() && <p className="text-sm text-muted">Add text for your graphic to continue.</p>}
               <ImageChoices value={studio.appearance} onChange={studio.onAppearance} format={format} onFormat={onFormatChange} disabled={isPending} brandColors={brandColors} />
               <p aria-live="polite" className="text-xs text-muted">{selectedMode === "text" ? "Text design · No AI image credit" : `${selectedMode === "mixed" ? "Text + Image" : "Image"} · 1 AI image credit on success`}</p>
-              <details className="border-y border-white/10 py-3">
+              <details className="border-y border-divider/10 py-3">
               <summary className="cursor-pointer text-sm font-semibold">Advanced Options (Optional)</summary>
               <div className="mt-4 grid gap-4">
-              <div role="group" aria-label="Visual mode" className="grid grid-cols-4 gap-1 rounded border border-white/15 p-1">
+              <div role="group" aria-label="Visual mode" className="grid grid-cols-4 gap-1 rounded border border-divider/15 p-1">
                 {IMAGE_MODES.map(mode => <button key={mode} type="button" aria-pressed={studio.mode === mode} disabled={isPending}
-                  onClick={() => studio.onMode(mode)} className={clsx("min-h-11 rounded px-1 text-sm", studio.mode === mode ? "bg-violet text-white" : "text-muted hover:bg-white/10")}>
+                  onClick={() => studio.onMode(mode)} className={clsx("min-h-11 rounded px-1 text-sm", studio.mode === mode ? "bg-violet text-white" : "text-muted hover:bg-overlay/10")}>
                   {{ auto: "Auto", image: "Image", text: "Text", mixed: "Text + Image" }[mode]}
                 </button>)}
               </div>
               <label className="grid gap-2 text-sm">Source caption / graphic text
-                <textarea aria-label="Image content" rows={3} maxLength={2600} value={studio.source} disabled={isPending} onChange={e => studio.onSource(e.target.value)} className="rounded border border-white/15 bg-ink p-3" />
+                <textarea aria-label="Image content" rows={3} maxLength={2600} value={studio.source} disabled={isPending} onChange={e => studio.onSource(e.target.value)} className="rounded border border-divider/15 bg-ink p-3" />
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <label className="grid gap-2 text-sm">Platform<select aria-label="Image platform" value={studio.platform} disabled={isPending} onChange={e => studio.onPlatform(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3">
+                <label className="grid gap-2 text-sm">Platform<select aria-label="Image platform" value={studio.platform} disabled={isPending} onChange={e => studio.onPlatform(e.target.value)} className="min-h-11 min-w-0 rounded border border-divider/15 bg-ink px-3">
                   {[...new Set([studio.platform, "LinkedIn", "Instagram", "Facebook", "TikTok", "YouTube", "X", "Pinterest", "Blog"])].map(p => <option key={p}>{p}</option>)}
                 </select></label>
-                <label className="grid gap-2 text-sm">Industry / niche<input value={studio.industry} maxLength={180} disabled={isPending} onChange={e => studio.onIndustry(e.target.value)} className="min-h-11 min-w-0 rounded border border-white/15 bg-ink px-3" /></label>
+                <label className="grid gap-2 text-sm">Industry / niche<input value={studio.industry} maxLength={180} disabled={isPending} onChange={e => studio.onIndustry(e.target.value)} className="min-h-11 min-w-0 rounded border border-divider/15 bg-ink px-3" /></label>
               </div>
-              <label className="grid gap-2 text-sm">Fallback template<select value={style} disabled={isPending} onChange={e => onStyleChange(e.target.value as ImageStyle)} className="min-h-11 rounded border border-white/15 bg-ink px-3">
+              <label className="grid gap-2 text-sm">Fallback template<select value={style} disabled={isPending} onChange={e => onStyleChange(e.target.value as ImageStyle)} className="min-h-11 rounded border border-divider/15 bg-ink px-3">
                 {imageStyles.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
               </select></label>
 
@@ -2504,7 +2508,7 @@ function ImageGenerationPanel({
                     maxLength={180}
                     disabled={isPending}
                     onChange={(event) => onBrandColorsChange(event.target.value)}
-                    className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
+                    className="min-h-11 rounded border border-divider/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
                     placeholder="White, teal or #ffffff, #087e83"
                   />
                 </label>
@@ -2517,7 +2521,7 @@ function ImageGenerationPanel({
                     maxLength={180}
                     disabled={isPending}
                     onChange={(event) => onVisualStyleChange(event.target.value)}
-                    className="min-h-11 rounded border border-white/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
+                    className="min-h-11 rounded border border-divider/10 bg-ink/70 px-3 text-sm text-bone outline-none transition placeholder:text-muted focus:border-violet/70"
                     placeholder="Editorial photography, hand-drawn illustration"
                   />
                 </label>
@@ -2538,13 +2542,13 @@ function ImageGenerationPanel({
                 <img
                   src={image.image}
                   alt={`Generated visual for ${section.title}`}
-                  className="max-h-[55vh] w-full rounded border border-white/10 object-contain"
+                  className="max-h-[55vh] w-full rounded border border-divider/10 object-contain"
                 />
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   <button
                     type="button"
                     onClick={() => void downloadVisualAsPng(image.image, imageFilename(section.title))}
-                    className="flex min-h-11 items-center justify-center gap-2 rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
+                    className="flex min-h-11 items-center justify-center gap-2 rounded border border-divider/10 bg-overlay/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
                   >
                     <FileText size={16} />
                     Download PNG
@@ -2553,7 +2557,7 @@ function ImageGenerationPanel({
                     type="button"
                     onClick={onGenerate}
                     disabled={isPending}
-                    className="flex min-h-11 items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted"
+                    className="flex min-h-11 items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-overlay/10 disabled:text-muted"
                   >
                     {isPending ? <Loader2 className="animate-spin" size={16} /> : <RefreshCcw size={16} />}
                     Regenerate image
@@ -2565,7 +2569,7 @@ function ImageGenerationPanel({
                 </div>
                 {image.design && image.design.mode !== "image" ? <ImageDesignEditor key={`${section.id}:${image.createdAt}`} design={image.design} disabled={isPending} canUndo={studio.canUndo} onApply={studio.onEdit} onUndo={studio.onUndo} /> : null}
                 {image.warning ? (
-                  <p className="mt-2 text-xs leading-5 text-goldSoft">{image.warning}</p>
+                  <p className="mt-2 text-xs leading-5 text-accentGold">{image.warning}</p>
                 ) : null}
               </div>
             ) : null}
@@ -2575,15 +2579,15 @@ function ImageGenerationPanel({
                 type="button"
                 onClick={onGenerate}
                 disabled={isPending || !(studio.source.trim() || studio.instructions.trim())}
-                className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted"
+                className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-overlay/10 disabled:text-muted"
               >
                 {isPending ? <Loader2 className="animate-spin" size={17} /> : <Wand2 size={17} />}
                 {isPending ? "Generating visual..." : "Generate visual"}
               </button>
             ) : null}
-            {Object.keys(studio.saved).length > 0 ? <div className="mt-5 border-t border-white/10 pt-3">
+            {Object.keys(studio.saved).length > 0 ? <div className="mt-5 border-t border-divider/10 pt-3">
               <h3 className="text-sm text-muted">Recent designs on this device</h3>
-              <div className="mt-2 grid grid-cols-4 gap-2">{Object.entries(studio.saved).slice(-8).map(([id, saved]) => <button key={id} type="button" disabled={isPending} aria-label={`Open saved design ${saved.design?.headline || id}`} onClick={() => studio.onOpenSaved(id)} className="aspect-square overflow-hidden rounded border border-white/15 hover:border-violet"><img src={saved.image} alt="" className="h-full w-full object-contain" /></button>)}</div>
+              <div className="mt-2 grid grid-cols-4 gap-2">{Object.entries(studio.saved).slice(-8).map(([id, saved]) => <button key={id} type="button" disabled={isPending} aria-label={`Open saved design ${saved.design?.headline || id}`} onClick={() => studio.onOpenSaved(id)} className="aspect-square overflow-hidden rounded border border-divider/15 hover:border-violet"><img src={saved.image} alt="" className="h-full w-full object-contain" /></button>)}</div>
             </div> : null}
             </div>
           </div>
@@ -2597,7 +2601,7 @@ function LoadingCard() {
   return (
     <div className="rounded border border-violet/30 bg-violet/10 p-5">
       <div className="flex items-center gap-3">
-        <Loader2 className="animate-spin text-goldSoft" size={20} />
+        <Loader2 className="animate-spin text-accentGold" size={20} />
         <div>
           <p className="font-semibold text-bone">Building the content set</p>
           <p className="mt-1 text-sm text-muted">
@@ -2643,10 +2647,10 @@ function SavedLibraryPanel({
   });
 
   return (
-    <section className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-white/10 bg-coal/88 p-4 backdrop-blur-xl sm:rounded sm:border sm:p-5">
+    <section className="scroll-mt-20 w-full min-w-0 rounded-2xl border border-divider/10 bg-coal/88 p-4 backdrop-blur-xl sm:rounded sm:border sm:p-5">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-goldSoft sm:text-xs sm:tracking-[0.18em]">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-accentGold sm:text-xs sm:tracking-[0.18em]">
             Saved library
           </p>
           <h2 className="mt-2 font-display text-[1.7rem] uppercase leading-none tracking-normal text-bone sm:text-2xl">
@@ -2669,12 +2673,12 @@ function SavedLibraryPanel({
       </div>
 
       {!isPro ? (
-        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4 text-sm leading-6 text-muted sm:rounded">
+        <div className="rounded-xl border border-divider/10 bg-overlay/[0.035] p-4 text-sm leading-6 text-muted sm:rounded">
           Saved history is included in paid plans. Your drafts and recent work remain available in the workspace.
         </div>
       ) : (
         <>
-          <label className="mb-3 grid gap-2 text-sm">Search my content<input value={query} onChange={e => setQuery(e.target.value)} type="search" placeholder="Title, topic, or phrase" className="min-h-11 rounded border border-white/20 bg-ink px-3" /></label>
+          <label className="mb-3 grid gap-2 text-sm">Search my content<input value={query} onChange={e => setQuery(e.target.value)} type="search" placeholder="Title, topic, or phrase" className="min-h-11 rounded border border-divider/20 bg-ink px-3" /></label>
           <div className="grid gap-3 sm:grid-cols-2">
             <select
               aria-label="Filter saved content by platform"
@@ -2709,7 +2713,7 @@ function SavedLibraryPanel({
               filtered.map((item) => (
                 <article
                   key={item.id}
-                  className="w-full min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.035] p-4 sm:rounded sm:border-white/10"
+                  className="w-full min-w-0 rounded-xl border border-divider/[0.08] bg-overlay/[0.035] p-4 sm:rounded sm:border-divider/10"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -2724,7 +2728,7 @@ function SavedLibraryPanel({
                       <button
                         type="button"
                         onClick={() => onCopy(item)}
-                        className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-ink/70 text-bone transition hover:border-violet/60 sm:rounded"
+                        className="grid h-10 w-10 place-items-center rounded-lg border border-divider/10 bg-ink/70 text-bone transition hover:border-violet/60 sm:rounded"
                         aria-label="Copy saved content"
                       >
                         {copiedId === item.id ? <Check size={16} /> : <Copy size={16} />}
@@ -2732,7 +2736,7 @@ function SavedLibraryPanel({
                       <button
                         type="button"
                         onClick={() => onDelete(item.id)}
-                        className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-ink/70 text-muted transition hover:border-gold/60 hover:text-bone sm:rounded"
+                        className="grid h-10 w-10 place-items-center rounded-lg border border-divider/10 bg-ink/70 text-muted transition hover:border-gold/60 hover:text-bone sm:rounded"
                         aria-label="Delete saved content"
                       >
                         <Trash2 size={16} />
@@ -2742,7 +2746,7 @@ function SavedLibraryPanel({
                 </article>
               ))
             ) : (
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-muted sm:rounded">
+              <div className="rounded-xl border border-divider/10 bg-overlay/[0.03] p-4 text-sm text-muted sm:rounded">
                 No saved outputs match these filters yet.
               </div>
             )}
@@ -2785,11 +2789,11 @@ function HistoryPanel({
 
   return (
       <dialog ref={dialogRef} aria-label="Recent work" onCancel={onClose} onClose={onClose}
-        className="fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-dvh w-full max-w-md border-l border-white/10 bg-coal p-4 text-bone backdrop:bg-black/60"
+        className="fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-dvh w-full max-w-md border-l border-divider/10 bg-coal p-4 text-bone backdrop:bg-black/60"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accentGold">
               History
             </p>
             <h2 className="mt-1 text-lg font-semibold text-bone">Recent work</h2>
@@ -2797,7 +2801,7 @@ function HistoryPanel({
           <button
             type="button"
             onClick={onClose}
-            className="grid h-10 w-10 place-items-center border border-white/10 bg-white/[0.04] text-muted"
+            className="grid h-10 w-10 place-items-center border border-divider/10 bg-overlay/[0.04] text-muted"
             aria-label="Close"
           >
             <X size={18} />
@@ -2869,7 +2873,7 @@ function HistoryPanel({
 function UsageSummaryCard({ plan, usage }: { plan: PlanId; usage: UsageSummary }) {
   return (
     <section className="rounded-xl border border-gold/25 bg-gold/[0.07] p-3 sm:rounded">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-goldSoft">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accentGold">
         {labelForPlan(plan)}
       </p>
       <p className="mt-2 text-lg font-semibold text-bone">
@@ -2904,7 +2908,7 @@ function HistoryGroup<T>({
         {items.length ? (
           items.map(render)
         ) : (
-          <p className="rounded border border-white/10 bg-white/[0.03] p-3 text-sm text-muted">
+          <p className="rounded border border-divider/10 bg-overlay/[0.03] p-3 text-sm text-muted">
             {empty}
           </p>
         )}
@@ -2926,7 +2930,7 @@ function HistoryButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex min-h-16 w-full items-center justify-between gap-3 rounded border border-white/10 bg-ink/55 p-3 text-left transition hover:border-violet/60"
+      className="flex min-h-16 w-full items-center justify-between gap-3 rounded border border-divider/10 bg-ink/55 p-3 text-left transition hover:border-violet/60"
     >
       <span className="min-w-0">
         <span className="line-clamp-2 block text-sm font-semibold leading-5 text-bone">
@@ -2934,7 +2938,7 @@ function HistoryButton({
         </span>
         <span className="mt-1 block truncate text-xs text-muted">{meta}</span>
       </span>
-      <ChevronRight className="shrink-0 text-goldSoft" size={17} />
+      <ChevronRight className="shrink-0 text-accentGold" size={17} />
     </button>
   );
 }
@@ -2961,13 +2965,13 @@ function BottomActionBar({
   onOpenHistory: () => void;
 }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink/94 px-4 pb-4 pt-3 shadow-[0_-18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-divider/10 bg-ink/94 px-4 pb-4 pt-3 shadow-[0_-18px_45px_rgba(0,0,0,0.35)] backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-md grid-cols-4 gap-2">
         <button
           type="button"
           onClick={onGenerate}
           disabled={!canGenerate}
-          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-violet/70 bg-violet text-[0.7rem] font-semibold text-white shadow-violet disabled:border-white/10 disabled:bg-white/10 disabled:text-muted"
+          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-violet/70 bg-violet text-[0.7rem] font-semibold text-white shadow-violet disabled:border-divider/10 disabled:bg-overlay/10 disabled:text-muted"
         >
           {isPending ? <Loader2 className="animate-spin" size={17} /> : <Sparkles size={17} />}
           Generate
@@ -2976,7 +2980,7 @@ function BottomActionBar({
           type="button"
           onClick={onSave}
           disabled={!canSave}
-          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/[0.025] text-[0.7rem] font-semibold text-bone"
+          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-divider/10 bg-overlay/[0.025] text-[0.7rem] font-semibold text-bone"
         >
           {saved ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
           {earlierResult ? "Save earlier" : "Save"}
@@ -2984,7 +2988,7 @@ function BottomActionBar({
         <button
           type="button"
           onClick={onSaveDraft}
-          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/[0.025] text-[0.7rem] font-semibold text-bone"
+          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-divider/10 bg-overlay/[0.025] text-[0.7rem] font-semibold text-bone"
         >
           <Clipboard size={17} />
           Draft
@@ -2992,7 +2996,7 @@ function BottomActionBar({
         <button
           type="button"
           onClick={onOpenHistory}
-          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-white/10 bg-white/[0.025] text-[0.7rem] font-semibold text-bone"
+          className="flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl border border-divider/10 bg-overlay/[0.025] text-[0.7rem] font-semibold text-bone"
         >
           <History size={17} />
           History

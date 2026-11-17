@@ -90,7 +90,7 @@ export default async function SuccessPage({
       <ClearPendingCheckout />
       {showFoundingMessage ? (
         <section className="rounded border border-gold/35 bg-gold/[0.08] p-4 text-bone">
-          <p className="font-semibold text-goldSoft">
+          <p className="font-semibold text-accentGold">
             Your Founder access is active. You have not been charged.
           </p>
           <p className="mt-2 text-sm text-muted">
@@ -103,7 +103,7 @@ export default async function SuccessPage({
           <p>You now have access to your upgraded ContentOS features.</p>
         </>
       )}
-      <Link href="/dashboard" className="text-goldSoft hover:text-bone">
+      <Link href="/dashboard" className="text-accentGold hover:text-bone">
         Go to dashboard
       </Link>
     </PublicPage>

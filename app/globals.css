@@ -4,9 +4,57 @@
 
 :root {
   color-scheme: dark;
-  background: #050509;
+  --color-ink: 5 5 9;
+  --color-coal: 11 10 16;
+  --color-graphite: 20 18 29;
+  --color-panel: 25 21 36;
+  --color-line: 45 34 65;
+  --color-menu: 7 5 13;
+  --color-bone: 244 241 234;
+  --color-muted: 169 162 184;
+  --color-overlay: 255 255 255;
+  --color-divider: 255 255 255;
+  --divider-base: 0;
+  --divider-scale: 1;
+  --color-accent-gold: 224 187 88;
+  --color-accent-violet: 192 148 255;
+  --color-danger: 252 165 165;
+  --color-warning: 253 230 138;
+  --color-focus: 192 148 255;
+  --color-control-border: 119 102 143;
+  --page-background:
+    radial-gradient(circle at 86% 8%, rgba(139, 63, 242, 0.24), transparent 30rem),
+    radial-gradient(circle at 4% 24%, rgba(201, 154, 34, 0.11), transparent 22rem),
+    linear-gradient(155deg, #050509 0%, #0b0911 46%, #120d1e 100%);
+  background: rgb(var(--color-ink));
   --font-inter: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-oswald: Impact, "Arial Narrow", "Roboto Condensed", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: 250 248 252;
+  --color-coal: 246 242 249;
+  --color-graphite: 240 234 247;
+  --color-panel: 255 255 255;
+  --color-line: 162 149 180;
+  --color-menu: 255 255 255;
+  --color-bone: 30 22 43;
+  --color-muted: 98 83 116;
+  --color-overlay: 64 35 94;
+  --color-divider: 54 42 77;
+  --divider-base: 0.4;
+  --divider-scale: 0.6;
+  --color-accent-gold: 121 82 9;
+  --color-accent-violet: 106 36 184;
+  --color-danger: 172 31 45;
+  --color-warning: 123 78 0;
+  --color-focus: 106 36 184;
+  --color-control-border: 119 102 143;
+  --page-background:
+    radial-gradient(circle at 86% 8%, rgba(139, 63, 242, 0.08), transparent 30rem),
+    radial-gradient(circle at 4% 24%, rgba(201, 154, 34, 0.07), transparent 22rem),
+    linear-gradient(155deg, #faf8fc 0%, #f6f2f9 46%, #f0eaf7 100%);
 }
 
 * {
@@ -16,29 +64,53 @@
 html {
   min-height: 100%;
   overflow-x: hidden;
-  background: #050509;
+  background: rgb(var(--color-ink));
 }
 
 body {
   min-height: 100%;
   margin: 0;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at 86% 8%, rgba(139, 63, 242, 0.24), transparent 30rem),
-    radial-gradient(circle at 4% 24%, rgba(201, 154, 34, 0.11), transparent 22rem),
-    linear-gradient(155deg, #050509 0%, #0b0911 46%, #120d1e 100%);
-  color: #f4f1ea;
+  background: var(--page-background);
+  color: rgb(var(--color-bone));
   font-family: var(--font-inter), system-ui, sans-serif;
 }
 
 button,
 textarea,
-input {
+input,
+select {
   font: inherit;
 }
 
 button {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* An outline remains visible even on controls that use outline-none. */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--color-focus));
+  outline-offset: 3px;
+}
+
+/* Form boundaries must remain clear against both the page and panel surfaces. */
+:where(input:not([type="checkbox"]):not([type="radio"]), textarea, select)[class] {
+  border-color: rgb(var(--color-control-border));
+}
+
+:where(input[type="checkbox"], input[type="radio"]) {
+  accent-color: #8b3ff2;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgb(var(--color-muted));
+  opacity: 1;
+}
+
+:where(button, input, textarea, select):disabled,
+fieldset:disabled :where(button, input, textarea, select) {
+  cursor: not-allowed;
 }
 
 ::selection {
@@ -47,7 +119,7 @@ button {
 }
 
 .studio-scroll {
-  scrollbar-color: rgba(139, 63, 242, 0.55) rgba(255, 255, 255, 0.04);
+  scrollbar-color: rgba(139, 63, 242, 0.55) rgb(var(--color-overlay) / 0.04);
   scrollbar-width: thin;
 }
 
@@ -57,7 +129,7 @@ button {
 }
 
 .studio-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgb(var(--color-overlay) / 0.04);
 }
 
 .studio-scroll::-webkit-scrollbar-thumb {

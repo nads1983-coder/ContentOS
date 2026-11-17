@@ -21,7 +21,7 @@ export function BrandLogo({
     <div className={clsx("flex min-w-0 max-w-full items-center gap-3", className)}>
       <div
         className={clsx(
-          "grid shrink-0 place-items-center rounded-lg border border-gold/55 bg-[linear-gradient(135deg,rgba(139,63,242,0.38),rgba(201,154,34,0.18))] font-bold text-goldSoft shadow-gold ring-1 ring-white/10",
+          "grid shrink-0 place-items-center rounded-lg border border-gold/55 bg-[linear-gradient(135deg,rgba(139,63,242,0.38),rgba(201,154,34,0.18))] font-bold text-accentGold shadow-gold ring-1 ring-divider/10",
           sizeClasses[size]
         )}
         aria-hidden="true"
@@ -31,7 +31,7 @@ export function BrandLogo({
       {showWordmark ? (
         <div className="min-w-0 max-w-[calc(100vw-6rem)] sm:max-w-none">
           <p className="truncate text-base font-extrabold tracking-normal text-bone sm:text-lg">
-            Content<span className="text-goldSoft">OS</span>
+            Content<span className="text-accentGold">OS</span>
           </p>
           <p className="text-xs leading-5 text-muted sm:hidden">
             Create from one idea.

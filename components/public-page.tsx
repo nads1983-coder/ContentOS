@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
+import { ThemeSelector } from "@/components/theme-selector";
 import { siteConfig } from "@/lib/site";
 
 export function PublicPage({
@@ -17,8 +18,8 @@ export function PublicPage({
     <main className="min-h-screen overflow-x-hidden px-4 py-8 text-bone sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-4xl">
         <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <BrandLogo />
-          <nav className="grid w-full grid-cols-4 items-center gap-x-2 gap-y-2 border-t border-white/10 pt-3 text-center text-xs text-muted sm:flex sm:w-auto sm:flex-wrap sm:justify-end sm:gap-4 sm:border-0 sm:pt-0 sm:text-sm" aria-label="Page">
+          <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:w-auto"><BrandLogo /><ThemeSelector /></div>
+          <nav className="grid w-full grid-cols-4 items-center gap-x-2 gap-y-2 border-t border-divider/10 pt-3 text-center text-xs text-muted sm:flex sm:w-auto sm:flex-wrap sm:justify-end sm:gap-4 sm:border-0 sm:pt-0 sm:text-sm" aria-label="Page">
             <Link href="/" className="hover:text-bone">
               Home
             </Link>
@@ -33,14 +34,14 @@ export function PublicPage({
             </Link>
           </nav>
         </div>
-        <article className="mt-10 rounded border border-white/10 bg-panel/78 p-4 shadow-violet sm:p-6">
+        <article className="mt-10 rounded border border-divider/10 bg-panel/78 p-4 shadow-violet sm:p-6">
           <h1 className="font-display text-3xl uppercase tracking-normal sm:text-4xl">{title}</h1>
           <div className="prose-content mt-6 grid gap-5 text-sm leading-7 text-muted">
             {children}
           </div>
           <p className="mt-8 text-xs text-muted">
             {contactLabel}:{" "}
-            <a href={`mailto:${contactEmail}`} className="text-goldSoft hover:text-bone">
+            <a href={`mailto:${contactEmail}`} className="text-accentGold hover:text-bone">
               {contactEmail}
             </a>
           </p>

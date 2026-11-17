@@ -19,7 +19,7 @@ export default async function BudgetPage() {
   return <main className="mx-auto max-w-3xl px-5 py-10 text-bone">
     <h1 className="text-2xl font-semibold">AI capacity</h1>
     <p className="mt-4">{current ? `${current.month}: £${pounds(current.held)} accounted or reserved of £30.00` : "Opening balance has not been approved. Generation is blocked."}</p>
-    {current?.suspended ? <p role="alert" className="mt-3 text-red-300">Provider-cost investigation required. New AI requests are blocked.</p> : null}
+    {current?.suspended ? <p role="alert" className="mt-3 text-danger">Provider-cost investigation required. New AI requests are blocked.</p> : null}
     <h2 className="mt-8 text-lg font-semibold">Budget warnings</h2>
     <ul className="mt-3 space-y-2">{alerts.map(a=><li key={`${a.month}-${a.threshold_microgbp}`} role="status">{a.month}: £{pounds(a.threshold_microgbp)} threshold reached ({Number(a.threshold_microgbp)===25_000_000?"critical":"early warning"}).</li>)}</ul>
     <p className="mt-6 text-sm text-muted">Includes uncertain provider calls. No automatic budget increases or retries. Provider invoices, taxes and spending outside this application require separate reconciliation.</p>

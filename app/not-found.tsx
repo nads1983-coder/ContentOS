@@ -4,9 +4,9 @@ import { BrandLogo } from "@/components/brand-logo";
 export default function NotFound() {
   return (
     <main className="grid min-h-screen place-items-center px-4 py-10 text-bone">
-      <section className="w-full max-w-lg rounded border border-white/10 bg-panel/78 p-6 shadow-violet">
+      <section className="w-full max-w-lg rounded border border-divider/10 bg-panel/78 p-6 shadow-violet">
         <BrandLogo />
-        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">
+        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-accentGold">
           404
         </p>
         <h1 className="mt-3 font-display text-3xl uppercase tracking-normal">
@@ -24,7 +24,7 @@ export default function NotFound() {
           </Link>
           <Link
             href="/studio"
-            className="flex min-h-11 items-center justify-center rounded border border-white/10 bg-white/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
+            className="flex min-h-11 items-center justify-center rounded border border-divider/10 bg-overlay/[0.04] px-4 text-sm font-semibold text-bone transition hover:border-gold/60"
           >
             Open studio
           </Link>

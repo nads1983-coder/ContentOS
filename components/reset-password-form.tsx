@@ -121,7 +121,7 @@ export function ResetPasswordForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="min-h-12 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-muted"
+        className="min-h-12 rounded border border-violet/70 bg-violet px-4 text-sm font-semibold text-white shadow-violet transition hover:bg-violetDeep disabled:cursor-not-allowed disabled:bg-overlay/10 disabled:text-muted"
       >
         {isPending ? "Please wait..." : mode === "confirm" ? "Update password" : "Send reset link"}
       </button>

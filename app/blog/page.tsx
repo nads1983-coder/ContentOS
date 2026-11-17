@@ -18,8 +18,8 @@ export default function BlogIndexPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "CollectionPage", name: "ContentOS Blog", url: absoluteUrl("/blog"), description: "Practical articles about AI content workflows, idea repurposing, creator systems and platform-ready publishing." }).replace(/</g, "\\u003c") }} />
       <div className="grid gap-4">
         {blogPosts.map((post) => (
-          <article key={post.slug} className="rounded border border-white/10 bg-white/[0.03] p-4">
-            <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-goldSoft">
+          <article key={post.slug} className="rounded border border-divider/10 bg-overlay/[0.03] p-4">
+            <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-normal text-accentGold">
               <time dateTime={post.published}>
                 {new Intl.DateTimeFormat("en-GB", {
                   day: "numeric",
@@ -34,7 +34,7 @@ export default function BlogIndexPage() {
             <p className="mt-3 text-sm leading-7 text-muted">{post.description}</p>
             <Link
               href={`/blog/${post.slug}`}
-              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-goldSoft hover:text-bone"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-accentGold hover:text-bone"
             >
               Read article <ArrowRight size={16} aria-hidden="true" />
             </Link>

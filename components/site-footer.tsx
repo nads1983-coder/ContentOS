@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand-logo";
+import { ThemeSelector } from "@/components/theme-selector";
 import { siteConfig } from "@/lib/site";
 
 export function SiteFooter() {
   return (
-      <footer className="border-t border-white/10 px-4 py-8 text-sm text-muted sm:px-6 lg:px-8">
+      <footer className="border-t border-divider/10 px-4 py-8 text-sm text-muted sm:px-6 lg:px-8">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <BrandLogo />
+          <div className="flex flex-wrap items-center gap-4"><BrandLogo /><ThemeSelector /></div>
           <nav className="flex flex-wrap gap-4" aria-label="Footer">
             <Link href="/features" className="hover:text-bone">Features</Link>
             <Link href="/pricing" className="hover:text-bone">Pricing</Link>

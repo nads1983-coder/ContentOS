@@ -22,10 +22,10 @@ export default async function AdminPage() {
   if (!user || !isAdminEmail(user.email)) {
     return (
       <main className="grid min-h-screen place-items-center px-4 text-bone">
-        <section className="rounded border border-white/10 bg-panel/78 p-6">
+        <section className="rounded border border-divider/10 bg-panel/78 p-6">
           <BrandLogo />
           <h1 className="mt-6 text-2xl font-semibold">Admin access required</h1>
-          <Link href="/login" className="mt-4 block text-sm text-goldSoft">
+          <Link href="/login" className="mt-4 block text-sm text-accentGold">
             Log in
           </Link>
         </section>
@@ -49,8 +49,8 @@ export default async function AdminPage() {
             "Failed requests",
             "Usage metrics"
           ].map((item) => (
-            <article key={item} className="rounded border border-white/10 bg-panel/78 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-goldSoft">{item}</p>
+            <article key={item} className="rounded border border-divider/10 bg-panel/78 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accentGold">{item}</p>
               <p className="mt-3 text-sm text-muted">Reporting is not configured yet.</p>
             </article>
           ))}

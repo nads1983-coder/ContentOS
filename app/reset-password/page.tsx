@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ResetPasswordForm } from "@/components/reset-password-form";
 import { BrandLogo } from "@/components/brand-logo";
+import { ThemeSelector } from "@/components/theme-selector";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
@@ -12,8 +13,9 @@ export const metadata = pageMetadata({
 export default function ResetPasswordPage() {
   return (
     <main className="grid min-h-screen place-items-center overflow-x-hidden px-4 py-10 text-bone">
-      <section className="w-full max-w-md rounded border border-white/10 bg-panel/78 p-4 shadow-violet sm:p-6">
+      <section className="w-full max-w-md rounded border border-divider/10 bg-panel/78 p-4 shadow-violet sm:p-6">
         <BrandLogo />
+        <div className="mt-4 flex justify-end"><ThemeSelector /></div>
         <h1 className="mt-8 font-display text-3xl uppercase tracking-normal">Reset password</h1>
         <p className="mt-2 text-sm leading-6 text-muted">
           Send a secure password reset link through ContentOS.

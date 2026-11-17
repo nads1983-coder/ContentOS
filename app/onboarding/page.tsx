@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BrandLogo } from "@/components/brand-logo";
+import { ThemeSelector } from "@/components/theme-selector";
 import { OnboardingForm } from "@/components/onboarding-form";
 
 export const metadata: Metadata = {
@@ -13,8 +14,9 @@ export const metadata: Metadata = {
 export default function OnboardingPage() {
   return (
     <main className="grid min-h-screen place-items-center px-4 py-10 text-bone">
-      <section className="w-full max-w-2xl rounded border border-white/10 bg-panel/78 p-6 shadow-violet">
+      <section className="w-full max-w-2xl rounded border border-divider/10 bg-panel/78 p-6 shadow-violet">
         <BrandLogo />
+        <div className="mt-4 flex justify-end"><ThemeSelector /></div>
         <h1 className="mt-8 font-display text-3xl uppercase tracking-normal">
           Set up your workspace
         </h1>
