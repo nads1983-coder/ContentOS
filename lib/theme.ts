@@ -1,9 +1,9 @@
-export type ThemePreference = "light" | "dark" | "system";
+export type ThemePreference = "light" | "system";
 
 export const THEME_STORAGE_KEY = "contentos-theme";
 
 export function normalizeThemePreference(value: unknown): ThemePreference {
-  return value === "light" || value === "dark" ? value : "system";
+  return value === "light" ? "light" : "system";
 }
 
 // Runs in the head before the first paint. Keep this independent of React and
@@ -11,7 +11,7 @@ export function normalizeThemePreference(value: unknown): ThemePreference {
 export const themeInitScript = `(() => {
   let preference = "system";
   try { preference = localStorage.getItem("${THEME_STORAGE_KEY}"); } catch {}
-  preference = preference === "light" || preference === "dark" ? preference : "system";
+  preference = preference === "light" ? "light" : "system";
   const theme = preference === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : preference;
   document.documentElement.dataset.theme = theme;
   document.documentElement.dataset.themePreference = preference;

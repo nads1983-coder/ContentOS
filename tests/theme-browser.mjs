@@ -54,7 +54,7 @@ async function layout(page) {
 }
 try {
   // The inline head script must work with all React bundles blocked.
-  for (const [saved, device, expected] of [["light", "dark", "light"], ["dark", "light", "dark"], ["system", "light", "light"], [null, "dark", "dark"], ["invalid", "light", "light"]]) {
+  for (const [saved, device, expected] of [["light", "dark", "light"], ["dark", "light", "light"], ["system", "light", "light"], [null, "dark", "dark"], ["invalid", "light", "light"]]) {
     const ctx = await context({ colorScheme: device });
     await ctx.addInitScript(({ value, origin }) => { if (value !== null && location.origin === origin) localStorage.setItem("contentos-theme", value); }, { value: saved, origin: new URL(base).origin });
     await ctx.route("**/*.js*", route => route.abort());
@@ -63,7 +63,7 @@ try {
   }
   const ctx = await context(), page = await ctx.newPage();
   await page.goto(base); await theme(page, "dark");
-  assert.deepEqual(await page.getByLabel("Colour theme").first().locator("option").allTextContents(), ["Light", "Dark", "System"]);
+  assert.deepEqual(await page.getByLabel("Colour theme").first().locator("option").allTextContents(), ["Light", "System"]);
   await select(page, "light"); await theme(page, "light");
   assert.equal(await page.evaluate(() => localStorage.getItem("contentos-theme")), "light");
   await page.reload(); await theme(page, "light");
@@ -71,7 +71,7 @@ try {
   const returning = await context({ storageState: await ctx.storageState() });
   const returned = await returning.newPage(); await returned.goto(base); await theme(returned, "light"); await returning.close();
   const second = await ctx.newPage(); await second.goto(base);
-  await select(page, "dark"); await theme(second, "dark");
+  await select(page, "system"); await theme(second, "dark");
   await select(page, "system"); await theme(page, "dark");
   await page.emulateMedia({ colorScheme: "light" }); await theme(page, "light");
   await page.emulateMedia({ colorScheme: "dark" }); await theme(page, "dark");
@@ -82,7 +82,7 @@ try {
 
   const paths = ["/", "/features", "/pricing", "/workflows", "/blog", "/login", "/signup", "/reset-password", "/onboarding", "/dashboard", "/theme-not-found"];
   for (const mode of ["light", "dark"]) {
-    await select(page, mode);
+    await select(page, mode === "dark" ? "system" : "light");
     for (const width of [375, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
       for (const path of paths) {
@@ -97,16 +97,16 @@ try {
     assert.equal(await page.getByLabel("Colour theme").first().evaluate(el => getComputedStyle(el).outlineStyle), "solid");
     checks.push(`${mode}: 11 public/auth/error pages at 375 and 1440px; homepage at 320/768/1024px; keyboard focus`);
   }
-  const blocked = await context({ colorScheme: "light" });
+  const blocked = await context({ colorScheme: "dark" });
   await blocked.addInitScript(() => { Object.defineProperty(window, "localStorage", { get() { throw new DOMException("Blocked", "SecurityError"); } }); });
-  const blockedPage = await blocked.newPage(); await blockedPage.goto(base); await theme(blockedPage, "light"); await select(blockedPage, "dark"); await theme(blockedPage, "dark"); await blocked.close();
+  const blockedPage = await blocked.newPage(); await blockedPage.goto(base); await theme(blockedPage, "dark"); await select(blockedPage, "light"); await theme(blockedPage, "light"); await blocked.close();
   checks.push("Storage unavailable: device fallback and manual switching still work");
 
   if (withStudio) {
     await page.setViewportSize({ width: 1440, height: 1000 }); await page.goto(base + "/image-studio-test");
     await page.locator('#outputs article').first().waitFor();
     for (const mode of ["light", "dark"]) {
-      await select(page, mode); await theme(page, mode); await layout(page);
+      await select(page, mode === "dark" ? "system" : "light"); await theme(page, mode); await layout(page);
       await page.screenshot({ path: `${dir}/${mode}-studio-desktop.png` });
       await page.getByRole("button", { name: "Image Studio", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: "Image Studio" }); await dialog.waitFor();
@@ -131,7 +131,7 @@ try {
     await page.getByLabel("What would you like to create?").fill("A planning checklist for creators.");
     await page.getByRole("button", { name: "Create Content", exact: true }).click();
     await page.getByText("Synthetic theme verification failure", { exact: false }).first().waitFor();
-    for (const mode of ["light", "dark"]) { await select(page, mode); await page.screenshot({ path: `${dir}/${mode}-notification.png` }); }
+    for (const mode of ["light", "dark"]) { await select(page, mode === "dark" ? "system" : "light"); await page.screenshot({ path: `${dir}/${mode}-notification.png` }); }
     checks.push("Studio: output cards, forms, disabled controls, account menu, history and image dialogs, swatches, platform preview, failure notification; synthetic transport only");
   }
   assert.deepEqual(errors, []);
