@@ -72,7 +72,6 @@ export function ThemeSelector() {
         className="min-h-11 w-24 rounded border border-divider/20 bg-ink px-2 text-sm text-bone hover:border-violet focus-visible:outline-offset-2"
       >
         <option value="light">Light</option>
-        <option value="dark">Dark</option>
         <option value="system">System</option>
       </select>
     </label>

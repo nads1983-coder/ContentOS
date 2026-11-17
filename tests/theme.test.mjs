@@ -13,7 +13,8 @@ for (const systemDark of [false, true]) {
         document, matchMedia: () => ({ matches: systemDark }),
         localStorage: { getItem: key => { assert.equal(key, THEME_STORAGE_KEY); return saved; } }
       });
-      const preference = normalizeThemePreference(saved);
+      const preference = saved === "light" ? "light" : "system";
+      assert.equal(normalizeThemePreference(saved), preference);
       assert.equal(document.documentElement.dataset.themePreference, preference);
       assert.equal(document.documentElement.dataset.theme, preference === "system" ? (systemDark ? "dark" : "light") : preference);
     });

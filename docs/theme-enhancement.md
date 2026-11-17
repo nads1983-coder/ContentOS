@@ -1,10 +1,10 @@
-# Light, dark and system themes
+# Light and System theme choices
 
 The original dark palette and gradients remain the dark theme. The alternative uses warm white and pale violet surfaces, dark text and readable gold/violet text accents. Shared Tailwind tokens cover page chrome, cards, forms, menus, dialogs, notifications, output cards and preview containers. Violet/gold fills, image swatches, generated images, favicons and Open Graph artwork retain their original colours. The formatter's intentionally light target-platform mockup is also preserved.
 
-The native Light / Dark / System select appears in the homepage header, public-page header, studio toolbar, account-entry forms and shared footer. It has an accessible name, keyboard support, a 44px touch target and visible focus. The selector waits for hydration before accepting input. Header wrapping accommodates narrow viewports without changing navigation links.
+The native Light / System select appears in the homepage header, public-page header, studio toolbar, account-entry forms and shared footer. It has an accessible name, keyboard support, a 44px touch target and visible focus. The selector waits for hydration before accepting input. Header wrapping accommodates narrow viewports without changing navigation links.
 
-The preference is stored in `contentos-theme` in localStorage. System is the default; device preference changes are followed live. Selectors and other open tabs stay synchronized. Missing/invalid preferences and cleared storage resolve to System. If storage is blocked, switching still works for the current visit.
+The preference is stored in `contentos-theme` in localStorage. System is the default; device preference changes are followed live. Selectors and other open tabs stay synchronized. Missing/invalid preferences, previously saved Dark preferences and cleared storage resolve to System. If storage is blocked, switching still works for the current visit.
 
 A synchronous head script resolves the theme before first paint. Only the expected root attribute mismatch is suppressed; selector server snapshots match hydration. The runtime re-reads storage after attaching listeners to handle changes made by another tab during hydration. No server cookie reads, dynamic rendering, new dependency, network request or account-data mutation is required for theming.
 
